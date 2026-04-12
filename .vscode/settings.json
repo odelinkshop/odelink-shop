@@ -1,0 +1,4 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "claudeCodeChat.permissions.yoloMode": true
+}

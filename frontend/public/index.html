@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico?v=3" sizes="any" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon-32.png?v=3" type="image/png" sizes="32x32" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon-48.png?v=3" type="image/png" sizes="48x48" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#EF4444" />
+  <meta name="description" content="Shopier mağazanız için profesyonel vitrin sitesi oluşturun. Ödelink ile ürünlerinizi sergileyin, linklerinizi tek sayfada toplayın." />
+  <link rel="canonical" href="https://www.odelink.shop/" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ödelink" />
+  <meta property="og:title" content="Ödelink | Shopier için Vitrin Sitesi" />
+  <meta property="og:description" content="Shopier mağazanız için profesyonel vitrin sitesi oluşturun. Ödelink ile ürünlerinizi sergileyin, linklerinizi tek sayfada toplayın." />
+  <meta property="og:url" content="https://www.odelink.shop/" />
+  <meta property="og:image" content="https://www.odelink.shop/favicon-512.png?v=3" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Ödelink | Shopier için Vitrin Sitesi" />
+  <meta name="twitter:description" content="Shopier mağazanız için profesyonel vitrin sitesi oluşturun. Ödelink ile ürünlerinizi sergileyin, linklerinizi tek sayfada toplayın." />
+  <meta name="twitter:image" content="https://www.odelink.shop/favicon-512.png?v=3" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png?v=3" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var host = (window.location.hostname || '').toLowerCase();
+        var path = window.location.pathname || '';
+        var search = window.location.search || '';
+        var hash = window.location.hash || '';
+
+        if (host === 'odelink.shop') {
+          var parts = [];
+          try {
+            var token = window.localStorage.getItem('odelink_token') || '';
+            var user = window.localStorage.getItem('odelink_user') || '';
+            if (token) parts.push('__odelink_token=' + encodeURIComponent(token));
+            if (user) parts.push('__odelink_user=' + encodeURIComponent(user));
+          } catch (storageErr) {
+            void storageErr;
+          }
+
+          if (hash) {
+            parts.push('__odelink_hash=' + encodeURIComponent(hash.replace(/^#/, '')));
+          }
+
+          var nextHash = parts.length ? ('#__odelink_transfer__=1&' + parts.join('&')) : hash;
+          var next = 'https://www.odelink.shop' + path + search + nextHash;
+          window.location.replace(next);
+          return;
+        }
+
+        if (host === 'www.odelink.shop' && hash.indexOf('#__odelink_transfer__=1') === 0) {
+          try {
+            var params = new URLSearchParams(hash.slice(1));
+            var nextToken = params.get('__odelink_token') || '';
+            var nextUser = params.get('__odelink_user') || '';
+            var nextHashValue = params.get('__odelink_hash') || '';
+
+            if (nextToken) window.localStorage.setItem('odelink_token', nextToken);
+            if (nextUser) window.localStorage.setItem('odelink_user', nextUser);
+
+            var cleaned = path + search + (nextHashValue ? ('#' + nextHashValue) : '');
+            window.history.replaceState(null, '', cleaned);
+          } catch (migrateErr) {
+            void migrateErr;
+          }
+        }
+      } catch (e) {
+        void e;
+      }
+    })();
+  </script>
+  <style>
+    html, body { height: 100%; }
+    body { margin: 0; background: radial-gradient(1200px 700px at 20% 10%, rgba(30, 41, 59, 0.55), transparent 60%), linear-gradient(135deg, #020617, #111827 45%, #020617); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    #boot-splash { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
+    #boot-card { width: 100%; max-width: 520px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; padding: 18px; backdrop-filter: blur(10px); }
+    #boot-title { height: 18px; width: 160px; border-radius: 999px; background: rgba(255,255,255,0.18); }
+    #boot-line { margin-top: 10px; height: 12px; width: 72%; border-radius: 999px; background: rgba(255,255,255,0.12); }
+    #boot-grid { margin-top: 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .boot-box { height: 92px; border-radius: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); }
+    @media (max-width: 520px) { #boot-grid { grid-template-columns: 1fr; } }
+  </style>
+  <title>Ödelink | Shopier için Vitrin Sitesi</title>
+</head>
+<body>
+  <noscript>Bu uygulamayı kullanmak için JavaScript'i etkinleştirmelisiniz.</noscript>
+  <div id="root">
+    <div id="boot-splash">
+      <div id="boot-card">
+        <div id="boot-title"></div>
+        <div id="boot-line"></div>
+        <div id="boot-grid">
+          <div class="boot-box"></div>
+          <div class="boot-box"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

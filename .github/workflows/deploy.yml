@@ -1,0 +1,238 @@
+name: Deploy to VDS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to VDS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VDS_HOST }}
+          username: ${{ secrets.VDS_USER }}
+          password: ${{ secrets.VDS_PASSWORD }}
+          port: ${{ secrets.VDS_PORT || 4383 }}
+          timeout: 120s
+          command_timeout: 30m
+          script: |
+            echo "✅ SSH connection successful!"
+            set -e
+            cd "$HOME/odelink-shop"
+            
+            echo "---- DEPLOY: Configure git safe.directory ----"
+            git config --global --add safe.directory "$HOME/odelink-shop"
+            
+            echo "---- DEPLOY: Configure git credentials ----"
+            git config --global credential.helper store
+            echo "https://${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
+            
+            # Configure git for HTTPS to avoid SSH key issues
+            git remote set-url origin https://github.com/odelinkshop/odelink-shop.git
+            
+            echo "---- DEPLOY DEBUG: Starting git sync ----"
+            # Always use origin/main to get latest code from remote
+            git fetch -v --prune origin main || git fetch origin main
+            git reset --hard origin/main
+            CURRENT_COMMIT="$(git rev-parse HEAD)"
+            echo "✅ Git sync complete. Current commit: ${CURRENT_COMMIT}"
+            
+            echo "---- DEPLOY DEBUG: Starting Docker services ----"
+            mkdir -p backend
+            touch backend/.env
+            
+            # Update env vars with proper handling (preserve existing vars)
+            grep -v '^EMAIL_HOST=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> backend/.env
+            
+            grep -v '^EMAIL_PORT=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> backend/.env
+            
+            grep -v '^EMAIL_USER=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> backend/.env
+            
+            grep -v '^EMAIL_PASS=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> backend/.env
+            
+            grep -v '^PASSWORD_RESET_SECRET=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "PASSWORD_RESET_SECRET=${{ secrets.PASSWORD_RESET_SECRET }}" >> backend/.env
+            
+            grep -v '^JWT_SECRET=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> backend/.env
+            
+            grep -v '^GOOGLE_CLIENT_ID=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> backend/.env
+            
+            grep -v '^CLOUDFLARE_API_TOKEN=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> backend/.env
+            
+            grep -v '^CLOUDFLARE_ZONE_ID=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}" >> backend/.env
+            
+            grep -v '^SHOPIER_API_TOKEN=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "SHOPIER_API_TOKEN=${{ secrets.SHOPIER_API_TOKEN }}" >> backend/.env
+            
+            grep -v '^GIT_COMMIT=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "GIT_COMMIT=${CURRENT_COMMIT}" >> backend/.env
+            
+            # CRITICAL: Set DATABASE_URL to use Docker network (postgres:5432 not 127.0.0.1)
+            grep -v '^DATABASE_URL=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "DATABASE_URL=postgresql://postgres:odelink_production_password_change_me@postgres:5432/odelink_shop" >> backend/.env
+            
+            echo "---- DEPLOY DEBUG: Starting postgres ----"
+            docker compose up -d postgres
+            
+            POSTGRES_OK="0"
+            for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+              if docker exec odelink_postgres pg_isready -U postgres -d odelink_shop >/dev/null 2>&1; then
+                POSTGRES_OK="1"
+                break
+              fi
+              echo "Waiting for postgres readiness (${i}/12)"
+              sleep 5
+            done
+            
+            if [ "${POSTGRES_OK}" != "1" ]; then
+              echo "Postgres did not become ready" >&2
+              docker logs odelink_postgres --tail 100 2>&1 || true
+              exit 1
+            fi
+            
+            echo "---- DEPLOY: Initializing database schema ----"
+            docker run --rm \
+              --network odelink-shop_default \
+              -e DATABASE_URL="postgresql://postgres:odelink_production_password_change_me@postgres:5432/odelink_shop" \
+              -v "$HOME/odelink-shop:/app" \
+              -w /app \
+              node:20-alpine \
+              sh -c "cd backend && npm install --omit=dev && node ../scripts/init-database.js" || {
+                echo "⚠️ Database initialization failed, but continuing (tables may already exist)"
+              }
+            
+            docker compose stop backend || true
+            docker compose rm -f backend || true
+            docker rmi odelink-shop-backend:latest 2>/dev/null || true
+            docker compose build backend
+            
+            echo "---- DEPLOY DEBUG: Building frontend BEFORE starting backend ----"
+            HOST_UID="$(id -u)"
+            HOST_GID="$(id -g)"
+            docker run --rm -t \
+              -v "$HOME/odelink-shop/frontend:/app" \
+              -w /app \
+              node:18-alpine sh -lc "rm -rf build && npm install && npm run build && chown -R ${HOST_UID}:${HOST_GID} build"
+            
+            # Copy maintenance page to build directory
+            cp "$HOME/odelink-shop/frontend/public/maintenance.html" "$HOME/odelink-shop/frontend/build/maintenance.html" || echo "⚠️ Maintenance page copy failed"
+            
+            if [ ! -f "$HOME/odelink-shop/frontend/build/asset-manifest.json" ]; then
+              echo "CRITICAL ERROR: asset-manifest.json was not generated!" >&2
+              ls -la "$HOME/odelink-shop/frontend/build" || true
+              exit 1
+            fi
+            
+            echo "---- DEPLOY DEBUG: write build commit marker ----"
+            git rev-parse HEAD > "$HOME/odelink-shop/frontend/build/.build_commit" || true
+            
+            echo "---- DEPLOY: Enabling maintenance mode ----"
+            curl -X POST http://127.0.0.1:5000/api/maintenance/enable || echo "⚠️ Maintenance mode API call failed (backend may be down)"
+            
+            echo "---- DEPLOY DEBUG: Docker backend starting... ----"
+            docker compose up -d backend
+            
+            echo "---- DEPLOY DEBUG: Waiting for backend readiness ----"
+            READY_OK="0"
+            for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+              if curl -fsS http://127.0.0.1:5000/api/ready >/tmp/odelink-ready.json; then
+                cat /tmp/odelink-ready.json
+                READY_OK="1"
+                break
+              fi
+              echo "Waiting for backend readiness (${i}/15)"
+              sleep 4
+            done
+            
+            if [ "${READY_OK}" != "1" ]; then
+              echo "Backend readiness failed" >&2
+              docker logs odelink_backend --tail 150 2>&1 || true
+              exit 1
+            fi
+            
+            echo "---- DEPLOY DEBUG: Docker ps status (check if running) ----"
+            docker ps -a | grep odelink || echo "No odelink containers found"
+            
+            echo "---- DEPLOY DEBUG: Backend logs (last 100 lines) ----"
+            docker logs odelink_backend --tail 100 2>&1 || echo "Could not get backend logs"
+            
+            echo "---- DEPLOY DEBUG: Frontend already built, checking files ----"
+              ls -la "$HOME/odelink-shop/frontend/build" || true
+            echo "---- DEPLOY DEBUG: Frontend already built, checking files ----"
+            
+            echo "---- DEPLOY DEBUG: current commit ----"
+            git rev-parse HEAD || true
+            
+            echo "---- DEPLOY DEBUG: frontend/build index ----"
+            ls -la "$HOME/odelink-shop/frontend/build" | sed -n '1,200p' || true
+            
+            echo "---- DEPLOY DEBUG: frontend/build/static/js main bundles ----"
+            ls -la "$HOME/odelink-shop/frontend/build/static/js" | grep -E 'main\.|runtime-main\.' || true
+            
+            SMOKE_EXPECT_MAIN_JS="$(docker run --rm \
+              -v "$HOME/odelink-shop:/app" \
+              -w /app \
+              node:20-alpine \
+              node -e "const fs=require('fs');const manifest=JSON.parse(fs.readFileSync('./frontend/build/asset-manifest.json','utf8'));process.stdout.write(String((manifest.files&&manifest.files['main.js'])||''));")"
+            
+            if [ -z "${SMOKE_EXPECT_MAIN_JS}" ]; then
+              echo "Could not resolve expected main bundle from asset-manifest.json" >&2
+              exit 1
+            fi
+            
+            echo "---- DEPLOY DEBUG: Expected main bundle ${SMOKE_EXPECT_MAIN_JS} ----"
+            
+            echo "---- DEPLOY: Installing Cloudflare SSL certificates ----"
+            if [ -f "scripts/install-cloudflare-ssl.sh" ]; then
+              echo "Running SSL installation script..."
+              chmod +x scripts/install-cloudflare-ssl.sh
+              bash scripts/install-cloudflare-ssl.sh || {
+                echo "⚠️ SSL installation failed, but continuing deployment"
+                echo "SSL can be installed manually later"
+              }
+            else
+              echo "⚠️ SSL installation script not found, skipping SSL setup"
+            fi
+            
+            echo "---- DEPLOY DEBUG: Docker backend logs (last 50 lines) ----"
+            docker logs odelink_backend --tail 50 2>&1 || echo "Could not get backend logs"
+            
+            echo "---- DEPLOY DEBUG: Docker ps status ----"
+            docker ps -a | grep odelink || echo "No odelink containers found"
+            
+            echo "---- DEPLOY: Smoke checks skipped (will be enabled after Nginx setup) ----"
+            echo "⚠️ Nginx is required for external access"
+            
+            echo "---- DEPLOY: Disabling maintenance mode ----"
+            curl -X POST http://127.0.0.1:5000/api/maintenance/disable || echo "⚠️ Maintenance mode disable failed"
+            
+            echo "✅ Deploy completed successfully!"
