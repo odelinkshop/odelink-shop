@@ -53,8 +53,66 @@ const AuthPage = () => {
   const [password, setPassword] = useState('');
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [suggestedPassword, setSuggestedPassword] = useState('');
+  const [showSuggested, setShowSuggested] = useState(false);
+  const [passwordCopied, setPasswordCopied] = useState(false);
 
   const googleEnabled = Boolean(googleClientId);
+
+  // Generate strong password
+  const generateStrongPassword = useCallback(() => {
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    const allChars = lowercase + uppercase + numbers + symbols;
+    
+    let password = '';
+    // Ensure at least one of each type
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += symbols[Math.floor(Math.random() * symbols.length)];
+    
+    // Fill the rest (total 16 characters)
+    for (let i = password.length; i < 16; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+    
+    // Shuffle the password
+    return password.split('').sort(() => Math.random() - 0.5).join('');
+  }, []);
+
+  // Generate password when switching to register mode
+  useEffect(() => {
+    if (mode === 'register') {
+      setSuggestedPassword(generateStrongPassword());
+      setPasswordCopied(false);
+    }
+  }, [mode, generateStrongPassword]);
+
+  // Copy suggested password to clipboard
+  const copySuggestedPassword = useCallback(() => {
+    if (!suggestedPassword) return;
+    
+    navigator.clipboard.writeText(suggestedPassword).then(() => {
+      setPassword(suggestedPassword);
+      setPasswordCopied(true);
+      setTimeout(() => setPasswordCopied(false), 2000);
+    }).catch(err => {
+      console.error('Failed to copy password:', err);
+      // Fallback: just set the password
+      setPassword(suggestedPassword);
+      setPasswordCopied(true);
+      setTimeout(() => setPasswordCopied(false), 2000);
+    });
+  }, [suggestedPassword]);
+
+  // Regenerate password
+  const regeneratePassword = useCallback(() => {
+    setSuggestedPassword(generateStrongPassword());
+    setPasswordCopied(false);
+  }, [generateStrongPassword]);
 
   const completeAuth = useCallback((data) => {
     setAuthSession({
@@ -316,6 +374,86 @@ const AuthPage = () => {
                   required
                   disabled={loading || googleLoading}
                 />
+                
+                {/* Strong Password Suggestion - Only for Register */}
+                {mode === 'register' && suggestedPassword ? (
+                  <div className="mt-3 p-4 rounded-lg border border-blue-200 bg-blue-50">
+                    <div className="flex items-start gap-2 mb-2">
+                      <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-blue-900">Güvenliğiniz için güçlü şifre öneriyoruz</p>
+                        <p className="text-xs text-blue-700 mt-1">Müşteri güvenliği bizim için en önemli şeydir</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 mt-3">
+                      <div className="flex-1 relative">
+                        <input
+                          type={showSuggested ? "text" : "password"}
+                          value={suggestedPassword}
+                          readOnly
+                          className="w-full px-3 py-2 bg-white border border-blue-300 rounded-lg text-sm font-mono"
+                          style={{ fontSize: 13 }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowSuggested(!showSuggested)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-800"
+                          title={showSuggested ? "Gizle" : "Göster"}
+                        >
+                          {showSuggested ? (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                      
+                      <button
+                        type="button"
+                        onClick={copySuggestedPassword}
+                        disabled={passwordCopied}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-green-600 flex items-center gap-2 text-sm font-medium"
+                        title="Kullan"
+                      >
+                        {passwordCopied ? (
+                          <>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Kullanıldı
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            Kullan
+                          </>
+                        )}
+                      </button>
+                      
+                      <button
+                        type="button"
+                        onClick={regeneratePassword}
+                        className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                        title="Yeni şifre üret"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+                
                 {mode === 'login' ? (
                   <div className="mt-2 text-right">
                     <button
