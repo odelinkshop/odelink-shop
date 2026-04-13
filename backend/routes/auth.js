@@ -459,6 +459,13 @@ router.post('/register', async (req, res) => {
     const normalizedEmail = normalizeEmail(email);
     const normalizedPhone = normalizePhone(phone);
 
+    // Gmail-only validation - Sadece Gmail adresleri kabul edilir
+    if (!normalizedEmail.endsWith('@gmail.com')) {
+      return res.status(400).json({ 
+        error: 'Sadece Gmail adresleri ile kayıt olabilirsiniz. Lütfen @gmail.com uzantılı bir e-posta adresi kullanın.' 
+      });
+    }
+
     // Check if user already exists
     const existingUser = await User.findByEmail(normalizedEmail);
     if (existingUser) {
@@ -712,6 +719,14 @@ router.post('/google/callback', async (req, res) => {
     // Verify ID token
     const googleIdentity = await verifyGoogleCredential(id_token);
     
+    // Gmail-only validation - Sadece Gmail adresleri kabul edilir
+    if (!googleIdentity.email.endsWith('@gmail.com')) {
+      console.log('❌ Non-Gmail email rejected:', googleIdentity.email);
+      return res.status(400).json({ 
+        error: 'Sadece Gmail adresleri ile giriş yapabilirsiniz. Lütfen @gmail.com uzantılı bir Google hesabı kullanın.' 
+      });
+    }
+    
     let user = await User.findByEmail(googleIdentity.email);
     let eventType = 'google_login';
 
@@ -777,6 +792,14 @@ router.post('/google', async (req, res) => {
     console.log('🔵 Verifying Google credential...');
     const googleIdentity = await verifyGoogleCredential(value.credential);
     console.log('✅ Google identity verified:', { email: googleIdentity.email, name: googleIdentity.name });
+    
+    // Gmail-only validation - Sadece Gmail adresleri kabul edilir
+    if (!googleIdentity.email.endsWith('@gmail.com')) {
+      console.log('❌ Non-Gmail email rejected:', googleIdentity.email);
+      return res.status(400).json({ 
+        error: 'Sadece Gmail adresleri ile giriş yapabilirsiniz. Lütfen @gmail.com uzantılı bir Google hesabı kullanın.' 
+      });
+    }
     
     let user = await User.findByEmail(googleIdentity.email);
     let eventType = 'google_login';
@@ -846,6 +869,13 @@ router.post('/login', async (req, res) => {
 
     const { email, password } = req.body;
     const normalizedEmail = normalizeEmail(email);
+
+    // Gmail-only validation - Sadece Gmail adresleri kabul edilir
+    if (!normalizedEmail.endsWith('@gmail.com')) {
+      return res.status(400).json({ 
+        error: 'Sadece Gmail adresleri ile giriş yapabilirsiniz. Lütfen @gmail.com uzantılı bir e-posta adresi kullanın.' 
+      });
+    }
 
     // Find user
     const user = await User.findByEmail(normalizedEmail);
