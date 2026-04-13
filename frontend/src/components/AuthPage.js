@@ -121,17 +121,21 @@ const AuthPage = () => {
   }, [googleEnabled]);
 
   const handleGoogleCredential = useCallback(async (googleResponse) => {
+    console.log('🔵 Google credential received:', googleResponse);
     const credential = (googleResponse?.credential || '').toString().trim();
     if (!credential) {
+      console.error('❌ No credential in response');
       setError('Google kimligi alinamadi.');
       return;
     }
 
+    console.log('🔵 Credential length:', credential.length);
     setError('');
     setInfo('');
     setGoogleLoading(true);
 
     try {
+      console.log('🔵 Sending credential to backend...');
       const response = await fetch(`${API_BASE}/api/auth/google`, {
         credentials: 'include',
         method: 'POST',
@@ -139,20 +143,22 @@ const AuthPage = () => {
         body: JSON.stringify({ credential })
       });
 
+      console.log('🔵 Backend response status:', response.status);
       const data = await response.json().catch(() => ({}));
+      console.log('🔵 Backend response data:', data);
 
       if (!response.ok) {
         const errorMsg = data?.error || 'Google ile giris basarisiz.';
-        console.error('Google OAuth error:', errorMsg, data);
+        console.error('❌ Google OAuth error:', errorMsg, data);
         setError(errorMsg);
         setGoogleLoading(false);
         return;
       }
 
-      console.log('Google OAuth success:', data);
+      console.log('✅ Google OAuth success, completing auth...');
       completeAuth(data);
     } catch (requestError) {
-      console.error('Google OAuth request error:', requestError);
+      console.error('❌ Google OAuth request error:', requestError);
       setError('Google ile baglanti kurulamadi.');
       setGoogleLoading(false);
     }
@@ -163,13 +169,21 @@ const AuthPage = () => {
     if (!window.google?.accounts?.id) return;
 
     try {
+      console.log('🔵 Initializing Google Identity Services...');
+      console.log('🔵 Client ID:', googleConfig.clientId);
+      console.log('🔵 Mode:', mode);
+      
       googleButtonRef.current.innerHTML = '';
+      
       window.google.accounts.id.initialize({
         client_id: googleConfig.clientId,
         callback: handleGoogleCredential,
         auto_select: false,
-        cancel_on_tap_outside: true
+        cancel_on_tap_outside: true,
+        ux_mode: 'popup',
+        context: mode === 'register' ? 'signup' : 'signin'
       });
+      
       window.google.accounts.id.renderButton(googleButtonRef.current, {
         theme: 'outline',
         size: 'large',
@@ -178,7 +192,10 @@ const AuthPage = () => {
         logo_alignment: 'left',
         text: mode === 'register' ? 'signup_with' : 'signin_with'
       });
+      
+      console.log('✅ Google button rendered');
     } catch (renderError) {
+      console.error('❌ Google button render error:', renderError);
       setError((prev) => prev || 'Google giris butonu hazirlanamadi.');
     }
   }, [googleConfig.clientId, googleEnabled, googleScriptReady, handleGoogleCredential, mode]);
