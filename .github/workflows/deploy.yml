@@ -100,6 +100,99 @@ jobs:
             mv backend/.env.tmp backend/.env
             echo "DATABASE_URL=postgresql://postgres:odelink_production_password_change_me@postgres:5432/odelink_shop" >> backend/.env
             
+            # Add missing critical environment variables
+            grep -v '^PORT=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "PORT=5000" >> backend/.env
+            
+            grep -v '^NODE_ENV=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "NODE_ENV=production" >> backend/.env
+            
+            grep -v '^FRONTEND_URL=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "FRONTEND_URL=https://www.odelink.shop" >> backend/.env
+            
+            grep -v '^DB_HOST=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "DB_HOST=postgres" >> backend/.env
+            
+            grep -v '^DB_PORT=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "DB_PORT=5432" >> backend/.env
+            
+            grep -v '^DB_NAME=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "DB_NAME=odelink_shop" >> backend/.env
+            
+            grep -v '^DB_USER=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "DB_USER=postgres" >> backend/.env
+            
+            grep -v '^DB_PASSWORD=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "DB_PASSWORD=odelink_production_password_change_me" >> backend/.env
+            
+            grep -v '^JWT_EXPIRE=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "JWT_EXPIRE=7d" >> backend/.env
+            
+            grep -v '^ADMIN_CLAIM_EMAIL=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "ADMIN_CLAIM_EMAIL=odelink@admin.com" >> backend/.env
+            
+            grep -v '^CORS_ORIGINS=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "CORS_ORIGINS=https://www.odelink.shop,https://odelink.shop" >> backend/.env
+            
+            grep -v '^SERVE_FRONTEND=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "SERVE_FRONTEND=true" >> backend/.env
+            
+            grep -v '^AUTO_BUILD_FRONTEND=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "AUTO_BUILD_FRONTEND=false" >> backend/.env
+            
+            grep -v '^PASSWORD_RESET_EXPIRES_MINUTES=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "PASSWORD_RESET_EXPIRES_MINUTES=20" >> backend/.env
+            
+            grep -v '^AUTH_ACCESS_COOKIE_NAME=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "AUTH_ACCESS_COOKIE_NAME=odelink_access" >> backend/.env
+            
+            grep -v '^AUTH_REFRESH_COOKIE_NAME=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "AUTH_REFRESH_COOKIE_NAME=odelink_refresh" >> backend/.env
+            
+            grep -v '^AUTH_ACCESS_COOKIE_MAX_AGE=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "AUTH_ACCESS_COOKIE_MAX_AGE=7d" >> backend/.env
+            
+            grep -v '^REFRESH_TOKEN_EXPIRE_DAYS=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "REFRESH_TOKEN_EXPIRE_DAYS=30" >> backend/.env
+            
+            grep -v '^AUTH_COOKIE_DOMAIN=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "AUTH_COOKIE_DOMAIN=.odelink.shop" >> backend/.env
+            
+            grep -v '^PUPPETEER_HEADLESS=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "PUPPETEER_HEADLESS=true" >> backend/.env
+            
+            grep -v '^PUPPETEER_ARGS=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox" >> backend/.env
+            
+            grep -v '^CLOUDINARY_CLOUD_NAME=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "CLOUDINARY_CLOUD_NAME=demo" >> backend/.env
+            
+            echo "---- DEPLOY DEBUG: .env file created with all variables ----"
+            echo "Checking .env file (first 20 lines, secrets masked):"
+            head -20 backend/.env | sed 's/=.*/=***/' || true
+            
             echo "---- DEPLOY DEBUG: Starting postgres ----"
             docker compose up -d postgres
             
