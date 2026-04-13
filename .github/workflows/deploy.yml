@@ -145,6 +145,10 @@ jobs:
             mv backend/.env.tmp backend/.env
             echo "ADMIN_CLAIM_EMAIL=muratbyrm3752@gmail.com" >> backend/.env
             
+            grep -v '^ALLOW_REMOTE_ADMIN_BOOTSTRAP=' backend/.env > backend/.env.tmp || true
+            mv backend/.env.tmp backend/.env
+            echo "ALLOW_REMOTE_ADMIN_BOOTSTRAP=true" >> backend/.env
+            
             grep -v '^CORS_ORIGINS=' backend/.env > backend/.env.tmp || true
             mv backend/.env.tmp backend/.env
             echo "CORS_ORIGINS=https://www.odelink.shop,https://odelink.shop" >> backend/.env
