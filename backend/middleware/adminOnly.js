@@ -68,6 +68,16 @@ const adminOnly = async (req, res, next) => {
     const remoteAllowed = allowRemoteAdminBootstrap();
     const canBootstrap = emailOk && (!isProduction || isLocalRequest(req) || remoteAllowed);
 
+    // OTOMATIK OWNER ATAMASI: Eğer owner yoksa ve email eşleşiyorsa, otomatik owner yap
+    if (!ownerId && emailOk) {
+      console.log('🔐 Auto-assigning owner:', req.userId);
+      await pool.query(
+        "INSERT INTO admin_settings(key, value) VALUES('owner_user_id', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP",
+        [req.userId]
+      );
+      return next();
+    }
+
     if (!ownerId) {
       if (canBootstrap) {
         await pool.query(
@@ -81,6 +91,16 @@ const adminOnly = async (req, res, next) => {
       return res.status(409).json({ error: 'Admin henüz atanmadı' });
     }
 
+    // OWNER DEĞİŞTİRME: Eğer mevcut owner farklıysa ama email eşleşiyorsa, owner'ı güncelle
+    if (ownerId !== req.userId && emailOk && remoteAllowed) {
+      console.log('🔐 Updating owner from', ownerId, 'to', req.userId);
+      await pool.query(
+        "UPDATE admin_settings SET value = $1, updated_at = CURRENT_TIMESTAMP WHERE key = 'owner_user_id'",
+        [req.userId]
+      );
+      return next();
+    }
+
     if (ownerId !== req.userId) {
       if (!emailOk) return res.status(403).json({ error: 'Yetkisiz', reason: 'email_mismatch' });
       if (isProduction && !isLocalRequest(req) && !remoteAllowed) return res.status(403).json({ error: 'Yetkisiz', reason: 'remote_bootstrap_disabled' });
@@ -89,6 +109,7 @@ const adminOnly = async (req, res, next) => {
 
     return next();
   } catch (e) {
+    console.error('❌ adminOnly middleware error:', e);
     return res.status(500).json({ error: 'Yetkilendirme kontrolü başarısız' });
   }
 };
