@@ -71,6 +71,50 @@ const AuthPage = () => {
     navigate(to);
   }, [location?.state?.from, navigate]);
 
+  const handleGoogleCredential = useCallback(async (googleResponse) => {
+    console.log('🔵 Google credential received:', googleResponse);
+    const credential = (googleResponse?.credential || '').toString().trim();
+    if (!credential) {
+      console.error('❌ No credential in response');
+      setError('Google kimligi alinamadi.');
+      return;
+    }
+
+    console.log('🔵 Credential length:', credential.length);
+    setError('');
+    setInfo('');
+    setGoogleLoading(true);
+
+    try {
+      console.log('🔵 Sending credential to backend...');
+      const response = await fetch(`${API_BASE}/api/auth/google`, {
+        credentials: 'include',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential })
+      });
+
+      console.log('🔵 Backend response status:', response.status);
+      const data = await response.json().catch(() => ({}));
+      console.log('🔵 Backend response data:', data);
+
+      if (!response.ok) {
+        const errorMsg = data?.error || 'Google ile giris basarisiz.';
+        console.error('❌ Google OAuth error:', errorMsg, data);
+        setError(errorMsg);
+        setGoogleLoading(false);
+        return;
+      }
+
+      console.log('✅ Google OAuth success, completing auth...');
+      completeAuth(data);
+    } catch (requestError) {
+      console.error('❌ Google OAuth request error:', requestError);
+      setError('Google ile baglanti kurulamadi.');
+      setGoogleLoading(false);
+    }
+  }, [completeAuth]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -130,50 +174,6 @@ const AuthPage = () => {
       cancelled = true;
     };
   }, [googleEnabled]);
-
-  const handleGoogleCredential = useCallback(async (googleResponse) => {
-    console.log('🔵 Google credential received:', googleResponse);
-    const credential = (googleResponse?.credential || '').toString().trim();
-    if (!credential) {
-      console.error('❌ No credential in response');
-      setError('Google kimligi alinamadi.');
-      return;
-    }
-
-    console.log('🔵 Credential length:', credential.length);
-    setError('');
-    setInfo('');
-    setGoogleLoading(true);
-
-    try {
-      console.log('🔵 Sending credential to backend...');
-      const response = await fetch(`${API_BASE}/api/auth/google`, {
-        credentials: 'include',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential })
-      });
-
-      console.log('🔵 Backend response status:', response.status);
-      const data = await response.json().catch(() => ({}));
-      console.log('🔵 Backend response data:', data);
-
-      if (!response.ok) {
-        const errorMsg = data?.error || 'Google ile giris basarisiz.';
-        console.error('❌ Google OAuth error:', errorMsg, data);
-        setError(errorMsg);
-        setGoogleLoading(false);
-        return;
-      }
-
-      console.log('✅ Google OAuth success, completing auth...');
-      completeAuth(data);
-    } catch (requestError) {
-      console.error('❌ Google OAuth request error:', requestError);
-      setError('Google ile baglanti kurulamadi.');
-      setGoogleLoading(false);
-    }
-  }, [completeAuth]);
 
   useEffect(() => {
     if (!googleEnabled || !googleScriptReady || !googleButtonRef.current) return;
