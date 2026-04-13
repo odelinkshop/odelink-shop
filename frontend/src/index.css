@@ -234,20 +234,451 @@ textarea {
 }
 
 @media (max-width: 640px) {
+  /* Global mobile optimizations */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 15px;
+  }
+
+  body {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* Buttons */
   .btn-primary,
   .btn-secondary {
-    padding: 12px 16px;
-    border-radius: 14px;
+    padding: 10px 14px;
+    min-height: 44px;
+    font-size: 14px;
+    border-radius: 12px;
   }
 
+  /* Inputs */
   .input-field {
-    padding: 12px 14px;
+    padding: 10px 12px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  /* Cards */
+  .card {
+    padding: 14px;
     border-radius: 14px;
   }
 
-  .card {
-    padding: 20px;
-    border-radius: 18px;
+  /* Hero section mobile optimization */
+  .text-\[34px\] {
+    font-size: 26px !important;
+    line-height: 1.15 !important;
+  }
+
+  /* Headings */
+  h1, .text-5xl, .text-4xl {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+
+  h2, .text-3xl {
+    font-size: 1.5rem !important;
+    line-height: 1.25 !important;
+  }
+
+  h3, .text-2xl {
+    font-size: 1.25rem !important;
+    line-height: 1.3 !important;
+  }
+
+  h4, .text-xl {
+    font-size: 1.125rem !important;
+    line-height: 1.4 !important;
+  }
+
+  h5, .text-lg {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Paragraphs */
+  p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Padding reductions */
+  .pt-20, .py-20 {
+    padding-top: 2.5rem !important;
+  }
+
+  .pb-20, .py-20 {
+    padding-bottom: 2.5rem !important;
+  }
+
+  .pt-24 {
+    padding-top: 3rem !important;
+  }
+
+  .pb-24 {
+    padding-bottom: 3rem !important;
+  }
+
+  .pt-32 {
+    padding-top: 4rem !important;
+  }
+
+  .pb-32 {
+    padding-bottom: 4rem !important;
+  }
+
+  .pt-40 {
+    padding-top: 5rem !important;
+  }
+
+  .px-4 {
+    padding-left: 0.875rem !important;
+    padding-right: 0.875rem !important;
+  }
+
+  .px-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .px-8 {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  .px-10 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  .p-4 {
+    padding: 0.75rem !important;
+  }
+
+  .p-6 {
+    padding: 1rem !important;
+  }
+
+  .p-7 {
+    padding: 1rem !important;
+  }
+
+  .p-8 {
+    padding: 1.25rem !important;
+  }
+
+  /* Margin reductions */
+  .mb-4 {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .mb-6 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mb-8 {
+    margin-bottom: 1.25rem !important;
+  }
+
+  .mb-10 {
+    margin-bottom: 1.75rem !important;
+  }
+
+  .mb-12 {
+    margin-bottom: 2rem !important;
+  }
+
+  .mb-16 {
+    margin-bottom: 2.5rem !important;
+  }
+
+  .mt-4 {
+    margin-top: 0.75rem !important;
+  }
+
+  .mt-6 {
+    margin-top: 1rem !important;
+  }
+
+  .mt-8 {
+    margin-top: 1.25rem !important;
+  }
+
+  .mt-10 {
+    margin-top: 1.75rem !important;
+  }
+
+  .mt-12 {
+    margin-top: 2rem !important;
+  }
+
+  .mt-16 {
+    margin-top: 2.5rem !important;
+  }
+
+  /* Gap reductions */
+  .gap-2 {
+    gap: 0.375rem !important;
+  }
+
+  .gap-3 {
+    gap: 0.5rem !important;
+  }
+
+  .gap-4 {
+    gap: 0.75rem !important;
+  }
+
+  .gap-6 {
+    gap: 1rem !important;
+  }
+
+  .gap-8 {
+    gap: 1.25rem !important;
+  }
+
+  .gap-10 {
+    gap: 1.5rem !important;
+  }
+
+  /* Container */
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Icons */
+  .w-14, .h-14 {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+
+  .w-12, .h-12 {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+  }
+
+  .w-10, .h-10 {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+
+  .w-8, .h-8 {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+  }
+
+  .w-7, .h-7 {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  .w-6, .h-6 {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  .w-5, .h-5 {
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+  }
+
+  /* Border radius */
+  .rounded-3xl {
+    border-radius: 18px !important;
+  }
+
+  .rounded-2xl {
+    border-radius: 14px !important;
+  }
+
+  .rounded-xl {
+    border-radius: 12px !important;
+  }
+
+  .rounded-lg {
+    border-radius: 10px !important;
+  }
+
+  /* Text sizes */
+  .text-sm {
+    font-size: 0.8125rem !important;
+  }
+
+  .text-xs {
+    font-size: 0.6875rem !important;
+  }
+
+  /* Max widths */
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl,
+  .max-w-4xl,
+  .max-w-3xl,
+  .max-w-2xl,
+  .max-w-xl {
+    max-width: 100% !important;
+  }
+
+  /* Grid adjustments */
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  /* Flex adjustments */
+  .flex-row {
+    flex-direction: column !important;
+  }
+
+  /* Space reductions */
+  .space-x-4 > * + * {
+    margin-left: 0.75rem !important;
+  }
+
+  .space-x-6 > * + * {
+    margin-left: 1rem !important;
+  }
+
+  .space-x-8 > * + * {
+    margin-left: 1.25rem !important;
+  }
+
+  .space-y-4 > * + * {
+    margin-top: 0.75rem !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 1rem !important;
+  }
+
+  .space-y-8 > * + * {
+    margin-top: 1.25rem !important;
+  }
+
+  /* Shadow reductions */
+  .shadow-2xl,
+  .shadow-xl,
+  .shadow-lg {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Gradient background mobile fix */
+  .gradient-bg {
+    min-height: auto !important;
+  }
+
+  /* Remove hover effects on mobile */
+  .hover\:scale-105:hover,
+  .hover\:scale-110:hover {
+    transform: none !important;
+  }
+
+  .card:hover {
+    transform: none !important;
+  }
+
+  /* Optimize images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Table responsiveness */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Form elements */
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Modal adjustments */
+  .modal {
+    padding: 1rem !important;
+  }
+
+  /* Sticky header height */
+  .sticky-header {
+    height: 56px !important;
+  }
+
+  /* Bottom navigation spacing */
+  .pb-safe {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 4rem) !important;
+  }
+
+  /* Prevent text overflow */
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Line clamp */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Touch targets */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Reduce animation on mobile */
+  * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+
+  /* Optimize scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fix viewport issues */
+  body {
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Prevent zoom on input focus */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
   }
 }
 
