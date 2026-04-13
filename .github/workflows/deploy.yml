@@ -143,7 +143,7 @@ jobs:
             
             grep -v '^ADMIN_CLAIM_EMAIL=' backend/.env > backend/.env.tmp || true
             mv backend/.env.tmp backend/.env
-            echo "ADMIN_CLAIM_EMAIL=odelink@admin.com" >> backend/.env
+            echo "ADMIN_CLAIM_EMAIL=muratbyrm3752@gmail.com" >> backend/.env
             
             grep -v '^CORS_ORIGINS=' backend/.env > backend/.env.tmp || true
             mv backend/.env.tmp backend/.env
