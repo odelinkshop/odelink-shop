@@ -93,11 +93,22 @@ const AuthPage = () => {
       }
     };
 
+    // Check for Google credential in URL (redirect mode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const credential = urlParams.get('credential');
+    if (credential) {
+      console.log('🔵 Found credential in URL, processing...');
+      // Remove credential from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Process the credential
+      handleGoogleCredential({ credential });
+    }
+
     loadGoogleConfig();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [handleGoogleCredential]);
 
   useEffect(() => {
     if (!googleEnabled) return undefined;
@@ -169,19 +180,23 @@ const AuthPage = () => {
     if (!window.google?.accounts?.id) return;
 
     try {
-      console.log('🔵 Initializing Google Identity Services...');
+      console.log('🔵 Initializing Google Identity Services with REDIRECT mode...');
       console.log('🔵 Client ID:', googleConfig.clientId);
       console.log('🔵 Mode:', mode);
+      console.log('🔵 Current URL:', window.location.href);
       
       googleButtonRef.current.innerHTML = '';
       
+      // Use redirect mode instead of popup
       window.google.accounts.id.initialize({
         client_id: googleConfig.clientId,
         callback: handleGoogleCredential,
         auto_select: false,
         cancel_on_tap_outside: true,
-        ux_mode: 'popup',
-        context: mode === 'register' ? 'signup' : 'signin'
+        ux_mode: 'redirect',
+        login_uri: `${window.location.origin}/auth`,
+        context: mode === 'register' ? 'signup' : 'signin',
+        itp_support: true
       });
       
       window.google.accounts.id.renderButton(googleButtonRef.current, {
@@ -193,7 +208,7 @@ const AuthPage = () => {
         text: mode === 'register' ? 'signup_with' : 'signin_with'
       });
       
-      console.log('✅ Google button rendered');
+      console.log('✅ Google button rendered with redirect mode');
     } catch (renderError) {
       console.error('❌ Google button render error:', renderError);
       setError((prev) => prev || 'Google giris butonu hazirlanamadi.');
