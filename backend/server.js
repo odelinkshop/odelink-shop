@@ -599,24 +599,8 @@ app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // Maintenance mode middleware - check before all routes
-const MAINTENANCE_FLAG = path.join(__dirname, '.maintenance');
-app.use((req, res, next) => {
-  // Skip maintenance check for API endpoints
-  if (req.path.startsWith('/api/')) {
-    return next();
-  }
-  
-  // Check if maintenance mode is active
-  if (fs.existsSync(MAINTENANCE_FLAG)) {
-    // Serve maintenance page
-    const maintenancePath = path.join(__dirname, '..', 'frontend', 'build', 'maintenance.html');
-    if (fs.existsSync(maintenancePath)) {
-      return res.status(503).sendFile(maintenancePath);
-    }
-  }
-  
-  next();
-});
+const { maintenanceMiddleware } = require('./middleware/maintenanceMode');
+app.use(maintenanceMiddleware);
 
 app.use(globalLimiter);
 
@@ -880,6 +864,9 @@ app.get('/api/csrf-token', (req, res) => {
 });
 
 // Routes
+const maintenanceRoutes = require('./routes/maintenance');
+app.use('/api/maintenance', maintenanceRoutes);
+
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/sites', sitesLimiter, siteRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);

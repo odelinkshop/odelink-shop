@@ -240,8 +240,10 @@ jobs:
               -w /app \
               node:18-alpine sh -lc "rm -rf build && npm install && npm run build && chown -R ${HOST_UID}:${HOST_GID} build"
             
-            # Copy maintenance page to build directory
-            cp "$HOME/odelink-shop/frontend/public/maintenance.html" "$HOME/odelink-shop/frontend/build/maintenance.html" || echo "⚠️ Maintenance page copy failed"
+            # Copy maintenance page to build directory AND backend directory
+            cp "$HOME/odelink-shop/frontend/public/maintenance.html" "$HOME/odelink-shop/frontend/build/maintenance.html" || echo "⚠️ Maintenance page copy to build failed"
+            mkdir -p "$HOME/odelink-shop/backend/frontend-build"
+            cp "$HOME/odelink-shop/frontend/public/maintenance.html" "$HOME/odelink-shop/backend/frontend-build/maintenance.html" || echo "⚠️ Maintenance page copy to backend failed"
             
             if [ ! -f "$HOME/odelink-shop/frontend/build/asset-manifest.json" ]; then
               echo "CRITICAL ERROR: asset-manifest.json was not generated!" >&2
