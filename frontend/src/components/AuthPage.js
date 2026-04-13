@@ -40,13 +40,11 @@ const loadGoogleIdentityScript = () => {
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const googleButtonRef = useRef(null);
 
   const [mode, setMode] = useState('login');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [googleConfig, setGoogleConfig] = useState({ enabled: false, clientId: '' });
-  const [googleScriptReady, setGoogleScriptReady] = useState(false);
+  const [googleClientId, setGoogleClientId] = useState('');
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
 
@@ -56,10 +54,7 @@ const AuthPage = () => {
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  const googleEnabled = useMemo(
-    () => Boolean(googleConfig?.enabled && googleConfig?.clientId),
-    [googleConfig]
-  );
+  const googleEnabled = Boolean(googleClientId);
 
   const completeAuth = useCallback((data) => {
     setAuthSession({
@@ -71,50 +66,7 @@ const AuthPage = () => {
     navigate(to);
   }, [location?.state?.from, navigate]);
 
-  const handleGoogleCredential = useCallback(async (googleResponse) => {
-    console.log('🔵 Google credential received:', googleResponse);
-    const credential = (googleResponse?.credential || '').toString().trim();
-    if (!credential) {
-      console.error('❌ No credential in response');
-      setError('Google kimligi alinamadi.');
-      return;
-    }
-
-    console.log('🔵 Credential length:', credential.length);
-    setError('');
-    setInfo('');
-    setGoogleLoading(true);
-
-    try {
-      console.log('🔵 Sending credential to backend...');
-      const response = await fetch(`${API_BASE}/api/auth/google`, {
-        credentials: 'include',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential })
-      });
-
-      console.log('🔵 Backend response status:', response.status);
-      const data = await response.json().catch(() => ({}));
-      console.log('🔵 Backend response data:', data);
-
-      if (!response.ok) {
-        const errorMsg = data?.error || 'Google ile giris basarisiz.';
-        console.error('❌ Google OAuth error:', errorMsg, data);
-        setError(errorMsg);
-        setGoogleLoading(false);
-        return;
-      }
-
-      console.log('✅ Google OAuth success, completing auth...');
-      completeAuth(data);
-    } catch (requestError) {
-      console.error('❌ Google OAuth request error:', requestError);
-      setError('Google ile baglanti kurulamadi.');
-      setGoogleLoading(false);
-    }
-  }, [completeAuth]);
-
+  // Load Google Client ID
   useEffect(() => {
     let cancelled = false;
 
@@ -126,14 +78,11 @@ const AuthPage = () => {
         const data = await response.json().catch(() => ({}));
         if (cancelled) return;
 
-        setGoogleConfig({
-          enabled: Boolean(data?.enabled && data?.clientId),
-          clientId: (data?.clientId || '').toString().trim()
-        });
-      } catch (fetchError) {
-        if (!cancelled) {
-          setGoogleConfig({ enabled: false, clientId: '' });
+        if (data?.enabled && data?.clientId) {
+          setGoogleClientId(data.clientId);
         }
+      } catch (fetchError) {
+        console.error('Failed to load Google config:', fetchError);
       }
     };
 
@@ -143,62 +92,69 @@ const AuthPage = () => {
     };
   }, []);
 
+  // Handle Google OAuth redirect callback
   useEffect(() => {
-    if (!googleEnabled) return undefined;
-
-    let cancelled = false;
-
-    loadGoogleIdentityScript()
-      .then(() => {
-        if (!cancelled) setGoogleScriptReady(true);
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    
+    if (code && state === 'google_oauth') {
+      console.log('🔵 Processing Google OAuth callback...');
+      setGoogleLoading(true);
+      
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Exchange code for token
+      fetch(`${API_BASE}/api/auth/google/callback`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
       })
-      .catch(() => {
-        if (!cancelled) {
-          setGoogleScriptReady(false);
-          setError((prev) => prev || 'Google giris butonu yuklenemedi.');
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [googleEnabled]);
-
-  useEffect(() => {
-    if (!googleEnabled || !googleScriptReady || !googleButtonRef.current) return;
-    if (!window.google?.accounts?.id) return;
-
-    try {
-      console.log('🔵 Initializing Google Identity Services with POPUP mode...');
-      console.log('🔵 Client ID:', googleConfig.clientId);
-      console.log('🔵 Mode:', mode);
-      console.log('🔵 Current URL:', window.location.href);
-      
-      googleButtonRef.current.innerHTML = '';
-      
-      // Use popup mode - simpler and more reliable
-      window.google.accounts.id.initialize({
-        client_id: googleConfig.clientId,
-        callback: handleGoogleCredential,
-        auto_select: false,
-        cancel_on_tap_outside: true
-      });
-      
-      window.google.accounts.id.renderButton(googleButtonRef.current, {
-        theme: 'outline',
-        size: 'large',
-        width: 420,
-        shape: 'pill',
-        logo_alignment: 'left',
-        text: mode === 'register' ? 'signup_with' : 'signin_with'
-      });
-      
-      console.log('✅ Google button rendered with popup mode');
-    } catch (renderError) {
-      console.error('❌ Google button render error:', renderError);
-      setError((prev) => prev || 'Google giris butonu hazirlanamadi.');
+        .then(res => res.json())
+        .then(data => {
+          if (data?.error) {
+            setError(data.error);
+            setGoogleLoading(false);
+          } else {
+            completeAuth(data);
+          }
+        })
+        .catch(err => {
+          console.error('Google OAuth callback error:', err);
+          setError('Google ile giris basarisiz.');
+          setGoogleLoading(false);
+        });
     }
-  }, [googleConfig.clientId, googleEnabled, googleScriptReady, handleGoogleCredential, mode]);
+  }, [completeAuth]);
+
+  // Handle Google Sign In button click
+  const handleGoogleSignIn = () => {
+    if (!googleClientId) {
+      setError('Google giris yapilandirilmadi.');
+      return;
+    }
+
+    setGoogleLoading(true);
+    
+    const redirectUri = `${window.location.origin}/auth`;
+    const scope = 'openid email profile';
+    const responseType = 'code';
+    const state = 'google_oauth';
+    
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${encodeURIComponent(googleClientId)}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `response_type=${encodeURIComponent(responseType)}&` +
+      `scope=${encodeURIComponent(scope)}&` +
+      `state=${encodeURIComponent(state)}&` +
+      `access_type=online&` +
+      `prompt=select_account`;
+    
+    console.log('🔵 Redirecting to Google OAuth:', authUrl);
+    window.location.href = authUrl;
+  };
 
   const submit = async (event) => {
     event.preventDefault();
@@ -297,10 +253,21 @@ const AuthPage = () => {
 
           {(mode === 'login' || mode === 'register') && googleEnabled ? (
             <div className="mb-6">
-              <div
-                ref={googleButtonRef}
-                className={`flex justify-center ${googleLoading ? 'pointer-events-none opacity-70' : ''}`}
-              />
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading || loading}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ fontSize: 16, fontWeight: 500 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z" fill="#4285F4"/>
+                  <path d="M10 20c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H1.064v2.59A9.996 9.996 0 0010 20z" fill="#34A853"/>
+                  <path d="M4.405 11.9c-.2-.6-.314-1.24-.314-1.9 0-.66.114-1.3.314-1.9V5.51H1.064A9.996 9.996 0 000 10c0 1.614.386 3.14 1.064 4.49l3.34-2.59z" fill="#FBBC05"/>
+                  <path d="M10 3.977c1.468 0 2.786.505 3.823 1.496l2.868-2.868C14.959.99 12.695 0 10 0 6.09 0 2.71 2.24 1.064 5.51l3.34 2.59C5.19 5.736 7.395 3.977 10 3.977z" fill="#EA4335"/>
+                </svg>
+                {googleLoading ? 'Yukleniyor...' : 'Google ile devam et'}
+              </button>
               <div className="mt-4 flex items-center gap-3">
                 <div className="h-px flex-1 bg-gray-200" />
                 <span className="text-xs uppercase tracking-[0.2em] text-gray-500">veya email ile devam et</span>

@@ -669,6 +669,102 @@ router.get('/google/config', (req, res) => {
   });
 });
 
+router.post('/google/callback', async (req, res) => {
+  try {
+    console.log('🔵 Google OAuth callback received');
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code eksik' });
+    }
+
+    const clientId = getGoogleClientId();
+    const clientSecret = (process.env.GOOGLE_CLIENT_SECRET || '').toString().trim();
+    
+    if (!clientId || !clientSecret) {
+      console.error('❌ Google OAuth credentials missing');
+      return res.status(503).json({ error: 'Google girisi yapilandirilmadi' });
+    }
+
+    const redirectUri = `${req.protocol}://${req.get('host')}/auth`;
+    
+    console.log('🔵 Exchanging code for token...');
+    // Exchange authorization code for access token
+    const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code'
+    }, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      timeout: 15000
+    });
+
+    const { id_token } = tokenResponse.data;
+    
+    if (!id_token) {
+      console.error('❌ No id_token in response');
+      return res.status(401).json({ error: 'Google kimlik dogrulanamadi' });
+    }
+
+    console.log('🔵 Verifying ID token...');
+    // Verify ID token
+    const googleIdentity = await verifyGoogleCredential(id_token);
+    
+    let user = await User.findByEmail(googleIdentity.email);
+    let eventType = 'google_login';
+
+    if (!user) {
+      console.log('🔵 User not found, creating new user...');
+      eventType = 'google_register';
+      try {
+        user = await User.create({
+          name: googleIdentity.name,
+          email: googleIdentity.email,
+          password: generateProviderPassword(),
+          phone: ''
+        });
+        console.log('✅ New user created:', user.id);
+      } catch (createError) {
+        console.error('⚠️ User creation failed, trying to find existing:', createError.message);
+        user = await User.findByEmail(googleIdentity.email);
+        if (!user) throw createError;
+      }
+    } else {
+      console.log('✅ Existing user found:', user.id);
+    }
+
+    try {
+      await insertIpLog(user.id, user.email, req, eventType);
+    } catch (logError) {
+      console.error('⚠️ IP log failed:', logError.message);
+      void logError;
+    }
+
+    console.log('🔵 Issuing session cookies...');
+    const { token } = await issueSessionCookies(req, res, user);
+    console.log('✅ Session cookies issued successfully');
+
+    return res.json({
+      ok: true,
+      message: 'Google girisi basarili',
+      user: buildUserPayload(user),
+      token
+    });
+  } catch (callbackError) {
+    const status = Number(callbackError?.status || callbackError?.response?.status || 0) || 500;
+    console.error('❌ Google OAuth callback error:', {
+      status,
+      message: callbackError?.message,
+      response: callbackError?.response?.data
+    });
+    return res.status(status).json({
+      error: 'Google ile giris basarisiz'
+    });
+  }
+});
+
 router.post('/google', async (req, res) => {
   try {
     console.log('🔵 Google OAuth request received');
