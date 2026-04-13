@@ -42,7 +42,27 @@ router.get('/capabilities', authMiddleware, async (req, res) => {
 // Public plan catalog (pricing UI consumes this)
 router.get('/plans', async (req, res) => {
   try {
-    return res.json({ catalog: PLAN_CATALOG });
+    // Frontend compatibility: return both catalog and plans array
+    const plans = Object.entries(PLAN_CATALOG.tiers || {}).flatMap(([tierKey, tierDef]) => {
+      return Object.entries(tierDef.billingCycles || {}).map(([cycleKey, cycleDef]) => {
+        return {
+          id: `${tierKey}_${cycleKey}`,
+          tier: tierKey,
+          name: tierDef.label || tierKey,
+          billingCycle: cycleKey,
+          price: cycleDef.price || 0,
+          priceLabel: cycleDef.priceLabel || `${cycleDef.price} TL`,
+          duration: cycleKey === 'yearly' ? 'yıl' : 'ay',
+          capabilities: tierDef.capabilities || {},
+          featureGroups: tierDef.featureGroups || []
+        };
+      });
+    });
+    
+    return res.json({ 
+      catalog: PLAN_CATALOG,
+      plans: plans
+    });
   } catch (error) {
     console.error('Get plan catalog error:', error);
     return res.status(500).json({ error: 'Planlar alınamadı' });
