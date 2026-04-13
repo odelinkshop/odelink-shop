@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /site-builder
+Disallow: /admin
+
+Sitemap: https://www.odelink.shop/sitemap.xml
