@@ -381,18 +381,26 @@ const generateProviderPassword = () => crypto.randomBytes(24).toString('hex');
 const verifyGoogleCredential = async (credential) => {
   const clientId = getGoogleClientId();
   if (!clientId) {
+    console.error('❌ GOOGLE_CLIENT_ID not configured');
     const error = new Error('Google giris yapilandirilmadi');
     error.status = 503;
     throw error;
   }
 
+  console.log('🔵 Verifying credential with Google tokeninfo API...');
   const response = await axios.get('https://oauth2.googleapis.com/tokeninfo', {
     params: { id_token: credential },
     timeout: 15000,
     validateStatus: () => true
   });
 
+  console.log('🔵 Google tokeninfo response status:', response.status);
+
   if (!response || response.status !== 200) {
+    console.error('❌ Google tokeninfo failed:', {
+      status: response?.status,
+      data: response?.data
+    });
     const error = new Error('Google kimligi dogrulanamadi');
     error.status = 401;
     throw error;
@@ -405,12 +413,28 @@ const verifyGoogleCredential = async (credential) => {
   const emailVerified = (payload.email_verified || '').toString().trim().toLowerCase() === 'true';
   const subject = (payload.sub || '').toString().trim();
 
+  console.log('🔵 Google payload:', {
+    aud,
+    azp,
+    email,
+    emailVerified,
+    subject,
+    clientId
+  });
+
   if ((!aud || (aud !== clientId && azp !== clientId)) || !subject || !email || !emailVerified) {
+    console.error('❌ Google credential validation failed:', {
+      audMatch: aud === clientId || azp === clientId,
+      hasSubject: !!subject,
+      hasEmail: !!email,
+      emailVerified
+    });
     const error = new Error('Google kimligi gecersiz');
     error.status = 401;
     throw error;
   }
 
+  console.log('✅ Google credential verified successfully');
   return {
     email,
     name: buildGoogleUserName(payload),
@@ -647,16 +671,22 @@ router.get('/google/config', (req, res) => {
 
 router.post('/google', async (req, res) => {
   try {
+    console.log('🔵 Google OAuth request received');
     const { error, value } = googleAuthSchema.validate(req.body);
     if (error) {
+      console.error('❌ Google OAuth validation error:', error.details);
       return res.status(400).json({ error: 'Gecersiz Google giris istegi' });
     }
 
+    console.log('🔵 Verifying Google credential...');
     const googleIdentity = await verifyGoogleCredential(value.credential);
+    console.log('✅ Google identity verified:', { email: googleIdentity.email, name: googleIdentity.name });
+    
     let user = await User.findByEmail(googleIdentity.email);
     let eventType = 'google_login';
 
     if (!user) {
+      console.log('🔵 User not found, creating new user...');
       eventType = 'google_register';
       try {
         user = await User.create({
@@ -665,19 +695,26 @@ router.post('/google', async (req, res) => {
           password: generateProviderPassword(),
           phone: ''
         });
+        console.log('✅ New user created:', user.id);
       } catch (createError) {
+        console.error('⚠️ User creation failed, trying to find existing:', createError.message);
         user = await User.findByEmail(googleIdentity.email);
         if (!user) throw createError;
       }
+    } else {
+      console.log('✅ Existing user found:', user.id);
     }
 
     try {
       await insertIpLog(user.id, user.email, req, eventType);
     } catch (logError) {
+      console.error('⚠️ IP log failed:', logError.message);
       void logError;
     }
 
+    console.log('🔵 Issuing session cookies...');
     const { token } = await issueSessionCookies(req, res, user);
+    console.log('✅ Session cookies issued successfully');
 
     return res.json({
       ok: true,
@@ -687,7 +724,11 @@ router.post('/google', async (req, res) => {
     });
   } catch (routeError) {
     const status = Number(routeError?.status || routeError?.response?.status || 0) || 500;
-    console.error('Google auth error:', routeError);
+    console.error('❌ Google auth error:', {
+      status,
+      message: routeError?.message,
+      stack: routeError?.stack
+    });
     return res.status(status).json({
       error: status === 503
         ? 'Google girisi henuz yapilandirilmadi.'

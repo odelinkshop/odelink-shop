@@ -142,14 +142,18 @@ const AuthPage = () => {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setError(data?.error || 'Google ile giris basarisiz.');
+        const errorMsg = data?.error || 'Google ile giris basarisiz.';
+        console.error('Google OAuth error:', errorMsg, data);
+        setError(errorMsg);
+        setGoogleLoading(false);
         return;
       }
 
+      console.log('Google OAuth success:', data);
       completeAuth(data);
     } catch (requestError) {
+      console.error('Google OAuth request error:', requestError);
       setError('Google ile baglanti kurulamadi.');
-    } finally {
       setGoogleLoading(false);
     }
   }, [completeAuth]);
