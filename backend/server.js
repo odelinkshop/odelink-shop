@@ -480,8 +480,10 @@ app.use(helmet({
           "'self'", 
           "'unsafe-inline'", 
           "'unsafe-eval'", 
-          'https://cdn.shopier.com', 
-          'https://www.googletagmanager.com', 
+          'https://cdn.shopier.com',
+          'https://www.shopier.com',
+          'https://www.googletagmanager.com',
+          'https://www.google.com',
           'https://ajax.googleapis.com',
           'https://accounts.google.com',
           'https://apis.google.com',
@@ -491,7 +493,11 @@ app.use(helmet({
           'https://*.googleapis.com',
           'https://static.zdassets.com',
           'https://ekr.zdassets.com',
-          'https://*.zdassets.com'
+          'https://*.zdassets.com',
+          'https://static.cloudflareinsights.com',
+          'https://*.cloudflareinsights.com',
+          'https://content.googleapis.com',
+          'https://*.gstatic.com'
         ],
         'style-src': [
           "'self'", 
@@ -508,6 +514,7 @@ app.use(helmet({
           'https://www.odelink.shop',
           'https://odelink.shop',
           'https://cdn.shopier.com',
+          'https://www.shopier.com',
           'https://accounts.google.com',
           'https://gsi.googleapis.com',
           'https://apis.google.com',
@@ -515,7 +522,10 @@ app.use(helmet({
           'https://*.googleusercontent.com',
           'https://*.googleapis.com',
           'https://ekr.zdassets.com',
-          'https://*.zdassets.com'
+          'https://*.zdassets.com',
+          'https://oauth2.googleapis.com',
+          'https://static.cloudflareinsights.com',
+          'https://*.cloudflareinsights.com'
         ],
         'frame-src': ["'self'", 'https://www.google.com', 'https://maps.google.com', 'https://accounts.google.com', 'https://gsi.googleapis.com', 'https://*.google.com'],
         'object-src': ["'none'"],
