@@ -26,6 +26,9 @@ class ProductInjectorService {
         social: siteSettings.social || {}
       };
 
+      // Temayı Türkçeleştir
+      themeHtml = this.translateThemeToTurkish(themeHtml);
+
       // JavaScript injection code'unu oluştur
       const injectionScript = `
 <script>
@@ -65,6 +68,210 @@ class ProductInjectorService {
       console.error('❌ Product injection error:', error);
       // Hata durumunda orijinal HTML'i döndür
       return themeHtml;
+    }
+  }
+
+  /**
+   * Tema HTML'indeki tüm İngilizce metinleri Türkçeye çevir
+   * @param {string} html - Tema HTML içeriği
+   * @returns {string} - Türkçeleştirilmiş HTML
+   */
+  translateThemeToTurkish(html) {
+    try {
+      // Türkçe çeviri haritası - KAPSAMLI LİSTE
+      const translations = {
+        // Navigasyon
+        '>Home<': '>Ana Sayfa<',
+        '>About<': '>Hakkımızda<',
+        '>Shop<': '>Mağaza<',
+        '>Blog<': '>Blog<',
+        '>Contact<': '>İletişim<',
+        
+        // Butonlar ve CTA'lar
+        'Shop all items': 'Tüm Ürünler',
+        'Shop All Items': 'Tüm Ürünler',
+        'See all collections': 'Tüm Koleksiyonlar',
+        'See All Collections': 'Tüm Koleksiyonlar',
+        'View all': 'Tümünü Gör',
+        'View All': 'Tümünü Gör',
+        'Contact us': 'Bize Ulaşın',
+        'Contact Us': 'Bize Ulaşın',
+        'Get in touch': 'İletişime Geç',
+        'Get In Touch': 'İletişime Geç',
+        'Learn more': 'Daha Fazla',
+        'Learn More': 'Daha Fazla',
+        'Read more': 'Devamını Oku',
+        'Read More': 'Devamını Oku',
+        'Shop now': 'Hemen Al',
+        'Shop Now': 'Hemen Al',
+        'Buy now': 'Satın Al',
+        'Buy Now': 'Satın Al',
+        'Add to cart': 'Sepete Ekle',
+        'Add to Cart': 'Sepete Ekle',
+        'View product': 'Ürünü Gör',
+        'View Product': 'Ürünü Gör',
+        
+        // İçerik metinleri
+        'Premium wear for modern living': 'Modern yaşam için premium giyim',
+        'Premium Wear for Modern Living': 'Modern Yaşam İçin Premium Giyim',
+        'Premium wear': 'Premium giyim',
+        'Premium Wear': 'Premium Giyim',
+        'Modern living': 'Modern yaşam',
+        'Modern Living': 'Modern Yaşam',
+        'Quality clothing': 'Kaliteli giyim',
+        'Quality Clothing': 'Kaliteli Giyim',
+        'Fashion forward': 'Moda öncüsü',
+        'Fashion Forward': 'Moda Öncüsü',
+        'Style meets comfort': 'Stil ve konfor buluşuyor',
+        'Style Meets Comfort': 'Stil ve Konfor Buluşuyor',
+        
+        // Ürün kategorileri
+        'New arrivals': 'Yeni Gelenler',
+        'New Arrivals': 'Yeni Gelenler',
+        'Best sellers': 'Çok Satanlar',
+        'Best Sellers': 'Çok Satanlar',
+        'Featured': 'Öne Çıkanlar',
+        'Collections': 'Koleksiyonlar',
+        'Categories': 'Kategoriler',
+        'Products': 'Ürünler',
+        
+        // Sayfa başlıkları
+        'Welcome': 'Hoş Geldiniz',
+        'Our Story': 'Hikayemiz',
+        'Our Mission': 'Misyonumuz',
+        'Our Vision': 'Vizyonumuz',
+        'Our Values': 'Değerlerimiz',
+        'Our Team': 'Ekibimiz',
+        
+        // Footer ve genel
+        'All rights reserved': 'Tüm hakları saklıdır',
+        'Privacy Policy': 'Gizlilik Politikası',
+        'Terms of Service': 'Hizmet Şartları',
+        'Terms & Conditions': 'Şartlar ve Koşullar',
+        'Shipping': 'Kargo',
+        'Returns': 'İadeler',
+        'FAQ': 'SSS',
+        'Customer Service': 'Müşteri Hizmetleri',
+        'Support': 'Destek',
+        'Follow us': 'Bizi Takip Edin',
+        'Subscribe': 'Abone Ol',
+        'Newsletter': 'Bülten',
+        'Email': 'E-posta',
+        'Phone': 'Telefon',
+        'Address': 'Adres',
+        
+        // Ürün detayları
+        'Size': 'Beden',
+        'Color': 'Renk',
+        'Price': 'Fiyat',
+        'Quantity': 'Adet',
+        'In stock': 'Stokta',
+        'Out of stock': 'Stokta Yok',
+        'Description': 'Açıklama',
+        'Details': 'Detaylar',
+        'Specifications': 'Özellikler',
+        'Reviews': 'Yorumlar',
+        'Rating': 'Değerlendirme',
+        
+        // Sepet ve ödeme
+        'Cart': 'Sepet',
+        'Checkout': 'Ödeme',
+        'Total': 'Toplam',
+        'Subtotal': 'Ara Toplam',
+        'Shipping cost': 'Kargo Ücreti',
+        'Tax': 'Vergi',
+        'Discount': 'İndirim',
+        'Coupon': 'Kupon',
+        'Apply': 'Uygula',
+        'Continue shopping': 'Alışverişe Devam',
+        'Proceed to checkout': 'Ödemeye Geç',
+        
+        // Hesap ve kullanıcı
+        'Account': 'Hesap',
+        'Login': 'Giriş',
+        'Sign in': 'Giriş Yap',
+        'Sign up': 'Kayıt Ol',
+        'Register': 'Kayıt',
+        'Logout': 'Çıkış',
+        'My account': 'Hesabım',
+        'Profile': 'Profil',
+        'Orders': 'Siparişler',
+        'Wishlist': 'Favoriler',
+        'Settings': 'Ayarlar',
+        
+        // Arama ve filtreler
+        'Search': 'Ara',
+        'Filter': 'Filtrele',
+        'Sort by': 'Sırala',
+        'Show': 'Göster',
+        'Results': 'Sonuç',
+        'No results found': 'Sonuç bulunamadı',
+        
+        // Mesajlar
+        'Thank you': 'Teşekkürler',
+        'Success': 'Başarılı',
+        'Error': 'Hata',
+        'Loading': 'Yükleniyor',
+        'Please wait': 'Lütfen bekleyin',
+        'Coming soon': 'Yakında',
+        
+        // Meta ve SEO
+        'Modern Clothing E-commerce': 'Modern Giyim E-Ticaret',
+        'Framer Template': 'Framer Şablonu',
+        'E-commerce': 'E-Ticaret',
+        'Online Store': 'Online Mağaza',
+        'Fashion': 'Moda',
+        'Clothing': 'Giyim',
+        'Apparel': 'Giysi',
+        'Wearix': 'Wearix'
+      };
+
+      // Her çeviriyi uygula
+      for (const [english, turkish] of Object.entries(translations)) {
+        // Global replace (tüm eşleşmeleri değiştir)
+        const regex = new RegExp(english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        html = html.replace(regex, turkish);
+      }
+
+      // Title tag'i Türkçeleştir
+      html = html.replace(
+        /<title>.*?<\/title>/i,
+        '<title>Wearix - Modern Giyim E-Ticaret Teması</title>'
+      );
+
+      // Meta description'ı Türkçeleştir
+      html = html.replace(
+        /<meta name="description" content=".*?">/i,
+        '<meta name="description" content="Online mağazanızı Wearix ile yükseltin. Moda perakendecileri için çağdaş bir tema. Minimalist tasarım ve güçlü e-ticaret özellikleri ile modern, dönüşüm odaklı giyim markanız için mükemmel temel.">'
+      );
+
+      // OG meta tag'lerini Türkçeleştir
+      html = html.replace(
+        /<meta property="og:title" content=".*?">/i,
+        '<meta property="og:title" content="Wearix - Modern Giyim E-Ticaret Teması">'
+      );
+      html = html.replace(
+        /<meta property="og:description" content=".*?">/i,
+        '<meta property="og:description" content="Online mağazanızı Wearix ile yükseltin. Moda perakendecileri için çağdaş bir tema.">'
+      );
+
+      // Twitter meta tag'lerini Türkçeleştir
+      html = html.replace(
+        /<meta name="twitter:title" content=".*?">/i,
+        '<meta name="twitter:title" content="Wearix - Modern Giyim E-Ticaret Teması">'
+      );
+      html = html.replace(
+        /<meta name="twitter:description" content=".*?">/i,
+        '<meta name="twitter:description" content="Online mağazanızı Wearix ile yükseltin. Moda perakendecileri için çağdaş bir tema.">'
+      );
+
+      console.log('✅ Tema Türkçeleştirildi');
+      return html;
+
+    } catch (error) {
+      console.error('❌ Translation error:', error);
+      // Hata durumunda orijinal HTML'i döndür
+      return html;
     }
   }
 
