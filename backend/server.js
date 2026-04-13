@@ -918,10 +918,6 @@ app.use('/api/health', healthRoutes);
 const backupRoutes = require('./routes/backup');
 app.use('/api/backup', backupRoutes);
 
-// Maintenance mode routes
-const maintenanceRoutes = require('./routes/maintenance');
-app.use('/api/maintenance', maintenanceRoutes);
-
 // Webhook routes (deploy)
 const webhookRoutes = require('./routes/webhook');
 app.use('/api/webhook', webhookRoutes);
