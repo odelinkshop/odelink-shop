@@ -216,84 +216,109 @@ const Hero = () => {
  * Mobile content - Static version
  */
 const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaInstalling }) => (
-  <div>
-    <div className="hidden sm:inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-4 sm:mb-6 md:mb-8 max-w-full">
-      <span className="w-2 h-2 rounded-full bg-red-500" />
-      <span className="text-[11px] sm:text-xs md:text-sm font-semibold tracking-wide">
-        Shopier mağazan için vitrin sitesi
-      </span>
-    </div>
-
-    <h1 className="hidden sm:block text-[28px] sm:text-3xl md:text-4xl lg:text-6xl font-black mb-3 sm:mb-4 md:mb-6 leading-[1.06] tracking-tight">
-      Ürünlerini tek linkte topla.
-      <span className="block text-white/90">Modern vitrin sayfanı yayınla.</span>
-    </h1>
-
-    {/* MOBILE ONLY - PC'deki başlık AYNEN */}
-    <div className="sm:hidden text-center mb-6">
-      <div className="text-sm text-white/65 font-semibold mb-3">
+  <div className="sm:hidden">
+    {/* Mobile Header - Sloganımız */}
+    <div className="text-center mb-8">
+      <motion.div
+        className="text-sm text-white/70 font-semibold mb-3 tracking-wide"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         Türkiye'nin En İyi Şirketsiz SaaS Platformu
-      </div>
-      <div className="text-2xl font-black tracking-tight text-white/95 mb-2">
+      </motion.div>
+      <motion.h1
+        className="text-3xl font-black tracking-tight text-white mb-3 leading-tight"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         Mağazan için premium vitrin sayfası.
-      </div>
-      <div className="text-sm text-white/65 font-semibold">
+      </motion.h1>
+      <motion.div
+        className="text-base text-white/70 font-semibold"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
         Tek link. Temiz tasarım. Dakikalar içinde yayında.
-      </div>
+      </motion.div>
     </div>
 
-    <p className="hidden sm:block text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 md:mb-10 max-w-xl leading-relaxed font-medium">
-      Ödelink ile Shopier ürünlerini tek ekrandan sergile.
-      Müşterilerine güven veren, hızlı açılan bir vitrin sayfası oluştur.
-    </p>
-
-    <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center">
-      <button
+    {/* Buttons - Professional */}
+    <div className="flex flex-col gap-4 mb-6">
+      <motion.button
         type="button"
         onClick={handleNavigate}
-        className="btn-primary text-base md:text-lg px-10 py-5 rounded-xl inline-flex items-center justify-center"
+        className="relative overflow-hidden bg-gradient-to-r from-red-600 to-red-500 text-white font-bold text-lg px-8 py-5 rounded-2xl shadow-2xl shadow-red-500/50 flex items-center justify-center gap-3 active:scale-95 transition-transform"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        whileTap={{ scale: 0.95 }}
       >
         <span>Site Oluştur</span>
-        <ArrowRight className="w-5 h-5 ml-3" />
-      </button>
+        <ArrowRight className="w-6 h-6" />
+      </motion.button>
 
-      <a
+      <motion.a
         href="#features"
-        className="btn-secondary text-base md:text-lg px-10 py-5 rounded-xl inline-flex items-center justify-center w-full sm:w-[190px] md:w-[210px]"
+        className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white font-bold text-lg px-8 py-5 rounded-2xl flex items-center justify-center active:scale-95 transition-transform"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <span className="whitespace-nowrap break-normal">Detaylı Bilgi</span>
-      </a>
+        Detaylı Bilgi
+      </motion.a>
 
-      <button
+      <motion.button
         type="button"
         onClick={triggerInstall}
         disabled={pwaInstalling}
-        className="btn-secondary text-base md:text-lg px-10 py-5 rounded-xl items-center justify-center w-full sm:w-[190px] md:w-[210px] sm:hidden inline-flex"
+        className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white font-bold text-lg px-8 py-5 rounded-2xl flex items-center justify-center active:scale-95 transition-transform disabled:opacity-50"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
       >
-        <span className="whitespace-nowrap break-normal">{pwaInstalling ? 'Hazırlanıyor…' : 'Uygulamayı Yükle'}</span>
-      </button>
+        {pwaInstalling ? 'Hazırlanıyor…' : 'Uygulamayı Yükle'}
+      </motion.button>
     </div>
 
-    <div className="mt-3 text-xs text-white/65 font-semibold sm:hidden text-center">
+    {/* PWA Info */}
+    <motion.div
+      className="text-center text-xs text-white/60 font-medium mb-6 px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.6 }}
+    >
       Mobilde Chrome menüsünden "Ana ekrana ekle" ile kurulabilir.
-    </div>
+    </motion.div>
 
-    <div className="mt-6 flex flex-col items-center gap-3 text-sm text-white/80">
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-red-400" />
-          <span>Hızlı kurulum</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-red-400" />
-          <span>Temiz tasarım</span>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Check className="w-4 h-4 text-red-400" />
-        <span>Tek link paylaşımı</span>
-      </div>
-    </div>
+    {/* Check Items - Professional */}
+    <motion.div
+      className="flex flex-col gap-3 px-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.7 }}
+    >
+      {[
+        { text: 'Hızlı kurulum', delay: 0.8 },
+        { text: 'Temiz tasarım', delay: 0.9 },
+        { text: 'Tek link paylaşımı', delay: 1.0 },
+      ].map((item, idx) => (
+        <motion.div
+          key={idx}
+          className="flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: item.delay }}
+        >
+          <div className="w-6 h-6 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center flex-shrink-0">
+            <Check className="w-4 h-4 text-red-400" />
+          </div>
+          <span className="text-base font-semibold text-white">{item.text}</span>
+        </motion.div>
+      ))}
+    </motion.div>
   </div>
 );
 
