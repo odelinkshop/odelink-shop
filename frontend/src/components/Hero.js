@@ -130,38 +130,95 @@ const Hero = () => {
       />
 
       <div className="container mx-auto relative z-10">
-        {/* Advertisement Banner - Responsive */}
+        {/* Advertisement Space - For Rent */}
         <motion.div
-          className="mb-6 sm:mb-8 md:mb-10"
+          className="mb-8 sm:mb-10 md:mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
+          <div className="relative w-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-2xl p-8 sm:p-12 md:p-16 shadow-2xl border-2 border-gray-600/50 overflow-hidden min-h-[200px] sm:min-h-[250px] md:min-h-[300px] flex items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px)',
+              }} />
+            </div>
+            
+            {/* Content */}
+            <div className="relative z-10 text-center">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4 border border-white/20">
+                <TrendingUp className="w-4 h-4 text-white" />
+                <span className="text-xs sm:text-sm font-bold text-white">REKLAM ALANI</span>
+              </div>
+              
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-3 sm:mb-4">
+                Bu Alan Sizin Olabilir!
+              </h3>
+              
+              <p className="text-sm sm:text-base md:text-lg text-white/80 mb-6 sm:mb-8 max-w-2xl mx-auto font-medium">
+                Binlerce kullanıcıya ulaşın. Markanızı, ürününüzü veya hizmetinizi burada tanıtın.
+              </p>
+              
+              <a
+                href="/advertise"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/advertise');
+                }}
+                className="inline-flex items-center gap-3 bg-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-xl min-h-[48px]"
+              >
+                <span>Reklam Vermek İçin Tıklayın</span>
+                <ArrowRight className="w-5 h-5" />
+              </a>
+              
+              <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm text-white/60">
+                <span className="flex items-center gap-1">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4" />
+                  Geniş kitle
+                </span>
+                <span className="flex items-center gap-1">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4" />
+                  Uygun fiyat
+                </span>
+                <span className="flex items-center gap-1">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4" />
+                  Hızlı yayın
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Small Promo Banner */}
+        <motion.div
+          className="mb-6 sm:mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <a
             href="/plans"
-            className="block w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl hover:shadow-red-500/50 transition-all duration-300 hover:scale-[1.02] border-2 border-red-400/30"
+            className="block w-full bg-gradient-to-r from-red-600 to-orange-500 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg hover:shadow-red-500/30 transition-all duration-300 hover:scale-[1.01] border border-red-400/30"
             onClick={(e) => {
               e.preventDefault();
               navigate('/plans');
             }}
           >
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
-                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <div className="text-center sm:text-left">
-                  <div className="text-base sm:text-lg md:text-xl font-black text-white">
-                    🎉 Özel Fırsat: Yıllık Pakette %30 İndirim!
-                  </div>
-                  <div className="text-xs sm:text-sm text-white/90 font-semibold mt-1">
-                    Profesyonel özelliklerin tamamı sadece ₺399/yıl
+                <div>
+                  <div className="text-xs sm:text-sm md:text-base font-bold text-white">
+                    🎉 Yıllık Pakette %30 İndirim - Sadece ₺399/yıl
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border border-white/30 flex-shrink-0">
-                <span className="text-sm sm:text-base font-black text-white whitespace-nowrap">Hemen Al</span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              <div className="flex items-center gap-1 bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex-shrink-0">
+                <span className="text-xs sm:text-sm font-bold text-white whitespace-nowrap">Hemen Al</span>
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
               </div>
             </div>
           </a>
