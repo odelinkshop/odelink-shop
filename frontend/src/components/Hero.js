@@ -59,11 +59,8 @@ const Hero = () => {
 
   const triggerInstall = useCallback(async () => {
     if (!pwaPrompt) {
-      try {
-        window.location.href = '/support';
-      } catch (e) {
-        void e;
-      }
+      // PWA prompt yok - kullanıcıya manuel kurulum talimatı göster
+      alert('Uygulamayı yüklemek için:\n\n1. Chrome menüsünü aç (⋮)\n2. "Ana ekrana ekle" seçeneğine tıkla\n3. Onaylayın ve uygulamayı kullanmaya başlayın!');
       return;
     }
 
@@ -133,43 +130,34 @@ const Hero = () => {
       />
 
       <div className="container mx-auto relative z-10">
-        {/* MOBILE ONLY - Simplified header */}
+        {/* MOBILE ONLY - PC gibi header */}
         {isMobile && (
-          <motion.div
-            className="sm:hidden text-center mb-6"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="sm:hidden text-center mb-8">
             <motion.div
-              className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-4 mb-4 shadow-xl"
-              variants={badgeVariants}
-              initial="hidden"
-              animate="visible"
+              className="text-sm text-white/65 font-semibold mb-3"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center justify-center gap-2 mb-2">
-                <BrandLogo size={24} className="opacity-95" textClassName="text-white" />
-                <span className="text-sm font-extrabold tracking-wide text-white">Ödelink</span>
-              </div>
-              <div className="text-xs text-white/70 font-semibold">
-                Türkiye'nin En İyi Şirketsiz SaaS Platformu
-              </div>
+              Türkiye'nin En İyi Şirketsiz SaaS Platformu
             </motion.div>
-
             <motion.div
-              className="bg-gradient-to-br from-red-500/20 via-red-600/15 to-red-700/10 border-2 border-red-500/40 rounded-2xl p-5 mb-4 shadow-xl"
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
+              className="text-2xl font-black tracking-tight text-white/95 mb-2"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className="text-2xl font-black tracking-tight text-white leading-tight mb-2">
-                Mağazan için premium vitrin sayfası
-              </div>
-              <div className="text-sm text-white/80 font-medium">
-                Tek link. Temiz tasarım. Dakikalar içinde yayında.
-              </div>
+              Mağazan için premium vitrin sayfası.
             </motion.div>
-          </motion.div>
+            <motion.div
+              className="text-sm text-white/65 font-semibold"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Tek link. Temiz tasarım. Dakikalar içinde yayında.
+            </motion.div>
+          </div>
         )}
 
         {/* DESKTOP ONLY - Header */}
@@ -302,18 +290,20 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
       </button>
     </div>
 
-    <div className="mt-3 text-xs text-white/65 font-semibold sm:hidden">
+    <div className="mt-3 text-xs text-white/65 font-semibold sm:hidden text-center">
       Mobilde Chrome menüsünden "Ana ekrana ekle" ile kurulabilir.
     </div>
 
-    <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-white/80">
-      <div className="flex items-center gap-2">
-        <Check className="w-4 h-4 text-red-400" />
-        <span>Hızlı kurulum</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Check className="w-4 h-4 text-red-400" />
-        <span>Temiz tasarım</span>
+    <div className="mt-6 flex flex-col items-center gap-3 text-sm text-white/80">
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
+          <Check className="w-4 h-4 text-red-400" />
+          <span>Hızlı kurulum</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Check className="w-4 h-4 text-red-400" />
+          <span>Temiz tasarım</span>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <Check className="w-4 h-4 text-red-400" />
