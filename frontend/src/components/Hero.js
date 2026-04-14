@@ -130,34 +130,6 @@ const Hero = () => {
       />
 
       <div className="container mx-auto relative z-10">
-        {/* MOBILE ONLY - Sadece Foto 3 layout */}
-        {isMobile && (
-          <div className="sm:hidden text-center mb-6">
-            {/* Foto 3 - Badge + Büyük başlık */}
-            <motion.div
-              className="inline-flex items-center gap-2 bg-white/10 border border-white/10 text-white px-4 py-2 rounded-full mb-6"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="w-2 h-2 rounded-full bg-red-500" />
-              <span className="text-xs font-semibold tracking-wide">
-                Shopier mağazan için vitrin sitesi
-              </span>
-            </motion.div>
-
-            <motion.h1
-              className="text-[34px] font-black mb-4 leading-[1.06] tracking-tight text-white"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              Ürünlerini tek linkte topla.
-              <span className="block text-white/90">Modern vitrin sayfanı yayınla.</span>
-            </motion.h1>
-          </div>
-        )}
-
         {/* DESKTOP ONLY - Header */}
         {!isMobile && (
           <div className="max-w-5xl mx-auto text-center mb-6 sm:mb-8 md:mb-10">
