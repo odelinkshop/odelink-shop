@@ -289,7 +289,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
 const DesktopContent = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaInstalling }) => (
   <div>
     <motion.div
-      className="inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-4 py-2 rounded-full mb-6 sm:mb-8 max-w-full"
+      className="hidden sm:inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-4 py-2 rounded-full mb-6 sm:mb-8 max-w-full"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: 'backOut' }}
@@ -301,7 +301,7 @@ const DesktopContent = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaIn
     </motion.div>
 
     <motion.h1
-      className="text-[34px] sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 leading-[1.06] tracking-tight"
+      className="hidden sm:block text-[34px] sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 leading-[1.06] tracking-tight"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.1 }}
