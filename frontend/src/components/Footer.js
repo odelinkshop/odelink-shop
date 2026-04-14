@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Instagram, Linkedin } from 'lucide-react';
+import { Mail, Instagram, Linkedin, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuthSession from '../hooks/useAuthSession';
 import BrandLogo from './BrandLogo';
@@ -53,205 +53,197 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-gray-900 text-white pt-8 pb-6 sm:py-12 cv-auto">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8 mb-6 sm:mb-8">
-          <MotionDiv
-            className="sm:col-span-2 md:col-span-1"
-            {...(disableDesktopMotion
-              ? {}
-              : {
-                  initial: { opacity: 0, y: 30 },
-                  whileInView: { opacity: 1, y: 0 },
-                  viewport: { once: true },
-                  transition: { duration: 0.5 }
-                })}
-          >
-            <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-              <BrandLogo withText textClassName="text-white" />
-            </div>
-            <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
-              Shopier mağazanıza vitrin sayfası oluşturmanıza yardımcı olan bir yazılım aracıdır.
-              Shopier, Ödelink tarafından işletilmeyen bağımsız bir üçüncü taraf platformdur.
-            </p>
-          </MotionDiv>
+    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-white pt-16 pb-8 cv-auto border-t border-white/10">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Top Section - Logo & Description */}
+        <MotionDiv
+          className="text-center mb-12"
+          {...(disableDesktopMotion
+            ? {}
+            : {
+                initial: { opacity: 0, y: 20 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true },
+                transition: { duration: 0.5 }
+              })}
+        >
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <BrandLogo withText textClassName="text-white text-2xl" />
+          </div>
+          <p className="text-gray-400 max-w-2xl mx-auto text-base leading-relaxed">
+            Shopier mağazanıza vitrin sayfası oluşturmanıza yardımcı olan bir yazılım aracıdır.
+            Shopier, Ödelink tarafından işletilmeyen bağımsız bir üçüncü taraf platformdur.
+          </p>
+        </MotionDiv>
 
+        {/* Main Grid - 3 Columns on Desktop, Stack on Mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
+          {/* Column 1: Quick Links */}
           <MotionDiv
-            className="sm:col-span-1 md:col-span-1"
             {...(disableDesktopMotion
               ? {}
               : {
-                  initial: { opacity: 0, y: 30 },
+                  initial: { opacity: 0, y: 20 },
                   whileInView: { opacity: 1, y: 0 },
                   viewport: { once: true },
                   transition: { duration: 0.5, delay: 0.1 }
                 })}
           >
-            <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Hızlı Linkler</h4>
-            <ul className="space-y-1.5 sm:space-y-2">
+            <h4 className="text-xl font-bold mb-6 text-white border-b border-white/20 pb-3">Hızlı Linkler</h4>
+            <ul className="space-y-3">
               <li>
-                <button type="button" onClick={() => goHomeHash('#features')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Özellikler
+                <button type="button" onClick={() => goHomeHash('#features')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Özellikler
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => goHomeHash('#pricing')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Fiyatlandırma
+                <button type="button" onClick={() => goHomeHash('#pricing')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Fiyatlandırma
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => navigate(siteBuilderHref)} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Site Oluştur
+                <button type="button" onClick={() => navigate(siteBuilderHref)} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Site Oluştur
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => navigate('/support')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Destek
+                <button type="button" onClick={() => navigate('/support')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Destek
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => navigate('/links')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Tüm Linkler
-                </button>
-              </li>
-              <li>
-                <button type="button" onClick={() => navigate('/contact')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  İletişim
+                <button type="button" onClick={() => navigate('/contact')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → İletişim
                 </button>
               </li>
             </ul>
           </MotionDiv>
 
+          {/* Column 2: Resources & Legal */}
           <MotionDiv
-            className="sm:col-span-1 md:col-span-1"
             {...(disableDesktopMotion
               ? {}
               : {
-                  initial: { opacity: 0, y: 30 },
+                  initial: { opacity: 0, y: 20 },
                   whileInView: { opacity: 1, y: 0 },
                   viewport: { once: true },
                   transition: { duration: 0.5, delay: 0.2 }
                 })}
           >
-            <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Kaynaklar</h4>
-            <ul className="space-y-1.5 sm:space-y-2">
+            <h4 className="text-xl font-bold mb-6 text-white border-b border-white/20 pb-3">Kaynaklar</h4>
+            <ul className="space-y-3 mb-8">
               <li>
-                <button type="button" onClick={() => navigate('/blog')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Blog
+                <button type="button" onClick={() => navigate('/blog')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Blog
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => navigate('/faq')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  SSS
+                <button type="button" onClick={() => navigate('/faq')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → SSS
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => navigate('/guide')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Kullanım Kılavuzu
+                <button type="button" onClick={() => navigate('/guide')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Kullanım Kılavuzu
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => navigate('/reviews')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Müşteri Yorumları
+                <button type="button" onClick={() => navigate('/reviews')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Müşteri Yorumları
+                </button>
+              </li>
+            </ul>
+
+            <h4 className="text-xl font-bold mb-6 text-white border-b border-white/20 pb-3">Yasal</h4>
+            <ul className="space-y-3">
+              <li>
+                <button type="button" onClick={() => navigate('/terms')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Kullanım Şartları
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => navigate('/privacy')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Gizlilik Politikası
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => navigate('/kvkk')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → KVKK
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => navigate('/cookies')} className="text-gray-300 hover:text-white transition-colors duration-200 text-base font-medium hover:translate-x-1 inline-block">
+                  → Çerez Politikası
                 </button>
               </li>
             </ul>
           </MotionDiv>
 
+          {/* Column 3: Contact */}
           <MotionDiv
-            className="sm:col-span-1 md:col-span-1"
             {...(disableDesktopMotion
               ? {}
               : {
-                  initial: { opacity: 0, y: 30 },
+                  initial: { opacity: 0, y: 20 },
                   whileInView: { opacity: 1, y: 0 },
                   viewport: { once: true },
                   transition: { duration: 0.5, delay: 0.3 }
                 })}
           >
-            <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Yasal</h4>
-            <ul className="space-y-1.5 sm:space-y-2">
-              <li>
-                <button type="button" onClick={() => navigate('/terms')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Kullanım Şartları
-                </button>
-              </li>
-              <li>
-                <button type="button" onClick={() => navigate('/privacy')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Gizlilik Politikası
-                </button>
-              </li>
-              <li>
-                <button type="button" onClick={() => navigate('/kvkk')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  KVKK
-                </button>
-              </li>
-              <li>
-                <button type="button" onClick={() => navigate('/cookies')} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base">
-                  Çerez Politikası
-                </button>
-              </li>
-            </ul>
-          </MotionDiv>
-
-          <MotionDiv
-            className="sm:col-span-2 md:col-span-1"
-            {...(disableDesktopMotion
-              ? {}
-              : {
-                  initial: { opacity: 0, y: 30 },
-                  whileInView: { opacity: 1, y: 0 },
-                  viewport: { once: true },
-                  transition: { duration: 0.5, delay: 0.3 }
-                })}
-          >
-            <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">İletişim</h4>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-gray-200 flex-shrink-0" />
-                <a className="text-gray-300 hover:text-white transition-colors text-sm sm:text-base break-all" href={gmailHref} target="_blank" rel="noreferrer">{supportEmail}</a>
-              </div>
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-gray-200 flex-shrink-0" />
-                <button type="button" className="text-gray-300 hover:text-white transition-colors text-sm sm:text-base text-left" onClick={() => navigate('/contact')}>
-                  İletişim sayfasına git
-                </button>
-              </div>
+            <h4 className="text-xl font-bold mb-6 text-white border-b border-white/20 pb-3">İletişim</h4>
+            <div className="space-y-4 mb-8">
+              <a 
+                className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors group" 
+                href={gmailHref} 
+                target="_blank" 
+                rel="noreferrer"
+              >
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <span className="text-base font-medium break-all">{supportEmail}</span>
+              </a>
+              
+              <a 
+                className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors group" 
+                href={whatsappHref} 
+                target="_blank" 
+                rel="noreferrer"
+              >
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <span className="text-base font-medium">{whatsappPhoneLabel}</span>
+              </a>
             </div>
-            
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-4 sm:mt-6">
+
+            <h4 className="text-xl font-bold mb-6 text-white border-b border-white/20 pb-3">Sosyal Medya</h4>
+            <div className="flex items-center gap-4">
               <a
-                className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors duration-200"
+                className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-200 hover:scale-110"
                 href={instagramHref}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
               >
-                <Instagram className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Instagram className="w-6 h-6" />
               </a>
               <a
-                className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors duration-200"
+                className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-200 hover:scale-110"
                 href={linkedInHref}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
               >
-                <Linkedin className="w-4 h-4 sm:w-5 sm:h-5" />
-              </a>
-              <a
-                className="text-gray-300 hover:text-white transition-colors font-semibold text-sm sm:text-base"
-                href={whatsappHref}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {whatsappPhoneLabel}
+                <Linkedin className="w-6 h-6" />
               </a>
             </div>
           </MotionDiv>
         </div>
 
+        {/* Bottom Section - Copyright */}
         <MotionDiv
-          className="border-t border-gray-800 pt-4 sm:pt-6 md:pt-8 text-center"
+          className="border-t border-white/10 pt-8 text-center"
           {...(disableDesktopMotion
             ? {}
             : {
@@ -261,7 +253,7 @@ const Footer = () => {
                 transition: { duration: 0.5, delay: 0.4 }
               })}
         >
-          <p className="text-gray-400 text-sm sm:text-base">
+          <p className="text-gray-400 text-base">
             © 2024 Ödelink. Tüm hakları saklıdır.
           </p>
         </MotionDiv>
