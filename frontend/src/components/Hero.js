@@ -130,7 +130,7 @@ const Hero = () => {
       />
 
       <div className="container mx-auto relative z-10">
-        {/* MOBILE ONLY - Foto 3 + Foto 4 layout */}
+        {/* MOBILE ONLY - Sadece Foto 3 layout */}
         {isMobile && (
           <div className="sm:hidden text-center mb-6">
             {/* Foto 3 - Badge + Büyük başlık */}
@@ -155,24 +155,6 @@ const Hero = () => {
               Ürünlerini tek linkte topla.
               <span className="block text-white/90">Modern vitrin sayfanı yayınla.</span>
             </motion.h1>
-
-            {/* Foto 4 - PC'deki başlık */}
-            <motion.div
-              className="mt-8 mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="text-sm text-white/65 font-semibold mb-3">
-                Türkiye'nin En İyi Şirketsiz SaaS Platformu
-              </div>
-              <div className="text-2xl font-black tracking-tight text-white/95 mb-2">
-                Mağazan için premium vitrin sayfası.
-              </div>
-              <div className="text-sm text-white/65 font-semibold">
-                Tek link. Temiz tasarım. Dakikalar içinde yayında.
-              </div>
-            </motion.div>
           </div>
         )}
 
