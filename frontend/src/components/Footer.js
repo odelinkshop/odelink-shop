@@ -55,7 +55,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white pt-10 pb-6 sm:py-12 cv-auto">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
           <MotionDiv
             {...(disableDesktopMotion
               ? {}
@@ -130,7 +130,42 @@ const Footer = () => {
                   transition: { duration: 0.5, delay: 0.2 }
                 })}
           >
-            <h4 className="text-lg font-semibold mb-4">Destek</h4>
+            <h4 className="text-lg font-semibold mb-4">Kaynaklar</h4>
+            <ul className="space-y-2">
+              <li>
+                <button type="button" onClick={() => navigate('/blog')} className="text-gray-300 hover:text-white transition-colors duration-200">
+                  Blog
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => navigate('/faq')} className="text-gray-300 hover:text-white transition-colors duration-200">
+                  SSS
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => navigate('/guide')} className="text-gray-300 hover:text-white transition-colors duration-200">
+                  Kullanım Kılavuzu
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => navigate('/reviews')} className="text-gray-300 hover:text-white transition-colors duration-200">
+                  Müşteri Yorumları
+                </button>
+              </li>
+            </ul>
+          </MotionDiv>
+
+          <MotionDiv
+            {...(disableDesktopMotion
+              ? {}
+              : {
+                  initial: { opacity: 0, y: 30 },
+                  whileInView: { opacity: 1, y: 0 },
+                  viewport: { once: true },
+                  transition: { duration: 0.5, delay: 0.3 }
+                })}
+          >
+            <h4 className="text-lg font-semibold mb-4">Yasal</h4>
             <ul className="space-y-2">
               <li>
                 <button type="button" onClick={() => navigate('/terms')} className="text-gray-300 hover:text-white transition-colors duration-200">

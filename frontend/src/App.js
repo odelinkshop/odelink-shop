@@ -16,6 +16,8 @@ import AboutPage from './components/AboutPage';
 import ServicesPage from './components/ServicesPage';
 import ReviewsPage from './components/ReviewsPage';
 import BlogPage from './components/BlogPage';
+import FaqPage from './components/FaqPage';
+import GuidePage from './components/GuidePage';
 import PaymentPage from './components/PaymentPage';
 import ShoppingPage from './components/ShoppingPage';
 import WidgetPage from './components/WidgetPage';
@@ -385,6 +387,8 @@ function AppLayout() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/reviews" element={<ReviewsPage />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/faq" element={<FaqPage />} />
+          <Route path="/guide" element={<GuidePage />} />
           <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
           <Route path="/shopping" element={<ProtectedRoute><ShoppingPage /></ProtectedRoute>} />
           <Route path="/widget" element={<ProtectedRoute><WidgetPage /></ProtectedRoute>} />
