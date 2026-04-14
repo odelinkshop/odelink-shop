@@ -1117,6 +1117,29 @@ if (!shouldServeFrontend) {
   });
 }
 if (shouldServeFrontend) {
+  // Serve sitemap.xml and robots.txt with correct content-type
+  app.get('/sitemap.xml', (req, res) => {
+    const sitemapPath = path.join(frontendBuildPath, 'sitemap.xml');
+    if (fs.existsSync(sitemapPath)) {
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.sendFile(sitemapPath);
+    } else {
+      res.status(404).send('Sitemap not found');
+    }
+  });
+
+  app.get('/robots.txt', (req, res) => {
+    const robotsPath = path.join(frontendBuildPath, 'robots.txt');
+    if (fs.existsSync(robotsPath)) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.sendFile(robotsPath);
+    } else {
+      res.status(404).send('Robots.txt not found');
+    }
+  });
+
   // Theme serving removed
   
   app.use(express.static(frontendBuildPath, {
