@@ -58,11 +58,7 @@ const guides = [
       },
       {
         title: 'Blok Düzenleme',
-        content: 'Hero, ürünler, koleksiyonlar, özellikler, SSS, iletişim gibi blokları sürükle-bırak ile yeniden sıralayın. İstediğiniz blokları ekleyin veya kaldırın.'
-      },
-      {
-        title: 'İçerik Düzenleme',
-        content: 'Her bloğun içeriğini düzenleyebilirsiniz. Başlıklar, açıklamalar, buton metinleri tamamen özelleştirilebilir.'
+        content: 'Hero, ürünler, koleksiyonlar, özellikler, SSS, iletişim gibi blokları sürükle-bırak ile yeniden sıralayın.'
       }
     ]
   },
@@ -103,7 +99,7 @@ const GuidePage = () => {
             Kullanım Kılavuzu
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Shopier vitrin sitesi kurulumu, e-ticaret mağaza yönetimi ve SEO optimizasyonu için adım adım rehber
+            Shopier vitrin sitesi kurulumu ve e-ticaret mağaza yönetimi için adım adım rehber
           </p>
         </div>
 
@@ -111,7 +107,7 @@ const GuidePage = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="card sticky top-24" style={{ borderRadius: 16 }}>
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Rehberler</h2>
+              <h2 className="text-lg font-bold text-white mb-4">Rehberler</h2>
               <div className="space-y-2">
                 {guides.map((guide) => (
                   <button
@@ -119,8 +115,8 @@ const GuidePage = () => {
                     onClick={() => setSelectedGuide(guide)}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
                       selectedGuide.id === guide.id
-                        ? 'bg-blue-50 text-blue-700 font-semibold'
-                        : 'hover:bg-gray-50 text-gray-700'
+                        ? 'bg-blue-600 text-white font-semibold'
+                        : 'hover:bg-gray-700 text-gray-300'
                     }`}
                   >
                     <span className="mr-2">{guide.icon}</span>
@@ -136,7 +132,7 @@ const GuidePage = () => {
             <div className="card" style={{ borderRadius: 16 }}>
               <div className="flex items-center gap-3 mb-6">
                 <span className="text-4xl">{selectedGuide.icon}</span>
-                <h2 className="text-3xl font-bold text-gray-900">
+                <h2 className="text-3xl font-bold text-white">
                   {selectedGuide.title}
                 </h2>
               </div>
@@ -147,10 +143,10 @@ const GuidePage = () => {
                     key={idx}
                     className="border-l-4 border-blue-500 pl-6 py-2"
                   >
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    <h3 className="text-xl font-bold text-white mb-3">
                       {step.title}
                     </h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-300 leading-relaxed">
                       {step.content}
                     </p>
                   </div>
@@ -158,7 +154,7 @@ const GuidePage = () => {
               </div>
             </div>
 
-            {/* Video Tutorial CTA */}
+            {/* CTA */}
             <div className="card mt-6" style={{ borderRadius: 16, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
               <div className="text-white">
                 <h3 className="text-2xl font-bold mb-3">
@@ -178,10 +174,10 @@ const GuidePage = () => {
         {/* Bottom CTA */}
         <div className="mt-16 text-center">
           <div className="card inline-block" style={{ borderRadius: 16 }}>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl font-bold text-white mb-3">
               Yardıma mı ihtiyacınız var?
             </h2>
-            <p className="text-gray-700 mb-6">
+            <p className="text-gray-300 mb-6">
               Destek ekibimiz size yardımcı olmak için 7/24 hazır
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -193,7 +189,7 @@ const GuidePage = () => {
               </a>
               <a
                 href="/faq"
-                className="px-8 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-8 py-3 bg-gray-700 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors"
               >
                 SSS
               </a>

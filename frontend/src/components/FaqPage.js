@@ -35,11 +35,11 @@ const faqs = [
       },
       {
         q: 'İptal politikanız nedir?',
-        a: 'İstediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal sonrası mevcut dönem sonuna kadar hizmetlerimizden yararlanmaya devam edersiniz. Otomatik yenileme yapılmaz. İade politikası için destek ekibimizle iletişime geçin.'
+        a: 'İstediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal sonrası mevcut dönem sonuna kadar hizmetlerimizden yararlanmaya devam edersiniz. Otomatik yenileme yapılmaz.'
       },
       {
         q: 'Yıllık ödeme avantajı nedir?',
-        a: 'Yıllık ödeme seçeneğinde %20 indirim kazanırsınız. Örneğin Basic plan aylık 199 TL yerine yıllık 1.910 TL olur (2.388 TL yerine). Ayrıca yıllık planlarda öncelikli destek hizmeti sunuyoruz.'
+        a: 'Profesyonel plan yıllık 399 TL\'dir. Aylık plana göre daha ekonomiktir. Ayrıca yıllık planda öncelikli destek ve aylık rapor indirme özelliği bulunur.'
       }
     ]
   },
@@ -48,11 +48,11 @@ const faqs = [
     questions: [
       {
         q: 'SEO uyumlu mu?',
-        a: 'Evet! Ödelink tamamen SEO optimize edilmiştir. Sitemap, meta taglar, yapılandırılmış veri (Schema.org), hızlı yükleme, mobil uyumluluk gibi tüm SEO gereksinimleri karşılanmıştır. Google\'da üst sıralara çıkmanız için gerekli altyapı hazırdır.'
+        a: 'Evet! Ödelink tamamen SEO optimize edilmiştir. Sitemap, meta taglar, yapılandırılmış veri, hızlı yükleme, mobil uyumluluk gibi tüm SEO gereksinimleri karşılanmıştır. Google\'da üst sıralara çıkmanız için gerekli altyapı hazırdır.'
       },
       {
         q: 'Mobil uyumlu mu?',
-        a: 'Kesinlikle! Tüm temalarımız mobil öncelikli (mobile-first) yaklaşımla tasarlanmıştır. Siteniz telefon, tablet ve bilgisayarda mükemmel görünür. Müşterilerinizin %70\'i mobil cihazdan alışveriş yaptığı için bu çok önemlidir.'
+        a: 'Kesinlikle! Tüm temalarımız mobil öncelikli (mobile-first) yaklaşımla tasarlanmıştır. Siteniz telefon, tablet ve bilgisayarda mükemmel görünür. Müşterilerin %70\'i mobil cihazdan alışveriş yaptığı için bu çok önemlidir.'
       },
       {
         q: 'Özel alan adı kullanabilir miyim?',
@@ -64,7 +64,7 @@ const faqs = [
       },
       {
         q: 'Tasarımı özelleştirebilir miyim?',
-        a: 'Evet! Renk paleti, logo, yazı tipleri, düzen ve daha fazlasını özelleştirebilirsiniz. Pro planda özel CSS/HTML desteği de sunuyoruz. Markanıza uygun benzersiz bir tasarım oluşturabilirsiniz.'
+        a: 'Evet! Renk paleti (mavi, mor, yeşil, amber), logo, blok düzeni ve içerikleri özelleştirebilirsiniz. Sürükle-bırak editörü ile blokları yeniden sıralayabilirsiniz.'
       }
     ]
   },
@@ -77,7 +77,7 @@ const faqs = [
       },
       {
         q: 'Güvenlik nasıl sağlanıyor?',
-        a: 'Tüm siteler ücretsiz SSL sertifikası ile güvenli HTTPS protokolü üzerinden çalışır. Verileriniz şifrelenir. Düzenli güvenlik güncellemeleri yapılır. PCI-DSS uyumlu altyapı kullanılır.'
+        a: 'Tüm siteler ücretsiz SSL sertifikası ile güvenli HTTPS protokolü üzerinden çalışır. Verileriniz şifrelenir. Düzenli güvenlik güncellemeleri yapılır.'
       },
       {
         q: 'Yedekleme yapılıyor mu?',
@@ -94,11 +94,11 @@ const faqs = [
     questions: [
       {
         q: 'Destek nasıl alırım?',
-        a: 'E-posta, canlı chat ve destek formu üzerinden 7/24 destek alabilirsiniz. Pro plan müşterilerimize öncelikli destek ve telefon desteği sunuyoruz. Ortalama yanıt süremiz 2 saattir.'
+        a: 'E-posta, canlı chat ve destek formu üzerinden 7/24 destek alabilirsiniz. Profesyonel plan müşterilerimize öncelikli destek sunuyoruz. Ortalama yanıt süremiz 2 saattir.'
       },
       {
         q: 'Kurulum desteği var mı?',
-        a: 'Evet! İlk kurulum aşamasında size rehberlik ediyoruz. Shopier entegrasyonu, alan adı bağlama, tasarım özelleştirme gibi konularda adım adım yardımcı oluyoruz.'
+        a: 'Evet! İlk kurulum aşamasında size rehberlik ediyoruz. Shopier entegrasyonu, tasarım özelleştirme gibi konularda adım adım yardımcı oluyoruz.'
       },
       {
         q: 'Eğitim materyalleri var mı?',
@@ -142,7 +142,7 @@ const FaqPage = () => {
               className={`px-6 py-3 rounded-full font-medium transition-all ${
                 selectedCategory === cat
                   ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white/10 text-white hover:bg-white/20'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
               {cat}
@@ -167,16 +167,16 @@ const FaqPage = () => {
                   onClick={() => toggleQuestion(categoryIdx, qIdx)}
                   className="w-full text-left flex items-start justify-between gap-4"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 flex-1">
+                  <h3 className="text-lg font-semibold text-white flex-1">
                     {item.q}
                   </h3>
-                  <span className={`text-2xl text-blue-600 transition-transform ${isOpen ? 'rotate-45' : ''}`}>
+                  <span className={`text-2xl text-blue-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-45' : ''}`}>
                     +
                   </span>
                 </button>
                 {isOpen && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-gray-700 leading-relaxed">
+                  <div className="mt-4 pt-4 border-t border-gray-700">
+                    <p className="text-gray-300 leading-relaxed">
                       {item.a}
                     </p>
                   </div>
@@ -189,10 +189,10 @@ const FaqPage = () => {
         {/* CTA */}
         <div className="mt-16 text-center">
           <div className="card inline-block" style={{ borderRadius: 16 }}>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl font-bold text-white mb-3">
               Sorunuz yanıtlanmadı mı?
             </h2>
-            <p className="text-gray-700 mb-6">
+            <p className="text-gray-300 mb-6">
               Destek ekibimiz size yardımcı olmak için hazır
             </p>
             <a
