@@ -878,6 +878,17 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/support', supportLimiter, supportRoutes);
 app.use('/api/reports', reportsRoutes);
 
+// Advertisement routes
+try {
+  const advertisementRoutes = require('./routes/advertisements');
+  const adminAdvertisementRoutes = require('./routes/admin/advertisements');
+  app.use('/api/advertisements', advertisementRoutes);
+  app.use('/api/admin/advertisements', adminAdvertisementRoutes);
+  console.log('✅ Advertisement routes loaded');
+} catch (e) {
+  console.error('❌ Advertisement routes failed:', e.message);
+}
+
 // Shopier Products API - Tema için ürünleri döndür
 const shopierProductsRoutes = require('./routes/shopier-products');
 app.use('/api/shopier-products', shopierProductsRoutes);
@@ -1221,10 +1232,18 @@ app.use('*', (req, res) => {
 let server = null;
 let shuttingDown = false;
 
-const startServer = () => {
+const startServer = async () => {
   if (server) return server;
 
   try {
+    // Run database migrations
+    try {
+      const { runMigrations } = require('./config/runMigrations');
+      await runMigrations();
+    } catch (e) {
+      console.warn('⚠️ Migration warning:', e.message);
+    }
+
     server = app.listen(PORT, () => {
       console.log('🚀 Odelink.shop Backend', PORT, 'portunda çalışıyor');
       console.log('🌍 Environment:', process.env.NODE_ENV || 'development');
@@ -1232,6 +1251,18 @@ const startServer = () => {
       console.log('📊 Health Check:', `http://localhost:${PORT}/api/health`);
       console.log('📋 Readiness Check:', `http://localhost:${PORT}/api/ready`);
       console.log('⚡ Real Shopier API:', `http://localhost:${PORT}/api/real-shopier`);
+
+      // Start background jobs for advertisement system
+      try {
+        const AdvertisementStatusUpdater = require('./services/advertisementStatusUpdater');
+        const AdvertisementTrackingCleanup = require('./services/advertisementTrackingCleanup');
+        
+        AdvertisementStatusUpdater.startScheduler(5); // Every 5 minutes
+        AdvertisementTrackingCleanup.startScheduler(24); // Every 24 hours
+        console.log('✅ Advertisement background jobs started');
+      } catch (e) {
+        console.warn('⚠️ Could not start advertisement background jobs:', e.message);
+      }
     });
 
     server.headersTimeout = 12 * 1000;

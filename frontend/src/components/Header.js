@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useAuthSession from '../hooks/useAuthSession';
 import { isAdminUiEnabled, logoutAuthSession } from '../utils/authStorage';
 import BrandLogo from './BrandLogo';
+import AdBanner from './AdBanner';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -204,38 +205,7 @@ const Header = () => {
       </div>
 
       {/* Advertisement Banner - Full Width */}
-      <div className="w-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 border-b border-gray-600/50">
-        <div className="container mx-auto px-4 py-4">
-          <a
-            href="/advertise"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate('/advertise');
-            }}
-            className="flex items-center justify-between gap-4 hover:opacity-90 transition-opacity"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-xs font-bold">AD</span>
-              </div>
-              <div>
-                <div className="text-sm sm:text-base font-bold text-white">
-                  Bu Alan Sizin Olabilir - Reklam Verin
-                </div>
-                <div className="text-xs text-white/70">
-                  Binlerce kullanıcıya ulaşın • Uygun fiyatlar • Hızlı yayın
-                </div>
-              </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg">
-              <span className="text-sm font-bold text-white whitespace-nowrap">Detaylı Bilgi</span>
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </a>
-        </div>
-      </div>
+      <AdBanner placement="header-banner" />
 
       <AnimatePresence>
         {isMobileMenuOpen ? (

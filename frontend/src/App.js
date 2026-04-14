@@ -21,6 +21,7 @@ import GuidePage from './components/GuidePage';
 import PaymentPage from './components/PaymentPage';
 import ShoppingPage from './components/ShoppingPage';
 import WidgetPage from './components/WidgetPage';
+import AdDashboard from './components/AdDashboard';
 import PublicPoliciesPage from './components/PublicPoliciesPage';
 import SiteAnalyticsPage from './components/SiteAnalyticsPage';
 import SiteBuilderWizard from './components/SiteBuilderWizard';
@@ -70,6 +71,9 @@ const ContactPage = lazyWithPreload(() => import('./components/ContactPage'));
 const VipSupportPage = lazyWithPreload(() => import('./components/VipSupportPage'));
 const LinksPage = lazyWithPreload(() => import('./components/LinksPage'));
 const AdvertisePage = lazyWithPreload(() => import('./components/AdvertisePage'));
+const CustomerAdsDashboard = lazyWithPreload(() => import('./components/CustomerAdsDashboard'));
+const AdminAdvertisementsPage = lazyWithPreload(() => import('./components/AdminAdvertisementsPage'));
+const AdminAdStatisticsPage = lazyWithPreload(() => import('./components/AdminAdStatisticsPage'));
 
 try {
   const p = window.location?.pathname || '';
@@ -383,6 +387,9 @@ function AppLayout() {
           <Route path="/cookies" element={<WithSuspense><CookiesPage /></WithSuspense>} />
           <Route path="/contact" element={<WithSuspense><ContactPage /></WithSuspense>} />
           <Route path="/advertise" element={<WithSuspense><AdvertisePage /></WithSuspense>} />
+          <Route path="/dashboard/ads" element={<WithSuspense><ProtectedRoute><CustomerAdsDashboard /></ProtectedRoute></WithSuspense>} />
+          <Route path="/admin/advertisements" element={<WithSuspense><AdminPasswordGate><AdminAdvertisementsPage /></AdminPasswordGate></WithSuspense>} />
+          <Route path="/admin/advertisements/statistics" element={<WithSuspense><AdminPasswordGate><AdminAdStatisticsPage /></AdminPasswordGate></WithSuspense>} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="/vip-support" element={<WithSuspense><VipSupportPage /></WithSuspense>} />
           <Route path="/links" element={<WithSuspense><LinksPage /></WithSuspense>} />
@@ -395,6 +402,7 @@ function AppLayout() {
           <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
           <Route path="/shopping" element={<ProtectedRoute><ShoppingPage /></ProtectedRoute>} />
           <Route path="/widget" element={<ProtectedRoute><WidgetPage /></ProtectedRoute>} />
+          <Route path="/dashboard/ads" element={<ProtectedRoute><AdDashboard /></ProtectedRoute>} />
         </Routes>
       </div>
       {!hideChrome ? <Footer /> : null}

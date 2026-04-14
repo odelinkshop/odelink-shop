@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Globe, DollarSign, TrendingUp, Settings, LogOut, Menu, X, Search, Filter, Plus, Star, Shield, RefreshCw, Undo2 } from 'lucide-react';
+import { Users, Globe, DollarSign, TrendingUp, Settings, LogOut, Menu, X, Search, Filter, Plus, Star, Shield, RefreshCw, Undo2, Megaphone } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 import { clearAuthSession, getAuthToken, logoutAuthSession } from '../utils/authStorage';
 
@@ -133,6 +133,20 @@ const SimpleAdminPanel = ({ adminAccess }) => {
 
   const [refreshTick, setRefreshTick] = useState(0);
   const [ipUndoAvailable, setIpUndoAvailable] = useState(false);
+
+  // Advertisement management state
+  const [adminAdvertisements, setAdminAdvertisements] = useState([]);
+  const [advertisementStats, setAdvertisementStats] = useState(null);
+  const [selectedAdvertisement, setSelectedAdvertisement] = useState(null);
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [approvalData, setApprovalData] = useState({
+    startDate: '',
+    endDate: '',
+    placementPosition: 'header-banner'
+  });
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [advertisementFilter, setAdvertisementFilter] = useState('all');
 
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [settingsError, setSettingsError] = useState('');
@@ -626,8 +640,150 @@ const SimpleAdminPanel = ({ adminAccess }) => {
     }
   };
 
+  // Advertisement management functions
+  const approveAdvertisement = async (adId, approvalData) => {
+    if (!isOwner) {
+      setAdminError('Yetkisiz: Bu işlem sadece owner hesap tarafından yapılabilir.');
+      return;
+    }
+    const token = getAuthToken();
+    if (!token) {
+      navigate('/auth');
+      return;
+    }
+
+    setAdminActionLoading(true);
+    setAdminError('');
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/advertisements/${encodeURIComponent(adId)}/approve`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(approvalData)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAdminError(data?.error || 'Reklam onaylanamadı');
+        return;
+      }
+
+      // Reload advertisements
+      const reload = await fetch(`${API_BASE}/api/admin/advertisements`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const reloadData = await reload.json().catch(() => ({}));
+      if (reload.ok) {
+        setAdminAdvertisements(Array.isArray(reloadData?.advertisements) ? reloadData.advertisements : []);
+      }
+      
+      setAdminSuccess('Reklam başarıyla onaylandı');
+    } catch (e) {
+      setAdminError('Reklam onaylanamadı');
+    } finally {
+      setAdminActionLoading(false);
+    }
+  };
+
+  const rejectAdvertisement = async (adId, rejectionReason) => {
+    if (!isOwner) {
+      setAdminError('Yetkisiz: Bu işlem sadece owner hesap tarafından yapılabilir.');
+      return;
+    }
+    const token = getAuthToken();
+    if (!token) {
+      navigate('/auth');
+      return;
+    }
+
+    setAdminActionLoading(true);
+    setAdminError('');
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/advertisements/${encodeURIComponent(adId)}/reject`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ rejectionReason })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAdminError(data?.error || 'Reklam reddedilemedi');
+        return;
+      }
+
+      // Reload advertisements
+      const reload = await fetch(`${API_BASE}/api/admin/advertisements`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const reloadData = await reload.json().catch(() => ({}));
+      if (reload.ok) {
+        setAdminAdvertisements(Array.isArray(reloadData?.advertisements) ? reloadData.advertisements : []);
+      }
+      
+      setAdminSuccess('Reklam başarıyla reddedildi');
+    } catch (e) {
+      setAdminError('Reklam reddedilemedi');
+    } finally {
+      setAdminActionLoading(false);
+    }
+  };
+
+  const deleteAdvertisement = async (adId) => {
+    if (!isOwner) {
+      setAdminError('Yetkisiz: Bu işlem sadece owner hesap tarafından yapılabilir.');
+      return;
+    }
+    const token = getAuthToken();
+    if (!token) {
+      navigate('/auth');
+      return;
+    }
+
+    if (!window.confirm('Bu reklam silinsin mi? (Geri alınamaz)')) return;
+
+    setAdminActionLoading(true);
+    setAdminError('');
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/advertisements/${encodeURIComponent(adId)}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAdminError(data?.error || 'Reklam silinemedi');
+        return;
+      }
+
+      // Reload advertisements
+      const reload = await fetch(`${API_BASE}/api/admin/advertisements`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const reloadData = await reload.json().catch(() => ({}));
+      if (reload.ok) {
+        setAdminAdvertisements(Array.isArray(reloadData?.advertisements) ? reloadData.advertisements : []);
+      }
+      
+      setAdminSuccess('Reklam başarıyla silindi');
+    } catch (e) {
+      setAdminError('Reklam silinemedi');
+    } finally {
+      setAdminActionLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (!['dashboard', 'users', 'sites', 'subscriptions', 'ip'].includes(activeTab)) return;
+    if (!['dashboard', 'users', 'sites', 'subscriptions', 'advertisements', 'ip'].includes(activeTab)) return;
     const token = getAuthToken();
     if (!token) return;
 
@@ -726,6 +882,39 @@ const SimpleAdminPanel = ({ adminAccess }) => {
             return;
           }
           setAdminSubscriptions(Array.isArray(data?.subscriptions) ? data.subscriptions : []);
+        }
+
+        if (activeTab === 'advertisements') {
+          const res = await fetch(`${API_BASE}/api/admin/advertisements`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            if (res.status === 401) {
+              handleUnauthorized();
+              return;
+            }
+            if (res.status === 403 || res.status === 409) {
+              setAdminError(formatAdminReason(data, 'Reklamlar alınamadı'));
+              return;
+            }
+            setAdminError(data?.error || 'Reklamlar alınamadı');
+            return;
+          }
+          setAdminAdvertisements(Array.isArray(data?.advertisements) ? data.advertisements : []);
+          
+          // Also fetch advertisement statistics
+          const statsRes = await fetch(`${API_BASE}/api/admin/advertisements/statistics`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          const statsData = await statsRes.json().catch(() => ({}));
+          if (statsRes.ok) {
+            setAdvertisementStats(statsData);
+          }
         }
 
         if (activeTab === 'ip') {
@@ -895,6 +1084,7 @@ const SimpleAdminPanel = ({ adminAccess }) => {
     { id: 'users', label: 'Kullanıcılar', icon: Users },
     { id: 'sites', label: 'Siteler', icon: Globe },
     { id: 'subscriptions', label: 'Abonelikler', icon: DollarSign },
+    { id: 'advertisements', label: 'Reklamlar', icon: Megaphone },
     { id: 'ip', label: 'IP', icon: Shield },
     { id: 'settings', label: 'Ayarlar', icon: Settings }
   ];
@@ -1704,6 +1894,220 @@ const SimpleAdminPanel = ({ adminAccess }) => {
             </div>
           )}
 
+          {!hasAdminError && activeTab === 'advertisements' && (
+            <div className="bg-gray-800 rounded-xl p-6">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-white">Reklam Yönetimi</h2>
+                  <p className="text-gray-300 text-sm">Tüm reklam talepleri ve durumları. Liste 5 sn'de bir güncellenir.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <select
+                    value={advertisementFilter}
+                    onChange={(e) => setAdvertisementFilter(e.target.value)}
+                    className="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border border-gray-600"
+                  >
+                    <option value="all">Tüm Durumlar</option>
+                    <option value="pending">Beklemede</option>
+                    <option value="approved">Onaylandı</option>
+                    <option value="active">Aktif</option>
+                    <option value="rejected">Reddedildi</option>
+                    <option value="expired">Süresi Doldu</option>
+                  </select>
+                  <div className="text-sm text-gray-300">{adminPolling ? 'Güncelleniyor…' : ''}</div>
+                </div>
+              </div>
+
+              {adminError ? (
+                <div className="bg-red-900/30 border border-red-800 rounded-lg p-4 text-red-200 mb-4">{adminError}</div>
+              ) : null}
+
+              {hasAdminSuccess ? (
+                <div className="bg-green-900/30 border border-green-800 rounded-lg p-4 text-green-200 mb-4">{adminSuccess}</div>
+              ) : null}
+
+              {/* Advertisement Statistics Overview */}
+              {advertisementStats && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-white">{advertisementStats.activeAds || 0}</div>
+                    <div className="text-sm text-gray-300">Aktif Reklamlar</div>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-white">{advertisementStats.aggregate?.totalImpressions || 0}</div>
+                    <div className="text-sm text-gray-300">Toplam Görüntülenme</div>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-white">{advertisementStats.aggregate?.totalClicks || 0}</div>
+                    <div className="text-sm text-gray-300">Toplam Tıklama</div>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-white">₺{advertisementStats.revenue?.total || 0}</div>
+                    <div className="text-sm text-gray-300">Toplam Gelir</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-white">
+                  <thead>
+                    <tr className="border-b border-gray-700">
+                      <th className="text-left py-3 px-4">Marka</th>
+                      <th className="text-left py-3 px-4">Müşteri</th>
+                      <th className="text-left py-3 px-4">Durum</th>
+                      <th className="text-left py-3 px-4">Paket</th>
+                      <th className="text-left py-3 px-4">Ödeme</th>
+                      <th className="text-left py-3 px-4">İstatistikler</th>
+                      <th className="text-left py-3 px-4">Tarihler</th>
+                      <th className="text-left py-3 px-4">İşlemler</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adminAdvertisements
+                      .filter((ad) => {
+                        if (advertisementFilter !== 'all' && ad.status !== advertisementFilter) return false;
+                        const q = searchQuery.trim().toLowerCase();
+                        if (!q) return true;
+                        const hay = `${ad?.brand_name || ''} ${ad?.user_email || ''} ${ad?.shopier_url || ''}`.toLowerCase();
+                        return hay.includes(q);
+                      })
+                      .map((ad) => (
+                        <tr key={ad.id} className="border-b border-gray-700 hover:bg-gray-700">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-3">
+                              {ad.logo_url && (
+                                <img src={ad.logo_url} alt={ad.brand_name} className="w-8 h-8 object-contain rounded" />
+                              )}
+                              <div>
+                                <p className="font-medium">{ad.brand_name}</p>
+                                <p className="text-xs text-gray-400 truncate max-w-[200px]" title={ad.shopier_url}>
+                                  {ad.shopier_url}
+                                </p>
+                                {ad.instagram_handle && (
+                                  <p className="text-xs text-blue-400">@{ad.instagram_handle}</p>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <p className="text-sm font-medium">{ad.user_name || 'N/A'}</p>
+                              <p className="text-xs text-gray-400">{ad.user_email}</p>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              ad.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              ad.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+                              ad.status === 'active' ? 'bg-green-100 text-green-800' :
+                              ad.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                              ad.status === 'expired' ? 'bg-gray-100 text-gray-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {ad.status === 'pending' ? 'Beklemede' :
+                               ad.status === 'approved' ? 'Onaylandı' :
+                               ad.status === 'active' ? 'Aktif' :
+                               ad.status === 'rejected' ? 'Reddedildi' :
+                               ad.status === 'expired' ? 'Süresi Doldu' : ad.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <span className="text-sm font-medium">
+                                {ad.pricing_tier === 'baslangic' ? 'Başlangıç' :
+                                 ad.pricing_tier === 'profesyonel' ? 'Profesyonel' :
+                                 ad.pricing_tier === 'premium' ? 'Premium' : ad.pricing_tier}
+                              </span>
+                              <div className="text-xs text-gray-400">
+                                {ad.placement_position && `Konum: ${ad.placement_position}`}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              ad.payment_status === 'paid' ? 'bg-green-100 text-green-800' :
+                              ad.payment_status === 'unpaid' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {ad.payment_status === 'paid' ? 'Ödendi' :
+                               ad.payment_status === 'unpaid' ? 'Ödenmedi' : ad.payment_status}
+                            </span>
+                            {ad.payment_amount && (
+                              <div className="text-xs text-gray-400 mt-1">₺{ad.payment_amount}</div>
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-sm">
+                              <div className="flex items-center gap-2">
+                                <span>👁 {ad.statistics?.impressions || 0}</span>
+                                <span>👆 {ad.statistics?.clicks || 0}</span>
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                CTR: {ad.statistics?.ctr ? `${ad.statistics.ctr.toFixed(2)}%` : '0%'}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-xs text-gray-400">
+                              <div>Oluşturuldu: {new Date(ad.created_at).toLocaleDateString()}</div>
+                              {ad.start_date && <div>Başlangıç: {new Date(ad.start_date).toLocaleDateString()}</div>}
+                              {ad.end_date && <div>Bitiş: {new Date(ad.end_date).toLocaleDateString()}</div>}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex flex-col gap-2">
+                              {ad.status === 'pending' && canMutate && (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedAdvertisement(ad);
+                                      setShowApprovalModal(true);
+                                    }}
+                                    className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition"
+                                    disabled={adminActionLoading}
+                                  >
+                                    Onayla
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedAdvertisement(ad);
+                                      setShowRejectionModal(true);
+                                    }}
+                                    className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition"
+                                    disabled={adminActionLoading}
+                                  >
+                                    Reddet
+                                  </button>
+                                </>
+                              )}
+                              {canMutate && (
+                                <button
+                                  onClick={() => deleteAdvertisement(ad.id)}
+                                  className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 transition"
+                                  disabled={adminActionLoading}
+                                >
+                                  Sil
+                                </button>
+                              )}
+                              {!canMutate && (
+                                <div className="text-xs text-gray-400">Sadece owner işlem yapabilir</div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {adminAdvertisements.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-400">Reklam bulunamadı</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'settings' && (
             <div className="bg-gray-800 rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-6">Ayarlar</h2>
@@ -1784,6 +2188,152 @@ const SimpleAdminPanel = ({ adminAccess }) => {
           )}
         </main>
       </div>
+
+      {/* Advertisement Approval Modal */}
+      {showApprovalModal && selectedAdvertisement && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowApprovalModal(false)} />
+          <div className="relative w-full max-w-md bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-white/10">
+              <div className="text-white font-black">Reklamı Onayla</div>
+              <button
+                type="button"
+                className="p-2 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white"
+                onClick={() => setShowApprovalModal(false)}
+                aria-label="Kapat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="text-xs text-white/60 font-semibold">Marka</div>
+                <div className="text-sm text-white mt-1">{selectedAdvertisement.brand_name}</div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Başlangıç Tarihi</label>
+                <input
+                  type="date"
+                  value={approvalData.startDate}
+                  onChange={(e) => setApprovalData(prev => ({ ...prev, startDate: e.target.value }))}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Bitiş Tarihi</label>
+                <input
+                  type="date"
+                  value={approvalData.endDate}
+                  onChange={(e) => setApprovalData(prev => ({ ...prev, endDate: e.target.value }))}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Yerleşim Konumu</label>
+                <select
+                  value={approvalData.placementPosition}
+                  onChange={(e) => setApprovalData(prev => ({ ...prev, placementPosition: e.target.value }))}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="header-banner">Başlık Banner</option>
+                  <option value="hero-section">Hero Bölümü</option>
+                  <option value="sidebar-top">Kenar Çubuğu Üst</option>
+                  <option value="sidebar-bottom">Kenar Çubuğu Alt</option>
+                  <option value="footer-banner">Altbilgi Banner</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setShowApprovalModal(false)}
+                  className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/20 transition"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={() => {
+                    approveAdvertisement(selectedAdvertisement.id, {
+                      startDate: approvalData.startDate,
+                      endDate: approvalData.endDate,
+                      placementPosition: approvalData.placementPosition
+                    });
+                    setShowApprovalModal(false);
+                    setSelectedAdvertisement(null);
+                    setApprovalData({ startDate: '', endDate: '', placementPosition: 'header-banner' });
+                  }}
+                  disabled={adminActionLoading || !approvalData.startDate || !approvalData.endDate}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                >
+                  {adminActionLoading ? 'İşleniyor...' : 'Onayla'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Advertisement Rejection Modal */}
+      {showRejectionModal && selectedAdvertisement && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowRejectionModal(false)} />
+          <div className="relative w-full max-w-md bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-white/10">
+              <div className="text-white font-black">Reklamı Reddet</div>
+              <button
+                type="button"
+                className="p-2 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white"
+                onClick={() => setShowRejectionModal(false)}
+                aria-label="Kapat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="text-xs text-white/60 font-semibold">Marka</div>
+                <div className="text-sm text-white mt-1">{selectedAdvertisement.brand_name}</div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Reddetme Sebebi (İsteğe Bağlı)</label>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Reddetme sebebini yazınız..."
+                  maxLength="500"
+                  rows="4"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+                />
+                <p className="text-xs text-white/60 mt-1">{rejectionReason.length}/500</p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setShowRejectionModal(false)}
+                  className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/20 transition"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={() => {
+                    rejectAdvertisement(selectedAdvertisement.id, rejectionReason);
+                    setShowRejectionModal(false);
+                    setSelectedAdvertisement(null);
+                    setRejectionReason('');
+                  }}
+                  disabled={adminActionLoading}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+                >
+                  {adminActionLoading ? 'İşleniyor...' : 'Reddet'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
