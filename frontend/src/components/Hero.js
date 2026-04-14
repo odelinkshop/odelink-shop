@@ -63,7 +63,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="pt-20 sm:pt-32 md:pt-40 pb-24 sm:pb-20 px-4 relative overflow-hidden bg-gray-900 text-white">
+    <section className="pt-16 sm:pt-20 md:pt-32 lg:pt-40 pb-16 sm:pb-20 md:pb-24 px-4 relative overflow-hidden bg-gray-900 text-white">
       <div className="absolute inset-0 pointer-events-none opacity-80" style={{
         backgroundImage: disableDesktopMotion
           ? 'none'
@@ -74,23 +74,23 @@ const Hero = () => {
       }} />
 
       <div className="container mx-auto relative z-10">
-        <div className="sm:hidden text-center mb-10">
+        <div className="sm:hidden text-center mb-8">
           <div className="inline-flex items-center justify-center gap-2">
-            <BrandLogo size={22} className="opacity-95" textClassName="text-white" />
-            <span className="text-[12px] font-extrabold tracking-wide text-white/85">Ödelink</span>
+            <BrandLogo size={20} className="opacity-95" textClassName="text-white" />
+            <span className="text-[11px] font-extrabold tracking-wide text-white/85">Ödelink</span>
           </div>
-          <div className="mt-4 max-w-[20rem] mx-auto">
-            <div className="text-[24px] font-black tracking-tight text-white leading-[1.08]" style={{ textWrap: 'balance' }}>
+          <div className="mt-3 max-w-[20rem] mx-auto">
+            <div className="text-[22px] font-black tracking-tight text-white leading-[1.08]" style={{ textWrap: 'balance' }}>
               Türkiye'nin En İyi Şirketsiz SaaS Platformu
             </div>
           </div>
         </div>
-        <div className="max-w-5xl mx-auto text-center mb-8 md:mb-10">
+        <div className="max-w-5xl mx-auto text-center mb-6 sm:mb-8 md:mb-10">
           <div className="hidden sm:block">
             <div className="max-w-4xl mx-auto text-sm md:text-base font-semibold tracking-wide text-white/65 mb-2" style={{ textWrap: 'balance' }}>
               Türkiye'nin En İyi Şirketsiz SaaS Platformu
             </div>
-            <div className="text-2xl md:text-4xl font-black tracking-tight text-white/95">
+            <div className="text-xl sm:text-2xl md:text-4xl font-black tracking-tight text-white/95">
               Mağazan için premium vitrin sayfası.
             </div>
             <div className="mt-2 text-sm md:text-base font-semibold text-white/65">
@@ -98,26 +98,26 @@ const Hero = () => {
             </div>
           </div>
         </div>
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-10 items-center">
+        <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-center">
             {disableDesktopMotion ? (
               <div className="lg:col-span-5 text-center sm:text-left">
-                <div className="inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-4 py-2 rounded-full mb-6 sm:mb-8 max-w-full">
+                <div className="inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-4 sm:mb-6 md:mb-8 max-w-full">
                   <span className="w-2 h-2 rounded-full bg-red-500" />
-                  <span className="text-xs md:text-sm font-semibold tracking-wide">
+                  <span className="text-[11px] sm:text-xs md:text-sm font-semibold tracking-wide">
                     Shopier mağazan için vitrin sitesi
                   </span>
                 </div>
 
-                <h1 className="text-[34px] sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 leading-[1.06] tracking-tight" style={{ textWrap: 'balance' }}>
+                <h1 className="text-[28px] sm:text-3xl md:text-4xl lg:text-6xl font-black mb-3 sm:mb-4 md:mb-6 leading-[1.06] tracking-tight" style={{ textWrap: 'balance' }}>
                   Ürünlerini tek linkte topla.
                   <span className="block text-white/90">Modern vitrin sayfanı yayınla.</span>
                 </h1>
-                <p className="hidden sm:block text-lg md:text-xl text-white/80 mb-10 max-w-xl leading-relaxed font-medium">
+                <p className="hidden sm:block text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 md:mb-10 max-w-xl leading-relaxed font-medium">
                   Ödelink ile Shopier ürünlerini tek ekrandan sergile.
                   Müşterilerine güven veren, hızlı açılan bir vitrin sayfası oluştur.
                 </p>
 
-                <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-stretch sm:items-center">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center">
                   <button
                     type="button"
                     onClick={() => navigate(siteBuilderHref)}
