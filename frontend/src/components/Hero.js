@@ -130,6 +130,43 @@ const Hero = () => {
       />
 
       <div className="container mx-auto relative z-10">
+        {/* Advertisement Banner - Responsive */}
+        <motion.div
+          className="mb-6 sm:mb-8 md:mb-10"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <a
+            href="/plans"
+            className="block w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl hover:shadow-red-500/50 transition-all duration-300 hover:scale-[1.02] border-2 border-red-400/30"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/plans');
+            }}
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
+                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="text-center sm:text-left">
+                  <div className="text-base sm:text-lg md:text-xl font-black text-white">
+                    🎉 Özel Fırsat: Yıllık Pakette %30 İndirim!
+                  </div>
+                  <div className="text-xs sm:text-sm text-white/90 font-semibold mt-1">
+                    Profesyonel özelliklerin tamamı sadece ₺399/yıl
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border border-white/30 flex-shrink-0">
+                <span className="text-sm sm:text-base font-black text-white whitespace-nowrap">Hemen Al</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+            </div>
+          </a>
+        </motion.div>
+
         {/* DESKTOP ONLY - Header */}
         {!isMobile && (
           <div className="max-w-5xl mx-auto text-center mb-6 sm:mb-8 md:mb-10">
