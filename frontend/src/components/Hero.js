@@ -228,6 +228,20 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
       Ürünlerini tek linkte topla.
       <span className="block text-white/90">Modern vitrin sayfanı yayınla.</span>
     </h1>
+
+    {/* MOBILE ONLY - PC'deki başlık AYNEN */}
+    <div className="sm:hidden text-center mb-6">
+      <div className="text-sm text-white/65 font-semibold mb-3">
+        Türkiye'nin En İyi Şirketsiz SaaS Platformu
+      </div>
+      <div className="text-2xl font-black tracking-tight text-white/95 mb-2">
+        Mağazan için premium vitrin sayfası.
+      </div>
+      <div className="text-sm text-white/65 font-semibold">
+        Tek link. Temiz tasarım. Dakikalar içinde yayında.
+      </div>
+    </div>
+
     <p className="hidden sm:block text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 md:mb-10 max-w-xl leading-relaxed font-medium">
       Ödelink ile Shopier ürünlerini tek ekrandan sergile.
       Müşterilerine güven veren, hızlı açılan bir vitrin sayfası oluştur.
