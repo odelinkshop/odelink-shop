@@ -217,14 +217,14 @@ const Hero = () => {
  */
 const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaInstalling }) => (
   <div>
-    <div className="inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-4 sm:mb-6 md:mb-8 max-w-full">
+    <div className="hidden sm:inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-4 sm:mb-6 md:mb-8 max-w-full">
       <span className="w-2 h-2 rounded-full bg-red-500" />
       <span className="text-[11px] sm:text-xs md:text-sm font-semibold tracking-wide">
         Shopier mağazan için vitrin sitesi
       </span>
     </div>
 
-    <h1 className="text-[28px] sm:text-3xl md:text-4xl lg:text-6xl font-black mb-3 sm:mb-4 md:mb-6 leading-[1.06] tracking-tight">
+    <h1 className="hidden sm:block text-[28px] sm:text-3xl md:text-4xl lg:text-6xl font-black mb-3 sm:mb-4 md:mb-6 leading-[1.06] tracking-tight">
       Ürünlerini tek linkte topla.
       <span className="block text-white/90">Modern vitrin sayfanı yayınla.</span>
     </h1>
