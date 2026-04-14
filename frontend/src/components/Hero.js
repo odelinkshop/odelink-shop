@@ -217,10 +217,10 @@ const Hero = () => {
  */
 const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaInstalling }) => (
   <div className="sm:hidden">
-    {/* Mobile Header - Sloganımız */}
+    {/* Mobile Header - Hero başlığı en üstte */}
     <div className="text-center mb-8">
       <motion.div
-        className="text-sm text-white/70 font-semibold mb-3 tracking-wide"
+        className="text-sm font-semibold tracking-wide text-white/65 mb-2"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -228,7 +228,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
         Türkiye'nin En İyi Şirketsiz SaaS Platformu
       </motion.div>
       <motion.h1
-        className="text-3xl font-black tracking-tight text-white mb-3 leading-tight"
+        className="text-2xl font-black tracking-tight text-white/95 mb-2 leading-tight"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
@@ -236,7 +236,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
         Mağazan için premium vitrin sayfası.
       </motion.h1>
       <motion.div
-        className="text-base text-white/70 font-semibold"
+        className="text-sm font-semibold text-white/65"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
