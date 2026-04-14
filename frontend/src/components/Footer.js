@@ -90,9 +90,9 @@ const Footer = () => {
           </p>
         </MotionDiv>
 
-        {/* Main Grid */}
+        {/* Main Grid - Mobile Optimized */}
         <MotionDiv
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 lg:gap-12 mb-16"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 lg:gap-12 mb-12 sm:mb-16"
           {...(disableDesktopMotion
             ? {}
             : {

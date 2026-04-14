@@ -427,15 +427,15 @@ const PremiumPricing = () => {
                       )}
 
                       <div
-                        className={`relative bg-white/85 backdrop-blur-md rounded-3xl p-8 shadow-lg border-2 ${plan.highlight ? 'border-gray-900 ring-4 ring-red-500/30 shadow-red-500/20' : 'border-gray-200'} ${plan.name === 'PROFESYONEL' ? 'border-red-500/60 ring-2 ring-red-500/25' : ''} flex flex-col h-full`}
+                        className={`relative bg-white/85 backdrop-blur-md rounded-2xl p-6 sm:p-8 shadow-lg border-2 ${plan.highlight ? 'border-gray-900 ring-4 ring-red-500/30 shadow-red-500/20' : 'border-gray-200'} ${plan.name === 'PROFESYONEL' ? 'border-red-500/60 ring-2 ring-red-500/25' : ''} flex flex-col h-full max-w-[360px] mx-auto`}
                       >
-                        <div className="w-20 h-20 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                          <plan.icon className="w-10 h-10 text-white" />
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-900 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                          <plan.icon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                         </div>
 
                         <div className="text-center flex-1 flex flex-col">
-                          <h3 className="text-3xl font-black text-gray-900 mb-2">{plan.name}</h3>
-                          <p className="text-gray-600 mb-6 font-medium">{plan.description}</p>
+                          <h3 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">{plan.name}</h3>
+                          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 font-medium">{plan.description}</p>
 
                           <div className={`mb-3 flex items-center justify-center gap-2 ${chipLayoutClass} min-h-[34px]`}>
                             <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${statusTone}`}>
@@ -454,23 +454,23 @@ const PremiumPricing = () => {
                             </div>
                           ) : null}
 
-                          <div className={`text-sm text-gray-700 mb-4 min-h-[92px] ${expandedPlans?.[plan.name] ? 'max-h-[220px] overflow-auto pr-1' : ''}`}>
+                          <div className={`text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4 min-h-[80px] sm:min-h-[92px] ${expandedPlans?.[plan.name] ? 'max-h-[200px] overflow-auto pr-1' : ''}`}>
                             {(planFeatures?.[plan.name] || []).slice(0, expandedPlans?.[plan.name] ? 12 : 4).map((x, i) => (
-                              <div key={i} className="mt-1">- {x}</div>
+                              <div key={i} className="mt-1 leading-relaxed">- {x}</div>
                             ))}
                           </div>
 
                           <button
                             type="button"
-                            className="text-xs font-bold text-gray-700 underline underline-offset-4"
+                            className="text-[10px] sm:text-xs font-bold text-gray-700 underline underline-offset-4 min-h-[32px]"
                             onClick={() => toggleExpanded(plan.name)}
                           >
                             {expandedPlans?.[plan.name] ? 'Daha az göster' : 'Tüm özellikleri gör'}
                           </button>
 
-                          <div className="mt-auto mb-4 flex items-baseline justify-center gap-2 whitespace-nowrap min-h-[64px]">
-                            <span className="text-5xl font-black text-gray-900 leading-none">₺{Number(plan.price || 0).toFixed(2)}</span>
-                            <span className="text-gray-600 text-lg leading-none">{isAnnual ? '/yıl' : '/ay'}</span>
+                          <div className="mt-auto mb-3 sm:mb-4 flex items-baseline justify-center gap-2 whitespace-nowrap min-h-[56px] sm:min-h-[64px]">
+                            <span className="text-4xl sm:text-5xl font-black text-gray-900 leading-none">₺{Number(plan.price || 0).toFixed(2)}</span>
+                            <span className="text-gray-600 text-base sm:text-lg leading-none">{isAnnual ? '/yıl' : '/ay'}</span>
                           </div>
                         </div>
 
@@ -478,7 +478,7 @@ const PremiumPricing = () => {
                           type="button"
                           disabled={busyPlan === plan.name}
                           onClick={() => pickPlan(plan.name)}
-                          className={`${plan.highlight ? 'btn-primary' : 'btn-secondary'} w-full text-base ${busyPlan === plan.name ? 'opacity-70 cursor-not-allowed' : ''}`}
+                          className={`${plan.highlight ? 'btn-primary' : 'btn-secondary'} w-full text-sm sm:text-base min-h-[48px] ${busyPlan === plan.name ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                           {busyPlan === plan.name ? 'İşleniyor…' : 'Paketi Seç'}
                         </button>

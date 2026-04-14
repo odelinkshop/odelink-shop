@@ -220,7 +220,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
     {/* Mobile Header - Hero başlığı en üstte */}
     <div className="text-center mb-8">
       <motion.div
-        className="text-sm font-semibold tracking-wide text-white/65 mb-2"
+        className="text-base font-semibold tracking-wide text-white/65 mb-2"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -228,7 +228,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
         Türkiye'nin En İyi Şirketsiz SaaS Platformu
       </motion.div>
       <motion.h1
-        className="text-2xl font-black tracking-tight text-white/95 mb-2 leading-tight"
+        className="text-3xl font-black tracking-tight text-white/95 mb-2 leading-tight"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
@@ -236,7 +236,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
         Mağazan için premium vitrin sayfası.
       </motion.h1>
       <motion.div
-        className="text-sm font-semibold text-white/65"
+        className="text-base font-semibold text-white/65"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -245,24 +245,24 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
       </motion.div>
     </div>
 
-    {/* Buttons - Professional */}
-    <div className="flex flex-col gap-4 mb-6">
+    {/* Buttons - Professional & Mobile Optimized */}
+    <div className="flex flex-col gap-3 mb-6">
       <motion.button
         type="button"
         onClick={handleNavigate}
-        className="relative overflow-hidden bg-gradient-to-r from-red-600 to-red-500 text-white font-bold text-lg px-8 py-5 rounded-2xl shadow-2xl shadow-red-500/50 flex items-center justify-center gap-3 active:scale-95 transition-transform"
+        className="relative overflow-hidden bg-gradient-to-r from-red-600 to-red-500 text-white font-bold text-base px-6 py-4 rounded-xl shadow-xl shadow-red-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform min-h-[48px]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
         whileTap={{ scale: 0.95 }}
       >
         <span>Site Oluştur</span>
-        <ArrowRight className="w-6 h-6" />
+        <ArrowRight className="w-5 h-5" />
       </motion.button>
 
       <motion.a
         href="#features"
-        className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white font-bold text-lg px-8 py-5 rounded-2xl flex items-center justify-center active:scale-95 transition-transform"
+        className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white font-semibold text-base px-6 py-4 rounded-xl flex items-center justify-center active:scale-95 transition-transform min-h-[48px]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
@@ -274,7 +274,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
         type="button"
         onClick={triggerInstall}
         disabled={pwaInstalling}
-        className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white font-bold text-lg px-8 py-5 rounded-2xl flex items-center justify-center active:scale-95 transition-transform disabled:opacity-50"
+        className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white font-semibold text-base px-6 py-4 rounded-xl flex items-center justify-center active:scale-95 transition-transform disabled:opacity-50 min-h-[48px]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
@@ -285,7 +285,7 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
 
     {/* PWA Info */}
     <motion.div
-      className="text-center text-xs text-white/60 font-medium mb-6 px-4"
+      className="text-center text-xs text-white/50 font-medium mb-6 px-2"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.6 }}
@@ -293,9 +293,9 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
       Mobilde Chrome menüsünden "Ana ekrana ekle" ile kurulabilir.
     </motion.div>
 
-    {/* Check Items - Professional */}
+    {/* Check Items - Professional & Mobile Optimized */}
     <motion.div
-      className="flex flex-col gap-3 px-2"
+      className="flex flex-col gap-2 px-1"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.7 }}
@@ -307,15 +307,15 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
       ].map((item, idx) => (
         <motion.div
           key={idx}
-          className="flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3"
+          className="flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 min-h-[48px]"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: item.delay }}
         >
-          <div className="w-6 h-6 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center flex-shrink-0">
-            <Check className="w-4 h-4 text-red-400" />
+          <div className="w-5 h-5 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center flex-shrink-0">
+            <Check className="w-3.5 h-3.5 text-red-400" />
           </div>
-          <span className="text-base font-semibold text-white">{item.text}</span>
+          <span className="text-sm font-semibold text-white">{item.text}</span>
         </motion.div>
       ))}
     </motion.div>

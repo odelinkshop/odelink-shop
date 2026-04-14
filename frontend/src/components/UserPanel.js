@@ -452,20 +452,20 @@ const UserPanel = () => {
   if (loading) return <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center text-white">Yükleniyor...</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 pt-16 sm:pt-24 pb-16 sm:pb-20 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 pt-12 sm:pt-16 md:pt-24 pb-12 sm:pb-16 md:pb-20 px-4">
       <div className="container mx-auto" style={{ maxWidth: 980 }}>
         {error ? (
-          <div className="bg-white/5 border border-white/10 rounded-2xl shadow-2xl backdrop-blur p-4 sm:p-6 mb-8">
-            <h1 className="text-2xl font-bold text-white">Mağaza Paneli</h1>
-            <p className="text-gray-200 mt-2">{error}</p>
-            <div className="flex flex-col sm:flex-row gap-3 mt-6">
-              <button type="button" className="btn-primary" onClick={() => window.location.reload()}>
+          <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur p-4 sm:p-6 mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Mağaza Paneli</h1>
+            <p className="text-sm sm:text-base text-gray-200 mt-2">{error}</p>
+            <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
+              <button type="button" className="btn-primary min-h-[48px]" onClick={() => window.location.reload()}>
                 Tekrar Dene
               </button>
             </div>
           </div>
         ) : (
-          <div className="bg-white/5 border border-white/10 rounded-2xl shadow-2xl backdrop-blur overflow-hidden">
+          <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur overflow-hidden">
             <div className="p-4 sm:p-6">
               {trialView ? (
                 <div className="mb-4 flex justify-end">
@@ -485,18 +485,18 @@ const UserPanel = () => {
                   </div>
                 </div>
               ) : null}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/5 rounded-2xl p-4 sm:p-5 border border-white/10 backdrop-blur-sm transition-colors hover:bg-white/10 flex flex-col justify-center items-center text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                <div className="bg-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10 backdrop-blur-sm transition-colors hover:bg-white/10 flex flex-col justify-center items-center text-center min-h-[100px]">
                   <div className="text-xs sm:text-sm text-gray-300">Toplam Site</div>
                   <div className="text-xl sm:text-2xl font-bold text-white mt-1">{myStats.totalSites}</div>
                   <div className="text-xs sm:text-sm text-gray-300 mt-1">{myStats.activeSites} aktif</div>
                 </div>
-                <div className="bg-white/5 rounded-2xl p-4 sm:p-5 border border-white/10 backdrop-blur-sm transition-colors hover:bg-white/10 flex flex-col justify-center items-center text-center">
+                <div className="bg-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10 backdrop-blur-sm transition-colors hover:bg-white/10 flex flex-col justify-center items-center text-center min-h-[100px]">
                   <div className="text-xs sm:text-sm text-gray-300">Abonelik</div>
                   <div className="text-xl sm:text-2xl font-bold text-white mt-1">{subscriptionView.label}</div>
                   <div className="text-xs sm:text-sm text-gray-300 mt-1">{subscriptionView.subtitle}</div>
                 </div>
-                <div className="bg-white/5 rounded-2xl p-4 sm:p-5 border border-white/10 backdrop-blur-sm transition-colors hover:bg-white/10 flex flex-col justify-center items-center text-center">
+                <div className="bg-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10 backdrop-blur-sm transition-colors hover:bg-white/10 flex flex-col justify-center items-center text-center min-h-[100px]">
                   <div className="text-xs sm:text-sm text-gray-300">Yeni Siteler</div>
                   <div className="text-xl sm:text-2xl font-bold text-white mt-1">{Number(stats?.recent_sites || 0)}</div>
                   <div className="text-xs sm:text-sm text-gray-300 mt-1">Son 30 gün</div>

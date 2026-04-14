@@ -287,14 +287,14 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-bg pt-20 sm:pt-32 pb-16 sm:pb-20 px-4">
+    <div className="min-h-screen gradient-bg pt-16 sm:pt-20 md:pt-32 pb-12 sm:pb-16 md:pb-20 px-4">
       <div className="container mx-auto" style={{ maxWidth: 520 }}>
-        <div className="card" style={{ borderRadius: 16 }}>
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
-              {mode === 'login' ? 'Giris Yap' : mode === 'register' ? 'Kayit Ol' : 'Hesap Islemeleri'}
+        <div className="card" style={{ borderRadius: 16, padding: '20px' }}>
+          <div className="text-center mb-5 sm:mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              {mode === 'login' ? 'Giriş Yap' : mode === 'register' ? 'Kayıt Ol' : 'Hesap İşlemleri'}
             </h1>
-            <p className="text-gray-600 mt-2">Gercek veri icin hesap ile devam et</p>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Gerçek veri için hesap ile devam et</p>
           </div>
 
           {error ? (
@@ -310,13 +310,13 @@ const AuthPage = () => {
           ) : null}
 
           {(mode === 'login' || mode === 'register') && googleEnabled ? (
-            <div className="mb-6">
+            <div className="mb-5 sm:mb-6">
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading || loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ fontSize: 16, fontWeight: 500 }}
+                className="w-full flex items-center justify-center gap-2 sm:gap-3 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]"
+                style={{ fontSize: 14, fontWeight: 500 }}
               >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z" fill="#4285F4"/>

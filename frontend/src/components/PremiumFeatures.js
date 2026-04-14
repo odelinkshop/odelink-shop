@@ -98,56 +98,56 @@ const PremiumFeatures = () => {
           </motion.div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-16 sm:mb-20">
           {stats.map((stat, index) => (
             (disableDesktopMotion ? (
               <div
                 key={index}
-                className="bg-black/35 backdrop-blur-md rounded-3xl p-6 text-center border border-white/15 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition-all duration-200 hover:shadow-[0_18px_54px_rgba(0,0,0,0.45)] hover:-translate-y-0.5"
+                className="bg-black/35 backdrop-blur-md rounded-2xl p-4 sm:p-6 text-center border border-white/15 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition-all duration-200 hover:shadow-[0_18px_54px_rgba(0,0,0,0.45)] hover:-translate-y-0.5 min-h-[120px] flex flex-col justify-center"
               >
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3 border border-white/10">
-                  <stat.icon className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 border border-white/10">
+                  <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div className="text-2xl md:text-3xl font-black text-white mb-1">{stat.value}</div>
-                <div className="text-xs text-white/70 font-semibold">{stat.label}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-1">{stat.value}</div>
+                <div className="text-[10px] sm:text-xs text-white/70 font-semibold">{stat.label}</div>
               </div>
             ) : (
               <motion.div
                 key={index}
-                className="bg-black/35 backdrop-blur-md rounded-3xl p-6 text-center border border-white/15 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition-all duration-200 hover:shadow-[0_18px_54px_rgba(0,0,0,0.45)] hover:-translate-y-0.5"
+                className="bg-black/35 backdrop-blur-md rounded-2xl p-4 sm:p-6 text-center border border-white/15 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition-all duration-200 hover:shadow-[0_18px_54px_rgba(0,0,0,0.45)] hover:-translate-y-0.5 min-h-[120px] flex flex-col justify-center"
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3 border border-white/10">
-                <stat.icon className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 border border-white/10">
+                <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div className="text-2xl md:text-3xl font-black text-white mb-1">{stat.value}</div>
-              <div className="text-xs text-white/70 font-semibold">{stat.label}</div>
+              <div className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-1">{stat.value}</div>
+              <div className="text-[10px] sm:text-xs text-white/70 font-semibold">{stat.label}</div>
               </motion.div>
             ))
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {features.map((feature, index) => (
             (disableDesktopMotion ? (
               <div
                 key={index}
-                className="bg-black/35 backdrop-blur-md rounded-3xl p-8 border border-white/15 shadow-[0_16px_46px_rgba(0,0,0,0.40)] transition-all duration-200 hover:shadow-[0_20px_62px_rgba(0,0,0,0.52)] hover:-translate-y-0.5"
+                className="bg-black/35 backdrop-blur-md rounded-2xl p-5 sm:p-8 border border-white/15 shadow-[0_16px_46px_rgba(0,0,0,0.40)] transition-all duration-200 hover:shadow-[0_20px_62px_rgba(0,0,0,0.52)] hover:-translate-y-0.5"
               >
-                <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mb-6 border border-white/10">
-                  <feature.icon className="w-10 h-10 text-white" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 border border-white/10">
+                  <feature.icon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
                 
-                <h3 className="text-2xl font-black text-white mb-3">{feature.title}</h3>
-                <p className="text-white/70 mb-6">{feature.description}</p>
+                <h3 className="text-xl sm:text-2xl font-black text-white mb-2 sm:mb-3">{feature.title}</h3>
+                <p className="text-sm sm:text-base text-white/70 mb-4 sm:mb-6">{feature.description}</p>
                 
-                <div className="space-y-2 mb-6">
+                <div className="space-y-2 mb-4 sm:mb-6">
                   {feature.features.map((item, itemIndex) => (
-                    <div key={itemIndex} className="flex items-center text-sm text-white/80">
-                      <CheckCircle className="w-4 h-4 mr-2 text-white/80 flex-shrink-0" />
+                    <div key={itemIndex} className="flex items-center text-xs sm:text-sm text-white/80">
+                      <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-white/80 flex-shrink-0" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -156,23 +156,23 @@ const PremiumFeatures = () => {
             ) : (
               <motion.div
                 key={index}
-                className="bg-black/35 backdrop-blur-md rounded-3xl p-8 border border-white/15 shadow-[0_16px_46px_rgba(0,0,0,0.40)] transition-all duration-200 hover:shadow-[0_20px_62px_rgba(0,0,0,0.52)] hover:-translate-y-0.5"
+                className="bg-black/35 backdrop-blur-md rounded-2xl p-5 sm:p-8 border border-white/15 shadow-[0_16px_46px_rgba(0,0,0,0.40)] transition-all duration-200 hover:shadow-[0_20px_62px_rgba(0,0,0,0.52)] hover:-translate-y-0.5"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-              <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mb-6 border border-white/10">
-                <feature.icon className="w-10 h-10 text-white" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 border border-white/10">
+                <feature.icon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
               
-              <h3 className="text-2xl font-black text-white mb-3">{feature.title}</h3>
-              <p className="text-white/70 mb-6">{feature.description}</p>
+              <h3 className="text-xl sm:text-2xl font-black text-white mb-2 sm:mb-3">{feature.title}</h3>
+              <p className="text-sm sm:text-base text-white/70 mb-4 sm:mb-6">{feature.description}</p>
               
-              <div className="space-y-2 mb-6">
+              <div className="space-y-2 mb-4 sm:mb-6">
                 {feature.features.map((item, itemIndex) => (
-                  <div key={itemIndex} className="flex items-center text-sm text-white/80">
-                    <CheckCircle className="w-4 h-4 mr-2 text-white/80 flex-shrink-0" />
+                  <div key={itemIndex} className="flex items-center text-xs sm:text-sm text-white/80">
+                    <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-white/80 flex-shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
