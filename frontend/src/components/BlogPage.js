@@ -6,7 +6,7 @@ const blogPosts = [
     title: 'Shopier Vitrin Sitesi Nedir? Nasıl Kurulur?',
     date: '14 Nisan 2026',
     excerpt: 'Shopier mağazanız için profesyonel vitrin sitesi oluşturmanın tüm püf noktalarını öğrenin. E-ticaret sitenizi nasıl daha görünür hale getirebileceğinizi keşfedin.',
-    content: `Shopier ile e-ticaret yaparken, ürünlerinizi daha geniş kitlelere ulaştırmak için vitrin sitesine ihtiyacınız var. Ödelink ile dakikalar içinde profesyonel bir vitrin sitesi oluşturabilirsiniz.
+    content: `Shopier ile e-ticaret yaparken, ürünlerinizi daha geniş kitlelere ulaştırmak için vitrin sitesine ihtiyacınız var. Ödelink ile 3 dakikada profesyonel bir vitrin sitesi oluşturabilirsiniz.
 
 **Vitrin Sitesi Neden Önemli?**
 - Google'da daha iyi sıralama
@@ -15,12 +15,12 @@ const blogPosts = [
 - Sosyal medyada tek link paylaşımı
 
 **Nasıl Başlanır?**
-1. Ödelink'e üye olun
-2. Shopier API bilgilerinizi girin
-3. Tasarımınızı özelleştirin
+1. Ödelink'e üye olun (Gmail ile hızlı kayıt)
+2. Shopier linkinizi girin
+3. Logonuzu yükleyin, renklerinizi seçin
 4. Yayınlayın!
 
-Shopier entegrasyonu sayesinde ürünleriniz otomatik olarak senkronize edilir. Stok, fiyat ve ürün bilgileri anlık güncellenir.`,
+Shopier entegrasyonu sayesinde ürünleriniz otomatik olarak görünür. Hızlı kurulum, mobil uyumlu tasarım.`,
     keywords: ['shopier vitrin sitesi', 'e-ticaret', 'online mağaza', 'shopier entegrasyonu']
   },
   {
@@ -79,18 +79,18 @@ Aktif siteler daha iyi sıralanır.`,
 - Teknik bilgi gerekli
 
 **Ödelink ile Shopier Entegrasyonu**
-- Kurulum: Ücretsiz deneme
-- Aylık: 199 TL'den başlayan planlar
+- Kurulum: 3 dakika
+- Aylık: 299 TL (Standart) veya 399 TL/yıl (Profesyonel)
 - Komisyon yok
-- 7/24 destek
+- Destek dahil
 - Otomatik güncellemeler
 
 **Neden Ödelink?**
-- Hızlı kurulum (5 dakika)
+- Hızlı kurulum (3 dakika)
 - Teknik bilgi gerektirmez
 - SEO optimize
 - Mobil uyumlu
-- Sürekli güncellemeler
+- Analitik raporlar
 
 Shopier mağazanız için en uygun maliyetli çözüm Ödelink'tir.`,
     keywords: ['shopier mağaza maliyeti', 'vitrin sitesi fiyat', 'e-ticaret kurulum', 'uygun fiyatlı online mağaza']

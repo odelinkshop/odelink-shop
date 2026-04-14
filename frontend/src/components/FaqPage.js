@@ -10,7 +10,7 @@ const faqs = [
       },
       {
         q: 'Shopier entegrasyonu nasıl çalışır?',
-        a: 'Shopier API bilgilerinizi Ödelink\'e girdiğinizde, ürünleriniz otomatik olarak senkronize edilir. Stok, fiyat ve ürün bilgileri anlık güncellenir. Müşterileriniz ürünleri sitenizde görüntüler, satın almak için Shopier\'e yönlendirilir.'
+        a: 'Shopier mağaza linkinizi (örn: magazam.shopier.com) girdiğinizde, ürünleriniz otomatik olarak vitrin sitenizde görünür. API bilgisi gerekmez. Müşterileriniz ürünleri sitenizde görüntüler, satın almak için Shopier\'e yönlendirilir.'
       },
       {
         q: 'Teknik bilgiye ihtiyacım var mı?',
@@ -27,15 +27,15 @@ const faqs = [
     questions: [
       {
         q: 'Hangi ödeme planları var?',
-        a: 'Basic (199 TL/ay), Ekonomi (299 TL/ay), Standart (399 TL/ay) ve Pro (599 TL/ay) planlarımız bulunmaktadır. Yıllık ödemelerde %20 indirim kazanırsınız. Tüm planlar 7 gün ücretsiz deneme ile gelir.'
+        a: 'Standart (299 TL/ay) ve Profesyonel (399 TL/yıl) planlarımız bulunmaktadır. Standart planda 3 site, Profesyonel planda 10 site oluşturabilirsiniz. Komisyon alınmaz.'
       },
       {
         q: 'Ücretsiz deneme var mı?',
-        a: 'Evet! Tüm planlarımızda 7 gün ücretsiz deneme imkanı sunuyoruz. Kredi kartı bilgisi girmeden deneyebilirsiniz. Deneme süreniz bittiğinde otomatik ücretlendirme yapılmaz.'
+        a: 'Hayır, şu anda ücretsiz deneme sunmuyoruz. Ancak aylık 299 TL ile başlayabilir, istediğiniz zaman iptal edebilirsiniz. İlk ay sonunda otomatik yenileme yapılmaz.'
       },
       {
         q: 'İptal politikanız nedir?',
-        a: 'İstediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal sonrası mevcut dönem sonuna kadar hizmetlerimizden yararlanmaya devam edersiniz. Otomatik yenileme yapılmaz.'
+        a: 'İstediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal sonrası mevcut dönem sonuna kadar hizmetlerimizden yararlanmaya devam edersiniz. Otomatik yenileme yapılmaz. İade politikası için destek ekibimizle iletişime geçin.'
       },
       {
         q: 'Yıllık ödeme avantajı nedir?',
@@ -56,11 +56,11 @@ const faqs = [
       },
       {
         q: 'Özel alan adı kullanabilir miyim?',
-        a: 'Evet! Standart ve Pro planlarımızda kendi alan adınızı (örn: www.magazam.com) kullanabilirsiniz. SSL sertifikası ücretsiz olarak sağlanır. Alan adı yönlendirme işleminde size yardımcı oluruz.'
+        a: 'Şu anda özel alan adı özelliği sunmuyoruz. Tüm siteler alt alan adı (ornek.odelink.shop) ile yayınlanır. Gelecekte bu özellik eklenebilir.'
       },
       {
         q: 'Kaç ürün ekleyebilirim?',
-        a: 'Basic planda 100, Ekonomi\'de 500, Standart\'ta 2.000, Pro\'da sınırsız ürün ekleyebilirsiniz. Shopier entegrasyonu ile ürünleriniz otomatik senkronize edilir.'
+        a: 'Shopier mağazanızdaki tüm ürünler otomatik olarak vitrin sitenizde görünür. Ürün sayısı limiti yoktur. Standart planda 3 site, Profesyonel planda 10 site oluşturabilirsiniz.'
       },
       {
         q: 'Tasarımı özelleştirebilir miyim?',
