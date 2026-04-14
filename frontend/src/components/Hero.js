@@ -74,14 +74,25 @@ const Hero = () => {
       }} />
 
       <div className="container mx-auto relative z-10">
-        <div className="sm:hidden text-center mb-8">
-          <div className="inline-flex items-center justify-center gap-2">
-            <BrandLogo size={20} className="opacity-95" textClassName="text-white" />
-            <span className="text-[11px] font-extrabold tracking-wide text-white/85">Ödelink</span>
-          </div>
-          <div className="mt-3 max-w-[20rem] mx-auto">
-            <div className="text-[22px] font-black tracking-tight text-white leading-[1.08]" style={{ textWrap: 'balance' }}>
+        {/* Mobile Header - Daha belirgin ve renkli */}
+        <div className="sm:hidden text-center mb-6">
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-4 mb-4 shadow-xl">
+            <div className="inline-flex items-center justify-center gap-2 mb-2">
+              <BrandLogo size={24} className="opacity-95" textClassName="text-white" />
+              <span className="text-sm font-extrabold tracking-wide text-white">Ödelink</span>
+            </div>
+            <div className="text-xs text-white/70 font-semibold">
               Türkiye'nin En İyi Şirketsiz SaaS Platformu
+            </div>
+          </div>
+          
+          {/* Mobile Ana Başlık - Gradient background */}
+          <div className="bg-gradient-to-br from-red-500/20 via-red-600/15 to-red-700/10 border-2 border-red-500/40 rounded-2xl p-5 mb-4 shadow-xl">
+            <div className="text-2xl font-black tracking-tight text-white leading-tight mb-2">
+              Mağazan için premium vitrin sayfası
+            </div>
+            <div className="text-sm text-white/80 font-medium">
+              Tek link. Temiz tasarım. Dakikalar içinde yayında.
             </div>
           </div>
         </div>
