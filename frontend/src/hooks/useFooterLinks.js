@@ -25,7 +25,10 @@ const useFooterLinks = () => {
     { id: 'kvkk', label: 'KVKK', path: '/kvkk' },
     { id: 'cookies', label: 'Çerez Politikası', path: '/cookies' },
     { id: 'refund', label: 'İptal ve İade', path: '/refund-policy' },
-    { id: 'distance-sales', label: 'Mesafeli Satış Sözleşmesi', path: '/distance-sales-agreement' },
+    { id: 'distance-sales', label: 'Mesafeli Satış', path: '/distance-sales-agreement' },
+    { id: 'intellectual-property', label: 'Fikri Mülkiyet', path: '/intellectual-property' },
+    { id: 'security', label: 'Güvenlik Politikası', path: '/security-policy' },
+    { id: 'accessibility', label: 'Erişilebilirlik', path: '/accessibility' },
   ], []);
 
   const socialLinks = useMemo(() => [

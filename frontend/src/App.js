@@ -73,6 +73,9 @@ const VipSupportPage = lazyWithPreload(() => import('./components/VipSupportPage
 const LinksPage = lazyWithPreload(() => import('./components/LinksPage'));
 const RefundPolicyPage = lazyWithPreload(() => import('./components/RefundPolicyPage'));
 const DistanceSalesAgreementPage = lazyWithPreload(() => import('./components/DistanceSalesAgreementPage'));
+const IntellectualPropertyPage = lazyWithPreload(() => import('./components/IntellectualPropertyPage'));
+const SecurityPolicyPage = lazyWithPreload(() => import('./components/SecurityPolicyPage'));
+const AccessibilityStatementPage = lazyWithPreload(() => import('./components/AccessibilityStatementPage'));
 
 try {
   const p = window.location?.pathname || '';
@@ -377,6 +380,9 @@ function AppLayout() {
           <Route path="/cookies" element={<WithSuspense><CookiesPage /></WithSuspense>} />
           <Route path="/refund-policy" element={<WithSuspense><RefundPolicyPage /></WithSuspense>} />
           <Route path="/distance-sales-agreement" element={<WithSuspense><DistanceSalesAgreementPage /></WithSuspense>} />
+          <Route path="/intellectual-property" element={<WithSuspense><IntellectualPropertyPage /></WithSuspense>} />
+          <Route path="/security-policy" element={<WithSuspense><SecurityPolicyPage /></WithSuspense>} />
+          <Route path="/accessibility" element={<WithSuspense><AccessibilityStatementPage /></WithSuspense>} />
           <Route path="/contact" element={<WithSuspense><ContactPage /></WithSuspense>} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="/vip-support" element={<WithSuspense><VipSupportPage /></WithSuspense>} />
