@@ -236,6 +236,7 @@ jobs:
             # STEP 1: Kill ALL node processes on host (critical!)
             killall -9 node 2>/dev/null || true
             pkill -9 node 2>/dev/null || true
+            sleep 2
             
             # STEP 2: Force stop ALL odelink containers
             docker stop odelink_backend 2>/dev/null || true
@@ -248,32 +249,23 @@ jobs:
             # STEP 4: Remove old image
             docker rmi odelink-shop-backend:latest 2>/dev/null || true
             
-            # STEP 5: Find and kill ANY container using port 5000
-            for container in $(docker ps -q); do
-              if docker port "$container" 2>/dev/null | grep -q '5000'; then
-                echo "Killing container $container using port 5000"
-                docker rm -f "$container" 2>/dev/null || true
-              fi
-            done
+            # STEP 5: Kill ALL processes using port 5000 (aggressive)
+            lsof -ti:5000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+            fuser -k -9 5000/tcp 2>/dev/null || true
             
-            # STEP 6: Prune everything
+            # STEP 6: Wait for processes to die
+            sleep 3
+            
+            # STEP 7: Check and kill again if needed
+            if lsof -i :5000 2>/dev/null | grep -q LISTEN; then
+              echo "⚠️ Port still in use, killing again..."
+              lsof -ti:5000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+              sleep 2
+            fi
+            
+            # STEP 8: Prune everything
             docker network prune -f 2>/dev/null || true
             docker container prune -f 2>/dev/null || true
-            
-            # STEP 7: Kill host processes again (double check)
-            fuser -k 5000/tcp 2>/dev/null || true
-            lsof -ti:5000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
-            
-            # STEP 8: Wait and verify
-            echo "Waiting 10 seconds for complete port cleanup..."
-            sleep 10
-            
-            # Check if port is really free
-            if lsof -i :5000 2>/dev/null | grep -q LISTEN; then
-              echo "❌ ERROR: Port 5000 still in use!"
-              lsof -i :5000 || true
-              exit 1
-            fi
             
             echo "✅ Port 5000 cleanup completed"
             
@@ -304,6 +296,12 @@ jobs:
             
             echo "---- DEPLOY: Enabling maintenance mode ----"
             curl -X POST http://127.0.0.1:5000/api/maintenance/enable || echo "⚠️ Maintenance mode API call failed (backend may be down)"
+            
+            echo "---- DEPLOY DEBUG: Final port cleanup before starting backend ----"
+            # Kill any remaining node processes
+            killall -9 node 2>/dev/null || true
+            lsof -ti:5000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+            sleep 2
             
             echo "---- DEPLOY DEBUG: Docker backend starting... ----"
             docker compose up -d backend
