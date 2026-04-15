@@ -1385,33 +1385,99 @@ async function scrapePage(url, pageNum = 1) {
   const $ = cheerio.load(response.data);
   const products = [];
 
-  // Ürünleri bul
-  $('.product, .product-item, .product-card, [class*="product"]').each((i, el) => {
-    const $el = $(el);
-    
-    const name = $el.find('.product-name, .product-title, h3, h4').first().text().trim();
-    const priceText = $el.find('.product-price, .price, [class*="price"]').first().text().trim();
-    const imageUrl = $el.find('img').first().attr('src') || $el.find('img').first().attr('data-src') || '';
-    const productUrl = $el.find('a').first().attr('href') || '';
-
-    if (name && priceText) {
-      let resolvedUrl = (productUrl || '').toString().trim();
-      if (resolvedUrl) {
-        try {
-          resolvedUrl = new URL(resolvedUrl, url).toString();
-        } catch (e) {
-          void e;
+  // DEBUG: Log HTML structure
+  console.log(`📄 Scraping page ${pageNum}: ${pageUrl}`);
+  
+  // Shopier yeni HTML yapısı - daha geniş selector'lar
+  const productSelectors = [
+    'a[href*="/ShowProductNew/"]',  // Shopier ürün linkleri
+    'a[href*="/product/"]',
+    '.product',
+    '.product-item',
+    '.product-card',
+    '[class*="product"]',
+    'article',
+    '[data-product-id]'
+  ];
+  
+  let foundElements = 0;
+  
+  for (const selector of productSelectors) {
+    const elements = $(selector);
+    if (elements.length > 0) {
+      console.log(`✓ Found ${elements.length} elements with selector: ${selector}`);
+      foundElements = elements.length;
+      
+      elements.each((i, el) => {
+        const $el = $(el);
+        
+        // Ürün linki - Shopier'da genelde a tag'inde
+        let productUrl = '';
+        if ($el.is('a')) {
+          productUrl = $el.attr('href') || '';
+        } else {
+          productUrl = $el.find('a').first().attr('href') || '';
         }
-      }
-      products.push({
-        name,
-        price: priceText,
-        image: imageUrl.startsWith('http') ? imageUrl : `https:${imageUrl}`,
-        url: resolvedUrl,
-        id: `product-${Date.now()}-${i}`
+        
+        // İsim - çeşitli yerlerden dene
+        let name = $el.find('.product-name, .product-title, h3, h4, h2, [class*="title"], [class*="name"]').first().text().trim();
+        if (!name) {
+          name = $el.attr('title') || $el.attr('alt') || '';
+        }
+        
+        // Fiyat - çeşitli yerlerden dene
+        let priceText = $el.find('.product-price, .price, [class*="price"], [class*="fiyat"]').first().text().trim();
+        
+        // Görsel
+        let imageUrl = '';
+        const $img = $el.find('img').first();
+        if ($img.length) {
+          imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src') || '';
+        }
+        
+        // URL'yi düzelt
+        if (productUrl) {
+          try {
+            productUrl = new URL(productUrl, url).toString();
+          } catch (e) {
+            if (productUrl.startsWith('/')) {
+              productUrl = `https://www.shopier.com${productUrl}`;
+            }
+          }
+        }
+        
+        // Görsel URL'yi düzelt
+        if (imageUrl && !imageUrl.startsWith('http')) {
+          if (imageUrl.startsWith('//')) {
+            imageUrl = `https:${imageUrl}`;
+          } else if (imageUrl.startsWith('/')) {
+            imageUrl = `https://www.shopier.com${imageUrl}`;
+          }
+        }
+        
+        // En az URL olmalı
+        if (productUrl && productUrl.includes('shopier.com')) {
+          products.push({
+            name: name || 'Ürün',
+            price: priceText || '0',
+            image: imageUrl,
+            url: productUrl,
+            id: `product-${Date.now()}-${i}`
+          });
+        }
       });
+      
+      if (products.length > 0) {
+        console.log(`✅ Scraped ${products.length} products from page ${pageNum}`);
+        break; // İlk başarılı selector'da dur
+      }
     }
-  });
+  }
+  
+  if (foundElements === 0) {
+    console.warn(`⚠️ No product elements found on page ${pageNum}`);
+    console.log(`HTML preview (first 500 chars): ${response.data.substring(0, 500)}`);
+  }
 
   return products;
 }
