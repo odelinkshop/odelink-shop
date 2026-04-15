@@ -301,10 +301,17 @@ jobs:
             # Kill any remaining node processes
             killall -9 node 2>/dev/null || true
             lsof -ti:5000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
-            sleep 2
+            
+            # CRITICAL: Temporarily disable restart policy to prevent auto-restart
+            sed -i 's/restart: unless-stopped/restart: "no"/g' docker-compose.yml || true
+            
+            sleep 3
             
             echo "---- DEPLOY DEBUG: Docker backend starting... ----"
             docker compose up -d backend
+            
+            # Restore restart policy after container is up
+            sed -i 's/restart: "no"/restart: unless-stopped/g' docker-compose.yml || true
             
             echo "---- DEPLOY DEBUG: Waiting for backend readiness ----"
             READY_OK="0"
