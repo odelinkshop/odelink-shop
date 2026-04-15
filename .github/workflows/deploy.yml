@@ -233,27 +233,44 @@ jobs:
             
             echo "---- DEPLOY: CRITICAL - Stopping backend and cleaning port 5000 BEFORE build ----"
             
-            # Stop backend container
+            # STEP 1: Force stop ALL odelink containers
+            docker stop odelink_backend 2>/dev/null || true
+            docker rm -f odelink_backend 2>/dev/null || true
+            
+            # STEP 2: Use docker compose to ensure it's stopped
             docker compose stop backend 2>/dev/null || true
             docker compose rm -f backend 2>/dev/null || true
             
-            # Remove old image
+            # STEP 3: Remove old image
             docker rmi odelink-shop-backend:latest 2>/dev/null || true
             
-            # Kill ALL containers that might use port 5000
-            docker ps -aq | xargs -r docker inspect 2>/dev/null | grep -l '"5000/tcp"' | grep -oP 'Id":\s*"\K[^"]+' | xargs -r docker rm -f 2>/dev/null || true
+            # STEP 4: Find and kill ANY container using port 5000
+            for container in $(docker ps -q); do
+              if docker port "$container" 2>/dev/null | grep -q '5000'; then
+                echo "Killing container $container using port 5000"
+                docker rm -f "$container" 2>/dev/null || true
+              fi
+            done
             
-            # Prune networks to clear ghost bindings
+            # STEP 5: Prune everything
             docker network prune -f 2>/dev/null || true
+            docker container prune -f 2>/dev/null || true
             
-            # Kill host processes
+            # STEP 6: Kill host processes
             pkill -9 node 2>/dev/null || true
             fuser -k 5000/tcp 2>/dev/null || true
             lsof -ti:5000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
             
-            # Wait for cleanup
+            # STEP 7: Wait and verify
             echo "Waiting 10 seconds for complete port cleanup..."
             sleep 10
+            
+            # Check if port is really free
+            if docker ps -q | xargs -r docker port 2>/dev/null | grep -q '5000'; then
+              echo "❌ ERROR: Port 5000 still in use by a container!"
+              docker ps -a
+              exit 1
+            fi
             
             echo "✅ Port 5000 cleanup completed"
             
