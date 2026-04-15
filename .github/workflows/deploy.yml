@@ -261,6 +261,10 @@ jobs:
             echo "---- DEPLOY: Enabling maintenance mode ----"
             curl -X POST http://127.0.0.1:5000/api/maintenance/enable || echo "⚠️ Maintenance mode API call failed (backend may be down)"
             
+            echo "---- DEPLOY: Killing any stray node processes to free port 5000 ----"
+            pkill -9 node || true
+            sleep 2
+            
             echo "---- DEPLOY DEBUG: Docker backend starting... ----"
             docker compose up -d backend
             
