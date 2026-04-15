@@ -22,8 +22,6 @@ export default function SiteBuilderWizard() {
   const [shopierUrl, setShopierUrl] = useState('');
   const [siteName, setSiteName] = useState('');
   const [siteDescription, setSiteDescription] = useState('');
-  const [useTheme, setUseTheme] = useState(true); // Tema kullanımı (varsayılan: açık)
-  const [selectedTheme, setSelectedTheme] = useState('wearix'); // Seçili tema
   const [creating, setCreating] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState('');
@@ -89,7 +87,7 @@ export default function SiteBuilderWizard() {
       const payload = {
         name: storeName,
         shopierUrl: normalizedShopierUrl,
-        theme: useTheme ? selectedTheme : null, // Tema seçimi
+        theme: 'wear', // WEAR teması (Framer Pro)
         settings: {
           description: description
         }
@@ -272,64 +270,28 @@ export default function SiteBuilderWizard() {
                   />
                 </div>
 
-                {/* Tema Seçimi */}
-                <div className="space-y-4 pt-2">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      id="useTheme"
-                      checked={useTheme}
-                      onChange={(e) => setUseTheme(e.target.checked)}
-                      className="w-5 h-5 rounded-lg bg-black/30 border-2 border-white/10 checked:bg-red-600 checked:border-red-600 focus:ring-2 focus:ring-red-500/20 transition-all cursor-pointer"
-                    />
-                    <label htmlFor="useTheme" className="text-sm font-bold text-white/90 cursor-pointer">
-                      Profesyonel Tema Kullan
-                    </label>
-                  </div>
-
-                  {useTheme && (
-                    <div className="space-y-3 pl-8 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="text-xs text-white/40 uppercase tracking-widest font-bold">Tema Seçimi</div>
+                {/* Framer Pro Tema Bilgisi */}
+                <div className="space-y-3 pt-2">
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-purple-600/10 to-purple-700/10 border-2 border-purple-500/30">
+                    <div className="flex items-start gap-4">
+                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center shadow-lg shadow-purple-600/30 flex-shrink-0">
+                        <Store className="w-7 h-7 text-white" />
+                      </div>
                       
-                      {/* WEARIX Tema Kartı */}
-                      <div
-                        onClick={() => setSelectedTheme('wearix')}
-                        className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer group ${
-                          selectedTheme === 'wearix'
-                            ? 'bg-red-600/10 border-red-500/50 shadow-lg shadow-red-500/20'
-                            : 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30'
-                        }`}
-                      >
-                        {selectedTheme === 'wearix' && (
-                          <div className="absolute top-3 right-3">
-                            <CheckCircle2 className="w-5 h-5 text-red-500" />
-                          </div>
-                        )}
-                        
-                        <div className="flex items-start gap-4">
-                          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-lg shadow-red-600/30 flex-shrink-0">
-                            <Store className="w-8 h-8 text-white" />
-                          </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <div className="font-bold text-lg text-white mb-1">WEARIX</div>
-                            <div className="text-sm text-white/60 leading-relaxed">
-                              Modern Giyim E-ticaret - Premium tasarım, minimalist layout, profesyonel görünüm
-                            </div>
-                            <div className="mt-3 flex items-center gap-2">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-600/20 text-red-400 text-xs font-semibold">
-                                <Rocket className="w-3.5 h-3.5" />
-                                Önerilen
-                              </span>
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 text-white/50 text-xs font-semibold">
-                                Framer
-                              </span>
-                            </div>
-                          </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-lg text-white mb-1">WEAR - Framer Pro</div>
+                        <div className="text-sm text-white/60 leading-relaxed mb-3">
+                          Premium Framer teması ile profesyonel animasyonlar, modern tasarım ve yüksek performans
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-600/20 text-purple-300 text-xs font-semibold">
+                            <Rocket className="w-3.5 h-3.5" />
+                            Otomatik Aktif
+                          </span>
                         </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div className="flex gap-3">

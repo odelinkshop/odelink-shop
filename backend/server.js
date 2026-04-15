@@ -250,11 +250,11 @@ if (fs.existsSync(themeBasePath)) {
   try {
     const themeFiles = fs.readdirSync(themeBasePath);
     console.log('📂 Themes available:', themeFiles.join(', '));
-    const wearixIndexPath = path.join(themeBasePath, 'wearix/index.html');
-    console.log('📄 WEARIX index.html exists:', fs.existsSync(wearixIndexPath));
-    if (fs.existsSync(wearixIndexPath)) {
-      const stats = fs.statSync(wearixIndexPath);
-      console.log('📄 WEARIX index.html size:', stats.size, 'bytes');
+    const wearIndexPath = path.join(themeBasePath, 'wear.framer.website/wear.framer.website/index.html');
+    console.log('📄 WEAR index.html exists:', fs.existsSync(wearIndexPath));
+    if (fs.existsSync(wearIndexPath)) {
+      const stats = fs.statSync(wearIndexPath);
+      console.log('📄 WEAR index.html size:', stats.size, 'bytes');
     }
   } catch (e) {
     console.error('❌ Error reading theme directory:', e.message);
@@ -583,9 +583,7 @@ app.use(csrfTokenMiddleware);
 
 // Cloudflare endpoints (tema kopyalanınca bazı scriptler /cdn-cgi/* ister; Cloudflare yoksa 404 basar)
 
-// WEARIX Theme Handler
-const productInjectorService = require('./services/productInjectorService');
-
+// WEAR Theme Handler (Framer Pro)
 // In-memory HTML cache
 const htmlCache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 dakika
@@ -617,39 +615,55 @@ function setCachedHtml(key, html) {
 }
 
 /**
- * WEARIX temasını serve et
+ * WEAR temasını serve et (Framer Pro - Tek tema)
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  * @param {Object} site - Site verisi
  * @param {string} requestedPath - İstenen dosya yolu
  */
-async function handleWearixTheme(req, res, site, requestedPath) {
-  const themeDir = path.join(__dirname, 'themes', 'wearix');
+async function handleWearTheme(req, res, site, requestedPath) {
+  const themeDir = path.join(__dirname, 'themes', 'wear.framer.website');
   
   try {
-    // Static file request (CSS, JS, images, fonts)
+    // Static file request (CSS, JS, images, fonts, modules)
     if (requestedPath && requestedPath !== '/') {
-      const filePath = path.join(themeDir, requestedPath);
+      // Framer asset paths
+      const assetPaths = [
+        'framerusercontent.com',
+        'app.framerstatic.com',
+        'framer.com',
+        'events.framer.com',
+        'www.dropbox.com',
+        '_DataURI'
+      ];
       
-      // Path traversal koruması
-      if (!filePath.startsWith(themeDir)) {
-        console.error('⚠️ Path traversal attempt:', requestedPath);
-        return res.status(403).send('Forbidden');
+      // Check if request is for a static asset
+      const isAsset = assetPaths.some(assetPath => requestedPath.includes(assetPath));
+      
+      if (isAsset) {
+        // Construct file path
+        const filePath = path.join(themeDir, requestedPath);
+        
+        // Path traversal koruması
+        if (!filePath.startsWith(themeDir)) {
+          console.error('⚠️ Path traversal attempt:', requestedPath);
+          return res.status(403).send('Forbidden');
+        }
+        
+        // Dosya var mı kontrol et
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+          // Cache header'ları ayarla
+          res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 gün
+          res.setHeader('ETag', `"${fs.statSync(filePath).mtime.getTime()}"`);
+          return res.sendFile(filePath);
+        }
+        
+        return res.status(404).send('File not found');
       }
-      
-      // Dosya var mı kontrol et
-      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-        // Cache header'ları ayarla
-        res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 gün
-        res.setHeader('ETag', `"${fs.statSync(filePath).mtime.getTime()}"`);
-        return res.sendFile(filePath);
-      }
-      
-      return res.status(404).send('File not found');
     }
     
     // HTML request - check cache first
-    const cacheKey = `wearix:${site.subdomain}`;
+    const cacheKey = `wear:${site.subdomain}`;
     const cachedHtml = getCachedHtml(cacheKey);
     
     if (cachedHtml) {
@@ -657,40 +671,22 @@ async function handleWearixTheme(req, res, site, requestedPath) {
       res.setHeader('X-Cache', 'HIT');
       res.setHeader('Cache-Control', 'public, max-age=300');
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('X-XSS-Protection', '1; mode=block');
-      res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-      res.setHeader('Content-Security-Policy', 
-        "default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; " +
-        "img-src 'self' data: https:; " +
-        "font-src 'self' data: https:; " +
-        "connect-src 'self' https:; " +
-        "frame-src 'self' https:;"
-      );
       return res.send(cachedHtml);
     }
     
-    // HTML request - inject products
-    const htmlPath = path.join(themeDir, 'index.html');
-    
-    if (!fs.existsSync(htmlPath)) {
-      console.error('❌ Theme HTML not found:', htmlPath);
-      throw new Error('Theme HTML not found');
-    }
-    
-    let html = fs.readFileSync(htmlPath, 'utf-8');
+    // HTML request - render with products
+    const wearThemeService = require('./services/wearThemeService');
+    const { cacheProducts } = require('./routes/shopify-mock');
     
     // Shopier ürünlerini çek
     let products = [];
     try {
-      // Mevcut Shopier API'sini kullan
       const shopierCatalogService = require('./services/shopierCatalogService');
       const catalogData = await shopierCatalogService.getCatalogByShopierUrl(site.shopier_url);
       products = catalogData?.products || [];
+      console.log(`📦 Loaded ${products.length} products for WEAR theme`);
     } catch (productError) {
       console.error('⚠️ Product fetch error:', productError.message);
-      // Boş array ile devam et
     }
     
     // Site ayarlarını hazırla
@@ -703,35 +699,27 @@ async function handleWearixTheme(req, res, site, requestedPath) {
       social: site.settings?.social || {}
     };
     
-    // Ürünleri HTML'e enjekte et
-    html = productInjectorService.injectProducts(html, products, siteSettings);
+    // Temayı render et
+    const html = await wearThemeService.renderTheme(products, siteSettings);
+    
+    // Ürünleri Shopify formatına çevir ve cache'e yükle
+    const shopifyProducts = wearThemeService.convertToShopifyFormat(products);
+    cacheProducts(site.subdomain, shopifyProducts);
+    console.log(`✅ Cached ${shopifyProducts.length} products for ${site.subdomain}`);
     
     // Cache'e kaydet
     setCachedHtml(cacheKey, html);
     console.log('✅ Cache set:', cacheKey);
     
-    // Cache ve güvenlik header'ları
+    // Response header'ları
     res.setHeader('X-Cache', 'MISS');
     res.setHeader('Cache-Control', 'public, max-age=300'); // 5 dakika
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    
-    // Content Security Policy (Framer için gevşek)
-    res.setHeader('Content-Security-Policy', 
-      "default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; " +
-      "img-src 'self' data: https:; " +
-      "font-src 'self' data: https:; " +
-      "connect-src 'self' https:; " +
-      "frame-src 'self' https:;"
-    );
     
     return res.send(html);
     
   } catch (error) {
-    console.error('❌ WEARIX theme rendering error:', error);
+    console.error('❌ WEAR theme rendering error:', error);
     
     // Fallback: basit HTML
     return res.status(200).send(`
@@ -789,12 +777,13 @@ app.get('/s/:subdomain*', async (req, res, next) => {
     
     console.log('🎨 Serving site:', subdomain, 'theme:', site.theme);
     
-    // WEARIX tema desteği
-    if (site.theme === 'wearix') {
-      return await handleWearixTheme(req, res, site, requestedPath);
+    // WEAR tema desteği (Framer Pro - Tek tema)
+    if (site.theme === 'wear') {
+      return await handleWearTheme(req, res, site, requestedPath);
     }
     
-    // Fallback: basit HTML (tema yok)
+    // Fallback: WEAR teması (tema belirtilmemişse de WEAR kullan)
+    return await handleWearTheme(req, res, site, requestedPath);
     return res.status(200).send(`
       <!DOCTYPE html>
       <html>
@@ -834,6 +823,10 @@ app.get('/api/csrf-token', (req, res) => {
     res.status(500).json({ error: 'CSRF token alınamadı' });
   }
 });
+
+// Shopify Mock API - WEAR teması için
+const { router: shopifyMockRouter } = require('./routes/shopify-mock');
+app.use('/api', shopifyMockRouter);
 
 // Routes
 const maintenanceRoutes = require('./routes/maintenance');
