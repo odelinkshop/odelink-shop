@@ -231,9 +231,33 @@ jobs:
                 echo "⚠️ Database initialization failed, but continuing (tables may already exist)"
               }
             
-            docker compose stop backend || true
-            docker compose rm -f backend || true
+            echo "---- DEPLOY: CRITICAL - Stopping backend and cleaning port 5000 BEFORE build ----"
+            
+            # Stop backend container
+            docker compose stop backend 2>/dev/null || true
+            docker compose rm -f backend 2>/dev/null || true
+            
+            # Remove old image
             docker rmi odelink-shop-backend:latest 2>/dev/null || true
+            
+            # Kill ALL containers that might use port 5000
+            docker ps -aq | xargs -r docker inspect 2>/dev/null | grep -l '"5000/tcp"' | grep -oP 'Id":\s*"\K[^"]+' | xargs -r docker rm -f 2>/dev/null || true
+            
+            # Prune networks to clear ghost bindings
+            docker network prune -f 2>/dev/null || true
+            
+            # Kill host processes
+            pkill -9 node 2>/dev/null || true
+            fuser -k 5000/tcp 2>/dev/null || true
+            lsof -ti:5000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+            
+            # Wait for cleanup
+            echo "Waiting 10 seconds for complete port cleanup..."
+            sleep 10
+            
+            echo "✅ Port 5000 cleanup completed"
+            
+            # Now build the new image
             docker compose build backend
             
             echo "---- DEPLOY DEBUG: Building frontend BEFORE starting backend ----"
@@ -260,31 +284,6 @@ jobs:
             
             echo "---- DEPLOY: Enabling maintenance mode ----"
             curl -X POST http://127.0.0.1:5000/api/maintenance/enable || echo "⚠️ Maintenance mode API call failed (backend may be down)"
-            
-            echo "---- DEPLOY: Stopping any existing backend container to free port 5000 ----"
-            # Kill ALL containers using port 5000
-            docker ps -q --filter "expose=5000" | xargs -r docker stop || true
-            docker ps -aq --filter "expose=5000" | xargs -r docker rm -f || true
-            
-            # Stop and remove backend container specifically
-            docker compose stop backend || true
-            docker compose rm -f backend || true
-            
-            # Kill any process using port 5000 on host
-            pkill -9 node || true
-            fuser -k 5000/tcp || true
-            
-            # Wait for port to be released
-            sleep 5
-            
-            # Verify port is free
-            if netstat -tuln | grep ':5000 ' >/dev/null 2>&1; then
-              echo "⚠️ WARNING: Port 5000 still in use after cleanup!"
-              netstat -tuln | grep ':5000 ' || true
-              lsof -i :5000 || true
-            else
-              echo "✅ Port 5000 is free"
-            fi
             
             echo "---- DEPLOY DEBUG: Docker backend starting... ----"
             docker compose up -d backend
