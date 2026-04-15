@@ -72,10 +72,6 @@ const CookiesPage = lazyWithPreload(() => import('./components/CookiesPage'));
 const ContactPage = lazyWithPreload(() => import('./components/ContactPage'));
 const VipSupportPage = lazyWithPreload(() => import('./components/VipSupportPage'));
 const LinksPage = lazyWithPreload(() => import('./components/LinksPage'));
-const AdvertisePage = lazyWithPreload(() => import('./components/AdvertisePage'));
-const CustomerAdsDashboard = lazyWithPreload(() => import('./components/CustomerAdsDashboard'));
-const AdminAdvertisementsPage = lazyWithPreload(() => import('./components/AdminAdvertisementsPage'));
-const AdminAdStatisticsPage = lazyWithPreload(() => import('./components/AdminAdStatisticsPage'));
 
 try {
   const p = window.location?.pathname || '';
@@ -90,7 +86,6 @@ try {
   if (p.startsWith('/contact')) ContactPage.preload();
   if (p.startsWith('/vip-support')) VipSupportPage.preload();
   if (p.startsWith('/links')) LinksPage.preload();
-  if (p.startsWith('/advertise')) AdvertisePage.preload();
 } catch (e) {
   void e;
 }
@@ -388,10 +383,6 @@ function AppLayout() {
           <Route path="/kvkk" element={<WithSuspense><KvkkPage /></WithSuspense>} />
           <Route path="/cookies" element={<WithSuspense><CookiesPage /></WithSuspense>} />
           <Route path="/contact" element={<WithSuspense><ContactPage /></WithSuspense>} />
-          <Route path="/advertise" element={<WithSuspense><AdvertisePage /></WithSuspense>} />
-          <Route path="/dashboard/ads" element={<WithSuspense><ProtectedRoute><CustomerAdsDashboard /></ProtectedRoute></WithSuspense>} />
-          <Route path="/admin/advertisements" element={<WithSuspense><AdminPasswordGate><AdminAdvertisementsPage /></AdminPasswordGate></WithSuspense>} />
-          <Route path="/admin/advertisements/statistics" element={<WithSuspense><AdminPasswordGate><AdminAdStatisticsPage /></AdminPasswordGate></WithSuspense>} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="/vip-support" element={<WithSuspense><VipSupportPage /></WithSuspense>} />
           <Route path="/links" element={<WithSuspense><LinksPage /></WithSuspense>} />

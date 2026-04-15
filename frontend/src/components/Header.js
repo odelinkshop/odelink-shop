@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useAuthSession from '../hooks/useAuthSession';
 import { isAdminUiEnabled, logoutAuthSession } from '../utils/authStorage';
 import BrandLogo from './BrandLogo';
-import AdBanner from './AdBanner';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -172,9 +171,6 @@ const Header = () => {
               <a href="#pricing" onClick={(e) => goToLandingHash(e, '#pricing')} className="text-white/80 hover:text-white transition-colors duration-200 font-medium">
                 Fiyatlandırma
               </a>
-              <a href="/advertise" onClick={(e) => { e.preventDefault(); navigate('/advertise'); }} className="text-white/80 hover:text-white transition-colors duration-200 font-medium">
-                Reklam Ver
-              </a>
               <a href="/links" onClick={(e) => { e.preventDefault(); navigate('/links'); }} className="text-white/80 hover:text-white transition-colors duration-200 font-medium">
                 Kaynaklar
               </a>
@@ -203,9 +199,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-
-      {/* Advertisement Banner - Full Width */}
-      <AdBanner placement="header-banner" />
 
       <AnimatePresence>
         {isMobileMenuOpen ? (
@@ -276,9 +269,6 @@ const Header = () => {
                   </button>
                   <button type="button" onClick={(e) => { setIsMobileMenuOpen(false); goToLandingHash(e, '#pricing'); }} className="text-left w-full px-3 py-3 rounded-xl text-white/90 hover:bg-white/10 font-semibold">
                     Fiyatlandırma
-                  </button>
-                  <button type="button" onClick={() => { setIsMobileMenuOpen(false); navigate('/advertise'); }} className="text-left w-full px-3 py-3 rounded-xl text-white/90 hover:bg-white/10 font-semibold">
-                    Reklam Ver
                   </button>
                   <button type="button" onClick={() => { setIsMobileMenuOpen(false); navigate('/links'); }} className="text-left w-full px-3 py-3 rounded-xl text-white/90 hover:bg-white/10 font-semibold">
                     Kaynaklar
