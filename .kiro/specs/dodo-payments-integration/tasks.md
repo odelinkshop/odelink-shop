@@ -82,7 +82,7 @@ Bu implementation plan, Dodo Payments entegrasyonunu Odelink platformuna eklemek
     - Error handling'i test et
     - _Requirements: 1.5, 4.3, 4.4_
 
-- [ ] 3. Checkpoint - Temel servis ve modellerin testi
+- [x] 3. Checkpoint - Temel servis ve modellerin testi
   - Tüm testlerin başarılı olduğundan emin ol, sorular varsa kullanıcıya sor.
 
 - [x] 4. Payment routes ve webhook handler'ı implement et
@@ -185,7 +185,7 @@ Bu implementation plan, Dodo Payments entegrasyonunu Odelink platformuna eklemek
     - Email notification'ları test et
     - _Requirements: 5.1, 5.2, 5.3, 13.1, 13.2, 13.3_
 
-- [ ] 6. Checkpoint - Backend entegrasyonunun testi
+- [x] 6. Checkpoint - Backend entegrasyonunun testi
   - Tüm backend testlerinin başarılı olduğundan emin ol, sorular varsa kullanıcıya sor.
 
 - [x] 7. Frontend bileşenlerini implement et
@@ -270,7 +270,7 @@ Bu implementation plan, Dodo Payments entegrasyonunu Odelink platformuna eklemek
     - Manual payment completion adımlarını dokümante et
     - _Requirements: 8.4, 8.5_
 
-- [ ] 10. Final checkpoint - End-to-end test ve deployment
+- [x] 10. Final checkpoint - End-to-end test ve deployment
   - Test mode'da tüm flow'u test et
   - Webhook processing'i test et
   - Error scenario'larını test et
