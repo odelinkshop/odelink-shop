@@ -130,54 +130,55 @@ const Hero = () => {
       />
 
       <div className="container mx-auto relative z-10">
-        {/* Small Promo Banner */}
+        {/* Hero Header - EN ÜSTTE ORTADA */}
         <motion.div
-          className="mb-6 sm:mb-8"
-          initial={{ opacity: 0, y: -10 }}
+          className="max-w-4xl mx-auto text-center mb-8 sm:mb-10 md:mb-12"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="text-sm md:text-base font-semibold tracking-wide text-white/70 mb-3">
+            Türkiye'nin En İyi Şirketsiz SaaS Platformu
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white mb-4 leading-tight">
+            Mağazan için premium vitrin sayfası.
+          </h1>
+          <p className="text-base md:text-lg font-medium text-white/70">
+            Tek link. Temiz tasarım. Dakikalar içinde yayında.
+          </p>
+        </motion.div>
+
+        {/* Promo Banner - BAŞLIĞIN ALTINDA */}
+        <motion.div
+          className="max-w-3xl mx-auto mb-12 sm:mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
           <a
             href="/plans"
-            className="block w-full bg-gradient-to-r from-red-600 to-orange-500 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg hover:shadow-red-500/30 transition-all duration-300 hover:scale-[1.01] border border-red-400/30"
+            className="block bg-gradient-to-r from-red-600 to-orange-500 rounded-xl p-4 sm:p-5 shadow-xl hover:shadow-red-500/40 transition-all duration-300 hover:scale-[1.02] border border-red-400/30"
             onClick={(e) => {
               e.preventDefault();
               navigate('/plans');
             }}
           >
-            <div className="flex items-center justify-between gap-2 sm:gap-3">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            <div className="flex items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div>
-                  <div className="text-xs sm:text-sm md:text-base font-bold text-white">
-                    🎉 Yıllık Pakette %30 İndirim - Sadece ₺399/yıl
-                  </div>
+                <div className="text-sm sm:text-base md:text-lg font-bold text-white">
+                  🎉 Yıllık Pakette %30 İndirim - Sadece ₺399/yıl
                 </div>
               </div>
-              <div className="flex items-center gap-1 bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex-shrink-0">
-                <span className="text-xs sm:text-sm font-bold text-white whitespace-nowrap">Hemen Al</span>
-                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg flex-shrink-0">
+                <span className="text-sm sm:text-base font-bold text-white whitespace-nowrap">Hemen Al</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
             </div>
           </a>
         </motion.div>
-
-        {/* DESKTOP ONLY - Header */}
-        {!isMobile && (
-          <div className="max-w-5xl mx-auto text-center mb-6 sm:mb-8 md:mb-10">
-            <div className="max-w-4xl mx-auto text-sm md:text-base font-semibold tracking-wide text-white/65 mb-2">
-              Türkiye'nin En İyi Şirketsiz SaaS Platformu
-            </div>
-            <div className="text-xl sm:text-2xl md:text-4xl font-black tracking-tight text-white/95">
-              Mağazan için premium vitrin sayfası.
-            </div>
-            <div className="mt-2 text-sm md:text-base font-semibold text-white/65">
-              Tek link. Temiz tasarım. Dakikalar içinde yayında.
-            </div>
-          </div>
-        )}
 
         {/* Main content grid */}
         <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-center">
@@ -251,40 +252,12 @@ const Hero = () => {
  */
 const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaInstalling }) => (
   <div className="sm:hidden">
-    {/* Mobile Header - Hero başlığı en üstte */}
-    <div className="text-center mb-8">
-      <motion.div
-        className="text-base font-semibold tracking-wide text-white/65 mb-2"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        Türkiye'nin En İyi Şirketsiz SaaS Platformu
-      </motion.div>
-      <motion.h1
-        className="text-3xl font-black tracking-tight text-white/95 mb-2 leading-tight"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        Mağazan için premium vitrin sayfası.
-      </motion.h1>
-      <motion.div
-        className="text-base font-semibold text-white/65"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        Tek link. Temiz tasarım. Dakikalar içinde yayında.
-      </motion.div>
-    </div>
-
     {/* Buttons - Professional & Mobile Optimized */}
     <div className="flex flex-col gap-3 mb-6">
       <motion.button
         type="button"
         onClick={handleNavigate}
-        className="relative overflow-hidden bg-gradient-to-r from-red-600 to-red-500 text-white font-bold text-base px-6 py-4 rounded-xl shadow-xl shadow-red-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform min-h-[48px]"
+        className="bg-gradient-to-r from-red-600 to-red-500 text-white font-bold text-base px-6 py-4 rounded-xl shadow-xl shadow-red-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform min-h-[48px]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
@@ -362,8 +335,8 @@ const MobileContentStatic = ({ siteBuilderHref, handleNavigate, triggerInstall, 
 const DesktopContent = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaInstalling }) => (
   <div>
     <motion.div
-      className="hidden sm:inline-flex flex-wrap items-center justify-center sm:justify-start gap-2 bg-white/10 border border-white/10 text-white px-4 py-2 rounded-full mb-6 sm:mb-8 max-w-full"
-      initial={{ opacity: 0, scale: 0.8 }}
+      className="hidden sm:inline-flex items-center gap-2 bg-white/10 border border-white/10 text-white px-4 py-2 rounded-full mb-6 sm:mb-8"
+      initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: 'backOut' }}
     >
@@ -373,19 +346,18 @@ const DesktopContent = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaIn
       </span>
     </motion.div>
 
-    <motion.h1
-      className="hidden sm:block text-[34px] sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 leading-[1.06] tracking-tight"
+    <motion.h2
+      className="hidden sm:block text-3xl sm:text-4xl md:text-5xl font-black mb-4 sm:mb-6 leading-tight tracking-tight"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.1 }}
-      style={{ textWrap: 'balance' }}
     >
       Ürünlerini tek linkte topla.
       <span className="block text-white/90">Modern vitrin sayfanı yayınla.</span>
-    </motion.h1>
+    </motion.h2>
 
     <motion.p
-      className="hidden sm:block text-lg md:text-xl text-white/80 mb-10 max-w-xl leading-relaxed font-medium"
+      className="hidden sm:block text-base md:text-lg text-white/75 mb-8 max-w-xl leading-relaxed font-medium"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
@@ -394,7 +366,7 @@ const DesktopContent = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaIn
     </motion.p>
 
     <motion.div
-      className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center sm:flex-nowrap"
+      className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.3 }}
@@ -402,49 +374,29 @@ const DesktopContent = ({ siteBuilderHref, handleNavigate, triggerInstall, pwaIn
       <motion.button
         type="button"
         onClick={handleNavigate}
-        className="btn-primary text-base md:text-lg px-10 py-5 rounded-xl inline-flex items-center justify-center"
+        className="btn-primary text-base md:text-lg px-8 py-4 rounded-xl inline-flex items-center justify-center"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
         <span>Site Oluştur</span>
-        <ArrowRight className="w-5 h-5 ml-3" />
+        <ArrowRight className="w-5 h-5 ml-2" />
       </motion.button>
 
       <motion.a
         href="#features"
-        className="btn-secondary text-base md:text-lg px-8 md:px-9 py-5 rounded-xl inline-flex items-center justify-center w-full sm:w-[190px] md:w-[210px]"
+        className="btn-secondary text-base md:text-lg px-8 py-4 rounded-xl inline-flex items-center justify-center"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        <span className="whitespace-nowrap break-normal">Detaylı Bilgi</span>
+        Detaylı Bilgi
       </motion.a>
-
-      <motion.button
-        type="button"
-        onClick={triggerInstall}
-        disabled={pwaInstalling}
-        className="btn-secondary text-base md:text-lg px-8 md:px-9 py-5 rounded-xl items-center justify-center w-full sm:w-[190px] md:w-[210px] sm:hidden inline-flex"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <span className="whitespace-nowrap break-normal">{pwaInstalling ? 'Hazırlanıyor…' : 'Uygulamayı Yükle'}</span>
-      </motion.button>
     </motion.div>
 
     <motion.div
-      className="mt-3 text-xs text-white/65 font-semibold sm:hidden"
+      className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-white/75"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.4 }}
-    >
-      Mobilde Chrome menüsünden "Ana ekrana ekle" ile kurulabilir.
-    </motion.div>
-
-    <motion.div
-      className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-white/80"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, delay: 0.5 }}
     >
       <div className="flex items-center gap-2">
         <Check className="w-4 h-4 text-red-400" />
