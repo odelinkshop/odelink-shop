@@ -312,8 +312,8 @@ const PremiumPricing = () => {
 
             <div
               id="plans-grid"
-              className="grid gap-8 w-full mx-auto justify-center grid-cols-1 md:grid-cols-2 lg:grid-cols-2 justify-items-center"
-              style={{ maxWidth: '800px' }}
+              className="flex flex-wrap gap-8 w-full mx-auto justify-center items-start"
+              style={{ maxWidth: '900px' }}
             >
               {visiblePlans.map((plan, index) => (
                 (() => {
