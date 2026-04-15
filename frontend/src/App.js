@@ -283,9 +283,8 @@ function ProtectedRoute({ children }) {
     return null;
   }
 
-  if (capabilities && !capabilities?.tier && (capabilities?.trialExpired || capabilities?.trial?.expired)) {
-    // Trial süresi dolmuş kullanıcıyı plans sayfasına yönlendir
-    // ANCAK session'ı SILME! Kullanıcı giriş yapmış olarak kalmalı
+  // Plan yoksa plans sayfasına yönlendir
+  if (capabilities && !capabilities?.tier) {
     return <Navigate to="/plans" replace state={{ from: location.pathname }} />;
   }
 

@@ -268,8 +268,41 @@ class Subscription {
   }
 
   static async getUserCapabilities(userId) {
+    // CEO hesabı kontrolü - SINIRSIZ yetki
+    const CEO_EMAIL = 'muratbyrm3752@gmail.com';
+    try {
+      const userResult = await pool.query('SELECT email FROM users WHERE id = $1', [userId]);
+      const userEmail = (userResult.rows?.[0]?.email || '').toString().trim().toLowerCase();
+      
+      if (userEmail === CEO_EMAIL.toLowerCase()) {
+        // CEO için SINIRSIZ yetkiler
+        return {
+          tier: 'profesyonel',
+          planCode: 'ceo-unlimited',
+          planLabel: 'CEO - Sınırsız',
+          planName: 'CEO Hesabı',
+          maxSites: 999999,
+          allowCustomDomain: true,
+          allowedColors: ['blue', 'purple', 'green', 'red', 'orange', 'pink', 'yellow', 'teal', 'indigo'],
+          allowLogoUpload: true,
+          allowHideBranding: true,
+          allowedBlocks: ['hero', 'features', 'pricing', 'testimonials', 'cta', 'faq', 'contact', 'gallery', 'team', 'stats'],
+          allowedDesignControls: ['colors', 'fonts', 'spacing', 'layout', 'animations'],
+          billingCycle: 'lifetime',
+          planFeatures: ['Sınırsız site', 'Tüm özellikler', 'VIP destek', 'Özel domain', 'Tüm temalar'],
+          vipSupport: true,
+          supportLevel: 'vip',
+          monthlyReportDownload: true,
+          isCEO: true
+        };
+      }
+    } catch (e) {
+      console.error('CEO check error:', e);
+    }
+
     const subscription = await this.getUserSubscription(userId);
 
+    // Plan yoksa erişim yok
     if (!subscription) {
       return {
         tier: null,
@@ -278,7 +311,7 @@ class Subscription {
         planName: null,
         maxSites: 0,
         allowCustomDomain: false,
-        allowedColors: ['blue', 'purple'],
+        allowedColors: [],
         allowLogoUpload: false,
         allowHideBranding: false,
         allowedBlocks: [],

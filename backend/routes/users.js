@@ -23,7 +23,7 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
   try {
     const caps = await Subscription.getUserCapabilities(req.userId).catch(() => null);
     if (!caps?.tier) {
-      return res.status(403).json({ error: 'Deneme süreniz bitti. Plan satın alınız.', code: 'PAYWALL' });
+      return res.status(403).json({ error: 'Bu özelliği kullanmak için bir plan satın almalısınız.', code: 'PAYWALL' });
     }
 
     const [userResult, sitesResult, statsResult, subscriptionResult] = await Promise.allSettled([
