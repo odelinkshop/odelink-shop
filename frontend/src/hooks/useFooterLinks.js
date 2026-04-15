@@ -24,6 +24,8 @@ const useFooterLinks = () => {
     { id: 'privacy', label: 'Gizlilik Politikası', path: '/privacy' },
     { id: 'kvkk', label: 'KVKK', path: '/kvkk' },
     { id: 'cookies', label: 'Çerez Politikası', path: '/cookies' },
+    { id: 'refund', label: 'İptal ve İade', path: '/refund-policy' },
+    { id: 'distance-sales', label: 'Mesafeli Satış Sözleşmesi', path: '/distance-sales-agreement' },
   ], []);
 
   const socialLinks = useMemo(() => [
