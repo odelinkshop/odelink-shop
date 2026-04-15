@@ -29,7 +29,6 @@ import SiteAnalyticsPage from './components/SiteAnalyticsPage';
 import SiteBuilderWizard from './components/SiteBuilderWizard';
 import useAuthSession from './hooks/useAuthSession';
 import useCapabilities from './hooks/useCapabilities';
-import { clearAuthSession } from './utils/authStorage';
 import './index.css';
 
 try {
@@ -244,11 +243,7 @@ function GlobalPaywallRedirect() {
             const code = (data && typeof data === 'object') ? (data.code || data.errorCode) : null;
             if ((code || '').toString().toUpperCase() === 'PAYWALL') {
               redirected = true;
-              try {
-                clearAuthSession({ preserveAdminUi: true });
-              } catch (e) {
-                void e;
-              }
+              // PAYWALL durumunda session'ı SILME! Sadece plans sayfasına yönlendir
               window.location.href = '/plans';
             }
           }
@@ -289,11 +284,8 @@ function ProtectedRoute({ children }) {
   }
 
   if (capabilities && !capabilities?.tier && (capabilities?.trialExpired || capabilities?.trial?.expired)) {
-    try {
-      clearAuthSession({ preserveAdminUi: true });
-    } catch (e) {
-      void e;
-    }
+    // Trial süresi dolmuş kullanıcıyı plans sayfasına yönlendir
+    // ANCAK session'ı SILME! Kullanıcı giriş yapmış olarak kalmalı
     return <Navigate to="/plans" replace state={{ from: location.pathname }} />;
   }
 

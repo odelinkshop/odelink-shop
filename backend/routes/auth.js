@@ -163,10 +163,16 @@ const REFRESH_COOKIE_MAX_AGE_MS = Math.max(
 const buildCookieOptions = (req, maxAge) => {
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const forwardedProto = (req.headers['x-forwarded-proto'] || '').toString().trim().toLowerCase();
-  const secure = isProduction || forwardedProto === 'https';
+  
+  // Production'da MUTLAKA secure olmalı
+  const secure = isProduction ? true : (forwardedProto === 'https');
+  
   const explicitDomain = (process.env.AUTH_COOKIE_DOMAIN || '').toString().trim();
   const domain = explicitDomain || normalizeCookieDomain(host);
-  const sameSite = isProduction ? 'none' : 'lax';
+  
+  // Production'da sameSite=none MUTLAKA secure ile birlikte olmalı
+  // Aksi halde cookie set edilmez!
+  const sameSite = isProduction ? 'lax' : 'lax';
 
   return {
     httpOnly: true,

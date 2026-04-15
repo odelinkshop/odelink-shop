@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCapabilities from '../hooks/useCapabilities';
-import { clearAuthSession, getAuthHeaders, getAuthToken } from '../utils/authStorage';
+import { getAuthHeaders, getAuthToken } from '../utils/authStorage';
 
 const API_BASE =
   process.env.REACT_APP_API_URL ||
@@ -404,11 +404,8 @@ export default function SiteSettingsPage({ forcedSection }) {
 
           if (!siteRes.ok) {
             if (siteRes.status === 401) {
-              try {
-                clearAuthSession();
-              } catch (e) {
-                void e;
-              }
+              // authStorage.js zaten 401 durumunda session'ı temizliyor
+              // Burada tekrar silmeye gerek yok
               navigate('/auth');
               return;
             }

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Globe, DollarSign, TrendingUp, Settings, LogOut, Menu, X, Search, Filter, Plus, Star, Shield, RefreshCw, Undo2 } from 'lucide-react';
 import BrandLogo from './BrandLogo';
-import { clearAuthSession, getAuthToken, logoutAuthSession } from '../utils/authStorage';
+import { getAuthToken, logoutAuthSession } from '../utils/authStorage';
 
 const API_BASE =
   process.env.REACT_APP_API_URL ||
@@ -66,11 +66,8 @@ const SimpleAdminPanel = ({ adminAccess }) => {
   }, [navigate]);
 
   const handleUnauthorized = () => {
-    try {
-      clearAuthSession();
-    } catch (e) {
-      void e;
-    }
+    // authStorage.js zaten 401 durumunda session'ı temizliyor
+    // Burada tekrar silmeye gerek yok - sadece yönlendir
     navigateRef.current('/auth');
   };
 

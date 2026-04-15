@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getApiBase } from '../utils/apiBase';
-import { clearAuthSession, getAuthHeaders, getAuthToken } from '../utils/authStorage';
+import { getAuthHeaders, getAuthToken } from '../utils/authStorage';
 
 const API_BASE = getApiBase();
 const FALLBACK_LOCAL_API_BASE = 'http://localhost:5001';
@@ -128,11 +128,8 @@ const UserPanel = () => {
             data = res ? await res.json().catch(() => ({})) : {};
 
             if (res && res.status === 401) {
-              try {
-                clearAuthSession();
-              } catch (e) {
-                void e;
-              }
+              // authStorage.js zaten 401 durumunda session'ı temizliyor
+              // Burada tekrar silmeye gerek yok - sadece yönlendir
               navigate('/auth', { state: { from: location.pathname } });
               return { ok: false, error: 'Unauthorized' };
             }

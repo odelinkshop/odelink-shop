@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { clearAuthSession, getAuthHeaders, getAuthToken, setAdminUiEnabled } from '../utils/authStorage';
+import { getAuthHeaders, getAuthToken, setAdminUiEnabled } from '../utils/authStorage';
 import BrandLogo from './BrandLogo';
 
 const API_BASE =
@@ -100,7 +100,7 @@ const AdminPasswordGate = ({ children }) => {
 
         if (!res.ok) {
           if (res.status === 401) {
-            clearAuthSession();
+            // authStorage.js zaten 401 durumunda session'ı temizliyor
             setNeedsLogin(true);
             return;
           }

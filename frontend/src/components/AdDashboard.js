@@ -38,8 +38,8 @@ const AdDashboard = () => {
         setAdvertisements(data.advertisements || []);
         setError(null);
       } else if (response.status === 401) {
+        // authStorage.js zaten 401 durumunda session'ı temizliyor
         setError('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.');
-        localStorage.removeItem('token');
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Reklamlar yüklenemedi');

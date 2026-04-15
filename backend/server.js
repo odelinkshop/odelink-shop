@@ -472,66 +472,38 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   contentSecurityPolicy: isProduction
     ? {
-      useDefaults: true,
+      useDefaults: false,
       directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         'default-src': ["'self'"],
         'script-src': [
           "'self'", 
           "'unsafe-inline'", 
-          "'unsafe-eval'", 
-          'https://cdn.shopier.com',
-          'https://www.shopier.com',
-          'https://www.googletagmanager.com',
-          'https://www.google.com',
-          'https://ajax.googleapis.com',
-          'https://accounts.google.com',
-          'https://apis.google.com',
-          'https://gsi.googleapis.com',
-          'https://content.googleapis.com',
-          'https://*.googleusercontent.com',
-          'https://*.googleapis.com',
-          'https://static.zdassets.com',
-          'https://ekr.zdassets.com',
-          'https://*.zdassets.com',
-          'https://static.cloudflareinsights.com',
-          'https://*.cloudflareinsights.com',
-          'https://content.googleapis.com',
-          'https://*.gstatic.com'
+          "'unsafe-eval'",
+          'https:',
+          'http:',
+          'data:',
+          'blob:'
         ],
         'style-src': [
           "'self'", 
-          "'unsafe-inline'", 
-          'https://fonts.googleapis.com',
-          'https://accounts.google.com',
-          'https://gsi.googleapis.com',
-          'https://*.googleapis.com'
+          "'unsafe-inline'",
+          'https:',
+          'http:'
         ],
         'img-src': ["'self'", 'data:', 'blob:', 'https:', 'http:'],
-        'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
+        'font-src': ["'self'", 'data:', 'https:', 'http:'],
         'connect-src': [
           "'self'",
-          'https://www.odelink.shop',
-          'https://odelink.shop',
-          'https://cdn.shopier.com',
-          'https://www.shopier.com',
-          'https://accounts.google.com',
-          'https://gsi.googleapis.com',
-          'https://apis.google.com',
-          'https://content.googleapis.com',
-          'https://*.googleusercontent.com',
-          'https://*.googleapis.com',
-          'https://ekr.zdassets.com',
-          'https://*.zdassets.com',
-          'https://oauth2.googleapis.com',
-          'https://static.cloudflareinsights.com',
-          'https://*.cloudflareinsights.com'
+          'https:',
+          'http:',
+          'ws:',
+          'wss:'
         ],
-        'frame-src': ["'self'", 'https://www.google.com', 'https://maps.google.com', 'https://accounts.google.com', 'https://gsi.googleapis.com', 'https://*.google.com'],
+        'frame-src': ["'self'", 'https:', 'http:'],
         'object-src': ["'none'"],
         'base-uri': ["'self'"],
-        'form-action': ["'self'", 'https://www.shopier.com', 'https://shopier.com'],
-        'frame-ancestors': ["'none'"],
+        'form-action': ["'self'", 'https:', 'http:'],
+        'frame-ancestors': ["'self'"],
         'upgrade-insecure-requests': []
       }
     }
