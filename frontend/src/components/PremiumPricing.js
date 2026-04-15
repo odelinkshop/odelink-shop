@@ -299,8 +299,8 @@ const PremiumPricing = () => {
           </motion.div>
         )}
         
-        <div className="flex justify-center">
-          <div className="w-full max-w-6xl">
+        <div className="flex justify-center items-center">
+          <div className="w-full" style={{ maxWidth: '900px' }}>
             {hasToken && !capsLoading ? (
               <div className="mb-6">
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-white/90">
@@ -312,7 +312,8 @@ const PremiumPricing = () => {
 
             <div
               id="plans-grid"
-              className="grid gap-8 w-full max-w-6xl mx-auto justify-center grid-cols-1 md:grid-cols-2 max-w-3xl justify-items-center"
+              className="grid gap-8 w-full mx-auto justify-center grid-cols-1 md:grid-cols-2 lg:grid-cols-2 justify-items-center"
+              style={{ maxWidth: '800px' }}
             >
               {visiblePlans.map((plan, index) => (
                 (() => {
@@ -377,7 +378,8 @@ const PremiumPricing = () => {
                       )}
 
                       <div
-                        className={`relative bg-white/85 backdrop-blur-md rounded-2xl p-6 sm:p-8 shadow-lg border-2 ${plan.highlight ? 'border-gray-900 ring-4 ring-red-500/30 shadow-red-500/20' : 'border-gray-200'} ${plan.name === 'PROFESYONEL' ? 'border-red-500/60 ring-2 ring-red-500/25' : ''} flex flex-col h-full max-w-[360px] mx-auto`}
+                        className={`relative bg-white/85 backdrop-blur-md rounded-2xl p-6 sm:p-8 shadow-lg border-2 ${plan.highlight ? 'border-gray-900 ring-4 ring-red-500/30 shadow-red-500/20' : 'border-gray-200'} ${plan.name === 'PROFESYONEL' ? 'border-red-500/60 ring-2 ring-red-500/25' : ''} flex flex-col h-full w-full mx-auto`}
+                        style={{ maxWidth: '380px' }}
                       >
                         <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-900 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
                           <plan.icon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
