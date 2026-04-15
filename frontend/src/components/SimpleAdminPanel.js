@@ -22,7 +22,6 @@ const SimpleAdminPanel = ({ adminAccess }) => {
     const t = safeText(raw).trim().toLowerCase();
     if (t === 'standart' || t === 'standard') return 'standart';
     if (t === 'profesyonel' || t === 'professional' || t === 'pro' || t === 'premium') return 'profesyonel';
-    if (t === 'trial' || t === 'deneme') return 'trial';
     return t;
   };
 
@@ -31,7 +30,6 @@ const SimpleAdminPanel = ({ adminAccess }) => {
     if (!t) return '-';
     if (t === 'standart') return 'Standart';
     if (t === 'profesyonel') return 'Profesyonel';
-    if (t === 'trial') return '3 Günlük Deneme';
     return safeText(raw) || '-';
   };
 
@@ -133,20 +131,6 @@ const SimpleAdminPanel = ({ adminAccess }) => {
 
   const [refreshTick, setRefreshTick] = useState(0);
   const [ipUndoAvailable, setIpUndoAvailable] = useState(false);
-
-  // Advertisement management state
-  const [adminAdvertisements, setAdminAdvertisements] = useState([]);
-  const [advertisementStats, setAdvertisementStats] = useState(null);
-  const [selectedAdvertisement, setSelectedAdvertisement] = useState(null);
-  const [showApprovalModal, setShowApprovalModal] = useState(false);
-  const [showRejectionModal, setShowRejectionModal] = useState(false);
-  const [approvalData, setApprovalData] = useState({
-    startDate: '',
-    endDate: '',
-    placementPosition: 'header-banner'
-  });
-  const [rejectionReason, setRejectionReason] = useState('');
-  const [advertisementFilter, setAdvertisementFilter] = useState('all');
 
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [settingsError, setSettingsError] = useState('');
@@ -640,150 +624,10 @@ const SimpleAdminPanel = ({ adminAccess }) => {
     }
   };
 
-  // Advertisement management functions
-  const approveAdvertisement = async (adId, approvalData) => {
-    if (!isOwner) {
-      setAdminError('Yetkisiz: Bu işlem sadece owner hesap tarafından yapılabilir.');
-      return;
-    }
-    const token = getAuthToken();
-    if (!token) {
-      navigate('/auth');
-      return;
-    }
-
-    setAdminActionLoading(true);
-    setAdminError('');
-    try {
-      const res = await fetch(`${API_BASE}/api/admin/advertisements/${encodeURIComponent(adId)}/approve`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(approvalData)
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setAdminError(data?.error || 'Reklam onaylanamadı');
-        return;
-      }
-
-      // Reload advertisements
-      const reload = await fetch(`${API_BASE}/api/admin/advertisements`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const reloadData = await reload.json().catch(() => ({}));
-      if (reload.ok) {
-        setAdminAdvertisements(Array.isArray(reloadData?.advertisements) ? reloadData.advertisements : []);
-      }
-      
-      setAdminSuccess('Reklam başarıyla onaylandı');
-    } catch (e) {
-      setAdminError('Reklam onaylanamadı');
-    } finally {
-      setAdminActionLoading(false);
-    }
-  };
-
-  const rejectAdvertisement = async (adId, rejectionReason) => {
-    if (!isOwner) {
-      setAdminError('Yetkisiz: Bu işlem sadece owner hesap tarafından yapılabilir.');
-      return;
-    }
-    const token = getAuthToken();
-    if (!token) {
-      navigate('/auth');
-      return;
-    }
-
-    setAdminActionLoading(true);
-    setAdminError('');
-    try {
-      const res = await fetch(`${API_BASE}/api/admin/advertisements/${encodeURIComponent(adId)}/reject`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ rejectionReason })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setAdminError(data?.error || 'Reklam reddedilemedi');
-        return;
-      }
-
-      // Reload advertisements
-      const reload = await fetch(`${API_BASE}/api/admin/advertisements`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const reloadData = await reload.json().catch(() => ({}));
-      if (reload.ok) {
-        setAdminAdvertisements(Array.isArray(reloadData?.advertisements) ? reloadData.advertisements : []);
-      }
-      
-      setAdminSuccess('Reklam başarıyla reddedildi');
-    } catch (e) {
-      setAdminError('Reklam reddedilemedi');
-    } finally {
-      setAdminActionLoading(false);
-    }
-  };
-
-  const deleteAdvertisement = async (adId) => {
-    if (!isOwner) {
-      setAdminError('Yetkisiz: Bu işlem sadece owner hesap tarafından yapılabilir.');
-      return;
-    }
-    const token = getAuthToken();
-    if (!token) {
-      navigate('/auth');
-      return;
-    }
-
-    if (!window.confirm('Bu reklam silinsin mi? (Geri alınamaz)')) return;
-
-    setAdminActionLoading(true);
-    setAdminError('');
-    try {
-      const res = await fetch(`${API_BASE}/api/admin/advertisements/${encodeURIComponent(adId)}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setAdminError(data?.error || 'Reklam silinemedi');
-        return;
-      }
-
-      // Reload advertisements
-      const reload = await fetch(`${API_BASE}/api/admin/advertisements`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const reloadData = await reload.json().catch(() => ({}));
-      if (reload.ok) {
-        setAdminAdvertisements(Array.isArray(reloadData?.advertisements) ? reloadData.advertisements : []);
-      }
-      
-      setAdminSuccess('Reklam başarıyla silindi');
-    } catch (e) {
-      setAdminError('Reklam silinemedi');
-    } finally {
-      setAdminActionLoading(false);
-    }
-  };
+  // Advertisement management functions removed
 
   useEffect(() => {
-    if (!['dashboard', 'users', 'sites', 'subscriptions', 'advertisements', 'ip'].includes(activeTab)) return;
+    if (!['dashboard', 'users', 'sites', 'subscriptions', 'ip'].includes(activeTab)) return;
     const token = getAuthToken();
     if (!token) return;
 
@@ -882,39 +726,6 @@ const SimpleAdminPanel = ({ adminAccess }) => {
             return;
           }
           setAdminSubscriptions(Array.isArray(data?.subscriptions) ? data.subscriptions : []);
-        }
-
-        if (activeTab === 'advertisements') {
-          const res = await fetch(`${API_BASE}/api/admin/advertisements`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) {
-            if (res.status === 401) {
-              handleUnauthorized();
-              return;
-            }
-            if (res.status === 403 || res.status === 409) {
-              setAdminError(formatAdminReason(data, 'Reklamlar alınamadı'));
-              return;
-            }
-            setAdminError(data?.error || 'Reklamlar alınamadı');
-            return;
-          }
-          setAdminAdvertisements(Array.isArray(data?.advertisements) ? data.advertisements : []);
-          
-          // Also fetch advertisement statistics
-          const statsRes = await fetch(`${API_BASE}/api/admin/advertisements/statistics`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          const statsData = await statsRes.json().catch(() => ({}));
-          if (statsRes.ok) {
-            setAdvertisementStats(statsData);
-          }
         }
 
         if (activeTab === 'ip') {
@@ -1084,7 +895,6 @@ const SimpleAdminPanel = ({ adminAccess }) => {
     { id: 'users', label: 'Kullanıcılar', icon: Users },
     { id: 'sites', label: 'Siteler', icon: Globe },
     { id: 'subscriptions', label: 'Abonelikler', icon: DollarSign },
-    { id: 'advertisements', label: 'Reklamlar', icon: Megaphone },
     { id: 'ip', label: 'IP', icon: Shield },
     { id: 'settings', label: 'Ayarlar', icon: Settings }
   ];

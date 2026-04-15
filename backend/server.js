@@ -887,17 +887,6 @@ try {
   console.error('❌ Payment routes failed:', e.message);
 }
 
-// Advertisement routes
-try {
-  const advertisementRoutes = require('./routes/advertisements');
-  const adminAdvertisementRoutes = require('./routes/admin/advertisements');
-  app.use('/api/advertisements', advertisementRoutes);
-  app.use('/api/admin/advertisements', adminAdvertisementRoutes);
-  console.log('✅ Advertisement routes loaded');
-} catch (e) {
-  console.error('❌ Advertisement routes failed:', e.message);
-}
-
 // Shopier Products API - Tema için ürünleri döndür
 const shopierProductsRoutes = require('./routes/shopier-products');
 app.use('/api/shopier-products', shopierProductsRoutes);
@@ -1260,18 +1249,6 @@ const startServer = async () => {
       console.log('📊 Health Check:', `http://localhost:${PORT}/api/health`);
       console.log('📋 Readiness Check:', `http://localhost:${PORT}/api/ready`);
       console.log('⚡ Real Shopier API:', `http://localhost:${PORT}/api/real-shopier`);
-
-      // Start background jobs for advertisement system
-      try {
-        const AdvertisementStatusUpdater = require('./services/advertisementStatusUpdater');
-        const AdvertisementTrackingCleanup = require('./services/advertisementTrackingCleanup');
-        
-        AdvertisementStatusUpdater.startScheduler(5); // Every 5 minutes
-        AdvertisementTrackingCleanup.startScheduler(24); // Every 24 hours
-        console.log('✅ Advertisement background jobs started');
-      } catch (e) {
-        console.warn('⚠️ Could not start advertisement background jobs:', e.message);
-      }
     });
 
     server.headersTimeout = 12 * 1000;

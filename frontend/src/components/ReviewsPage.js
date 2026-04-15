@@ -61,7 +61,7 @@ const reviews = [
     business: 'Elektronik Aksesuar',
     rating: 5,
     date: '25 Mart 2026',
-    text: 'Komisyon almıyorlar, bu çok önemli! Sadece aylık abonelik ödüyorum. Satışlarımdan hiçbir kesinti yok. Ayrıca 7 gün ücretsiz deneme sayesinde risk almadan test edebildim.',
+    text: 'Komisyon almıyorlar, bu çok önemli! Sadece aylık abonelik ödüyorum. Satışlarımdan hiçbir kesinti yok. Aylık 299 TL ile başladım, çok uygun fiyat.',
     avatar: '🔌'
   },
   {
@@ -208,7 +208,7 @@ const ReviewsPage = () => {
               Siz de başarı hikayenizi yazın
             </h2>
             <p className="text-gray-700 mb-6">
-              7 gün ücretsiz deneyin, farkı görün
+              Hemen başlayın, farkı görün
             </p>
             <a
               href="/auth"

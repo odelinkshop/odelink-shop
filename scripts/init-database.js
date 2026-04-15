@@ -31,9 +31,6 @@ async function initDatabase() {
         password VARCHAR(255) NOT NULL,
         phone VARCHAR(50),
         subscription_id UUID,
-        trial_started_at TIMESTAMP,
-        trial_ends_at TIMESTAMP,
-        trial_consumed BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
@@ -43,7 +40,6 @@ async function initDatabase() {
     // Create email index
     await pool.query('CREATE INDEX IF NOT EXISTS idx_users_email_lower ON users (LOWER(email))');
     await pool.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_lower_unique ON users (LOWER(email))');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_users_trial_ends_at ON users (trial_ends_at)');
     console.log('✅ Users indexes created');
 
     // Create subscriptions table

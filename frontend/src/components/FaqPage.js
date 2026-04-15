@@ -30,8 +30,8 @@ const faqs = [
         a: 'Standart (299 TL/ay) ve Profesyonel (399 TL/yıl) planlarımız bulunmaktadır. Standart planda 3 site, Profesyonel planda 10 site oluşturabilirsiniz. Komisyon alınmaz.'
       },
       {
-        q: 'Ücretsiz deneme var mı?',
-        a: 'Hayır, şu anda ücretsiz deneme sunmuyoruz. Ancak aylık 299 TL ile başlayabilir, istediğiniz zaman iptal edebilirsiniz. İlk ay sonunda otomatik yenileme yapılmaz.'
+        q: 'Nasıl başlarım?',
+        a: 'Kayıt olduktan sonra bir plan seçin. Standart plan aylık 299 TL, Profesyonel plan yıllık 399 TL\'dir. İstediğiniz zaman iptal edebilirsiniz.'
       },
       {
         q: 'İptal politikanız nedir?',

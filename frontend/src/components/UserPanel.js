@@ -281,58 +281,6 @@ const UserPanel = () => {
     };
   }, [capabilities, subscription, normalizeTier, tierLabel]);
 
-  const trialView = useMemo(() => {
-    const isTrial = (capabilities?.planCode || '').toString().toLowerCase() === 'trial' || Boolean(capabilities?.trial?.active);
-    if (!isTrial) return null;
-
-    const endsAtRaw = (capabilities?.trial?.endsAt || capabilities?.trial?.trialEndsAt || '').toString();
-    const endsAt = endsAtRaw ? new Date(endsAtRaw) : null;
-    const endsAtMs = endsAt && !Number.isNaN(endsAt.getTime()) ? endsAt.getTime() : null;
-
-    let msLeft = Number(capabilities?.trial?.msLeft ?? capabilities?.trial?.remainingMs ?? capabilities?.trial?.remaining_ms ?? 0);
-    if (!Number.isFinite(msLeft) || msLeft < 0) msLeft = 0;
-
-    if (endsAtMs) {
-      const diff = endsAtMs - nowTs;
-      if (Number.isFinite(diff)) msLeft = Math.max(0, diff);
-    }
-
-    const totalSeconds = Math.floor(msLeft / 1000);
-    const days = Math.floor(totalSeconds / (24 * 3600));
-    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    const parts = [];
-    if (days > 0) parts.push(`${days} gün`);
-    if (hours > 0 || days > 0) parts.push(`${hours} saat`);
-    parts.push(`${minutes} dk`);
-    parts.push(`${seconds} sn`);
-
-    const pad2 = (n) => String(Number(n) || 0).padStart(2, '0');
-    const endLabel = endsAt && !Number.isNaN(endsAt.getTime())
-      ? `${pad2(endsAt.getDate())}.${pad2(endsAt.getMonth() + 1)}.${endsAt.getFullYear()} ${pad2(endsAt.getHours())}:${pad2(endsAt.getMinutes())}`
-      : '';
-
-    return {
-      label: parts.join(' '),
-      endsAt: endsAtRaw,
-      endsAtLabel: endLabel
-    };
-  }, [capabilities, nowTs]);
-
-  useEffect(() => {
-    const isTrial = (capabilities?.planCode || '').toString().toLowerCase() === 'trial' || Boolean(capabilities?.trial?.active);
-    if (!isTrial) return;
-
-    const t = setInterval(() => {
-      setNowTs(Date.now());
-    }, 1000);
-    return () => {
-      clearInterval(t);
-    };
-  }, [capabilities]);
-
   const prefillPublicCache = useCallback((subdomain, siteObj) => {
     try {
       const s = (subdomain || '').toString().trim().toLowerCase();
@@ -467,24 +415,6 @@ const UserPanel = () => {
         ) : (
           <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur overflow-hidden">
             <div className="p-4 sm:p-6">
-              {trialView ? (
-                <div className="mb-4 flex justify-end">
-                  <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm px-4 py-3 w-full sm:w-auto sm:min-w-[320px]">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-sm font-semibold text-white">Deneme aktif</div>
-                        <div className="text-gray-300 text-xs mt-1">Kalan: <span className="font-semibold text-white">{trialView.label}</span></div>
-                        {trialView.endsAtLabel ? (
-                          <div className="text-gray-300 text-xs mt-1">Bitiş: <span className="font-semibold text-white">{trialView.endsAtLabel}</span></div>
-                        ) : null}
-                      </div>
-                      <div className="shrink-0">
-                        <button type="button" className="btn-secondary" onClick={() => navigate('/plans')}>Plan Seç</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                 <div className="bg-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10 backdrop-blur-sm transition-colors hover:bg-white/10 flex flex-col justify-center items-center text-center min-h-[100px]">
                   <div className="text-xs sm:text-sm text-gray-300">Toplam Site</div>

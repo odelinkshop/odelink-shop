@@ -9,10 +9,10 @@ const PaymentPage = () => {
         <div className="card" style={{ borderRadius: 16 }}>
           <h1 className="text-3xl font-bold text-gray-900">Plan Satın Al</h1>
           <p className="text-gray-700 mt-4 leading-relaxed">
-            3 günlük deneme süreniz sona erdi. Devam etmek için plan satın almanız gerekiyor.
+            Devam etmek için bir plan seçmeniz gerekiyor.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <button type="button" className="btn-primary" onClick={() => { window.location.href = SHOPIER_STORE_URL; }}>
+            <button type="button" className="btn-primary" onClick={() => { window.location.href = '/plans'; }}>
               Planları Gör
             </button>
             <button type="button" className="btn-secondary" onClick={() => { window.location.href = '/'; }}>
