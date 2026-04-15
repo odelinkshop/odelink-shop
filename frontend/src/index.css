@@ -8,6 +8,47 @@
   box-sizing: border-box;
 }
 
+/* Mavi focus outline'ları kaldır - tüm cihazlarda */
+*:focus,
+*:focus-visible,
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus,
+[tabindex]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Tıklama sonrası mavi çerçeveleri kaldır */
+*:active,
+*:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* Tarayıcı varsayılan focus stillerini kaldır */
+:focus-visible {
+  outline: none !important;
+}
+
+/* Webkit tarayıcılar için (Chrome, Safari, Edge) */
+*::-webkit-focus-ring-color {
+  outline: none !important;
+}
+
+/* Tüm etkileşimli elementler için */
+button,
+a,
+input,
+textarea,
+select,
+[role="button"],
+[tabindex] {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
 :root {
   --brand-1: #dc2626;
   --brand-2: #111827;
@@ -123,11 +164,10 @@ textarea {
 }
 
 .btn-primary:focus-visible {
-  outline: none;
+  outline: none !important;
   box-shadow:
-    0 0 0 4px color-mix(in oklab, var(--brand-1), transparent 80%),
     0 18px 48px rgba(15, 23, 42, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
 }
 
 .btn-primary:disabled {
@@ -170,10 +210,8 @@ textarea {
 }
 
 .btn-secondary:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 4px color-mix(in oklab, var(--brand-1), transparent 86%),
-    0 14px 34px rgba(15, 23, 42, 0.12);
+  outline: none !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12) !important;
 }
 
 .btn-secondary:disabled {
@@ -202,11 +240,9 @@ textarea {
 }
 
 .input-field:focus {
-  outline: none;
+  outline: none !important;
   border-color: var(--brand-1);
-  box-shadow:
-    0 0 0 4px color-mix(in oklab, var(--brand-1), transparent 86%),
-    0 10px 26px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10) !important;
 }
 
 .input-field:disabled {
@@ -239,9 +275,24 @@ textarea {
 @media (max-width: 639px) {
   /* Global mobile optimizations */
   * {
-    -webkit-tap-highlight-color: rgba(239, 68, 68, 0.1);
+    -webkit-tap-highlight-color: transparent !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    outline: none !important;
+  }
+
+  /* Mobilde tüm focus outline'ları kaldır */
+  *:focus,
+  *:focus-visible,
+  *:active,
+  button:focus,
+  a:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
 
   html {
@@ -330,7 +381,8 @@ textarea {
 
   .input-field:focus {
     border-color: rgb(239 68 68) !important; /* primary color */
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
 
   /* Modern Card System */
