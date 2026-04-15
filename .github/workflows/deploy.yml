@@ -262,10 +262,29 @@ jobs:
             curl -X POST http://127.0.0.1:5000/api/maintenance/enable || echo "⚠️ Maintenance mode API call failed (backend may be down)"
             
             echo "---- DEPLOY: Stopping any existing backend container to free port 5000 ----"
+            # Kill ALL containers using port 5000
+            docker ps -q --filter "expose=5000" | xargs -r docker stop || true
+            docker ps -aq --filter "expose=5000" | xargs -r docker rm -f || true
+            
+            # Stop and remove backend container specifically
             docker compose stop backend || true
             docker compose rm -f backend || true
+            
+            # Kill any process using port 5000 on host
             pkill -9 node || true
-            sleep 3
+            fuser -k 5000/tcp || true
+            
+            # Wait for port to be released
+            sleep 5
+            
+            # Verify port is free
+            if netstat -tuln | grep ':5000 ' >/dev/null 2>&1; then
+              echo "⚠️ WARNING: Port 5000 still in use after cleanup!"
+              netstat -tuln | grep ':5000 ' || true
+              lsof -i :5000 || true
+            else
+              echo "✅ Port 5000 is free"
+            fi
             
             echo "---- DEPLOY DEBUG: Docker backend starting... ----"
             docker compose up -d backend
