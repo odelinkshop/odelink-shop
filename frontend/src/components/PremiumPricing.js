@@ -44,27 +44,6 @@ const PremiumPricing = () => {
   const currentTier = useMemo(() => normalizeTier(capabilities?.tier), [capabilities]);
   const currentCycle = useMemo(() => (capabilities?.billingCycle || '').toString().trim().toLowerCase(), [capabilities]);
 
-  const trial = capabilities?.trial || null;
-  const trialActive = Boolean(trial?.active) || (capabilities?.planCode || '') === 'trial';
-  const trialExpired = Boolean(trial?.expired) || Boolean(capabilities?.trialExpired);
-  const trialEndsAt = useMemo(() => {
-    const raw = trial?.endsAt || trial?.trialEndsAt || null;
-    if (!raw) return null;
-    const d = new Date(raw);
-    if (Number.isNaN(d.getTime())) return null;
-    return d;
-  }, [trial]);
-  const trialRemainingLabel = useMemo(() => {
-    const msRaw = trial?.remainingMs ?? trial?.remaining_ms ?? null;
-    const ms = Number(msRaw);
-    if (Number.isFinite(ms) && ms > 0) return formatRemaining(ms);
-    if (trialEndsAt) {
-      const diff = trialEndsAt.getTime() - Date.now();
-      if (diff > 0) return formatRemaining(diff);
-    }
-    return '';
-  }, [trial, trialEndsAt]);
-
   const scrollToPlans = () => {
     const el = document.getElementById('plans-grid');
     if (el && typeof el.scrollIntoView === 'function') {
@@ -138,9 +117,6 @@ const PremiumPricing = () => {
       })
       .filter((p) => !p.unavailable)
   ), [plans, isAnnual, recommendedName]);
-
-  const showTrialCard = Boolean(!hasToken || capsLoading);
-  const renderedCardCount = (visiblePlans?.length || 0) + (showTrialCard ? 1 : 0);
 
   const planFeatures = useMemo(() => {
     const tiers = catalog?.tiers || {};
@@ -336,55 +312,8 @@ const PremiumPricing = () => {
 
             <div
               id="plans-grid"
-              className={`grid gap-8 w-full max-w-6xl mx-auto justify-center ${
-                renderedCardCount === 1
-                  ? 'grid-cols-1'
-                  : renderedCardCount === 2
-                    ? 'grid-cols-1 md:grid-cols-2 max-w-3xl'
-                    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-              } justify-items-center`}
+              className="grid gap-8 w-full max-w-6xl mx-auto justify-center grid-cols-1 md:grid-cols-2 max-w-3xl justify-items-center"
             >
-              {showTrialCard && (
-                <motion.div
-                  key="trial-card"
-                  className="relative"
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0 }}
-                >
-                  <div className="relative bg-white/85 backdrop-blur-md rounded-3xl p-6 shadow-lg border-2 border-gray-200 flex flex-col h-full max-w-[320px]">
-                    <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Crown className="w-8 h-8 text-white" />
-                    </div>
-
-                    <div className="text-center flex-1 flex flex-col">
-                      <h3 className="text-2xl font-black text-gray-900 mb-1">3 GÜN DENEME</h3>
-                      <p className="text-gray-600 mb-4 text-sm font-medium leading-tight">Profesyonel özelliklerin tamamı 3 gün boyunca sende.</p>
-
-                      <div className="mb-3 flex items-center justify-center gap-2 flex-row flex-wrap min-h-[28px]">
-                        <span className="inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold bg-gray-50 text-gray-700 border-gray-200">
-                          Giriş yapınca başlar
-                        </span>
-                      </div>
-
-                      <div className="mt-auto">
-                        <div className="text-4xl font-black text-gray-900 mb-1">₺0</div>
-                        <div className="text-gray-600 text-sm font-bold mb-4">3 gün</div>
-
-                        <button
-                          type="button"
-                          onClick={() => { window.location.href = '/auth'; }}
-                          className="btn-primary w-full py-3 text-sm"
-                        >
-                          Kayıt Ol / Giriş Yap
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
               {visiblePlans.map((plan, index) => (
                 (() => {
                   const planTier = normalizeTier(plan?.name);

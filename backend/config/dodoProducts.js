@@ -20,30 +20,6 @@ const SUBSCRIPTION_PRODUCTS = {
   }
 };
 
-const AD_PACKAGES = {
-  ad_basic: {
-    name: 'Başlangıç',
-    amount: 500,
-    creditAmount: 500,
-    dodoProductId: process.env.DODO_PRODUCT_AD_BASIC || 'prod_ad_basic',
-    description: 'Başlangıç Reklam Paketi - 500 TRY kredi'
-  },
-  ad_professional: {
-    name: 'Profesyonel',
-    amount: 1200,
-    creditAmount: 1200,
-    dodoProductId: process.env.DODO_PRODUCT_AD_PROFESSIONAL || 'prod_ad_professional',
-    description: 'Profesyonel Reklam Paketi - 1200 TRY kredi'
-  },
-  ad_premium: {
-    name: 'Premium',
-    amount: 2500,
-    creditAmount: 2500,
-    dodoProductId: process.env.DODO_PRODUCT_AD_PREMIUM || 'prod_ad_premium',
-    description: 'Premium Reklam Paketi - 2500 TRY kredi'
-  }
-};
-
 /**
  * Get subscription product by ID
  * @param {string} productId - Product ID (e.g., 'standard_monthly')
@@ -54,28 +30,11 @@ function getSubscriptionProduct(productId) {
 }
 
 /**
- * Get ad package by ID
- * @param {string} packageId - Package ID (e.g., 'ad_basic')
- * @returns {Object|null} Package configuration or null if not found
- */
-function getAdPackage(packageId) {
-  return AD_PACKAGES[packageId] || null;
-}
-
-/**
  * Get all subscription products
  * @returns {Object} All subscription products
  */
 function getAllSubscriptionProducts() {
   return { ...SUBSCRIPTION_PRODUCTS };
-}
-
-/**
- * Get all ad packages
- * @returns {Object} All ad packages
- */
-function getAllAdPackages() {
-  return { ...AD_PACKAGES };
 }
 
 /**
@@ -92,15 +51,6 @@ function validateProductConfiguration() {
   if (!process.env.DODO_PRODUCT_PROFESSIONAL_YEARLY) {
     missing.push('DODO_PRODUCT_PROFESSIONAL_YEARLY');
   }
-  if (!process.env.DODO_PRODUCT_AD_BASIC) {
-    missing.push('DODO_PRODUCT_AD_BASIC');
-  }
-  if (!process.env.DODO_PRODUCT_AD_PROFESSIONAL) {
-    missing.push('DODO_PRODUCT_AD_PROFESSIONAL');
-  }
-  if (!process.env.DODO_PRODUCT_AD_PREMIUM) {
-    missing.push('DODO_PRODUCT_AD_PREMIUM');
-  }
 
   return {
     valid: missing.length === 0,
@@ -113,10 +63,7 @@ function validateProductConfiguration() {
 
 module.exports = {
   SUBSCRIPTION_PRODUCTS,
-  AD_PACKAGES,
   getSubscriptionProduct,
-  getAdPackage,
   getAllSubscriptionProducts,
-  getAllAdPackages,
   validateProductConfiguration
 };

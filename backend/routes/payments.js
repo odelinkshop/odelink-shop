@@ -11,7 +11,6 @@ const { dodoPaymentsService } = require('../services/dodoPaymentsService');
 const EmailNotificationService = require('../services/emailNotificationService');
 const Payment = require('../models/Payment');
 const Subscription = require('../models/Subscription');
-const AdvertisementCredit = require('../models/AdvertisementCredit');
 const User = require('../models/User');
 const crypto = require('crypto');
 
@@ -50,27 +49,6 @@ const SUBSCRIPTION_PRODUCTS = {
   }
 };
 
-const AD_PACKAGES = {
-  ad_basic: {
-    name: 'Başlangıç',
-    amount: 500,
-    creditAmount: 500,
-    dodoProductId: process.env.DODO_PRODUCT_AD_BASIC || 'prod_ad_basic'
-  },
-  ad_professional: {
-    name: 'Profesyonel',
-    amount: 1200,
-    creditAmount: 1200,
-    dodoProductId: process.env.DODO_PRODUCT_AD_PROFESSIONAL || 'prod_ad_professional'
-  },
-  ad_premium: {
-    name: 'Premium',
-    amount: 2500,
-    creditAmount: 2500,
-    dodoProductId: process.env.DODO_PRODUCT_AD_PREMIUM || 'prod_ad_premium'
-  }
-};
-
 /**
  * Create payment link
  * POST /api/payments/create-link
@@ -87,9 +65,9 @@ router.post('/create-link', authMiddleware, paymentLimiter, async (req, res) => 
       });
     }
 
-    if (!['subscription', 'ad_package'].includes(productType)) {
+    if (productType !== 'subscription') {
       return res.status(400).json({
-        error: 'Geçersiz productType. "subscription" veya "ad_package" olmalıdır'
+        error: 'Geçersiz productType. Sadece "subscription" desteklenmektedir'
       });
     }
 
@@ -99,43 +77,23 @@ router.post('/create-link', authMiddleware, paymentLimiter, async (req, res) => 
       return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
     }
 
-    let amount, dodoProductId, metadata;
-
-    // Determine product details based on type
-    if (productType === 'subscription') {
-      const product = SUBSCRIPTION_PRODUCTS[productId];
-      if (!product) {
-        return res.status(400).json({ error: 'Geçersiz abonelik ürünü' });
-      }
-
-      amount = product.amount;
-      dodoProductId = product.dodoProductId;
-      metadata = {
-        user_id: userId,
-        product_type: productType,
-        product_id: productId,
-        tier: product.tier,
-        billing_cycle: product.billingCycle,
-        successUrl: `${process.env.FRONTEND_URL}/payment/success`,
-        cancelUrl: `${process.env.FRONTEND_URL}/payment/cancel`
-      };
-    } else if (productType === 'ad_package') {
-      const adPackage = AD_PACKAGES[productId];
-      if (!adPackage) {
-        return res.status(400).json({ error: 'Geçersiz reklam paketi' });
-      }
-
-      amount = adPackage.amount;
-      dodoProductId = adPackage.dodoProductId;
-      metadata = {
-        user_id: userId,
-        product_type: productType,
-        product_id: productId,
-        credit_amount: adPackage.creditAmount,
-        successUrl: `${process.env.FRONTEND_URL}/payment/success`,
-        cancelUrl: `${process.env.FRONTEND_URL}/payment/cancel`
-      };
+    // Get subscription product
+    const product = SUBSCRIPTION_PRODUCTS[productId];
+    if (!product) {
+      return res.status(400).json({ error: 'Geçersiz abonelik ürünü' });
     }
+
+    const amount = product.amount;
+    const dodoProductId = product.dodoProductId;
+    const metadata = {
+      user_id: userId,
+      product_type: productType,
+      product_id: productId,
+      tier: product.tier,
+      billing_cycle: product.billingCycle,
+      successUrl: `${process.env.FRONTEND_URL}/payment/success`,
+      cancelUrl: `${process.env.FRONTEND_URL}/payment/cancel`
+    };
 
     // Generate unique transaction ID
     const transactionId = `txn_${Date.now()}_${crypto.randomBytes(8).toString('hex')}`;
@@ -523,7 +481,7 @@ async function handleFailedPayment(event) {
 }
 
 /**
- * Process successful payment - activate subscription or add credits
+ * Process successful payment - activate subscription
  */
 async function processSuccessfulPayment(payment) {
   const userId = payment.user_id;
@@ -584,55 +542,9 @@ async function processSuccessfulPayment(payment) {
       console.error('⚠️ Failed to send subscription confirmation email:', emailError.message);
       // Don't throw - email failure shouldn't block payment processing
     }
-
-  } else if (productType === 'ad_package') {
-    // Add advertisement credits
-    const metadata = payment.metadata || {};
-    const creditAmount = metadata.credit_amount || parseFloat(payment.amount);
-
-    console.log('🔄 Adding advertisement credits:', {
-      userId,
-      creditAmount
-    });
-
-    const creditRecord = await AdvertisementCredit.addCredit(
-      userId,
-      creditAmount,
-      'purchase',
-      payment.id,
-      `Reklam paketi satın alımı: ${payment.product_id}`
-    );
-
-    const newBalance = parseFloat(creditRecord.balance_after);
-
-    console.log('✅ Advertisement credits added:', {
-      userId,
-      creditAmount,
-      newBalance
-    });
-
-    // Determine package name
-    const packageNames = {
-      'ad_basic': 'Başlangıç',
-      'ad_professional': 'Profesyonel',
-      'ad_premium': 'Premium'
-    };
-    const packageName = packageNames[payment.product_id] || 'Reklam Paketi';
-
-    // Send credit confirmation email
-    try {
-      await EmailNotificationService.sendCreditConfirmation({
-        userEmail: user.email,
-        userName: user.name || user.email,
-        packageName,
-        creditAmount,
-        newBalance,
-        transactionId: payment.transaction_id
-      });
-    } catch (emailError) {
-      console.error('⚠️ Failed to send credit confirmation email:', emailError.message);
-      // Don't throw - email failure shouldn't block payment processing
-    }
+  } else {
+    console.error('❌ Unsupported product type:', productType);
+    throw new Error(`Unsupported product type: ${productType}`);
   }
 }
 

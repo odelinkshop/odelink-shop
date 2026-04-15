@@ -271,32 +271,6 @@ class Subscription {
     const subscription = await this.getUserSubscription(userId);
 
     if (!subscription) {
-      let trial = null;
-      try {
-        trial = await User.getTrialStatus(userId);
-      } catch (e) {
-        trial = null;
-      }
-
-      if (trial?.active) {
-        const trialCaps = buildCapabilitiesForTier({ tier: 'profesyonel', billingCycle: 'yearly' }) || {};
-        return {
-          ...trialCaps,
-          tier: 'profesyonel',
-          planCode: 'trial',
-          planLabel: 'Deneme',
-          planName: 'Deneme',
-          billingCycle: 'trial',
-          maxSites: 999999,
-          trial: {
-            active: true,
-            startedAt: trial.startedAt,
-            endsAt: trial.endsAt,
-            msLeft: trial.msLeft
-          }
-        };
-      }
-
       return {
         tier: null,
         planCode: null,
@@ -310,15 +284,7 @@ class Subscription {
         allowedBlocks: [],
         allowedDesignControls: [],
         billingCycle: null,
-        planFeatures: [],
-        trial: trial ? {
-          active: false,
-          startedAt: trial.startedAt,
-          endsAt: trial.endsAt,
-          expired: Boolean(trial.expired),
-          msLeft: 0
-        } : null,
-        trialExpired: Boolean(trial?.expired)
+        planFeatures: []
       };
     }
 
@@ -363,9 +329,7 @@ class Subscription {
 
     return {
       ...caps,
-      billingCycle,
-      trial: null,
-      trialExpired: false
+      billingCycle
     };
   }
 }

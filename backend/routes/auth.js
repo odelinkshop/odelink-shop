@@ -20,8 +20,8 @@ User.ensureEmailSchema().catch((error) => {
   console.error('User email schema init error:', error);
 });
 
-User.ensureTrialSchema().catch((error) => {
-  console.error('User trial schema init error:', error);
+User.ensureEmailSchema().catch((error) => {
+  console.error('User email schema init error:', error);
 });
 
 AuthSession.ensureSchema().catch((error) => {
@@ -476,15 +476,6 @@ router.post('/register', async (req, res) => {
     const user = await User.create({ name: normalizedName, email: normalizedEmail, password, phone: normalizedPhone });
 
     try {
-      const activeSub = await Subscription.getUserSubscription(user.id).catch(() => null);
-      if (!activeSub) {
-        await User.startTrialIfEligible(user.id, { days: 3 });
-      }
-    } catch (e) {
-      void e;
-    }
-
-    try {
       await insertIpLog(user.id, user.email, req, 'register');
     } catch (e) {
       void e;
@@ -887,15 +878,6 @@ router.post('/login', async (req, res) => {
     const isValidPassword = await User.verifyPassword(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Email veya şifre hatalı' });
-    }
-
-    try {
-      const activeSub = await Subscription.getUserSubscription(user.id).catch(() => null);
-      if (!activeSub) {
-        await User.startTrialIfEligible(user.id, { days: 3 });
-      }
-    } catch (e) {
-      void e;
     }
 
     try {

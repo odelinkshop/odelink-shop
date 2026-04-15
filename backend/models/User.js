@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const { normalizeEmail, normalizePhone, normalizeDisplayName } = require('../utils/account');
 
 let ensureEmailSchemaPromise = null;
-let ensureTrialSchemaPromise = null;
 
 class User {
   static async ensureEmailSchema() {
@@ -38,71 +37,6 @@ class User {
     });
 
     return ensureEmailSchemaPromise;
-  }
-
-  static async ensureTrialSchema() {
-    if (ensureTrialSchemaPromise) return ensureTrialSchemaPromise;
-
-    ensureTrialSchemaPromise = (async () => {
-      await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS trial_started_at TIMESTAMP");
-      await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS trial_ends_at TIMESTAMP");
-      await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS trial_consumed BOOLEAN DEFAULT FALSE");
-      await pool.query('CREATE INDEX IF NOT EXISTS idx_users_trial_ends_at ON users (trial_ends_at)');
-      return { ok: true };
-    })().catch((error) => {
-      ensureTrialSchemaPromise = null;
-      throw error;
-    });
-
-    return ensureTrialSchemaPromise;
-  }
-
-  static async getTrialStatus(userId) {
-    await this.ensureTrialSchema();
-
-    const res = await pool.query(
-      'SELECT trial_started_at, trial_ends_at, trial_consumed FROM users WHERE id = $1',
-      [userId]
-    );
-    const row = res.rows?.[0] || null;
-    const startedAt = row?.trial_started_at ? new Date(row.trial_started_at) : null;
-    const endsAt = row?.trial_ends_at ? new Date(row.trial_ends_at) : null;
-    const consumed = Boolean(row?.trial_consumed);
-
-    const now = Date.now();
-    const endsMs = endsAt && !Number.isNaN(endsAt.getTime()) ? endsAt.getTime() : 0;
-    const active = Boolean(endsMs) && endsMs > now;
-    const expired = Boolean(endsMs) && endsMs <= now;
-
-    return {
-      startedAt: startedAt && !Number.isNaN(startedAt.getTime()) ? startedAt.toISOString() : null,
-      endsAt: endsAt && !Number.isNaN(endsAt.getTime()) ? endsAt.toISOString() : null,
-      consumed,
-      active,
-      expired,
-      msLeft: active ? Math.max(0, endsMs - now) : 0
-    };
-  }
-
-  static async startTrialIfEligible(userId, { days = 3 } = {}) {
-    await this.ensureTrialSchema();
-
-    const trial = await this.getTrialStatus(userId);
-    if (trial.active) return { ok: true, started: false, trial };
-    if (trial.consumed) return { ok: true, started: false, trial };
-
-    const durationDays = Number(days || 3);
-    const safeDays = Number.isFinite(durationDays) ? Math.max(1, Math.min(14, Math.floor(durationDays))) : 3;
-    const startedAt = new Date();
-    const endsAt = new Date(startedAt.getTime() + safeDays * 24 * 60 * 60 * 1000);
-
-    await pool.query(
-      'UPDATE users SET trial_started_at = $2, trial_ends_at = $3, trial_consumed = TRUE, updated_at = NOW() WHERE id = $1',
-      [userId, startedAt.toISOString(), endsAt.toISOString()]
-    );
-
-    const next = await this.getTrialStatus(userId);
-    return { ok: true, started: true, trial: next };
   }
 
   static async create(userData) {
@@ -140,7 +74,7 @@ class User {
   }
 
   static async findById(id) {
-    const query = 'SELECT id, name, email, phone, subscription_id, trial_started_at, trial_ends_at, trial_consumed, created_at, updated_at FROM users WHERE id = $1';
+    const query = 'SELECT id, name, email, phone, subscription_id, created_at, updated_at FROM users WHERE id = $1';
     try {
       const result = await pool.query(query, [id]);
       return result.rows[0];
