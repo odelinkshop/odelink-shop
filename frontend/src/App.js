@@ -19,6 +19,8 @@ import BlogPage from './components/BlogPage';
 import FaqPage from './components/FaqPage';
 import GuidePage from './components/GuidePage';
 import PaymentPage from './components/PaymentPage';
+import PaymentStatus from './components/PaymentStatus';
+import PaymentHistory from './components/PaymentHistory';
 import ShoppingPage from './components/ShoppingPage';
 import WidgetPage from './components/WidgetPage';
 import AdDashboard from './components/AdDashboard';
@@ -400,6 +402,8 @@ function AppLayout() {
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/guide" element={<GuidePage />} />
           <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+          <Route path="/payment/status" element={<ProtectedRoute><PaymentStatus /></ProtectedRoute>} />
+          <Route path="/payment/history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
           <Route path="/shopping" element={<ProtectedRoute><ShoppingPage /></ProtectedRoute>} />
           <Route path="/widget" element={<ProtectedRoute><WidgetPage /></ProtectedRoute>} />
           <Route path="/dashboard/ads" element={<ProtectedRoute><AdDashboard /></ProtectedRoute>} />

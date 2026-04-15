@@ -878,6 +878,15 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/support', supportLimiter, supportRoutes);
 app.use('/api/reports', reportsRoutes);
 
+// Payment routes
+try {
+  const paymentRoutes = require('./routes/payments');
+  app.use('/api/payments', paymentRoutes);
+  console.log('✅ Payment routes loaded');
+} catch (e) {
+  console.error('❌ Payment routes failed:', e.message);
+}
+
 // Advertisement routes
 try {
   const advertisementRoutes = require('./routes/advertisements');

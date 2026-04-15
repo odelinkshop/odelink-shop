@@ -50,6 +50,18 @@ const realShopierLimiter = createLimiter({
   message: 'Gerçek zamanlı veri limiti.'
 });
 
+const paymentLimiter = createLimiter({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: 'Çok fazla ödeme isteği.'
+});
+
+const webhookLimiter = createLimiter({
+  windowMs: 60 * 1000,
+  max: 100,
+  message: 'Webhook rate limit exceeded.'
+});
+
 module.exports = {
   globalLimiter,
   authLimiter,
@@ -57,5 +69,7 @@ module.exports = {
   sitesLimiter,
   shopierLimiter,
   realShopierLimiter,
-  metricsLimiter
+  metricsLimiter,
+  paymentLimiter,
+  webhookLimiter
 };

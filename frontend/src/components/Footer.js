@@ -5,6 +5,7 @@ import useFooterLinks from '../hooks/useFooterLinks';
 import FooterSection from './FooterSection';
 import FooterContact from './FooterContact';
 import BrandLogo from './BrandLogo';
+import AdBanner from './AdBanner';
 
 const Footer = () => {
   const { isLoggedIn } = useAuthSession();

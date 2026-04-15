@@ -5,8 +5,6 @@ import useCapabilities from '../hooks/useCapabilities';
 import { getAuthToken } from '../utils/authStorage';
 import { getApiBase } from '../utils/apiBase';
 
-const SHOPIER_STANDART_URL = 'https://www.shopier.com/odelinkshop/45402190';
-const SHOPIER_PROFESYONEL_URL = 'https://www.shopier.com/odelinkshop/45402237';
 const API_BASE = getApiBase();
 
 const TIER_ORDER = {
@@ -188,26 +186,56 @@ const PremiumPricing = () => {
       return;
     }
 
-    const confirmed = window.confirm('Ödeme için Shopier sayfasına yönlendirileceksin. ÖNEMLİ: Shopier’de “Sipariş Notu” alanına kayıt olduğun e‑postayı yaz. Devam edilsin mi?');
+    const confirmed = window.confirm('Ödeme sayfasına yönlendirileceksiniz. Devam edilsin mi?');
     if (!confirmed) {
       return;
     }
 
     setBusyPlan(planName);
     try {
-      const url = planName === 'PROFESYONEL' ? SHOPIER_PROFESYONEL_URL : SHOPIER_STANDART_URL;
+      // Determine product details for Dodo Payments
+      const productId = planName === 'PROFESYONEL' 
+        ? 'professional_yearly' 
+        : 'standard_monthly';
       
-      try {
-        localStorage.setItem('odelink_intended_plan', planName);
-        localStorage.setItem('odelink_intended_cycle', isAnnual ? 'yearly' : 'monthly');
-      } catch (e) {
-        void e;
+      const tier = planName === 'PROFESYONEL' ? 'profesyonel' : 'standart';
+      const billingCycle = isAnnual ? 'yearly' : 'monthly';
+
+      // Call backend to create payment link
+      const response = await fetch(`${API_BASE}/api/payments/create-link`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productType: 'subscription',
+          productId,
+          tier,
+          billingCycle
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ödeme bağlantısı oluşturulamadı');
       }
 
-      window.location.href = url;
-    } catch (e) {
-      window.location.href = planName === 'PROFESYONEL' ? SHOPIER_PROFESYONEL_URL : SHOPIER_STANDART_URL;
-    } finally {
+      // Store transaction ID for status checking
+      try {
+        localStorage.setItem('odelink_transaction_id', data.transactionId);
+        localStorage.setItem('odelink_intended_plan', planName);
+        localStorage.setItem('odelink_intended_cycle', billingCycle);
+      } catch (e) {
+        console.warn('localStorage error:', e);
+      }
+
+      // Redirect to Dodo Payments checkout
+      window.location.href = data.paymentUrl;
+    } catch (error) {
+      console.error('Payment link creation error:', error);
+      alert(error.message || 'Ödeme bağlantısı oluşturulamadı. Lütfen tekrar deneyin.');
       setBusyPlan(null);
     }
   };
@@ -297,18 +325,11 @@ const PremiumPricing = () => {
         
         <div className="flex justify-center">
           <div className="w-full max-w-6xl">
-            <div className="mb-6">
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-900">
-                <div className="text-sm font-bold">Shopier ödeme notu</div>
-                <div className="text-sm">Ödeme yaparken Shopier’de “Sipariş Notu” alanına kayıt olduğun e‑postayı yaz. (Manuel onay için gerekli)</div>
-              </div>
-            </div>
-
             {hasToken && !capsLoading ? (
               <div className="mb-6">
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-white/90">
                   <div className="text-sm font-bold">Plan seçimi</div>
-                  <div className="text-sm text-white/70">Aşağıdan paket seçebilirsin. Ödeme sonrası planın admin onayıyla aktif edilir.</div>
+                  <div className="text-sm text-white/70">Aşağıdan paket seçebilirsin. Ödeme sonrası planın otomatik olarak aktif edilir.</div>
                 </div>
               </div>
             ) : null}
@@ -496,4 +517,3 @@ const PremiumPricing = () => {
 };
 
 export default PremiumPricing;
-
