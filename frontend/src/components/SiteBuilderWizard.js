@@ -22,6 +22,7 @@ export default function SiteBuilderWizard() {
   const [shopierUrl, setShopierUrl] = useState('');
   const [siteName, setSiteName] = useState('');
   const [siteDescription, setSiteDescription] = useState('');
+  const [selectedTheme, setSelectedTheme] = useState('wear');
   const [creating, setCreating] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState('');
@@ -87,7 +88,7 @@ export default function SiteBuilderWizard() {
       const payload = {
         name: storeName,
         shopierUrl: normalizedShopierUrl,
-        theme: 'wear', // WEAR teması (Framer Pro)
+        theme: selectedTheme,
         settings: {
           description: description
         }
@@ -270,27 +271,53 @@ export default function SiteBuilderWizard() {
                   />
                 </div>
 
-                {/* Framer Pro Tema Bilgisi */}
+                {/* Tema Seçimi */}
                 <div className="space-y-3 pt-2">
-                  <div className="p-5 rounded-2xl bg-gradient-to-br from-purple-600/10 to-purple-700/10 border-2 border-purple-500/30">
-                    <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center shadow-lg shadow-purple-600/30 flex-shrink-0">
-                        <Store className="w-7 h-7 text-white" />
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold text-lg text-white mb-1">WEAR - Framer Pro</div>
-                        <div className="text-sm text-white/60 leading-relaxed mb-3">
-                          Premium Framer teması ile profesyonel animasyonlar, modern tasarım ve yüksek performans
+                  <label className="text-xs font-bold uppercase tracking-widest text-white/40 ml-1">Görünüm Seçimi</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTheme('wear')}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left ${
+                        selectedTheme === 'wear' 
+                          ? 'bg-purple-600/10 border-purple-500/50 ring-4 ring-purple-500/10' 
+                          : 'bg-black/20 border-white/5 hover:border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          selectedTheme === 'wear' ? 'bg-purple-600' : 'bg-white/10'
+                        }`}>
+                          <Store className="w-5 h-5 text-white" />
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-600/20 text-purple-300 text-xs font-semibold">
-                            <Rocket className="w-3.5 h-3.5" />
-                            Otomatik Aktif
-                          </span>
-                        </div>
+                        <div className="font-bold">WEAR</div>
                       </div>
-                    </div>
+                      <p className="text-xs text-white/50 leading-relaxed">
+                        Modern, enerjik ve dinamik sokak giyimi tarzı.
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTheme('gent')}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left ${
+                        selectedTheme === 'gent' 
+                          ? 'bg-blue-600/10 border-blue-500/50 ring-4 ring-blue-500/10' 
+                          : 'bg-black/20 border-white/5 hover:border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          selectedTheme === 'gent' ? 'bg-blue-600' : 'bg-white/10'
+                        }`}>
+                          <Store className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="font-bold">GENT</div>
+                      </div>
+                      <p className="text-xs text-white/50 leading-relaxed">
+                        Profesyonel, şık ve klasik erkek giyim tarzı.
+                      </p>
+                    </button>
                   </div>
                 </div>
 

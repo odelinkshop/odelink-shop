@@ -298,7 +298,7 @@ class Site {
   }
 
   static async update(siteId, updateData) {
-    const { name, shopierUrl, customDomain, status, settings } = updateData;
+    const { name, shopierUrl, customDomain, theme, status, settings } = updateData;
     const dbSettings = (settings && typeof settings === 'object') ? JSON.stringify(settings) : (settings || null);
     const query = `
       UPDATE sites
@@ -306,15 +306,16 @@ class Site {
         name = COALESCE($1, name),
         shopier_url = COALESCE($2, shopier_url),
         custom_domain = COALESCE($3, custom_domain),
-        status = COALESCE($4, status),
-        settings = COALESCE(settings, '{}'::jsonb) || COALESCE($5::jsonb, '{}'::jsonb),
+        theme = COALESCE($4, theme),
+        status = COALESCE($5, status),
+        settings = COALESCE(settings, '{}'::jsonb) || COALESCE($6::jsonb, '{}'::jsonb),
         updated_at = NOW()
-      WHERE id = $6
+      WHERE id = $7
       RETURNING *
     `;
     
     try {
-      const result = await pool.query(query, [name, shopierUrl, customDomain, status, dbSettings, siteId]);
+      const result = await pool.query(query, [name, shopierUrl, customDomain, theme, status, dbSettings, siteId]);
       return result.rows[0];
     } catch (error) {
       throw new Error('Site güncellenemedi: ' + error.message);

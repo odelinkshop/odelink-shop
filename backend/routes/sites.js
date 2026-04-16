@@ -45,7 +45,7 @@ const pickPolicies = (raw) => {
 const createSiteSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   shopierUrl: Joi.string().min(3).max(500).required(),
-  theme: Joi.string().valid('wear').allow(null).optional(),
+  theme: Joi.string().valid('wear', 'gent').allow(null).optional(),
   settings: Joi.object({
     description: Joi.string().allow('').optional(),
     logoUrl: Joi.string().allow('').optional()
@@ -225,6 +225,7 @@ const updateSiteSchema = Joi.object({
   name: Joi.string().min(2).max(100).optional(),
   shopierUrl: Joi.string().min(3).max(500).optional(),
   customDomain: Joi.string().allow('').max(500).optional(),
+  theme: Joi.string().valid('wear', 'gent').allow(null).optional(),
   status: Joi.string().valid('active', 'inactive').optional(),
   settings: Joi.object().unknown(true).optional()
 });

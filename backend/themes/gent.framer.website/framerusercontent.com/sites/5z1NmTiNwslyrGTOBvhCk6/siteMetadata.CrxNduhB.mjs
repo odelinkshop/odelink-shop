@@ -1,0 +1,2 @@
+import{t as e}from"./rolldown-runtime.VnHjG-ER.mjs";function t(e,t){return{description:`Wear is a high-end, scalable Framer eCommerce design system crafted for leading fashion and large-scale online brands.`,favicon:`https://framerusercontent.com/assets/GZdNuvJdKQSCm9WHjNZENQF4.svg`,robots:`max-image-preview:large`,socialImage:`https://framerusercontent.com/assets/iQAL5UIxExPNLNZ0iduaGediZGE.jpg`,title:`Wear`}}var n=e((()=>{}));export{t as n,n as t};
+//# sourceMappingURL=siteMetadata.CrxNduhB.mjs.map

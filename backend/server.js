@@ -743,6 +743,118 @@ async function handleWearTheme(req, res, site, requestedPath) {
   }
 }
 
+/**
+ * GENT temasını serve et (Framer Pro)
+ * @param {Object} req - Express request
+ * @param {Object} res - Express response
+ * @param {Object} site - Site verisi
+ * @param {string} requestedPath - İstenen dosya yolu
+ */
+async function handleGentTheme(req, res, site, requestedPath) {
+  const themeDir = path.join(__dirname, 'themes', 'gent.framer.website');
+  
+  try {
+    // Static file request (CSS, JS, images, fonts, modules)
+    if (requestedPath && requestedPath !== '/') {
+      const assetPaths = [
+        'framerusercontent.com',
+        'app.framerstatic.com',
+        'framer.com',
+        'events.framer.com',
+        'www.dropbox.com',
+        '_DataURI'
+      ];
+      
+      const isAsset = assetPaths.some(assetPath => requestedPath.includes(assetPath));
+      
+      if (isAsset) {
+        const filePath = path.join(themeDir, requestedPath);
+        
+        if (!filePath.startsWith(themeDir)) {
+          console.error('⚠️ Path traversal attempt:', requestedPath);
+          return res.status(403).send('Forbidden');
+        }
+        
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+          res.setHeader('Cache-Control', 'public, max-age=86400');
+          res.setHeader('ETag', `"${fs.statSync(filePath).mtime.getTime()}"`);
+          return res.sendFile(filePath);
+        }
+        
+        return res.status(404).send('File not found');
+      }
+    }
+    
+    const cacheKey = `gent:${site.subdomain}`;
+    const cachedHtml = getCachedHtml(cacheKey);
+    
+    if (cachedHtml) {
+      console.log('✅ Cache hit:', cacheKey);
+      res.setHeader('X-Cache', 'HIT');
+      res.setHeader('Cache-Control', 'public, max-age=300');
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(cachedHtml);
+    }
+    
+    const gentThemeService = require('./services/gentThemeService');
+    const { cacheProducts } = require('./routes/shopify-mock');
+    
+    let products = [];
+    try {
+      const shopierCatalogService = require('./services/shopierCatalogService');
+      const catalogData = await shopierCatalogService.getCatalogByShopierUrl(site.shopier_url);
+      products = catalogData?.products || [];
+      console.log(`📦 Loaded ${products.length} products for GENT theme`);
+    } catch (productError) {
+      console.error('⚠️ Product fetch error:', productError.message);
+    }
+    
+    const siteSettings = {
+      name: site.name,
+      subdomain: site.subdomain,
+      logoUrl: site.settings?.logoUrl || '',
+      description: site.settings?.description || '',
+      contact: site.settings?.contact || {},
+      social: site.settings?.social || {}
+    };
+    
+    const html = await gentThemeService.renderTheme(products, siteSettings);
+    
+    const shopifyProducts = gentThemeService.convertToShopifyFormat(products);
+    cacheProducts(site.subdomain, shopifyProducts);
+    
+    setCachedHtml(cacheKey, html);
+    
+    res.setHeader('X-Cache', 'MISS');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    
+    return res.send(html);
+    
+  } catch (error) {
+    console.error('❌ GENT theme rendering error:', error);
+    return res.status(200).send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${site.name}</title>
+          <style>
+            body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+            h1 { color: #333; }
+            p { color: #666; }
+          </style>
+        </head>
+        <body>
+          <h1>${site.name}</h1>
+          <p>Tema yüklenemedi. Lütfen daha sonra tekrar deneyin.</p>
+        </body>
+      </html>
+    `);
+  }
+}
+
+
 // Path-based site route - serve Ödelink theme for /s/:subdomain
 // CRITICAL: This MUST come BEFORE express.static() and OUTSIDE shouldServeFrontend check
 app.get('/s/:subdomain*', async (req, res, next) => {
@@ -777,9 +889,11 @@ app.get('/s/:subdomain*', async (req, res, next) => {
     
     console.log('🎨 Serving site:', subdomain, 'theme:', site.theme);
     
-    // WEAR tema desteği (Framer Pro - Tek tema)
+    // Theme routing
     if (site.theme === 'wear') {
       return await handleWearTheme(req, res, site, requestedPath);
+    } else if (site.theme === 'gent') {
+      return await handleGentTheme(req, res, site, requestedPath);
     }
     
     // Fallback: WEAR teması (tema belirtilmemişse de WEAR kullan)
