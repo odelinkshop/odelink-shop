@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
@@ -29,7 +29,7 @@ class ThemeScraperService {
       
       // wget'i çalıştır
       try {
-        execSync(wgetCommand, { 
+        execFileSync('wget', ['--mirror', '--convert-links', '--adjust-extension', '--page-requisites', '--no-parent', url, '-P', targetDir], { 
           stdio: 'inherit',
           timeout: 300000 // 5 dakika timeout
         });
@@ -39,7 +39,7 @@ class ThemeScraperService {
           console.log('⚠️ wget bulunamadı, httrack deneniyor...');
           const httrackCommand = this._buildHttrackCommand(url, targetDir);
           console.log(`⚙️ Komut: ${httrackCommand}`);
-          execSync(httrackCommand, { 
+          execFileSync('httrack', [url, '-O', targetDir, '+*.framer.ai/*', '-v'], { 
             stdio: 'inherit',
             timeout: 300000
           });
