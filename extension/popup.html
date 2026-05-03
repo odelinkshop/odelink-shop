@@ -2,133 +2,159 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     body {
-      width: 320px;
-      height: 400px;
+      width: 340px;
       margin: 0;
       padding: 0;
       background: #050505;
-      color: white;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #F2EBE1;
+      font-family: 'Outfit', sans-serif;
       overflow: hidden;
     }
+    .container {
+      background: linear-gradient(180deg, rgba(197,160,89,0.05) 0%, rgba(0,0,0,0) 100%);
+      padding-bottom: 20px;
+    }
     .header {
-      padding: 20px;
-      background: linear-gradient(180deg, #0A0A0A 0%, #050505 100%);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 24px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
+      border-bottom: 1px solid rgba(197,160,89,0.1);
     }
     .logo {
-      width: 32px;
-      height: 32px;
-      background: #06b6d4;
-      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      background: #C5A059;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      box-shadow: 0 0 15px rgba(6,182,212,0.3);
+      font-weight: 900;
+      color: black;
+      font-size: 18px;
+      box-shadow: 0 0 20px rgba(197,160,89,0.3);
     }
-    .title {
-      font-size: 16px;
+    .brand {
+      flex: 1;
+    }
+    .brand-name {
+      font-size: 18px;
       font-weight: 900;
       letter-spacing: -0.5px;
-      font-style: italic;
+      color: #F2EBE1;
+      margin: 0;
     }
-    .status-badge {
+    .brand-tag {
       font-size: 8px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      background: rgba(16,185,129,0.1);
-      color: #10b981;
-      font-weight: bold;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+      color: #C5A059;
+      font-weight: bold;
     }
     .content {
+      padding: 24px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(197, 160, 89, 0.1);
+      border-radius: 20px;
       padding: 20px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(10px);
     }
-    .metric-card {
-      background: #0A0A0A;
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 12px;
+    .stat-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
-    .metric-label {
+    .stat-label {
       font-size: 10px;
-      color: #666;
-      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1px;
+      color: #666;
+      font-weight: 700;
     }
-    .metric-value {
-      font-size: 24px;
-      font-weight: bold;
+    .stat-value {
+      font-size: 20px;
+      font-weight: 900;
+      color: #F2EBE1;
     }
     .btn {
       width: 100%;
-      padding: 12px;
-      background: #06b6d4;
+      padding: 16px;
+      border-radius: 14px;
       border: none;
-      border-radius: 12px;
-      color: black;
+      font-family: 'Outfit', sans-serif;
       font-weight: 900;
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       cursor: pointer;
-      margin-top: 10px;
+      transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+      margin-top: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #C5A059 0%, #9A7B4F 100%);
+      color: black;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(197,160,89,0.2);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #F2EBE1;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(197,160,89,0.3);
     }
     .footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      padding: 12px;
       text-align: center;
+      padding: 20px;
       font-size: 8px;
-      color: #333;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      color: #333;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div className="header">
-    <div className="logo">O</div>
-    <div>
-      <div className="title">ODELINK LIVE</div>
-      <div className="status-badge">Signal Active</div>
-    </div>
-  </div>
-
-  <div className="content">
-    <div className="metric-card">
-      <div>
-        <div className="metric-label">Active Now</div>
-        <div className="metric-value" id="active-count">0</div>
+  <div class="container">
+    <div class="header">
+      <div class="logo">O</div>
+      <div class="brand">
+        <h1 class="brand-name">ODELINK LIVE</h1>
+        <div class="brand-tag">Neural Intelligence</div>
       </div>
-      <div style="color: #10b981;">●</div>
+      <div style="color: #C5A059; font-size: 8px;">● LIVE</div>
     </div>
 
-    <div className="metric-card">
-      <div>
-        <div className="metric-label">Today Clicks</div>
-        <div className="metric-value" id="today-clicks">0</div>
+    <div class="content">
+      <div class="card">
+        <div class="stat-row">
+          <span class="stat-label">Active Visitors</span>
+          <span class="stat-value" id="active-count">0</span>
+        </div>
+        <div class="stat-row" style="margin-bottom: 0; opacity: 0.5;">
+          <span class="stat-label">Total Clicks</span>
+          <span class="stat-value" id="today-clicks" style="font-size: 14px;">0</span>
+        </div>
       </div>
+
+      <button class="btn btn-primary" id="sync-shopier">Elite Product Sync</button>
+      <button class="btn btn-secondary" id="open-panel">Command Center</button>
     </div>
 
-    <button className="btn" id="open-panel">Command Center</button>
-    <button className="btn" id="sync-shopier" style="margin-top: 8px; background: #C5A059;">Sync Shopier Products</button>
+    <div class="footer">Nova Engine v2.5 Premium</div>
   </div>
-
-  <div className="footer">Nova Intelligence v2.1</div>
 
   <script src="popup.js"></script>
 </body>
