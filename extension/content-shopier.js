@@ -1,25 +1,17 @@
 /**
- * ODELINK PROFESSIONAL EXPORTER - CONTENT SCRIPT v4.1
- * Shopier sayfasını tarar, ürünleri toplar ve JSON dosyası indirir.
- * Giriş yok, API yok, sadece SAF GÜÇLE veri toplama.
+ * ODELINK PROFESSIONAL EXPORTER v4.2
+ * Shopier Infinite Scroll + Doğru Seçiciler
  */
 
-console.log('%c🏛️ ODELINK PRO EXPORTER v4.1', 'color: #C5A059; font-weight: bold; font-size: 16px;');
+console.log('%c🏛️ ODELINK PRO EXPORTER v4.2', 'color: #C5A059; font-weight: bold; font-size: 16px;');
 
-// ─── SHOPIER SEÇİCİLERİ (Kesin ve Doğru) ───
-const SELECTORS = {
-  productCard: 'a.shopier-store--store-product-card-link',
-  productTitle: 'h3',
-  productPrice: 'span',
-  productImage: 'img'
-};
+// ─── SHOPIER KESİN SEÇİCİLER ───
+const PRODUCT_SELECTOR = 'a.product-card__link.product-image-link-store';
 
 // ─── ELITE UI ───
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
-  
   #odelink-root { all: initial; font-family: 'Outfit', sans-serif; }
-
   .odelink-floating-btn {
     position: fixed; bottom: 30px; right: 30px;
     background: linear-gradient(135deg, #C5A059 0%, #9A7B4F 100%);
@@ -41,9 +33,7 @@ const styles = `
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; color: #C5A059; font-size: 14px;
   }
-  .odelink-btn-text {
-    font-weight: 800; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
-  }
+  .odelink-btn-text { font-weight: 800; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
   .odelink-scanner {
     position: fixed; top: 0; left: 0; width: 100%; height: 4px;
     background: linear-gradient(90deg, transparent, #C5A059, transparent);
@@ -71,22 +61,17 @@ function createFloatingUI() {
   if (document.getElementById('odelink-root')) return;
   const root = document.createElement('div');
   root.id = 'odelink-root';
-  
   const scanner = document.createElement('div');
   scanner.className = 'odelink-scanner';
-  
   const btn = document.createElement('div');
   btn.className = 'odelink-floating-btn';
   btn.innerHTML = `<div class="odelink-logo-box">O</div><span class="odelink-btn-text">PAKETLE</span>`;
-
   const toast = document.createElement('div');
   toast.className = 'odelink-toast';
-
   root.appendChild(scanner);
   root.appendChild(btn);
   root.appendChild(toast);
   document.body.appendChild(root);
-
   btn.onclick = () => doFullScanAndExport();
 }
 
@@ -118,31 +103,38 @@ async function doFullScanAndExport() {
   }
 }
 
-// ─── DERİN TARAMA (Yavaş Kaydırma + Sayım) ───
+// ─── DERİN TARAMA (Infinite Scroll Desteği) ───
 async function deepScanProducts(toast) {
   // Sayfayı en başa al
   window.scrollTo(0, 0);
   await new Promise(r => setTimeout(r, 500));
 
-  let totalHeight = document.body.scrollHeight;
-  let currentPos = 0;
-  const step = 500;
-  const delay = 500;
+  let previousCount = 0;
+  let sameCountRetries = 0;
+  const maxRetries = 5; // Aynı sayıda 5 kez üst üste gelirse dur
 
-  while (currentPos < document.body.scrollHeight) {
-    window.scrollBy(0, step);
-    currentPos += step;
+  while (sameCountRetries < maxRetries) {
+    // Sayfanın en altına kaydır (infinite scroll tetiklemek için)
+    window.scrollTo(0, document.body.scrollHeight);
+    
+    // Shopier'in AJAX isteğini tamamlaması için UZUN BEKLE
+    await new Promise(r => setTimeout(r, 1500));
 
-    // SADECE GERÇEK ÜRÜN KARTLARINI SAY
-    const count = document.querySelectorAll(SELECTORS.productCard).length;
-    showToast(toast, `🛰️ Taranıyor: ${count} Ürün Bulundu...`);
+    const currentCount = document.querySelectorAll(PRODUCT_SELECTOR).length;
+    showToast(toast, `🛰️ Taranıyor: ${currentCount} Ürün Yüklendi...`);
 
-    await new Promise(r => setTimeout(r, delay));
-
-    if (document.body.scrollHeight > totalHeight) {
-      totalHeight = document.body.scrollHeight;
+    if (currentCount === previousCount) {
+      sameCountRetries++;
+      // Biraz daha bekle, belki yavaş yükleniyor
+      await new Promise(r => setTimeout(r, 1000));
+    } else {
+      sameCountRetries = 0; // Yeni ürünler geldi, sayacı sıfırla
     }
+    
+    previousCount = currentCount;
   }
+
+  showToast(toast, `📦 ${previousCount} Ürün Bulundu, Paketleniyor...`);
 
   // En üste geri dön
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -151,29 +143,35 @@ async function deepScanProducts(toast) {
   return extractAllProducts();
 }
 
-// ─── ÜRÜN ÇEKME MOTORU (Shopier Kesin Seçiciler) ───
+// ─── ÜRÜN ÇEKME MOTORU ───
 function extractAllProducts() {
   const products = [];
   const seen = new Set();
 
-  // SADECE GERÇEK ÜRÜN KARTLARINI SEÇ
-  const cards = document.querySelectorAll(SELECTORS.productCard);
-  
+  const cards = document.querySelectorAll(PRODUCT_SELECTOR);
   console.log(`🔍 [Odelink] ${cards.length} gerçek ürün kartı bulundu.`);
 
   cards.forEach((card, index) => {
     try {
       const href = card.getAttribute('href') || '';
-      const fullUrl = href.startsWith('http') ? href : `https://www.shopier.com${href}`;
       
+      // javascript:void(0) gibi sahte linkleri atla
+      if (!href || href.includes('javascript:') || href === '#') return;
+      
+      const fullUrl = href.startsWith('http') ? href : `https://www.shopier.com${href}`;
       if (seen.has(fullUrl)) return;
       seen.add(fullUrl);
 
-      const name = card.querySelector(SELECTORS.productTitle)?.textContent?.trim() || `Ürün ${index + 1}`;
-      const priceEl = card.querySelector(SELECTORS.productPrice);
-      const price = priceEl?.textContent?.trim() || '0 TL';
-      const img = card.querySelector(SELECTORS.productImage)?.getAttribute('src') || 
-                  card.querySelector(SELECTORS.productImage)?.getAttribute('data-src') || '';
+      const name = card.querySelector('h3')?.textContent?.trim() || `Ürün ${index + 1}`;
+      
+      // Fiyat: Tüm span'ları topla (örn: "1.699" + "TL")
+      const spans = card.querySelectorAll('span');
+      let price = '';
+      spans.forEach(s => { price += s.textContent?.trim() + ' '; });
+      price = price.trim() || '0 TL';
+      
+      const img = card.querySelector('img')?.getAttribute('src') || 
+                  card.querySelector('img')?.getAttribute('data-src') || '';
       const id = href.split('/').filter(Boolean).pop() || `p${index}`;
 
       products.push({ id, name, price, image: img, url: fullUrl });
@@ -186,7 +184,7 @@ function extractAllProducts() {
   return products;
 }
 
-// ─── JSON DOSYASI İNDİRME ───
+// ─── JSON İNDİRME ───
 function downloadJSON(products) {
   const data = {
     exportDate: new Date().toISOString(),
@@ -209,7 +207,7 @@ function downloadJSON(products) {
 function showToast(el, msg) { el.innerHTML = msg; el.style.opacity = '1'; el.style.top = '40px'; }
 function hideToast(el) { el.style.opacity = '0'; el.style.top = '30px'; }
 
-// ─── POPUP'TAN GELEN KOMUTLARI DİNLE ───
+// ─── POPUP KOMUTLARI ───
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'extract_products') {
     deepScanProducts(document.querySelector('.odelink-toast') || document.createElement('div'))
