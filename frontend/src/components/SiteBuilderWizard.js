@@ -134,7 +134,12 @@ export default function SiteBuilderWizard() {
       setStep(3);
 
     } catch (e) {
-      setError(e.message || 'Beklenmeyen bir hata oluştu.');
+      console.error('Create site error:', e);
+      let errorMsg = e.message || 'Beklenmeyen bir hata oluştu.';
+      if (typeof errorMsg === 'object') {
+        errorMsg = JSON.stringify(errorMsg);
+      }
+      setError(errorMsg.toString());
     } finally {
       timers.forEach((t) => clearTimeout(t));
       setCreating(false);

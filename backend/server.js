@@ -98,9 +98,16 @@ try {
   siteRoutes = require('./routes/sites');
   console.log('✅ siteRoutes loaded');
 } catch (e) {
-  console.error('❌ siteRoutes failed:', e.message);
-  // Fallback to empty router to prevent app.use crash
+  console.error('❌ siteRoutes CRITICAL FAILURE:', e);
+  // Fallback to error router instead of empty router
   siteRoutes = express.Router();
+  siteRoutes.all('*', (req, res) => {
+    res.status(500).json({ 
+      error: 'Sites Service Unavailable', 
+      message: 'The sites module failed to load. Please check server logs.',
+      debug: { error: e.message, stack: e.stack }
+    });
+  });
 }
 
 try {

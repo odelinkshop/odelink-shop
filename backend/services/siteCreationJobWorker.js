@@ -319,6 +319,7 @@ const runOneJob = async (job) => {
         }
       }
     })().catch(() => void 0);
+    }
 
     return;
   } catch (e) {
