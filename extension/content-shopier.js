@@ -154,22 +154,30 @@ async function startNeuralSync(btn, scanner, toast) {
   showToast(toast, '💎 Nova Neural: Derin Tarama Başlatıldı...');
 
   try {
-    // AUTO SCROLL TO LOAD ALL PRODUCTS
-    let previousCount = 0;
-    let currentCount = 0;
-    let scrollAttempts = 0;
+    // 🚀 SMOOTH NEURAL SCROLL (Yavaş ve Kesin Kaydırma)
+    let totalHeight = document.body.scrollHeight;
+    let currentPos = 0;
+    const step = 600; // Her adımda 600px kaydır
+    const delay = 400; // Her adımda 0.4 saniye bekle (lazy load için)
 
-    while (scrollAttempts < 15) { // Max 15 scrolls to prevent infinite loops
-      window.scrollTo(0, document.body.scrollHeight);
-      await new Promise(r => setTimeout(r, 800)); // Wait for lazy load
+    while (currentPos < document.body.scrollHeight) {
+      window.scrollBy(0, step);
+      currentPos += step;
       
-      currentCount = document.querySelectorAll('.product-card, .shopier-product-card, [class*="product"]').length;
-      showToast(toast, `🛰️ Tarama: ${currentCount} Ürün Bulundu...`);
+      const foundCount = document.querySelectorAll('.product-card, .shopier-product-card, [class*="product"]').length;
+      showToast(toast, `🛰️ Taranıyor: ${foundCount} Ürün Tespit Edildi...`);
       
-      if (currentCount === previousCount && currentCount > 0) break; // No more products loading
-      previousCount = currentCount;
-      scrollAttempts++;
+      await new Promise(r => setTimeout(r, delay));
+      
+      // Eğer sayfa aşağı indikçe büyüdüyse totalHeight'ı güncelle
+      if (document.body.scrollHeight > totalHeight) {
+        totalHeight = document.body.scrollHeight;
+      }
     }
+
+    // En üste geri dön (Şık bir hareket)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    await new Promise(r => setTimeout(r, 1000));
 
     const products = extractShopierProducts();
     
@@ -185,8 +193,7 @@ async function startNeuralSync(btn, scanner, toast) {
           btn.style.pointerEvents = 'auto';
           setTimeout(() => {
             hideToast(toast);
-            // Redirect to panel to see the results
-            if(confirm('Ürünler başarıyla aktarıldı. Panelde görmek ister misiniz?')) {
+            if(confirm(`${products.length} ürün başarıyla aktarıldı. Panelde görmek ister misiniz?`)) {
               window.open('https://www.odelink.shop/panel', '_blank');
             }
           }, 3000);

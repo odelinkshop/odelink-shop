@@ -1,39 +1,52 @@
 {
   "manifest_version": 3,
-  "name": "Odelink Live Control",
-  "version": "1.0.0",
-  "description": "Odelink SaaS platformu için gerçek zamanlı canlı analitik ve CEO bildirimleri.",
+  "name": "Odelink Connector Elite",
+  "version": "3.2.0",
+  "description": "Nova Neural Engine v3 - Shopier Sync Terminal",
   "permissions": [
-    "notifications",
     "storage",
-    "alarms",
     "activeTab",
-    "scripting"
+    "tabs",
+    "scripting",
+    "alarms"
   ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": "icon.png"
-  },
+  "host_permissions": [
+    "https://*.shopier.com/*",
+    "https://www.odelink.shop/*",
+    "https://odelink.shop/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
   "icons": {
+    "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
   },
   "content_scripts": [
     {
-      "matches": ["https://www.shopier.com/*"],
-      "js": ["content-shopier.js"]
+      "matches": ["https://*.shopier.com/*"],
+      "js": ["content-shopier.js"],
+      "run_at": "document_idle"
     },
     {
-      "matches": ["https://*.odelink.shop/*"],
-      "js": ["content-auth.js"]
+      "matches": ["https://*.odelink.shop/*", "https://odelink.shop/*"],
+      "js": ["content-auth.js"],
+      "run_at": "document_start"
     }
   ],
-  "host_permissions": [
-    "https://*.odelink.shop/*",
-    "https://www.shopier.com/*",
-    "http://localhost:3001/*"
+  "web_accessible_resources": [
+    {
+      "resources": ["icon.png"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
