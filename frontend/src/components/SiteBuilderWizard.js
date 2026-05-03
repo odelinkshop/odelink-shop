@@ -4,6 +4,9 @@ import { ArrowLeft, CheckCircle2, Globe, Store, Zap, Download, Chrome, ExternalL
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthSession from '../hooks/useAuthSession';
 
+// 💡 GOOGLE WEB STORE LINKINI BURADAN DEGISTIREBILIRSIN KRAL
+const EXTENSION_URL = 'https://chrome.google.com/webstore/detail/odelink-connector/placeholder-id';
+
 export default function SiteBuilderWizard() {
   const navigate = useNavigate();
   const { token, ready } = useAuthSession();
@@ -64,7 +67,7 @@ export default function SiteBuilderWizard() {
               </div>
 
               <button 
-                onClick={() => window.open('https://chrome.google.com/webstore', '_blank')} 
+                onClick={() => window.open(EXTENSION_URL, '_blank')} 
                 className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2"
               >
                 <Download size={14} /> EKLENTİYİ EDİNİN
