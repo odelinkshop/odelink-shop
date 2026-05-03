@@ -1,0 +1,38 @@
+#!/bin/bash
+
+echo "🚀 Materia Scraping Başlıyor..."
+echo "================================"
+
+# 1. Theme Engine kontrolü
+echo ""
+echo "1️⃣ Theme Engine API kontrolü..."
+curl -s http://127.0.0.1:5000/api/themes | head -200
+
+# 2. Materia scrape başlat
+echo ""
+echo ""
+echo "2️⃣ Materia scraping başlatılıyor..."
+curl -X POST http://127.0.0.1:5000/api/themes/scrape/shopify \
+  -H "Content-Type: application/json" \
+  -d '{
+    "shopifyUrl": "https://materia-streetwear-demo2.myshopify.com/",
+    "themeId": "shopify-materia"
+  }'
+
+echo ""
+echo ""
+echo "⏳ Scraping başladı! 60 saniye bekleniyor..."
+sleep 60
+
+# 3. Tema dosyalarını kontrol et
+echo ""
+echo "3️⃣ Materia tema dosyaları:"
+ls -lh ~/odelink-shop/backend/themes/shopify-materia/ 2>/dev/null || echo "❌ Henüz oluşturulmadı"
+
+# 4. Backend logları
+echo ""
+echo "4️⃣ Backend logları (son 50 satır):"
+docker logs odelink_backend --tail 50 | grep -i "theme\|scrape\|error" || echo "İlgili log bulunamadı"
+
+echo ""
+echo "✅ İşlem tamamlandı!"

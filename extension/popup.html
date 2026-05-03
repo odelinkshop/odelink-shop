@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 320px;
+      height: 400px;
+      margin: 0;
+      padding: 0;
+      background: #050505;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+    .header {
+      padding: 20px;
+      background: linear-gradient(180deg, #0A0A0A 0%, #050505 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: #06b6d4;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(6,182,212,0.3);
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      font-style: italic;
+    }
+    .status-badge {
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: rgba(16,185,129,0.1);
+      color: #10b981;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .content {
+      padding: 20px;
+    }
+    .metric-card {
+      background: #0A0A0A;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .metric-label {
+      font-size: 10px;
+      color: #666;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .metric-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #06b6d4;
+      border: none;
+      border-radius: 12px;
+      color: black;
+      font-weight: 900;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 12px;
+      text-align: center;
+      font-size: 8px;
+      color: #333;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div className="header">
+    <div className="logo">O</div>
+    <div>
+      <div className="title">ODELINK LIVE</div>
+      <div className="status-badge">Signal Active</div>
+    </div>
+  </div>
+
+  <div className="content">
+    <div className="metric-card">
+      <div>
+        <div className="metric-label">Active Now</div>
+        <div className="metric-value" id="active-count">0</div>
+      </div>
+      <div style="color: #10b981;">●</div>
+    </div>
+
+    <div className="metric-card">
+      <div>
+        <div className="metric-label">Today Clicks</div>
+        <div className="metric-value" id="today-clicks">0</div>
+      </div>
+    </div>
+
+    <button className="btn" id="open-panel">Command Center</button>
+  </div>
+
+  <div className="footer">Nova Intelligence v2.1</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

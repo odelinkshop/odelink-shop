@@ -1,0 +1,185 @@
+.themes-page {
+  background: #0a0a0b;
+  color: white;
+  padding-bottom: 100px;
+}
+
+.themes-hero {
+  padding: 120px 0 80px;
+  background: linear-gradient(to bottom, #111827, #0a0a0b);
+  text-align: center;
+}
+
+.themes-hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  margin-bottom: 20px;
+  background: linear-gradient(to right, #fff, #9ca3af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.themes-hero p {
+  font-size: 1.2rem;
+  color: #9ca3af;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 40px;
+  margin-top: -40px;
+}
+
+.theme-card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.theme-card:hover {
+  transform: translateY(-10px);
+  border-color: #374151;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.theme-badge-container {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-new {
+  background: #10b981;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.theme-category {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.theme-image-wrapper {
+  position: relative;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+}
+
+.theme-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.theme-actions-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.theme-card:hover .theme-actions-overlay {
+  opacity: 1;
+}
+
+.btn-demo, .btn-buy {
+  width: 180px;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.btn-demo {
+  background: white;
+  color: black;
+}
+
+.btn-buy {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+}
+
+.btn-demo:hover { background: #f3f4f6; }
+.btn-buy:hover { background: rgba(255,255,255,0.2); }
+
+.theme-info {
+  padding: 25px;
+}
+
+.theme-info h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.theme-info p {
+  font-size: 14px;
+  color: #9ca3af;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.theme-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.theme-features span {
+  font-size: 13px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.themes-cta {
+  padding: 100px 0;
+  text-align: center;
+  border-top: 1px solid #1f2937;
+  margin-top: 100px;
+}
+
+.themes-cta h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.themes-cta p {
+  color: #9ca3af;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .themes-grid {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+  }
+}

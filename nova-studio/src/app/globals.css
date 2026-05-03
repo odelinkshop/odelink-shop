@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  /* Aristocratic Cream & Gold Palette */
+  --background: #F2EBE1; /* Full Cream/Parchment */
+  --foreground: #111111; /* Obsidian Black */
+  
+  --nova-primary: #F2EBE1;
+  --nova-secondary: #111111; 
+  --nova-accent: #C5A059;    /* Classic Gold */
+  --nova-neutral: #E6DED3;   /* Warm Sand */
+  
+  --radius: 0rem; 
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-primary: var(--nova-primary);
+  --color-secondary: var(--nova-secondary);
+  --color-accent: var(--nova-accent);
+  --color-neutral: var(--nova-neutral);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+  
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-reveal: reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal {
+  0% { transform: scaleY(0); transform-origin: top; }
+  100% { transform: scaleY(1); transform-origin: top; }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+}
+
+::selection {
+  background-color: var(--nova-accent);
+  color: var(--nova-secondary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), serif;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Scrollbar for Luxury Feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--nova-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nova-accent);
+}

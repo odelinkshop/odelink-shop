@@ -1,0 +1,30 @@
+{
+  "url": "https://www.shopier.com/bypedrotr/27921255",
+  "name": "Baggy Kalıp Gabardin Pantolon",
+  "description": "Bel lastikli",
+  "deliveryInfo": "",
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "variations": [
+    {
+      "name": "SIZE",
+      "options": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ]
+    }
+  ],
+  "hasFreeShipping": true,
+  "images": [
+    "https://cdn.shopier.app/scaledoriginal/BYPEDROTR_0849f9647a4f6d9e7499fc538c90b2f8.jpeg",
+    "https://cdn.shopier.app/pictures_original/BYPEDROTR_0849f9647a4f6d9e7499fc538c90b2f8.jpeg",
+    "https://www.shopier.com/bypedrotr/templates/storev3/assets/images/tick-circle.png"
+  ],
+  "image": "https://cdn.shopier.app/scaledoriginal/BYPEDROTR_0849f9647a4f6d9e7499fc538c90b2f8.jpeg"
+}

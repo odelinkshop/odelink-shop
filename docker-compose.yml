@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: odelink_shop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: odelink_production_password_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      - odelink_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d odelink_shop"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: "postgresql://postgres:odelink_production_password_change_me@postgres:5432/odelink_shop"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: odelink_shop
+      DB_USER: postgres
+      DB_PASSWORD: odelink_production_password_change_me
+      REDIS_URL: "redis://redis:6379"
+      FRONTEND_URL: https://www.odelink.shop
+      CORS_ORIGINS: "https://www.odelink.shop,https://odelink.shop,https://demo.odelink.shop"
+      SERVE_FRONTEND: "true"
+      AUTO_BUILD_FRONTEND: "false"
+      PUPPETEER_HEADLESS: "true"
+      PUPPETEER_ARGS: "--no-sandbox,--disable-setuid-sandbox"
+      NOVA_ENABLED: "true"
+      NOVA_URL: "http://nova:3001"
+      FLARESOLVERR_URL: "http://flaresolverr:8191/v1"
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - ./backend/uploads:/app/uploads:rw
+      - ./backend/backups:/app/backups:rw
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5000/api/ready').then(async(r)=>{const body=await r.json().catch(()=>null);process.exit(r.ok&&body&&body.ok?0:1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  nova:
+    build:
+      context: ./nova-studio
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      NEXT_PUBLIC_API_URL: https://www.odelink.shop/api
+    ports:
+      - "127.0.0.1:3001:3001"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: info
+      PORT: 8191
+    ports:
+      - "127.0.0.1:8191:8191"
+
+volumes:
+  odelink_pgdata:

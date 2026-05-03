@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Odelink Live Control",
+  "version": "1.0.0",
+  "description": "Odelink SaaS platformu için gerçek zamanlı canlı analitik ve CEO bildirimleri.",
+  "permissions": [
+    "notifications",
+    "storage",
+    "alarms"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "host_permissions": [
+    "https://*.odelink.shop/*",
+    "http://localhost:3001/*"
+  ]
+}
