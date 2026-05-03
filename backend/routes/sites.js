@@ -1427,4 +1427,67 @@ router.post('/:id/sync-from-extension', authMiddleware, requireAccess, async (re
   }
 });
 
+/**
+ * POST /api/sites/create-from-export
+ * Eklentiden dışa aktarılan JSON dosyasıyla otomatik site oluştur
+ */
+router.post('/create-from-export', authMiddleware, async (req, res) => {
+  try {
+    const { products, source, exportDate } = req.body;
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ error: 'Geçersiz veya boş ürün listesi' });
+    }
+
+    console.log(`📦 Export import: ${products.length} ürün, kaynak: ${source || 'bilinmiyor'}`);
+
+    // Kullanıcının mevcut sitesini bul veya yeni oluştur
+    const existingSites = await Site.findByUser(req.userId);
+    let site;
+
+    if (existingSites && existingSites.length > 0) {
+      // Mevcut siteyi güncelle
+      site = existingSites[0];
+      console.log(`📝 Mevcut site güncelleniyor: ${site.id}`);
+    } else {
+      // Yeni site oluştur
+      const subdomain = 'shop-' + Date.now().toString(36);
+      site = await Site.create({
+        user_id: req.userId,
+        subdomain: subdomain,
+        name: 'Mağazam',
+        theme: 'starter',
+        settings: {}
+      });
+      console.log(`🆕 Yeni site oluşturuldu: ${site.id}`);
+    }
+
+    // Ürünleri siteye işle
+    const updatedSettings = {
+      ...(site.settings || {}),
+      products_data: products,
+      catalog_total_products: products.length,
+      catalog_refreshed_at: exportDate || new Date().toISOString(),
+      catalog_full_sync_complete: true,
+      last_sync_method: 'export_import',
+      export_source: source || 'shopier'
+    };
+
+    await Site.update(site.id, { settings: updatedSettings });
+
+    const siteUrl = `https://${site.subdomain}.odelink.shop`;
+
+    return res.json({
+      success: true,
+      message: `${products.length} ürün başarıyla aktarıldı ve siteniz oluşturuldu!`,
+      siteId: site.id,
+      siteUrl: siteUrl,
+      count: products.length
+    });
+  } catch (error) {
+    console.error('❌ Export import error:', error);
+    return res.status(500).json({ error: 'İçe aktarma başarısız', message: error.message });
+  }
+});
+
 module.exports = router;
+

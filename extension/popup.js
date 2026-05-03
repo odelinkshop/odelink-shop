@@ -1,146 +1,50 @@
-const API_URL = 'https://www.odelink.shop/api';
+// Odelink Professional Exporter - Logic v4
+document.getElementById('export-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('export-btn');
+  const status = document.getElementById('status-msg');
+  const originalText = btn.textContent;
 
-async function checkState() {
-  const storage = await chrome.storage.local.get(['token', 'siteId']);
-  if (storage.token) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('main-container').style.display = 'block';
-    updatePopup();
-  } else {
-    document.getElementById('login-screen').style.display = 'block';
-    document.getElementById('main-container').style.display = 'none';
-  }
-}
-
-async function updatePopup() {
   try {
-    const { token, siteId } = await chrome.storage.local.get(['token', 'siteId']);
-    if (!token || !siteId) return;
+    status.textContent = '🛰️ Mağaza Taranıyor...';
+    btn.disabled = true;
 
-    const res = await fetch(`${API_URL}/sites/${siteId}/analytics`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    // Aktif tab'ı bul
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+    if (!tab.url.includes('shopier.com')) {
+      status.textContent = '❌ Lütfen Shopier Mağazasında Çalıştırın.';
+      btn.disabled = false;
+      return;
+    }
 
-    if (res.ok) {
-      const data = await res.json();
-      if (document.getElementById('active-count')) {
-        document.getElementById('active-count').textContent = data.realtime?.activeVisitors || 0;
-      }
-      if (document.getElementById('today-clicks')) {
-        document.getElementById('today-clicks').textContent = data.totals?.clicks || 0;
-      }
+    // Content script'e "ürünleri çek" emri gönder
+    const response = await chrome.tabs.sendMessage(tab.id, { action: 'extract_products' });
+    
+    if (response && response.success) {
+      status.textContent = `🚀 ${response.products.length} Ürün Paketlendi!`;
+      
+      // JSON dosyasını oluştur ve indir
+      const blob = new Blob([JSON.stringify(response.products, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const timestamp = new Date().toISOString().split('T')[0];
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `odelink_mağaza_paketi_${timestamp}.json`;
+      a.click();
+      
+      URL.revokeObjectURL(url);
+      status.textContent = '✅ Dosya İndirildi. Odelink Paneline Yükleyin.';
+    } else {
+      status.textContent = '❌ Ürünler Çekilemedi.';
     }
   } catch (e) {
-    console.error('Update Error:', e);
-  }
-}
-
-// LOGIN LOGIC
-if (document.getElementById('do-login')) {
-  document.getElementById('do-login').addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const btn = document.getElementById('do-login');
-    const errEl = document.getElementById('login-error');
-
-    if (!email || !password) return;
-
-    btn.innerText = 'BAĞLANILIYOR...';
-    btn.disabled = true;
-    errEl.style.display = 'none';
-
-    try {
-      const res = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        const sitesRes = await fetch(`${API_URL}/sites`, {
-          headers: { 'Authorization': `Bearer ${data.token}` }
-        });
-        const sitesData = await sitesRes.json();
-        const firstSiteId = sitesData[0]?.id || 'new';
-
-        await chrome.storage.local.set({ 
-          token: data.token, 
-          siteId: firstSiteId,
-          user: data.user
-        });
-        
-        checkState();
-      } else {
-        errEl.innerText = data.message || 'Giriş başarısız.';
-        errEl.style.display = 'block';
-      }
-    } catch (e) {
-      errEl.innerText = 'Bağlantı hatası.';
-      errEl.style.display = 'block';
-    } finally {
-      btn.innerText = 'SİSTEME GİRİŞ YAP';
-      btn.disabled = false;
-    }
-  });
-}
-
-if (document.getElementById('google-login')) {
-  document.getElementById('google-login').addEventListener('click', () => {
-    chrome.tabs.create({ url: 'https://www.odelink.shop/auth' });
-  });
-}
-
-if (document.getElementById('logout-btn')) {
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await chrome.storage.local.clear();
-    checkState();
-  });
-}
-
-if (document.getElementById('open-panel')) {
-  document.getElementById('open-panel').addEventListener('click', () => {
-    chrome.tabs.create({ url: 'https://www.odelink.shop/panel' });
-  });
-}
-
-if (document.getElementById('sync-shopier')) {
-  document.getElementById('sync-shopier').addEventListener('click', async () => {
-    const btn = document.getElementById('sync-shopier');
-    const originalText = btn.textContent;
-    
-    try {
-      btn.textContent = 'Syncing...';
-      btn.disabled = true;
-
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      
-      if (!tab.url.includes('shopier.com')) {
-        alert('Lütfen bu işlemi Shopier panelindeyken yapın.');
-        return;
-      }
-
-      const response = await chrome.tabs.sendMessage(tab.id, { action: 'extract_products' });
-      if (!response || !response.success) {
-        throw new Error('Eklenti tepki vermedi.');
-      }
-    } catch (e) {
-      console.error('Sync Error:', e);
-      alert('Hata: ' + e.message);
-    } finally {
+    console.error('Export Error:', e);
+    status.textContent = '❌ Hata: Sayfayı yenileyip deneyin.';
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => {
       btn.textContent = originalText;
-      btn.disabled = false;
-    }
-  });
-}
-
-// Depolama değiştiğinde (Giriş yapıldığında) popup'ı yenile
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && (changes.token || changes.siteId)) {
-    checkState();
+    }, 3000);
   }
 });
-
-checkState();
-setInterval(updatePopup, 5000);

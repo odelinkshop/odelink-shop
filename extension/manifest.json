@@ -1,52 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "Odelink Connector Elite",
-  "version": "3.2.0",
-  "description": "Nova Neural Engine v3 - Shopier Sync Terminal",
-  "permissions": [
-    "storage",
-    "activeTab",
-    "tabs",
-    "scripting",
-    "alarms"
-  ],
-  "host_permissions": [
-    "https://*.shopier.com/*",
-    "https://www.odelink.shop/*",
-    "https://odelink.shop/*"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
+  "name": "Odelink Connector",
+  "version": "4.0.0",
+  "description": "Shopier mağazanızı paketleyin, Odelink'e yükleyin.",
+  "permissions": ["activeTab", "tabs"],
   "action": {
     "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icon.png",
-      "48": "icon.png",
-      "128": "icon.png"
-    }
+    "default_icon": { "16": "icon.png", "48": "icon.png", "128": "icon.png" }
   },
-  "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
-  },
+  "icons": { "16": "icon.png", "48": "icon.png", "128": "icon.png" },
   "content_scripts": [
     {
       "matches": ["https://*.shopier.com/*"],
       "js": ["content-shopier.js"],
       "run_at": "document_idle"
-    },
-    {
-      "matches": ["https://*.odelink.shop/*", "https://odelink.shop/*"],
-      "js": ["content-auth.js"],
-      "run_at": "document_start"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["icon.png"],
-      "matches": ["<all_urls>"]
     }
   ]
 }

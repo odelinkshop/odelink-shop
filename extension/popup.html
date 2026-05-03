@@ -2,186 +2,110 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap');
+    
     body {
-      width: 340px;
-      margin: 0;
-      padding: 0;
-      background: #050505;
+      width: 320px;
+      background: #000;
       color: #F2EBE1;
       font-family: 'Outfit', sans-serif;
+      margin: 0;
       overflow: hidden;
+      border: 1px solid rgba(197, 160, 89, 0.2);
     }
+
     .container {
-      background: linear-gradient(180deg, rgba(197,160,89,0.05) 0%, rgba(0,0,0,0) 100%);
-      padding-bottom: 20px;
-    }
-    .header {
       padding: 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      border-bottom: 1px solid rgba(197,160,89,0.1);
+      text-align: center;
     }
+
     .logo {
-      width: 40px;
-      height: 40px;
+      width: 48px;
+      height: 48px;
       background: #C5A059;
-      border-radius: 10px;
+      color: black;
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 900;
-      color: black;
-      font-size: 18px;
-      box-shadow: 0 0 20px rgba(197,160,89,0.3);
+      border-radius: 12px;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.3);
     }
-    .brand {
-      flex: 1;
-    }
+
     .brand-name {
+      font-family: 'Playfair Display', serif;
       font-size: 18px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      color: #F2EBE1;
-      margin: 0;
+      font-style: italic;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
     }
+
     .brand-tag {
       font-size: 8px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #C5A059;
-      font-weight: bold;
-    }
-    .content {
-      padding: 24px;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(197, 160, 89, 0.1);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 16px;
-      backdrop-filter: blur(10px);
-    }
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .stat-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #666;
-      font-weight: 700;
-    }
-    .stat-value {
-      font-size: 20px;
       font-weight: 900;
-      color: #F2EBE1;
+      color: #C5A059;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 24px;
     }
+
     .btn {
       width: 100%;
       padding: 16px;
-      border-radius: 14px;
-      border: none;
-      font-family: 'Outfit', sans-serif;
+      border-radius: 12px;
       font-weight: 900;
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-      margin-top: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      outline: none;
+      margin-bottom: 12px;
     }
+
     .btn-primary {
-      background: linear-gradient(135deg, #C5A059 0%, #9A7B4F 100%);
+      background: #C5A059;
       color: black;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(197, 160, 89, 0.2);
     }
+
     .btn-primary:hover {
+      background: #F2EBE1;
       transform: translateY(-2px);
-      box-shadow: 0 15px 30px rgba(197,160,89,0.2);
     }
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #F2EBE1;
-    }
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(197,160,89,0.3);
-    }
+
     .footer {
-      text-align: center;
-      padding: 20px;
       font-size: 8px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: #333;
-      font-weight: bold;
+      opacity: 0.3;
+      margin-top: 20px;
+      letter-spacing: 1px;
+    }
+
+    #status-msg {
+      font-size: 10px;
+      color: #C5A059;
+      margin-top: 12px;
+      min-height: 15px;
     }
   </style>
 </head>
 <body>
-  <div id="login-screen" style="display: none; padding: 30px; text-align: center;">
-    <div class="logo" style="margin: 0 auto 20px;">O</div>
-    <h2 style="font-size: 18px; margin-bottom: 8px;">Odelink Elite</h2>
-    <p style="font-size: 10px; opacity: 0.5; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;">Access Terminal</p>
-    
-    <div style="space-y: 12px; text-align: left;">
-      <input type="email" id="email" placeholder="E-posta Adresiniz" style="width: 100%; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(197,160,89,0.2); border-radius: 12px; color: white; font-family: 'Outfit', sans-serif; font-size: 12px; outline: none; margin-bottom: 12px;">
-      <input type="password" id="password" placeholder="Şifreniz" style="width: 100%; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(197,160,89,0.2); border-radius: 12px; color: white; font-family: 'Outfit', sans-serif; font-size: 12px; outline: none; margin-bottom: 20px;">
-    </div>
-    
-    <button class="btn btn-primary" id="do-login">SİSTEME GİRİŞ YAP</button>
-    
-    <div style="margin: 16px 0; display: flex; align-items: center; gap: 10px; opacity: 0.3;">
-      <div style="flex: 1; height: 1px; background: white;"></div>
-      <span style="font-size: 8px; font-weight: bold;">VEYA</span>
-      <div style="flex: 1; height: 1px; background: white;"></div>
-    </div>
+  <div class="container">
+    <div class="logo">O</div>
+    <div class="brand-name">Odelink Connector</div>
+    <div class="brand-tag">Professional Exporter</div>
 
-    <button class="btn btn-secondary" id="google-login" style="background: white; color: black; border: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
-      <img src="https://www.google.com/favicon.ico" width="14" style="filter: none;">
-      GOOGLE İLE DEVAM ET
-    </button>
+    <button class="btn btn-primary" id="export-btn">MAĞAZAYI PAKETLE (.JSON)</button>
     
-    <p id="login-error" style="color: #ff4444; font-size: 10px; margin-top: 12px; display: none;"></p>
+    <div id="status-msg"></div>
+
+    <div class="footer">Nova Neural v4.0 PRO</div>
   </div>
-
-  <div id="main-container" class="container" style="display: none;">
-    <div class="header">
-      <div class="logo">O</div>
-      <div class="brand">
-        <h1 class="brand-name">ODELINK LIVE</h1>
-        <div class="brand-tag">Neural Intelligence</div>
-      </div>
-      <div id="logout-btn" style="color: #666; font-size: 8px; cursor: pointer;">ÇIKIŞ</div>
-    </div>
-
-    <div class="content">
-      <div class="card">
-        <div class="stat-row">
-          <span class="stat-label">Active Visitors</span>
-          <span class="stat-value" id="active-count">0</span>
-        </div>
-        <div class="stat-row" style="margin-bottom: 0; opacity: 0.5;">
-          <span class="stat-label">Total Clicks</span>
-          <span class="stat-value" id="today-clicks" style="font-size: 14px;">0</span>
-        </div>
-      </div>
-
-      <button class="btn btn-primary" id="sync-shopier">Elite Product Sync</button>
-      <button class="btn btn-secondary" id="open-panel">Command Center</button>
-    </div>
-
-    <div class="footer">Nova Engine v2.5 Premium</div>
-  </div>
-
   <script src="popup.js"></script>
 </body>
 </html>
