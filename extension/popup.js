@@ -81,6 +81,10 @@ document.getElementById('do-login').addEventListener('click', async () => {
   }
 });
 
+document.getElementById('google-login').addEventListener('click', () => {
+  chrome.tabs.create({ url: 'https://www.odelink.shop/auth' });
+});
+
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await chrome.storage.local.clear();
   checkState();
