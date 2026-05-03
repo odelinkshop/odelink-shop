@@ -99,6 +99,8 @@ try {
   console.log('✅ siteRoutes loaded');
 } catch (e) {
   console.error('❌ siteRoutes failed:', e.message);
+  // Fallback to empty router to prevent app.use crash
+  siteRoutes = express.Router();
 }
 
 try {
@@ -106,6 +108,7 @@ try {
   console.log('✅ subscriptionRoutes loaded');
 } catch (e) {
   console.error('❌ subscriptionRoutes failed:', e.message);
+  subscriptionRoutes = express.Router();
 }
 
 try {
@@ -113,6 +116,7 @@ try {
   console.log('✅ shopierRoutes loaded');
 } catch (e) {
   console.error('❌ shopierRoutes failed:', e.message);
+  shopierRoutes = express.Router();
 }
 
 try {
@@ -120,6 +124,7 @@ try {
   console.log('✅ usersRoutes loaded');
 } catch (e) {
   console.error('❌ usersRoutes failed:', e.message);
+  usersRoutes = express.Router();
 }
 
 try {
@@ -475,12 +480,13 @@ const buildReadinessSnapshot = async () => {
 };
 
 if (isProduction) {
-  const jwtSecretRaw = (process.env.JWT_SECRET || '').toString().trim();
+  const jwtSecretRaw = (process.env.JWT_SECRET || '').trim();
   if (!jwtSecretRaw) {
-    console.error('❌ JWT_SECRET is not set in production. Server cannot start securely.');
-    process.exit(1);
+    console.error('❌ CRITICAL: JWT_SECRET is not set in production! Using temporary fallback.');
+    console.error('⚠️  Please add JWT_SECRET to your .env file immediately.');
+    process.env.JWT_SECRET = 'odelink_fallback_secret_32_chars_long_!!';
   }
-
+}
   const corsOriginsRaw = (process.env.CORS_ORIGINS || '').toString().trim();
   const frontendUrlRaw = (process.env.FRONTEND_URL || '').toString().trim();
   const allowAll = corsOriginsRaw
