@@ -498,7 +498,6 @@ if (isProduction) {
     console.warn('⚠️ FRONTEND_URL or CORS_ORIGINS not set. Allowing all origins temporarily.');
     process.env.CORS_ORIGINS = '*';
   }
-}
 
 app.set('trust proxy', 1);
 
