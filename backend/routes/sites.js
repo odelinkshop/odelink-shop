@@ -1441,7 +1441,7 @@ router.post('/create-from-export', authMiddleware, async (req, res) => {
     console.log(`📦 Export import: ${products.length} ürün, kaynak: ${source || 'bilinmiyor'}`);
 
     // Kullanıcının mevcut sitesini bul veya yeni oluştur
-    const existingSites = await Site.findByUser(req.userId);
+    const existingSites = await Site.findByUserId(req.userId);
     let site;
 
     if (existingSites && existingSites.length > 0) {
@@ -1450,12 +1450,10 @@ router.post('/create-from-export', authMiddleware, async (req, res) => {
       console.log(`📝 Mevcut site güncelleniyor: ${site.id}`);
     } else {
       // Yeni site oluştur
-      const subdomain = 'shop-' + Date.now().toString(36);
       site = await Site.create({
-        user_id: req.userId,
-        subdomain: subdomain,
+        userId: req.userId,
         name: 'Mağazam',
-        theme: 'starter',
+        subdomain: '',
         settings: {}
       });
       console.log(`🆕 Yeni site oluşturuldu: ${site.id}`);
