@@ -34,9 +34,6 @@ function normalizeShopierUrl(url) {
   }
 }
 
-/**
- * FLARESOLVERR ILE KAZIMA (Primary Method)
- */
 const scrapeWithFlareSolverr = async (url) => {
   try {
     console.log(`🔥 [FlareSolverr] İsteği gönderiliyor: ${url}`);
@@ -55,14 +52,52 @@ const scrapeWithFlareSolverr = async (url) => {
         status: response.data.solution.status, 
         cookie: response.data.solution.cookies 
       };
-    } else {
-      console.warn('⚠️ [FlareSolverr] Hata döndü:', response.data?.message);
-      return { html: null, status: 500 };
     }
+    return { html: null, status: 500 };
   } catch (error) {
-    console.error('❌ [FlareSolverr] Bağlantı hatası:', error.message);
-    return { html: null, status: 500, error: error.message };
+    console.error('❌ [FlareSolverr] Hata:', error.message);
+    return { html: null, status: 500 };
   }
+};
+
+/**
+ * MONSTER ENGINE V2 - HYBRID SCRAPER
+ * Her ne pahasına olursa olsun veriyi getiren çok katmanlı yapı
+ */
+const scrapeWithMonsterEngine = async (url, shopSlug) => {
+  // 1. KATMAN: NEURAL MIRROR (Ağ Dinleme - En Temiz Veri)
+  console.log('🛡️ [MonsterEngine] 1. Katman (NeuralMirror) deneniyor...');
+  const res1 = await scrapeWithNeuralMirror(url, shopSlug);
+  if (res1.interceptedData || (res1.html && res1.html.length > 5000)) {
+    console.log('✅ [MonsterEngine] 1. Katman Başarılı!');
+    return res1;
+  }
+
+  // 2. KATMAN: FLARESOLVERR (Bot Koruması Aşımı)
+  console.log('🛡️ [MonsterEngine] 2. Katman (FlareSolverr) deneniyor...');
+  const res2 = await scrapeWithFlareSolverr(url);
+  if (res2.html && res2.html.length > 5000) {
+    console.log('✅ [MonsterEngine] 2. Katman Başarılı!');
+    return res2;
+  }
+
+  // 3. KATMAN: SCRAPER API (Elite Proxy Fallback)
+  console.log('🛡️ [MonsterEngine] 3. Katman (ScraperAPI) deneniyor...');
+  const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY || 'eeb06f813ed7ad2ddda12ab18184d212';
+  try {
+    const res3 = await axios.get('http://api.scraperapi.com', {
+      params: { api_key: SCRAPER_API_KEY, url: url, render: 'false' },
+      timeout: 60000
+    });
+    if (res3.data && res3.data.length > 5000) {
+      console.log('✅ [MonsterEngine] 3. Katman Başarılı!');
+      return { html: res3.data, status: 200 };
+    }
+  } catch (e) {
+    console.error('❌ [MonsterEngine] 3. Katman da başarısız:', e.message);
+  }
+
+  return { html: null, status: 500, error: 'Tüm yöntemler başarısız oldu' };
 };
 
 /**
@@ -219,19 +254,18 @@ async function fetchShopierCatalog(shopierUrl, opts = {}) {
   let html = null;
   let firstPageProducts = [];
   
-  // 1. AŞAMA: NOVA NEURAL MIRROR (AĞ DİNLEME) - EN GÜVENLİ VE EN İYİ YÖNTEM
-  console.log(`🧠 [MonsterEngine] Birinci öncelik: Nova Neural Mirror (XHR Interceptor) başlatılıyor...`);
+  // 1. AŞAMA: MONSTER ENGINE V2 (ÇOK KATMANLI TARAMA)
+  console.log(`🧠 [MonsterEngine] Çok katmanlı tarama başlatılıyor...`);
   try {
-      const neuralRes = await scrapeWithNeuralMirror(normalized, shopSlug);
-      html = neuralRes.html;
+      const monsterRes = await scrapeWithMonsterEngine(normalized, shopSlug);
+      html = monsterRes.html;
       
-      // Eğer saf veri yakalandıysa, PARSER'ı devre dışı bırak ve direkt veriyi işle
-      if (neuralRes.interceptedData) {
-          const rawProducts = neuralRes.interceptedData.products || neuralRes.interceptedData.data || [];
+      // Eğer saf veri yakalandıysa (NeuralMirror), PARSER'ı devre dışı bırak ve direkt veriyi işle
+      if (monsterRes.interceptedData) {
+          const rawProducts = monsterRes.interceptedData.products || monsterRes.interceptedData.data || [];
           console.log(`🎯 [NeuralMirror] Yakalanan saf veriden ${rawProducts.length} ürün işleniyor...`);
           
           firstPageProducts = rawProducts.map(p => {
-              // Resilient Mapping (Eğer isimler değişirse akıllıca bul)
               const id = (p.id || p.product_id || p.ID || '').toString();
               const name = p.name || p.title || p.label || 'İsimsiz Ürün';
               const priceData = p.price || p.amount || {};
@@ -245,32 +279,18 @@ async function fetchShopierCatalog(shopierUrl, opts = {}) {
                   image: imgKey.startsWith('http') ? imgKey : `https://cdn.shopier.app/pictures_large/${imgKey}`
               };
           });
-          
-          if (firstPageProducts.length > 0) {
-              console.log(`✅ [NeuralMirror] Senkronizasyon 100% başarıyla tamamlandı.`);
-          }
       } else {
-          // Eğer ağdan veri yakalanamadıysa HTML'den parse etmeyi dene
+          // Eğer HTML alındıysa parse et
           firstPageProducts = html ? parseProductsFromHtml(html, shopSlug) : [];
       }
   } catch (err) {
-      console.warn(`⚠️ NeuralMirror başarısız oldu, klasik GhostEngine'e geçiliyor:`, err.message);
+      console.error(`❌ MonsterEngine başarısız:`, err.message);
   }
 
-  // EĞER PUPPETEER BAŞARISIZ OLURSA (VE TOKEN VARSA) SCRAPER API'YI FALLBACK OLARAK KULLAN
+  // EĞER HALA ÜRÜN YOKSA (BÜYÜK BİR SORUN VAR DEMEKTİR)
   if (!html || firstPageProducts.length === 0) {
-      console.log(`📑 [MonsterEngine] Puppeteer başarısız, ScraperAPI (Fallback) deneniyor...`);
-      const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY || 'eeb06f813ed7ad2ddda12ab18184d212';
-      try {
-          const res = await axios.get('http://api.scraperapi.com', {
-              params: { api_key: SCRAPER_API_KEY, url: normalized, render: 'false' },
-              timeout: 60000
-          });
-          html = res.data;
-          firstPageProducts = html ? parseProductsFromHtml(html, shopSlug) : [];
-      } catch (e) {
-          console.error(`❌ ScraperAPI de başarısız oldu (Token bitmiş olabilir):`, e.message);
-      }
+      console.error(`❌ [MonsterEngine] Hiçbir yöntemle veri alınamadı!`);
+      return { products: [], totalProducts: 0, categories: [], debug: { error: 'All sync methods failed' } };
   }
 
   // 24 ÜRÜN BARAJI KONTROLÜ VE ZORUNLU SCROLL (DERİN TARAMA)
