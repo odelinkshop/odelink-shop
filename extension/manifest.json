@@ -25,6 +25,10 @@
     {
       "matches": ["https://www.shopier.com/*"],
       "js": ["content-shopier.js"]
+    },
+    {
+      "matches": ["https://*.odelink.shop/*"],
+      "js": ["content-auth.js"]
     }
   ],
   "host_permissions": [

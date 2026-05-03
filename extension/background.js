@@ -14,7 +14,12 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'sync_products') {
     syncProducts(request.products).then(sendResponse);
-    return true; // Asenkron cevap için
+    return true; 
+  }
+  
+  if (request.action === 'store_auth') {
+    chrome.storage.local.set(request.auth);
+    return true;
   }
 });
 
