@@ -127,14 +127,28 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div id="login-screen" style="display: none; padding: 30px; text-align: center;">
+    <div class="logo" style="margin: 0 auto 20px;">O</div>
+    <h2 style="font-size: 18px; margin-bottom: 8px;">Odelink Elite</h2>
+    <p style="font-size: 10px; opacity: 0.5; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;">Access Terminal</p>
+    
+    <div style="space-y: 12px; text-align: left;">
+      <input type="email" id="email" placeholder="E-posta Adresiniz" style="width: 100%; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(197,160,89,0.2); border-radius: 12px; color: white; font-family: 'Outfit', sans-serif; font-size: 12px; outline: none; margin-bottom: 12px;">
+      <input type="password" id="password" placeholder="Şifreniz" style="width: 100%; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(197,160,89,0.2); border-radius: 12px; color: white; font-family: 'Outfit', sans-serif; font-size: 12px; outline: none; margin-bottom: 20px;">
+    </div>
+    
+    <button class="btn btn-primary" id="do-login">SİSTEME GİRİŞ YAP</button>
+    <p id="login-error" style="color: #ff4444; font-size: 10px; margin-top: 12px; display: none;"></p>
+  </div>
+
+  <div id="main-container" class="container" style="display: none;">
     <div class="header">
       <div class="logo">O</div>
       <div class="brand">
         <h1 class="brand-name">ODELINK LIVE</h1>
         <div class="brand-tag">Neural Intelligence</div>
       </div>
-      <div style="color: #C5A059; font-size: 8px;">● LIVE</div>
+      <div id="logout-btn" style="color: #666; font-size: 8px; cursor: pointer;">ÇIKIŞ</div>
     </div>
 
     <div class="content">

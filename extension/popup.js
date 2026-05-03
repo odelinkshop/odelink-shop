@@ -1,17 +1,24 @@
 const API_URL = 'https://www.odelink.shop/api';
 
+async function checkState() {
+  const storage = await chrome.storage.local.get(['token', 'siteId']);
+  if (storage.token) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-container').style.display = 'block';
+    updatePopup();
+  } else {
+    document.getElementById('login-screen').style.display = 'block';
+    document.getElementById('main-container').style.display = 'none';
+  }
+}
+
 async function updatePopup() {
   try {
-    const storage = await chrome.storage.local.get(['token', 'siteId']);
-    if (!storage.token || !storage.siteId) {
-      document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: #666; font-size: 11px;">Lütfen önce Odelink paneline giriş yapın.</div>';
-      return;
-    }
+    const { token, siteId } = await chrome.storage.local.get(['token', 'siteId']);
+    if (!token || !siteId) return;
 
-    const res = await fetch(`${API_URL}/sites/${storage.siteId}/analytics`, {
-      headers: {
-        'Authorization': `Bearer ${storage.token}`
-      }
+    const res = await fetch(`${API_URL}/sites/${siteId}/analytics`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.ok) {
@@ -20,13 +27,70 @@ async function updatePopup() {
       document.getElementById('today-clicks').textContent = data.totals?.clicks || 0;
     }
   } catch (e) {
-    console.error('Popup Update Error:', e);
+    console.error('Update Error:', e);
   }
 }
+
+// LOGIN LOGIC
+document.getElementById('do-login').addEventListener('click', async () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('do-login');
+  const errEl = document.getElementById('login-error');
+
+  if (!email || !password) return;
+
+  btn.innerText = 'BAĞLANILIYOR...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Get the first site of user automatically
+      const sitesRes = await fetch(`${API_URL}/sites`, {
+        headers: { 'Authorization': `Bearer ${data.token}` }
+      });
+      const sitesData = await sitesRes.json();
+      const firstSiteId = sitesData[0]?.id || 'new'; // 'new' can trigger auto-create
+
+      await chrome.storage.local.set({ 
+        token: data.token, 
+        siteId: firstSiteId,
+        user: data.user
+      });
+      
+      checkState();
+    } else {
+      errEl.innerText = data.message || 'Giriş başarısız.';
+      errEl.style.display = 'block';
+    }
+  } catch (e) {
+    errEl.innerText = 'Bağlantı hatası.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.innerText = 'SİSTEME GİRİŞ YAP';
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await chrome.storage.local.clear();
+  checkState();
+});
 
 document.getElementById('open-panel').addEventListener('click', () => {
   chrome.tabs.create({ url: 'https://www.odelink.shop/panel' });
 });
+
+checkState();
 
 document.getElementById('sync-shopier').addEventListener('click', async () => {
   const btn = document.getElementById('sync-shopier');

@@ -151,24 +151,47 @@ async function startNeuralSync(btn, scanner, toast) {
   scanner.style.display = 'block';
   scanner.style.animation = 'odelink-scan 2s infinite linear';
 
-  showToast(toast, '💎 Nova Neural: Tarama Başlatıldı...');
+  showToast(toast, '💎 Nova Neural: Derin Tarama Başlatıldı...');
 
   try {
-    const products = extractShopierProducts();
-    await new Promise(r => setTimeout(r, 1500)); // Dramatic effect
+    // AUTO SCROLL TO LOAD ALL PRODUCTS
+    let previousCount = 0;
+    let currentCount = 0;
+    let scrollAttempts = 0;
 
+    while (scrollAttempts < 15) { // Max 15 scrolls to prevent infinite loops
+      window.scrollTo(0, document.body.scrollHeight);
+      await new Promise(r => setTimeout(r, 800)); // Wait for lazy load
+      
+      currentCount = document.querySelectorAll('.product-card, .shopier-product-card, [class*="product"]').length;
+      showToast(toast, `🛰️ Tarama: ${currentCount} Ürün Bulundu...`);
+      
+      if (currentCount === previousCount && currentCount > 0) break; // No more products loading
+      previousCount = currentCount;
+      scrollAttempts++;
+    }
+
+    const products = extractShopierProducts();
+    
     if (products.length > 0) {
-      showToast(toast, `🛰️ ${products.length} Ürün Aktarılıyor...`);
+      showToast(toast, `🚀 ${products.length} Ürün Paketleniyor...`);
+      await new Promise(r => setTimeout(r, 1000));
       
       chrome.runtime.sendMessage({ action: 'sync_products', products }, (response) => {
         if (response?.success) {
-          showToast(toast, '👑 Senkronizasyon Başarıyla Tamamlandı!');
+          showToast(toast, '👑 İşlem Başarılı! Mağazanız Güncellendi.');
           scanner.style.display = 'none';
           btn.style.opacity = '1';
           btn.style.pointerEvents = 'auto';
-          setTimeout(() => hideToast(toast), 3000);
+          setTimeout(() => {
+            hideToast(toast);
+            // Redirect to panel to see the results
+            if(confirm('Ürünler başarıyla aktarıldı. Panelde görmek ister misiniz?')) {
+              window.open('https://www.odelink.shop/panel', '_blank');
+            }
+          }, 3000);
         } else {
-          showToast(toast, '⚠️ Hata: Bağlantı Kurulamadı.');
+          showToast(toast, '⚠️ Hata: Sunucu Bağlantısı Kesildi.');
           resetUI(btn, scanner, toast);
         }
       });
@@ -207,10 +230,15 @@ createFloatingUI();
 // Mesaj dinleyici - Popup'tan gelen komutları al
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'extract_products') {
-    const products = extractShopierProducts();
-    sendResponse({ products, success: true });
+    const btn = document.querySelector('.odelink-floating-btn');
+    const scanner = document.querySelector('.odelink-scanner');
+    const toast = document.querySelector('.odelink-toast');
+    
+    startNeuralSync(btn, scanner, toast).then(() => {
+      sendResponse({ success: true });
+    });
+    return true; // Asenkron yanıt için
   }
-  return true;
 });
 
 /**
