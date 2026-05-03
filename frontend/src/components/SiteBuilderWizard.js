@@ -52,30 +52,48 @@ export default function SiteBuilderWizard() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#111] border border-[#C5A059]/20 p-8 rounded-3xl relative shadow-2xl"
+            className="bg-[#111] border border-[#C5A059]/20 p-6 rounded-3xl relative shadow-2xl text-left"
           >
             <div className="flex flex-col items-center space-y-6">
               <div className="w-16 h-16 bg-[#C5A059] rounded-xl flex items-center justify-center shadow-lg">
                 <Chrome className="w-8 h-8 text-black" />
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-2 text-center">
                 <h3 className="text-xl font-serif text-[#C5A059]">Odelink Connector</h3>
-                <p className="text-xs text-[#F2EBE1]/50 leading-relaxed max-w-sm mx-auto">
-                  Ürünlerinizi %100 başarıyla aktarmanın tek yolu. Eklentiyi tarayıcınıza ekleyin ve mağazanızı anında senkronize edin.
+                <p className="text-[10px] text-[#F2EBE1]/50 leading-relaxed max-w-sm mx-auto">
+                  Shopier engellerini bypass eden tek teknoloji. Manuel kurulum ile anında başlayın.
                 </p>
               </div>
 
-              <button 
-                onClick={() => window.open(EXTENSION_URL, '_blank')} 
-                className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2"
+              {/* DOWNLOAD BUTTON */}
+              <a 
+                href="/odelink-connector.zip" 
+                download 
+                className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 no-underline"
               >
-                <Download size={14} /> EKLENTİYİ EDİNİN
-              </button>
+                <Download size={14} /> PAKETİ İNDİR (.ZIP)
+              </a>
               
+              {/* MANUAL STEPS GUIDE */}
+              <div className="w-full border-t border-white/5 pt-6 space-y-4">
+                <div className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.3em] mb-2">3 Adımda Hızlı Kurulum</div>
+                
+                {[
+                  { step: '1', text: 'İndirdiğiniz dosyayı klasöre çıkartın.' },
+                  { step: '2', text: 'Chrome\'da chrome://extensions sayfasını açın.' },
+                  { step: '3', text: '"Geliştirici Modu"nu açıp klasörü içine sürükleyin.' }
+                ].map((s, i) => (
+                  <div key={i} className="flex gap-3 items-start">
+                    <div className="w-5 h-5 bg-[#C5A059]/10 border border-[#C5A059]/20 rounded flex items-center justify-center text-[10px] font-bold text-[#C5A059] shrink-0">{s.step}</div>
+                    <p className="text-[10px] text-white/40 leading-tight">{s.text}</p>
+                  </div>
+                ))}
+              </div>
+
               <div className="flex justify-center gap-4 pt-2">
-                <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/20 uppercase tracking-widest"><ShieldCheck size={12} className="text-[#C5A059]" /> Bot Engeli Yok</div>
-                <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/20 uppercase tracking-widest"><Zap size={12} className="text-[#C5A059]" /> Hızlı</div>
+                <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/10 uppercase tracking-widest"><ShieldCheck size={12} className="text-[#C5A059]" /> Ücretsiz</div>
+                <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/10 uppercase tracking-widest"><Zap size={12} className="text-[#C5A059]" /> Sınırsız</div>
               </div>
             </div>
           </motion.div>
