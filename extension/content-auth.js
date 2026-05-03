@@ -1,41 +1,37 @@
 /**
- * ODELINK AUTH BRIDGE - CONTENT SCRIPT
- * Odelink panelinden giriş bilgilerini sessizce yakalayıp eklentiye aktarır.
+ * Odelink Auth Bridge v2
+ * Sitedeki giriş verilerini saniyeler içinde eklentiye taşıyan köprü.
  */
 
-(function() {
-  const isOdelink = window.location.hostname.includes('odelink.shop');
-  
-  if (isOdelink) {
-    console.log('🏛️ Odelink Auth Bridge Active');
-    
-    // Panelden token ve siteId'yi çekmeye çalış
-    const checkAuth = () => {
-      const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      const userDataStr = localStorage.getItem('user');
-      let siteId = localStorage.getItem('currentSiteId');
+function captureAndBridge() {
+  // LocalStorage'dan verileri çek
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+  const siteId = localStorage.getItem('last_site_id') || 'new';
 
-      if (token) {
-        // Eğer siteId yoksa ama user verisi varsa içinden çekmeyi dene
-        if (!siteId && userDataStr) {
-          try {
-            const user = JSON.parse(userDataStr);
-            siteId = user.sites?.[0]?.id || user.lastSiteId;
-          } catch(e) {}
+  if (token && userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      
+      // Eklenti depolamasına (storage.local) gönder
+      chrome.runtime.sendMessage({
+        action: 'store_auth',
+        data: { token, user, siteId }
+      }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.log('Bridge Error:', chrome.runtime.lastError);
+        } else {
+          console.log('🏛️ Odelink Bridge: Auth data synced to extension.');
         }
-
-        if (token && siteId) {
-          chrome.runtime.sendMessage({
-            action: 'store_auth',
-            auth: { token, siteId }
-          });
-          console.log('✅ Odelink Auth Synced with Extension');
-        }
-      }
-    };
-
-    // Sayfa yüklendiğinde ve her saniye kontrol et (Giriş yapıldığında yakalamak için)
-    checkAuth();
-    setInterval(checkAuth, 3000);
+      });
+    } catch (e) {
+      console.error('Bridge Parse Error:', e);
+    }
   }
-})();
+}
+
+// Sürekli kontrol et (Giriş yapıldığı an yakalamak için)
+setInterval(captureAndBridge, 2000);
+
+// İlk yüklemede çalıştır
+captureAndBridge();
