@@ -39,52 +39,47 @@ export default function SiteBuilderWizard() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-8 pt-40 pb-20 relative">
-        <div className="text-center space-y-16">
-          <div className="space-y-4">
-            <h2 className="text-6xl font-serif leading-tight">Elite Aktarım Başlatılıyor</h2>
-            <p className="text-[#C5A059] uppercase tracking-[0.6em] text-[12px] font-black">En Güvenli Ve En Hızlı Yol</p>
+      <main className="max-w-2xl mx-auto px-6 pt-32 pb-20 relative text-center">
+        <div className="space-y-10">
+          <div className="space-y-3">
+            <h2 className="text-3xl font-serif leading-tight">Elite Aktarım</h2>
+            <p className="text-[#C5A059] uppercase tracking-[0.4em] text-[9px] font-black">Hızlı Ve Güvenli Mağaza Kurulumu</p>
           </div>
 
-          {/* SINGLE VIP OPTION: EXTENSION */}
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto bg-gradient-to-br from-[#111] to-[#050505] border border-[#C5A059]/30 p-12 rounded-[40px] relative overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)]"
+            className="bg-[#111] border border-[#C5A059]/20 p-8 rounded-3xl relative shadow-2xl"
           >
-            <div className="absolute top-8 right-10 text-[10px] font-black text-[#C5A059] tracking-[0.3em] bg-[#C5A059]/10 px-4 py-2 rounded-full border border-[#C5A059]/20">TEK ÇÖZÜM</div>
-            
-            <div className="flex flex-col items-center text-center space-y-8">
-              <div className="w-20 h-20 bg-[#C5A059] rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(197,160,89,0.3)]">
-                <Chrome className="w-10 h-10 text-black" />
+            <div className="flex flex-col items-center space-y-6">
+              <div className="w-16 h-16 bg-[#C5A059] rounded-xl flex items-center justify-center shadow-lg">
+                <Chrome className="w-8 h-8 text-black" />
               </div>
               
-              <div className="space-y-4">
-                <h3 className="text-3xl font-serif text-[#C5A059]">Odelink Connector</h3>
-                <p className="text-base text-[#F2EBE1]/60 leading-relaxed max-w-md mx-auto">
-                  Shopier engellerini %100 bypass eden tek teknoloji. Eklentiyi kurun ve mağazanızı anında senkronize edin.
+              <div className="space-y-2">
+                <h3 className="text-xl font-serif text-[#C5A059]">Odelink Connector</h3>
+                <p className="text-xs text-[#F2EBE1]/50 leading-relaxed max-w-sm mx-auto">
+                  Ürünlerinizi %100 başarıyla aktarmanın tek yolu. Eklentiyi tarayıcınıza ekleyin ve mağazanızı anında senkronize edin.
                 </p>
               </div>
 
-              <div className="w-full pt-4 space-y-4">
-                <button 
-                  onClick={() => navigate('/extension-guide')} 
-                  className="w-full py-6 bg-[#C5A059] text-black font-black uppercase text-[12px] tracking-[0.3em] rounded-2xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(0,0,0,0.3)]"
-                >
-                  <Download size={18} /> EKLENTİYİ KUR VE BAŞLA
-                </button>
-                <div className="flex justify-center gap-6 pt-4">
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest"><ShieldCheck size={14} className="text-[#C5A059]" /> Bot Engeli Yok</div>
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest"><Zap size={14} className="text-[#C5A059]" /> Işık Hızında</div>
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest"><Sparkles size={14} className="text-[#C5A059]" /> Otomatik</div>
-                </div>
+              <button 
+                onClick={() => window.open('https://chrome.google.com/webstore', '_blank')} 
+                className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2"
+              >
+                <Download size={14} /> EKLENTİYİ EDİNİN
+              </button>
+              
+              <div className="flex justify-center gap-4 pt-2">
+                <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/20 uppercase tracking-widest"><ShieldCheck size={12} className="text-[#C5A059]" /> Bot Engeli Yok</div>
+                <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/20 uppercase tracking-widest"><Zap size={12} className="text-[#C5A059]" /> Hızlı</div>
               </div>
             </div>
           </motion.div>
 
-          <div className="max-w-xl mx-auto p-8 border border-white/5 bg-white/[0.01] rounded-3xl">
-             <p className="text-[11px] text-white/30 leading-relaxed italic">
-               * Odelink Connector, tarayıcınızda çalışan güvenli bir köprüdür. Shopier panelinize erişerek ürünlerinizi Odelink vitrininize tek tıkla taşımanızı sağlar. Manuel kurulum zahmetini ortadan kaldırır.
+          <div className="p-6 border border-white/5 bg-white/[0.01] rounded-2xl">
+             <p className="text-[10px] text-white/20 leading-relaxed italic">
+               Eklenti kurulduktan sonra Shopier mağazanızda "Odelink'e Aktar" butonu belirecektir.
              </p>
           </div>
         </div>

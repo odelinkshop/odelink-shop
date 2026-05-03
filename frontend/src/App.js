@@ -28,6 +28,7 @@ import PublicPoliciesPage from './components/PublicPoliciesPage';
 import DesktopOnlyGate from './components/DesktopOnlyGate';
 import SiteAnalyticsPage from './components/SiteAnalyticsPage';
 import SiteBuilderWizard from './components/SiteBuilderWizard';
+import ExtensionGuide from './components/ExtensionGuide';
 import ThemeEditor from './pages/ThemeEditor';
 import ThemesPage from './pages/ThemesPage';
 import DownloadPage from './components/DownloadPage';
@@ -394,6 +395,7 @@ function AppLayout() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/panel" element={<ProtectedRoute><UserPanel /></ProtectedRoute>} />
           <Route path="/site-builder" element={<ProtectedRoute><SiteBuilderWizard /></ProtectedRoute>} />
+          <Route path="/extension-guide" element={<ExtensionGuide />} />
           <Route path="/plans" element={<WithSuspense><PlansPage /></WithSuspense>} />
           <Route path="/plan/*" element={<Navigate to="/plans" replace />} />
           <Route path="/auto-theme-builder" element={<Navigate to="/site-builder" replace />} />
