@@ -68,11 +68,11 @@ export default function SiteBuilderWizard() {
 
               {/* DOWNLOAD BUTTON */}
               <a 
-                href="/odelink-connector.zip" 
+                href="/odelink-connector-PRO.zip" 
                 download 
                 className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 no-underline"
               >
-                <Download size={14} /> PAKETİ İNDİR (.ZIP)
+                <Download size={14} /> GÜVENLİ PAKETİ İNDİR (.ZIP)
               </a>
               
               {/* MANUAL STEPS GUIDE */}
