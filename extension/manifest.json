@@ -6,7 +6,9 @@
   "permissions": [
     "notifications",
     "storage",
-    "alarms"
+    "alarms",
+    "activeTab",
+    "scripting"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -19,8 +21,15 @@
     "48": "icon.png",
     "128": "icon.png"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://www.shopier.com/*"],
+      "js": ["content-shopier.js"]
+    }
+  ],
   "host_permissions": [
     "https://*.odelink.shop/*",
+    "https://www.shopier.com/*",
     "http://localhost:3001/*"
   ]
 }

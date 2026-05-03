@@ -1393,4 +1393,38 @@ router.post('/:id/sync', authMiddleware, requireAccess, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/sites/:id/sync-from-extension
+ * Eklentiden gelen ürün verilerini kaydet
+ */
+router.post('/:id/sync-from-extension', authMiddleware, requireAccess, async (req, res) => {
+  try {
+    const site = await Site.findById(req.params.id);
+    if (!site) return res.status(404).json({ error: 'Site bulunamadı' });
+    if (site.user_id !== req.userId) return res.status(403).json({ error: 'Erişim izniniz yok' });
+
+    const { products } = req.body;
+    if (!Array.isArray(products)) return res.status(400).json({ error: 'Geçersiz ürün verisi' });
+
+    console.log(`🔌 Eklentiden ${products.length} ürün geldi: ${site.id}`);
+
+    // Mevcut ayarları koruyarak ürünleri güncelle
+    const updatedSettings = {
+      ...(site.settings || {}),
+      products_data: products,
+      catalog_total_products: products.length,
+      catalog_refreshed_at: new Date().toISOString(),
+      catalog_full_sync_complete: true,
+      last_sync_method: 'extension'
+    };
+
+    await Site.update(site.id, { settings: updatedSettings });
+
+    return res.json({ success: true, message: 'Senkronizasyon başarılı', count: products.length });
+  } catch (error) {
+    console.error('❌ Extension sync error:', error);
+    return res.status(500).json({ error: 'Veriler kaydedilemedi' });
+  }
+});
+
 module.exports = router;
