@@ -1010,9 +1010,9 @@ router.post('/', authMiddleware, requireAccess, async (req, res) => {
         console.log(`🕷️ Scraping ile ürünler çekiliyor (ZORUNLU): ${normalizedShopierUrl}`);
         catalog = await fetchShopierCatalog(normalizedShopierUrl, {
           debug: false,
-          skipDetails: false, // Açıklamalar ve kategoriler için detayları çekmeliyiz!
+          skipDetails: true, // HIZLI MOD: Detayları arka plana bırak
           detailConcurrency: 3,
-          detailMaxProducts: 500,
+          detailMaxProducts: 100,
           bypassCache: true
         });
         const scraped = Array.isArray(catalog?.products) ? catalog.products : [];
