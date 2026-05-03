@@ -4,6 +4,7 @@ const AutoBuildJobStore = require('../models/AutoBuildJobStore');
 const Site = require('../models/Site');
 const Subscription = require('../models/Subscription');
 const { fetchShopierCatalog, normalizeShopierUrl } = require('./shopierCatalogService');
+const { fetchAllProductsFromShopierAPI } = require('./shopierApiService');
 
 const safeText = (value) => (value == null ? '' : String(value)).trim();
 
@@ -173,18 +174,43 @@ const runOneJob = async (job) => {
       void reuseErr;
     }
 
-    await AutoBuildJobStore.updateProgress(jobId, { progress: 20, message: 'Site oluşturuluyor' });
-    await log('Creating site with basic product list');
+    await AutoBuildJobStore.updateProgress(jobId, { progress: 30, message: 'Nova Neural Mirror: Akıllı senkronizasyon başlatılıyor...' });
+    
+    let basicProducts = [];
+    let categories = [];
+    let totalProducts = 0;
+    let syncMethod = 'NEURAL_MIRROR';
 
-    // İlk önce hızlıca temel ürün listesini çek (detaysız)
-    const basicCatalog = await fetchShopierCatalog(normalizedShopierUrl, {
-      debug: false,
-      skipDetails: true
-    });
+    // 1. ÖNCELİK: Resmi Shopier API (Eğer Token Varsa)
+    const apiToken = process.env.SHOPIER_API_TOKEN;
+    if (apiToken) {
+      await log('Neural Layer 1: Resmi API kanalı aktif.');
+      try {
+        const apiResult = await fetchAllProductsFromShopierAPI(normalizedShopierUrl, apiToken);
+        if (apiResult && apiResult.length > 0) {
+          basicProducts = apiResult;
+          totalProducts = apiResult.length;
+          syncMethod = 'OFFICIAL_API';
+          await log(`Resmi API ile ${totalProducts} ürün çekildi.`);
+        }
+      } catch (apiErr) {
+        await log(`Resmi API uyarısı: ${apiErr.message}. Layer 2 (Neural Mirror) deneniyor...`);
+      }
+    }
 
-    const basicProducts = Array.isArray(basicCatalog?.products) ? basicCatalog.products : [];
-    const categories = Array.isArray(basicCatalog?.categories) ? basicCatalog.categories : [];
-    const totalProducts = Number(basicCatalog?.totalProducts || basicCatalog?.totalCount || basicProducts.length || 0);
+    // 2. ÖNCELİK: Nova Neural Mirror (Network Interception) - EN GÜÇLÜ YÖNTEM
+    if (basicProducts.length === 0) {
+      await log('Neural Layer 2: Nova Neural Mirror (Ağ Dinleme) başlatılıyor...');
+      const basicCatalog = await fetchShopierCatalog(normalizedShopierUrl, {
+        debug: true,
+        skipDetails: true
+      });
+      basicProducts = Array.isArray(basicCatalog?.products) ? basicCatalog.products : [];
+      categories = Array.isArray(basicCatalog?.categories) ? basicCatalog.categories : [];
+      totalProducts = Number(basicCatalog?.totalProducts || basicCatalog?.totalCount || basicProducts.length || 0);
+      syncMethod = 'NEURAL_MIRROR';
+      await log(`Neural Mirror ile ${totalProducts} ürün yakalandı.`);
+    }
 
     if (!basicProducts.length || totalProducts <= 0) {
       await fail('Shopier ürünleri çekilemedi (0 ürün)');
@@ -211,7 +237,8 @@ const runOneJob = async (job) => {
           categories,
           totalProducts
         }),
-        catalog_enrichment_status: 'pending'
+        catalog_sync_method: syncMethod,
+        catalog_enrichment_status: (syncMethod === 'OFFICIAL_API' || syncMethod === 'NEURAL_MIRROR') ? 'completed' : 'pending'
       }
     };
 
@@ -239,8 +266,9 @@ const runOneJob = async (job) => {
       }
     }
 
-    // ARKA PLANDA DETAYLI ÇEKİM BAŞLAT (async, await etme!)
-    (async () => {
+    // ARKA PLANDA DETAYLI ÇEKİM BAŞLAT (Sadece Scraping yapıldıysa gereklidir, API ve Neural zaten tüm veriyi verir)
+    if (syncMethod !== 'OFFICIAL_API' && syncMethod !== 'NEURAL_MIRROR') {
+      (async () => {
       try {
         await log('Background enrichment started');
         

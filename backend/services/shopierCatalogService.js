@@ -66,27 +66,54 @@ const scrapeWithFlareSolverr = async (url) => {
 };
 
 /**
- * GHOST PUPPETEER ILE KAZIMA (Secondary Fallback)
+ * GHOST NEURAL INTERCEPTOR (XHR/Network Layer)
+ * Bu yöntem HTML'e bakmaz, Shopier'in kendi iç veri paketini yakalar.
  */
-const scrapeWithPuppeteerGhost = async (url) => {
+const scrapeWithNeuralMirror = async (url, shopSlug) => {
   let browser = null;
   try {
-    console.log(`👻 [GhostEngine] Puppeteer Fallback: ${url}`);
+    console.log(`🧠 [NeuralMirror] Ağ dinleyicisi başlatılıyor: ${url}`);
     browser = await puppeteer.launch({
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox', 
+        '--disable-setuid-sandbox',
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins,site-per-process'
+      ]
     });
 
     const page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
     await page.setUserAgent(getRandomItem(USER_AGENTS));
-    const response = await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
+
+    let interceptedData = null;
+
+    // AĞI DİNLE: Shopier'in kendi API'sinden gelen JSON paketini yakala
+    page.on('response', async (response) => {
+      const resUrl = response.url();
+      if (resUrl.includes('/s/api/v1/search_product/') || resUrl.includes('api.shopier.com')) {
+        try {
+          const data = await response.json();
+          if (data && (data.products || data.data)) {
+            console.log(`🎯 [NeuralMirror] Saf veri paketi yakalandı!`);
+            interceptedData = data;
+          }
+        } catch (e) { /* Sessizce devam et */ }
+      }
+    });
+
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
     
-    await sleep(2000); // Dinamik içerik için bekle
+    // Eğer scroll gerekliyse yap (Daha fazla ürün yüklemesi için)
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await sleep(3000);
+
     const html = await page.content();
-    return { html, status: response ? response.status() : 200 };
+    return { html, interceptedData, status: 200 };
   } catch (error) {
-    console.error(`❌ [GhostEngine] Hata: ${error.message}`);
-    return { html: null, status: 500, error: error.message };
+    console.error(`❌ [NeuralMirror] Hata: ${error.message}`);
+    return { html: null, interceptedData: null, status: 500, error: error.message };
   } finally {
     if (browser) await browser.close();
   }
@@ -192,15 +219,42 @@ async function fetchShopierCatalog(shopierUrl, opts = {}) {
   let html = null;
   let firstPageProducts = [];
   
-  // 1. AŞAMA: ÖNCE GHOST ENGINE (PUPPETEER) ILE DENE (ÜCRETSİZ VE SINIRSIZ)
-  console.log(`👻 [GhostEngine] Birinci öncelik: Puppeteer ile ana sayfa taranıyor...`);
+  // 1. AŞAMA: NOVA NEURAL MIRROR (AĞ DİNLEME) - EN GÜVENLİ VE EN İYİ YÖNTEM
+  console.log(`🧠 [MonsterEngine] Birinci öncelik: Nova Neural Mirror (XHR Interceptor) başlatılıyor...`);
   try {
-      const ghostRes = await getShopierHtml(normalized, shopSlug);
-      html = ghostRes.html;
-      firstPageProducts = html ? parseProductsFromHtml(html, shopSlug) : [];
-      console.log(`✅ [GhostEngine] Ana sayfa başarıyla tarandı. ${firstPageProducts.length} ürün yakalandı.`);
+      const neuralRes = await scrapeWithNeuralMirror(normalized, shopSlug);
+      html = neuralRes.html;
+      
+      // Eğer saf veri yakalandıysa, PARSER'ı devre dışı bırak ve direkt veriyi işle
+      if (neuralRes.interceptedData) {
+          const rawProducts = neuralRes.interceptedData.products || neuralRes.interceptedData.data || [];
+          console.log(`🎯 [NeuralMirror] Yakalanan saf veriden ${rawProducts.length} ürün işleniyor...`);
+          
+          firstPageProducts = rawProducts.map(p => {
+              // Resilient Mapping (Eğer isimler değişirse akıllıca bul)
+              const id = (p.id || p.product_id || p.ID || '').toString();
+              const name = p.name || p.title || p.label || 'İsimsiz Ürün';
+              const priceData = p.price || p.amount || {};
+              const price = (priceData.price_legacy_formatted || priceData.price_formatted || p.price || '').toString();
+              const imgKey = p.primary_image || p.image || p.img || '';
+              
+              return {
+                  id, name,
+                  price: cleanPrice(price),
+                  url: `https://www.shopier.com/${shopSlug}/${id}`,
+                  image: imgKey.startsWith('http') ? imgKey : `https://cdn.shopier.app/pictures_large/${imgKey}`
+              };
+          });
+          
+          if (firstPageProducts.length > 0) {
+              console.log(`✅ [NeuralMirror] Senkronizasyon 100% başarıyla tamamlandı.`);
+          }
+      } else {
+          // Eğer ağdan veri yakalanamadıysa HTML'den parse etmeyi dene
+          firstPageProducts = html ? parseProductsFromHtml(html, shopSlug) : [];
+      }
   } catch (err) {
-      console.warn(`⚠️ GhostEngine (Puppeteer) başarısız oldu:`, err.message);
+      console.warn(`⚠️ NeuralMirror başarısız oldu, klasik GhostEngine'e geçiliyor:`, err.message);
   }
 
   // EĞER PUPPETEER BAŞARISIZ OLURSA (VE TOKEN VARSA) SCRAPER API'YI FALLBACK OLARAK KULLAN
