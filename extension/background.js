@@ -10,6 +10,35 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   }
 });
 
+// Sync Mesajlarını Dinle
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'sync_products') {
+    syncProducts(request.products).then(sendResponse);
+    return true; // Asenkron cevap için
+  }
+});
+
+async function syncProducts(products) {
+  try {
+    const storage = await chrome.storage.local.get(['token', 'siteId']);
+    if (!storage.token || !storage.siteId) return { success: false, error: 'Auth missing' };
+
+    const res = await fetch(`${API_URL}/sites/${storage.siteId}/sync-from-extension`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${storage.token}`
+      },
+      body: JSON.stringify({ products })
+    });
+
+    return { success: res.ok };
+  } catch (e) {
+    console.error('Sync Error:', e);
+    return { success: false };
+  }
+}
+
 async function checkLiveVisitors() {
   try {
     const storage = await chrome.storage.local.get(['token', 'siteId']);
