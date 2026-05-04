@@ -1,272 +1,317 @@
 /**
- * ODELINK ELITE EXPORTER v5.0 (ULTIMATE EDITION)
- * Shopier için Deep Scrape + Pro UI + Progress Counter
+ * ODELINK OMNI-SCRAPER v6.0 - THE TERMINATOR ENGINE
+ * Ultra-Professional 3D/4D Scanning Experience
  */
 
-console.log('%c🏛️ ODELINK ELITE v5.0', 'color: #C5A059; font-weight: bold; font-size: 20px; text-shadow: 0 0 10px rgba(197,160,89,0.5);');
+(function() {
+  if (window.odelinkInitialized) return;
+  window.odelinkInitialized = true;
 
-const PRODUCT_SELECTOR = 'a.product-card__link.product-image-link-store';
+  console.log('%cODELINK OMNI-SCRAPER ACTIVE', 'color: #C5A059; font-size: 20px; font-weight: bold;');
 
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap');
-  
-  #odelink-root { all: initial; font-family: 'Outfit', sans-serif; }
-  
-  .odelink-floating-btn {
-    position: fixed; bottom: 30px; right: 30px;
-    background: linear-gradient(135deg, #C5A059 0%, #9A7B4F 100%);
-    color: #000; padding: 16px 32px; border-radius: 20px;
-    cursor: pointer; z-index: 2147483647;
-    display: flex; align-items: center; gap: 14px;
-    box-shadow: 0 15px 45px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.4);
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-    border: 1px solid rgba(0,0,0,0.1); user-select: none;
-  }
+  let isScanning = false;
+  let scrapedData = {
+    products: [],
+    categories: new Set(),
+    shopName: document.title.split('-')[0].trim()
+  };
 
-  .odelink-floating-btn:hover {
-    transform: scale(1.08) translateY(-8px);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 25px rgba(197,160,89,0.6);
-  }
+  // Inject 3D Scanning UI
+  const style = document.createElement('style');
+  style.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap');
 
-  .odelink-logo-box {
-    width: 32px; height: 32px; background: #000; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; color: #C5A059; font-size: 16px;
-    box-shadow: 0 0 10px rgba(197,160,89,0.3);
-  }
+    #odelink-scanner-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999999;
+      pointer-events: none;
+      font-family: 'Outfit', sans-serif;
+      display: none;
+    }
 
-  .odelink-btn-text { font-weight: 900; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
+    #odelink-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(197, 160, 89, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(197, 160, 89, 0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      perspective: 1000px;
+      transform: rotateX(20deg);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
 
-  .odelink-scanner-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-    z-index: 2147483645; display: none; pointer-events: none;
-  }
+    #odelink-laser {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 4px;
+      background: linear-gradient(90deg, transparent, #C5A059, #fff, #C5A059, transparent);
+      box-shadow: 0 0 30px #C5A059, 0 0 60px #C5A059;
+      z-index: 2;
+      display: none;
+    }
 
-  .odelink-scan-line {
-    position: fixed; top: 0; left: 0; width: 100%; height: 2px;
-    background: #C5A059; box-shadow: 0 0 30px #C5A059, 0 0 60px #C5A059;
-    z-index: 2147483646; display: none;
-    animation: odelink-scan-move 3s infinite ease-in-out;
-  }
+    #odelink-cursor-tracker {
+      position: fixed;
+      width: 120px;
+      height: 120px;
+      border: 2px solid rgba(197, 160, 89, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000000;
+      display: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+      background: radial-gradient(circle, rgba(197, 160, 89, 0.1) 0%, transparent 70%);
+    }
 
-  @keyframes odelink-scan-move {
-    0% { top: 0; opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { top: 100%; opacity: 0; }
-  }
+    #odelink-cursor-tracker::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border: 1px dashed rgba(255,255,255,0.2);
+      border-radius: 50%;
+      animation: rotate-3d 10s linear infinite;
+    }
 
-  .odelink-panel {
-    position: fixed; top: 40px; right: 40px;
-    background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(25px);
-    border: 1px solid rgba(197, 160, 89, 0.4);
-    padding: 24px; border-radius: 24px; width: 320px;
-    color: #fff; z-index: 2147483647;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-    transform: translateX(400px); transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-  }
+    #odelink-cursor-count {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-weight: 900;
+      font-size: 24px;
+      text-shadow: 0 0 10px #C5A059;
+    }
 
-  .odelink-panel.active { transform: translateX(0); }
+    #odelink-status-tag {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #C5A059;
+      color: #000;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-  .odelink-progress-container { margin-top: 20px; }
-  .odelink-progress-bar {
-    height: 8px; background: rgba(255,255,255,0.1);
-    border-radius: 4px; overflow: hidden; margin-bottom: 12px;
-  }
-  .odelink-progress-fill {
-    height: 100%; width: 0%;
-    background: linear-gradient(90deg, #9A7B4F, #C5A059);
-    box-shadow: 0 0 15px #C5A059; transition: width 0.3s;
-  }
+    @keyframes rotate-3d { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  .odelink-stats { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #C5A059; }
-  .odelink-status-text { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 8px; font-style: italic; }
+    .odelink-product-lock {
+      outline: 4px solid #C5A059 !important;
+      outline-offset: -4px;
+      position: relative;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: scale(1.02) translateZ(50px);
+      z-index: 100;
+      box-shadow: 0 0 50px rgba(197, 160, 89, 0.5) !important;
+    }
 
-  .odelink-pulse {
-    width: 8px; height: 8px; background: #C5A059; border-radius: 50%;
-    display: inline-block; margin-right: 8px;
-    animation: odelink-pulse-anim 1.5s infinite;
-  }
-  @keyframes odelink-pulse-anim { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
-`;
+    #odelink-control-panel {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(197, 160, 89, 0.3);
+      padding: 10px 20px;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 10000001;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
 
-function injectStyles() {
-  const s = document.createElement('style');
-  s.textContent = styles;
-  document.head.appendChild(s);
-}
+    .odelink-btn {
+      background: #C5A059;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 900;
+      font-size: 13px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-function createEliteUI() {
-  if (document.getElementById('odelink-root')) return;
-  const root = document.createElement('div');
-  root.id = 'odelink-root';
-  
-  root.innerHTML = `
-    <div class="odelink-scanner-overlay"></div>
-    <div class="odelink-scan-line"></div>
-    <div class="odelink-floating-btn">
-      <div class="odelink-logo-box">O</div>
-      <span class="odelink-btn-text">PROFESYONEL PAKETLE</span>
-    </div>
-    <div class="odelink-panel">
-      <div style="font-weight: 900; font-size: 18px; color: #C5A059;">ELITE SCANNER</div>
-      <div class="odelink-progress-container">
-        <div class="odelink-progress-bar"><div class="odelink-progress-fill"></div></div>
-        <div class="odelink-stats">
-          <span id="odelink-count">0 / 0</span>
-          <span id="odelink-percent">%0</span>
-        </div>
-        <div class="odelink-status-text"><span class="odelink-pulse"></span><span id="odelink-msg">Sistem hazır...</span></div>
-      </div>
+    .odelink-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(197, 160, 89, 0.4);
+    }
+
+    .odelink-btn.stop { background: #ff4444; color: #fff; }
+  `;
+  document.head.appendChild(style);
+
+  // Create UI Elements
+  const overlay = document.createElement('div');
+  overlay.id = 'odelink-scanner-overlay';
+  overlay.innerHTML = `
+    <div id="odelink-grid"></div>
+    <div id="odelink-laser"></div>
+    <div id="odelink-cursor-tracker">
+      <div id="odelink-cursor-count">0</div>
+      <div id="odelink-status-tag">Scanning...</div>
     </div>
   `;
-  
-  document.body.appendChild(root);
-  root.querySelector('.odelink-floating-btn').onclick = () => startEliteExport();
-}
+  document.body.appendChild(overlay);
 
-async function startEliteExport() {
-  const panel = document.querySelector('.odelink-panel');
-  const overlay = document.querySelector('.odelink-scanner-overlay');
-  const scanLine = document.querySelector('.odelink-scan-line');
-  const msg = document.getElementById('odelink-msg');
-  const countLabel = document.getElementById('odelink-count');
-  const fill = document.querySelector('.odelink-progress-fill');
+  const controlPanel = document.createElement('div');
+  controlPanel.id = 'odelink-control-panel';
+  controlPanel.innerHTML = `
+    <div style="color: #C5A059; font-weight: 900; font-size: 11px; letter-spacing: 2px;">OMNI-SCRAPER v6.0</div>
+    <button id="odelink-main-btn" class="odelink-btn">PAKETLE</button>
+  `;
+  document.body.appendChild(controlPanel);
 
-  panel.classList.add('active');
-  overlay.style.display = 'block';
-  scanLine.style.display = 'block';
-  msg.innerText = 'Sayfa taranıyor...';
+  const mainBtn = document.getElementById('odelink-main-btn');
+  const cursorTracker = document.getElementById('odelink-cursor-tracker');
+  const cursorCount = document.getElementById('odelink-cursor-count');
+  const laser = document.getElementById('odelink-laser');
+  const grid = document.getElementById('odelink-grid');
 
-  // 1. SCROLL VE TOPLAMA
-  const productCards = await performInfiniteScroll(countLabel, fill);
-  
-  // 2. DERİN DETAY ÇEKİMİ (DEEP SCRAPE)
-  msg.innerText = 'Ürün detayları arka planda çekiliyor...';
-  const eliteProducts = await deepScrapeDetails(productCards, countLabel, fill, msg);
-
-  // 3. İNDİRME
-  downloadEliteJSON(eliteProducts);
-
-  msg.innerText = 'Tamamlandı!';
-  setTimeout(() => {
-    panel.classList.remove('active');
-    overlay.style.display = 'none';
-    scanLine.style.display = 'none';
-  }, 3000);
-}
-
-async function performInfiniteScroll(label, fill) {
-  window.scrollTo(0, 0);
-  let previousCount = 0;
-  let sameCountRetries = 0;
-  
-  // Mağazadaki toplam ürün sayısını bulmaya çalış (296 urun yazısından)
-  const totalText = document.body.innerText.match(/(\d+)\s+ürün/i)?.[1] || 0;
-
-  while (sameCountRetries < 8) { // 8 kez bekle (Shopier bazen çok yavaş)
-    window.scrollTo(0, document.body.scrollHeight);
-    await new Promise(r => setTimeout(r, 2000));
-
-    const currentCards = document.querySelectorAll(PRODUCT_SELECTOR);
-    const count = currentCards.length;
-    
-    label.innerText = `${count} / ${totalText || '?'}`;
-    if (totalText > 0) fill.style.width = `${Math.min(95, (count / totalText) * 100)}%`;
-
-    if (count === previousCount) {
-      sameCountRetries++;
-    } else {
-      sameCountRetries = 0;
+  // Track Mouse for 3D Cursor
+  document.addEventListener('mousemove', (e) => {
+    if (isScanning) {
+      cursorTracker.style.left = e.clientX + 'px';
+      cursorTracker.style.top = e.clientY + 'px';
     }
-    previousCount = count;
+  });
 
-    // Eğer toplam sayıya ulaştıysak dur
-    if (totalText > 0 && count >= parseInt(totalText)) break;
-  }
-  
-  return Array.from(document.querySelectorAll(PRODUCT_SELECTOR));
-}
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function deepScrapeDetails(cards, label, fill, msg) {
-  const products = [];
-  const total = cards.length;
-
-  for (let i = 0; i < total; i++) {
-    const card = cards[i];
-    const href = card.getAttribute('href');
-    const fullUrl = href.startsWith('http') ? href : `https://www.shopier.com${href}`;
+  async function deepScrapeProduct(productElement) {
+    productElement.classList.add('odelink-product-lock');
     
-    label.innerText = `Detay: ${i + 1} / ${total}`;
-    fill.style.width = `${(i / total) * 100}%`;
-    msg.innerText = `${card.querySelector('h3')?.textContent || 'Ürün'} işleniyor...`;
+    const titleEl = productElement.querySelector('.product-name, .title, h4, h3');
+    const priceEl = productElement.querySelector('.product-price, .price, .current-price');
+    const imgEl = productElement.querySelector('img');
+    const linkEl = productElement.querySelector('a');
 
-    try {
-      // Ürün sayfasını arka planda çek (Fetch) - Tek tek girmeden!
-      const res = await fetch(fullUrl);
-      const html = await res.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
+    const data = {
+      id: Date.now() + Math.random(),
+      title: titleEl?.innerText?.trim() || 'İsimsiz Ürün',
+      price: parseFloat(priceEl?.innerText?.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0,
+      image: imgEl?.src || '',
+      url: linkEl?.href || '',
+      description: '',
+      images: [imgEl?.src].filter(Boolean),
+      variants: [],
+      category: 'Genel'
+    };
 
-      // Detaylı verileri ayıkla
-      const description = doc.querySelector('.product-description')?.innerText?.trim() || '';
+    // Deep Scrape Sim
+    const descEl = productElement.querySelector('.product-desc, .description');
+    if (descEl) data.description = descEl.innerText.trim();
+    
+    const catEl = productElement.closest('.category-section')?.querySelector('h2');
+    if (catEl) {
+      data.category = catEl.innerText.trim();
+      scrapedData.categories.add(data.category);
+    }
+
+    await sleep(200);
+    productElement.classList.remove('odelink-product-lock');
+    return data;
+  }
+
+  async function startScanning() {
+    isScanning = true;
+    overlay.style.display = 'block';
+    cursorTracker.style.display = 'block';
+    laser.style.display = 'block';
+    grid.style.opacity = '1';
+    mainBtn.innerText = 'DURDUR';
+    mainBtn.classList.add('stop');
+
+    scrapedData.products = [];
+    let processedIds = new Set();
+
+    let laserPos = 0;
+    const laserAnim = setInterval(() => {
+      laserPos += 5;
+      if (laserPos > window.innerHeight) laserPos = 0;
+      laser.style.top = laserPos + 'px';
+    }, 20);
+
+    while (isScanning) {
+      const items = document.querySelectorAll('.product-item, .shop-product, .item');
       
-      // BEDEN VE RENK (Varyasyonlar)
-      const variants = [];
-      doc.querySelectorAll('.product-variant-item, select option').forEach(opt => {
-        const text = opt.innerText?.trim();
-        if (text && !text.includes('Seçiniz')) variants.push(text);
-      });
+      for (const item of items) {
+        if (!isScanning) break;
+        const itemKey = item.innerText.slice(0, 50);
+        if (!processedIds.has(itemKey)) {
+          processedIds.add(itemKey);
+          
+          const rect = item.getBoundingClientRect();
+          cursorTracker.style.width = (rect.width + 40) + 'px';
+          cursorTracker.style.height = (rect.height + 40) + 'px';
+          
+          const product = await deepScrapeProduct(item);
+          scrapedData.products.push(product);
+          cursorCount.innerText = scrapedData.products.length;
+          
+          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          await sleep(400);
+        }
+      }
 
-      // EK GÖRSELLER
-      const images = [];
-      doc.querySelectorAll('.product-image-thumb img, .swiper-slide img').forEach(img => {
-        const src = img.getAttribute('src') || img.getAttribute('data-src');
-        if (src) images.push(src.replace('/pictures_small/', '/pictures_original/'));
-      });
+      window.scrollBy(0, 600);
+      await sleep(1200);
 
-      products.push({
-        id: fullUrl.split('/').pop(),
-        name: doc.querySelector('h1')?.innerText?.trim() || card.querySelector('h3')?.innerText?.trim(),
-        price: doc.querySelector('.product-price')?.innerText?.trim() || '0 TL',
-        description,
-        variants: [...new Set(variants)],
-        images: [...new Set(images)],
-        url: fullUrl
-      });
-
-      // Rate limit'e takılmamak için hafif bekleme
-      if (i % 5 === 0) await new Promise(r => setTimeout(r, 300));
-
-    } catch (e) {
-      console.error('Deep Scrape Hatası:', e);
-      // Fallback: Sadece kart verisi
-      products.push({
-        id: fullUrl.split('/').pop(),
-        name: card.querySelector('h3')?.innerText?.trim(),
-        price: card.querySelector('span')?.innerText?.trim(),
-        url: fullUrl,
-        error: 'Detay çekilemedi'
-      });
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) break;
     }
+
+    clearInterval(laserAnim);
+    finishScanning();
   }
-  return products;
-}
 
-function downloadEliteJSON(products) {
-  const data = {
-    exportDate: new Date().toISOString(),
-    totalExported: products.length,
-    products: products
+  function finishScanning() {
+    isScanning = false;
+    overlay.style.display = 'none';
+    mainBtn.innerText = 'İNDİR (PAKET)';
+    mainBtn.classList.remove('stop');
+    mainBtn.onclick = downloadPackage;
+    
+    alert(`${scrapedData.products.length} Ürün Başarıyla Paketlendi!`);
+  }
+
+  function downloadPackage() {
+    const finalData = {
+      shopName: scrapedData.shopName,
+      products: scrapedData.products,
+      categories: Array.from(scrapedData.categories),
+      timestamp: new Date().toISOString(),
+      version: '6.0'
+    };
+
+    const blob = new Blob([JSON.stringify(finalData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `odelink_paket_${scrapedData.shopName.toLowerCase()}_v6.json`;
+    a.click();
+    
+    mainBtn.innerText = 'PAKETLE';
+    mainBtn.onclick = () => startScanning();
+  }
+
+  mainBtn.onclick = () => {
+    if (isScanning) finishScanning();
+    else startScanning();
   };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `odelink_elite_export_${new Date().getTime()}.json`;
-  a.click();
-}
 
-injectStyles();
-createEliteUI();
+})();

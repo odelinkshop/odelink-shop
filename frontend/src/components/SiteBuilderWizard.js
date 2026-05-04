@@ -52,8 +52,10 @@ export default function SiteBuilderWizard() {
         },
         body: JSON.stringify({
           products,
+          categories: data.categories || [],
+          shopName: data.shopName || '',
           source: data.source || 'shopier',
-          exportDate: data.exportDate || new Date().toISOString()
+          exportDate: data.exportDate || data.timestamp || new Date().toISOString()
         })
       });
 

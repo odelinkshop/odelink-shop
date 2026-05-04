@@ -144,11 +144,17 @@ const runOneJob = async (job) => {
                 const price = Number(p.price || 0);
                 return {
                   ...p,
-                  price: isNaN(price) || price < 0 ? 0 : price
+                  price: isNaN(price) || price < 0 ? 0 : price,
+                  description: p.description || '',
+                  images: Array.isArray(p.images) ? p.images : [p.image].filter(Boolean),
+                  variants: Array.isArray(p.variants) ? p.variants : [],
+                  category: p.category || 'Genel'
                 };
               }).filter(Boolean),
-              categories: existingCategories,
-              totalProducts: existingTotal
+              categories: Array.isArray(existingCategories) && existingCategories.length > 0 
+                ? existingCategories 
+                : [...new Set((existingProducts || []).map(p => p.category).filter(Boolean))],
+              totalProducts: existingTotal || (existingProducts || []).length
             })
           }
         };

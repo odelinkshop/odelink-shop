@@ -1433,36 +1433,39 @@ router.post('/:id/sync-from-extension', authMiddleware, requireAccess, async (re
  */
 router.post('/create-from-export', authMiddleware, async (req, res) => {
   try {
-    const { products, source, exportDate } = req.body;
+    const { products, categories, shopName, source, exportDate } = req.body;
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ error: 'Geçersiz veya boş ürün listesi' });
     }
 
-    console.log(`📦 Export import: ${products.length} ürün, kaynak: ${source || 'bilinmiyor'}`);
+    console.log(`📦 Omni-Export import: ${products.length} ürün, ${categories?.length || 0} kategori. Mağaza: ${shopName || 'Bilinmiyor'}`);
 
-    // Kullanıcının mevcut sitesini bul veya yeni oluştur
     const existingSites = await Site.findByUserId(req.userId);
     let site;
 
+    const slugify = (text) => (text || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+
     if (existingSites && existingSites.length > 0) {
-      // Mevcut siteyi güncelle
       site = existingSites[0];
       console.log(`📝 Mevcut site güncelleniyor: ${site.id}`);
+      if (shopName && (!site.name || site.name === 'Mağazam')) {
+        await Site.update(site.id, { name: shopName });
+      }
     } else {
-      // Yeni site oluştur
+      const subdomain = slugify(shopName || 'magazam-' + Math.random().toString(36).substring(2, 7));
       site = await Site.create({
         userId: req.userId,
-        name: 'Mağazam',
-        subdomain: '',
+        name: shopName || 'Mağazam',
+        subdomain: subdomain,
         settings: {}
       });
-      console.log(`🆕 Yeni site oluşturuldu: ${site.id}`);
+      console.log(`🆕 Yeni site oluşturuldu: ${site.id} (${subdomain})`);
     }
 
-    // Ürünleri siteye işle
     const updatedSettings = {
       ...(site.settings || {}),
       products_data: products,
+      collections: categories || [],
       catalog_total_products: products.length,
       catalog_refreshed_at: exportDate || new Date().toISOString(),
       catalog_full_sync_complete: true,
