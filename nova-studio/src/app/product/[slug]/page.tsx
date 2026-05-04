@@ -18,11 +18,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!store) return { title: "Ürün Bulunamadı" };
 
   const product = store.products.find(p => p.slug === slug || slugify(p.name) === slug);
+  const displayName = product?.name || slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
   if (!product) {
     return {
-      title: "Ürün Bulunamadı",
-      description: "Aradığınız ürün mağazamızda bulunmamaktadır."
+      title: `${displayName} | Ürün Detay`,
+      description: `${displayName} ürün detaylarını inceleyin.`
     };
   }
 

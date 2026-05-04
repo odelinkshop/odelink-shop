@@ -107,13 +107,23 @@ const mapProduct = (p: any, index: number): Product => {
     variations = [{ name: 'Beden', options: sizes }];
   }
 
-  const sanitizeImg = (img: string | undefined) => {
-    if (!img || typeof img !== 'string') return "";
-    let src = img.trim();
-    // Shopier resim kalitesini her zaman en yükseğe (xlarge) çek
-    if (src.includes('cdn.shopier.app/pictures')) {
-      src = src.replace(/pictures_(mid|large|small|mid_mid|standard)/, 'pictures_xlarge');
+  const sanitizeImg = (img: any): string => {
+    if (!img) return "";
+    let src = "";
+    if (typeof img === 'object') {
+      src = (img.url || img.src || img.original || img.large || "").toString();
+    } else {
+      src = img.toString().trim();
     }
+    
+    if (!src) return "";
+
+    // Shopier resim kalitesini her zaman en yükseğe (xlarge) çekmeye çalış, 
+    // ama linki bozma!
+    if (src.includes('cdn.shopier.app/pictures')) {
+      src = src.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large)/, 'pictures_xlarge');
+    }
+
     if (src.startsWith('http')) return src;
     return `https://cdn.shopier.app/pictures_xlarge/${src}`;
   };
