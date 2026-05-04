@@ -1158,12 +1158,27 @@ const startServer = async () => {
 
     server = httpServer;
 
+    // Neural Bridge Auth (v2.1)
+    const jwt = require('jsonwebtoken');
+    io.use((socket, next) => {
+      const token = socket.handshake.auth?.token;
+      if (!token) return next(new Error('Neural Bridge: Token Missing'));
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.role !== 'admin') return next(new Error('Neural Bridge: Access Denied'));
+        socket.user = decoded;
+        next();
+      } catch (err) {
+        next(new Error('Neural Bridge: Invalid Signature'));
+      }
+    });
+
     // REAL-TIME CORE (v2.1) - WebSocket Management
     io.on('connection', (socket) => {
-      console.log('📡 Elite Connection Established:', socket.id);
+      console.log('📡 CEO Connected to Neural Bridge:', socket.user.email);
 
       socket.on('disconnect', () => {
-        console.log('📡 Connection Lost:', socket.id);
+        console.log('📡 CEO Disconnected');
       });
     });
 

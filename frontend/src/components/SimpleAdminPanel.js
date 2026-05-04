@@ -50,33 +50,69 @@ const SimpleAdminPanel = () => {
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Socket.io for Real-time Matrix Feed
+  const [liveFeed, setLiveFeed] = useState([]);
+  
   useEffect(() => {
     const token = getAuthToken();
     if (!token) return;
 
+    // Initialize Neural Bridge (Socket.io)
+    const socket = io(API_BASE, {
+      auth: { token },
+      transports: ['websocket']
+    });
+
+    socket.on('connect', () => {
+      console.log('✅ Neural Bridge Connected');
+      toast.info('Sinir Ağı Bağlantısı Kuruldu', { icon: <Zap className="text-blue-500" /> });
+    });
+
+    socket.on('new_visit', (data) => {
+      setLiveFeed(prev => [{ ...data, type: 'visit', id: Date.now() }, ...prev].slice(0, 50));
+      setActiveVisitors(v => v + 1);
+    });
+
+    socket.on('security_event', (data) => {
+      setLiveFeed(prev => [{ ...data, type: 'security', id: Date.now() }, ...prev].slice(0, 50));
+      toast.error(`Güvenlik Olayı: ${data.message}`);
+    });
+
     const fetchData = async () => {
       try {
+        const headers = { Authorization: `Bearer ${token}` };
         if (activeTab === 'dashboard') {
-          const res = await fetch(`${API_BASE}/api/admin/overview`, { headers: { Authorization: `Bearer ${token}` } });
-          const data = await res.json();
-          if (res.ok) setAdminOverview(data?.overview);
+          const [overviewRes, visitorsRes, hourlyRes] = await Promise.all([
+            fetch(`${API_BASE}/api/admin/overview`, { headers }),
+            fetch(`${API_BASE}/api/metrics/active-visitors`, { headers }),
+            fetch(`${API_BASE}/api/admin/hourly-stats`, { headers })
+          ]);
           
-          const vRes = await fetch(`${API_BASE}/api/metrics/active-visitors`, { headers: { Authorization: `Bearer ${token}` } });
-          const vData = await vRes.json();
-          if (vRes.ok) setActiveVisitors(vData?.activeVisitors || 0);
+          if (overviewRes.ok) {
+            const data = await overviewRes.json();
+            setAdminOverview(data?.overview);
+          }
+          if (visitorsRes.ok) {
+            const data = await visitorsRes.json();
+            setActiveVisitors(data?.activeVisitors || 0);
+          }
+          if (hourlyRes.ok) {
+            const data = await hourlyRes.json();
+            setChartData(data?.hourly || []);
+          }
         }
         if (activeTab === 'users') {
-          const res = await fetch(`${API_BASE}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } });
+          const res = await fetch(`${API_BASE}/api/admin/users`, { headers });
           const data = await res.json();
           if (res.ok) setAdminUsers(data?.users || []);
         }
         if (activeTab === 'sites') {
-          const res = await fetch(`${API_BASE}/api/admin/sites`, { headers: { Authorization: `Bearer ${token}` } });
+          const res = await fetch(`${API_BASE}/api/admin/sites`, { headers });
           const data = await res.json();
           if (res.ok) setAdminSites(data?.sites || []);
         }
         if (activeTab === 'ip') {
-          const res = await fetch(`${API_BASE}/api/admin/ip-logs`, { headers: { Authorization: `Bearer ${token}` } });
+          const res = await fetch(`${API_BASE}/api/admin/ip-logs`, { headers });
           const data = await res.json();
           if (res.ok) setAdminIpLogs(data?.logs || []);
         }
@@ -84,34 +120,20 @@ const SimpleAdminPanel = () => {
     };
 
     const fetchSystemStats = async () => {
-      const token = getAuthToken();
-      if (!token) return;
       try {
         const res = await fetch(`${API_BASE}/api/admin/system-stats`, { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        if (res.ok) setSystemStats(data);
-      } catch (e) { void e; }
-    };
-
-    const fetchHourlyStats = async () => {
-      const token = getAuthToken();
-      if (!token) return;
-      try {
-        const res = await fetch(`${API_BASE}/api/admin/hourly-stats`, { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        if (res.ok) setChartData(data?.hourly || []);
+        if (res.ok) setSystemStats(await res.json());
       } catch (e) { void e; }
     };
 
     fetchData();
     fetchSystemStats();
-    fetchHourlyStats();
-    const interval = setInterval(() => {
-      fetchData();
-      fetchSystemStats();
-      fetchHourlyStats();
-    }, 15000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchSystemStats, 10000); // System stats every 10s
+
+    return () => {
+      socket.disconnect();
+      clearInterval(interval);
+    };
   }, [activeTab, refreshTick]);
 
   // Actions
@@ -329,117 +351,104 @@ const SimpleAdminPanel = () => {
         <div className="p-4 sm:p-8 lg:p-12 space-y-6 sm:space-y-10 max-w-7xl mx-auto w-full overflow-hidden">
            {activeTab === 'dashboard' && (
              <div className="space-y-6 sm:space-y-10">
-                <div className="bg-[#0C0D0E]/50 backdrop-blur-3xl border border-white/5 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
+                {/* CYBER ANALYTICS HEADER */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                   <DataCard title="Toplam Müşteri" value={adminOverview?.total_users || '0'} icon={Users} color="blue" trend="+12%" />
+                   <DataCard title="Canlı Vitrinler" value={adminOverview?.total_sites || '0'} icon={Monitor} color="emerald" trend="+5%" />
+                   <DataCard title="Abonelik Gücü" value={adminOverview?.active_subscriptions || '0'} icon={Zap} color="indigo" trend="Stabil" />
+                   <DataCard title="Anlık Siber Trafik" value={activeVisitors} icon={Activity} color="rose" pulse trend="Live" />
+                </div>
+
+                <div className="bg-[#0C0D0E]/50 backdrop-blur-3xl border border-white/5 rounded-[2rem] p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8 sm:mb-12">
                     <div>
-                      <h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-3">
-                        <Activity className="text-blue-500 animate-pulse" />
-                        Canlı Trafik Analizi
+                      <h2 className="text-xl font-bold text-white mb-1 flex items-center gap-3">
+                        <BarChart3 className="text-blue-500" />
+                        Küresel Trafik Analizi
                       </h2>
-                      <p className="text-sm text-gray-500 font-medium">Küresel siber etkileşim verileri (Son 24 Saat)</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold text-blue-400 uppercase tracking-widest">REAL-TIME</div>
+                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">Sistem genelindeki anlık etkileşim yoğunluğu</p>
                     </div>
                   </div>
 
-                  <div className="h-[350px] w-full">
+                  <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={chartData}>
                         <defs>
                           <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
                             <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                        <XAxis 
-                          dataKey="time" 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{fill: '#4b5563', fontSize: 11, fontWeight: 600}}
-                          dy={10}
-                        />
+                        <XAxis dataKey="time" hide />
                         <YAxis hide />
                         <Tooltip 
-                          contentStyle={{backgroundColor: '#0C0D0E', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', color: '#fff'}}
+                          contentStyle={{backgroundColor: '#0C0D0E', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff'}}
                           itemStyle={{color: '#3b82f6', fontWeight: 'bold'}}
                         />
-                        <Area 
-                          type="monotone" 
-                          dataKey="visits" 
-                          stroke="#3b82f6" 
-                          strokeWidth={4}
-                          fillOpacity={1} 
-                          fill="url(#colorVisits)" 
-                          animationDuration={2000}
-                        />
+                        <Area type="monotone" dataKey="visits" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorVisits)" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                   <DataCard title="Müşteri Sayısı" value={adminOverview?.total_users || '0'} icon={Users} color="blue" />
-                   <DataCard title="Aktif Vitrinler" value={adminOverview?.total_sites || '0'} icon={Monitor} color="emerald" />
-                   <DataCard title="Abonelikler" value={adminOverview?.active_subscriptions || '0'} icon={CreditCard} color="indigo" />
-                   <DataCard title="Anlık Trafik" value={activeVisitors} icon={Activity} color="rose" pulse />
-                </div>
-
-                {/* ADVANCED CEO METRICS (v7.0) */}
+                {/* REAL-TIME COMMAND CENTER FEED */}
                 <div className="grid lg:grid-cols-3 gap-8">
                    <div className="lg:col-span-2 space-y-8">
-                      <SectionBox title="Sistem Performansı">
-                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <MiniChart label="CPU Yükü" value={systemStats.cpu} color="blue" icon={Cpu} />
-                            <MiniChart label="RAM Kullanımı" value={systemStats.ram} color="emerald" icon={Server} />
-                            <MiniChart label="Database" value={systemStats.db} color="indigo" icon={HardDrive} />
-                         </div>
-                      </SectionBox>
-
-                      <SectionBox title="Son Hareketler">
-                         <div className="space-y-4">
-                            {(adminUsers.slice(0, 4)).map(u => (
-                               <div key={u.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-white/10 transition-all">
-                                  <div className="flex items-center gap-4">
-                                     <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-sm uppercase">{u.email[0]}</div>
-                                     <div>
-                                        <div className="text-sm font-bold text-white">{u.email}</div>
-                                        <div className="text-[10px] text-gray-500 font-medium">Yeni Müşteri Kaydı</div>
-                                     </div>
-                                  </div>
-                                  <span className="text-[10px] font-bold text-gray-600 uppercase">Anlık</span>
+                      <SectionBox title="Canlı Sinir Ağı (Live Feed)">
+                         <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                            {liveFeed.length > 0 ? (
+                              <AnimatePresence initial={false}>
+                                {liveFeed.map(item => (
+                                   <motion.div 
+                                     initial={{ opacity: 0, y: -10, filter: 'blur(5px)' }} 
+                                     animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                                     key={item.id} 
+                                     className={`flex items-center justify-between p-4 bg-white/5 rounded-2xl border ${item.type === 'security' ? 'border-red-500/30 bg-red-500/5' : 'border-white/5'} hover:bg-white/[0.08] transition-all`}
+                                   >
+                                      <div className="flex items-center gap-4">
+                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.type === 'security' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                            {item.type === 'security' ? <ShieldCheck size={18} /> : <MousePointer2 size={18} />}
+                                         </div>
+                                         <div>
+                                            <div className="text-[13px] font-bold text-white tracking-tight">
+                                               {item.type === 'security' ? item.message : `${item.host} ziyaret edildi`}
+                                            </div>
+                                            <div className="text-[10px] text-gray-500 font-medium font-mono">{item.path || '/'}</div>
+                                         </div>
+                                      </div>
+                                      <div className="text-right">
+                                         <div className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Canlı</div>
+                                         <div className="text-[8px] text-gray-700 font-mono mt-1">{new Date().toLocaleTimeString()}</div>
+                                      </div>
+                                   </motion.div>
+                                ))}
+                              </AnimatePresence>
+                            ) : (
+                               <div className="py-20 text-center flex flex-col items-center justify-center gap-4">
+                                  <div className="w-12 h-12 rounded-full border-2 border-white/5 border-t-blue-500 animate-spin" />
+                                  <span className="text-gray-600 text-[10px] font-bold uppercase tracking-widest">Sinir Ağı Veri Bekliyor...</span>
                                </div>
-                            ))}
+                            )}
                          </div>
                       </SectionBox>
                    </div>
 
                    <div className="space-y-8">
-                      <SectionBox title="Abonelik Dağılımı">
-                         <div className="space-y-6 py-4">
-                            {(() => {
-                               const plans = adminOverview?.planDistribution || [];
-                               const total = adminOverview?.overview?.active_subscriptions || 1;
-                               const getCount = (name) => plans.filter(p => p.plan_name.toLowerCase().includes(name.toLowerCase())).reduce((sum, p) => sum + p.count, 0);
-                               
-                               return (
-                                  <>
-                                     <ProgressBar label="Standart" count={getCount('Standart')} total={total} color="blue" />
-                                     <ProgressBar label="Profesyonel" count={getCount('Profesyonel')} total={total} color="emerald" />
-                                     <ProgressBar label="Free" count={getCount('Free')} total={total} color="gray" />
-                                  </>
-                               );
-                            })()}
+                      <SectionBox title="Sistem Kaynakları">
+                         <div className="space-y-8 py-2">
+                            <MiniChart label="CPU Sinyali" value={systemStats.cpu} color="blue" icon={Cpu} />
+                            <MiniChart label="RAM Havuzu" value={systemStats.ram} color="emerald" icon={Server} />
+                            <MiniChart label="DB Sağlığı" value={systemStats.db} color="indigo" icon={Database} />
                          </div>
                       </SectionBox>
 
-                      <SectionBox title="Hızlı Aksiyonlar">
+                      <SectionBox title="CEO Aksiyon Merkezi">
                          <div className="grid grid-cols-1 gap-3">
-                            <ActionButton icon={Megaphone} label="Duyuru Yayınla" onClick={() => setIsBroadcastModalOpen(true)} color="blue" />
-                            <ActionButton icon={RefreshCw} label="Önbellek Temizle" onClick={handleClearCache} color="emerald" />
-                            <ActionButton icon={AlertTriangle} label={maintenanceMode ? "Bakımı Kapat" : "Bakıma Al"} onClick={toggleMaintenance} color="rose" />
+                            <ActionButton icon={Megaphone} label="Genel Duyuru" onClick={() => setIsBroadcastModalOpen(true)} color="blue" />
+                            <ActionButton icon={RefreshCw} label="Önbellekleri Sıfırla" onClick={handleClearCache} color="emerald" />
+                            <ActionButton icon={AlertTriangle} label={maintenanceMode ? "Bakımı Sonlandır" : "Bakıma Al"} onClick={toggleMaintenance} color="rose" />
                          </div>
                       </SectionBox>
                    </div>
