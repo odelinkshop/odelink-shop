@@ -215,14 +215,16 @@
 
     const data = {
       id: Date.now() + Math.random(),
-      title: titleEl?.innerText?.trim() || 'İsimsiz Ürün',
+      name: titleEl?.innerText?.trim() || 'İsimsiz Ürün',
       price: parseFloat(priceEl?.innerText?.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0,
+      imageUrl: imgEl?.src || '',
       image: imgEl?.src || '',
       url: linkEl?.href || '',
       description: '',
       images: [imgEl?.src].filter(Boolean),
       variants: [],
-      category: 'Genel'
+      category: 'Genel',
+      slug: (titleEl?.innerText || 'urun').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
     };
 
     const descEl = productElement.querySelector('.product-desc, .description');

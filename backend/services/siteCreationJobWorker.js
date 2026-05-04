@@ -144,11 +144,15 @@ const runOneJob = async (job) => {
                 const price = Number(p.price || 0);
                 return {
                   ...p,
+                  name: p.name || p.title || 'İsimsiz Ürün',
                   price: isNaN(price) || price < 0 ? 0 : price,
                   description: p.description || '',
-                  images: Array.isArray(p.images) ? p.images : [p.image].filter(Boolean),
+                  imageUrl: p.imageUrl || p.image || '',
+                  image: p.image || p.imageUrl || '',
+                  images: Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image, p.imageUrl].filter(Boolean),
                   variants: Array.isArray(p.variants) ? p.variants : [],
-                  category: p.category || 'Genel'
+                  category: p.category || 'Genel',
+                  slug: p.slug || (p.name || p.title || 'urun').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
                 };
               }).filter(Boolean),
               categories: Array.isArray(existingCategories) && existingCategories.length > 0 
