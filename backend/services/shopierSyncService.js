@@ -132,8 +132,8 @@ async function syncSite(siteId) {
     const catalog = await fetchShopierCatalog(normalizedUrl, {
       debug: false,
       skipDetails: false,
-      detailConcurrency: 2,
-      detailMaxProducts: 0,
+      detailConcurrency: 5,
+      detailMaxProducts: 9999,
       apiKey: apiKey,
       bypassCache: true // Taze veri çek, eski veriyi unut!
     });

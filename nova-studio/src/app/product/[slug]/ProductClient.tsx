@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Heart, ChevronLeft, ChevronRight, Star, ShieldCheck, Truck, RefreshCw, Plus, Minus } from "lucide-react";
 import { useCart } from "@/store/useCart";
-import { slugify } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 
 // Fiyat formatlama
 const formatPrice = (price: string | number): string => {
@@ -29,6 +29,18 @@ export default function ProductClient() {
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // Ürünü bul
+  const product = products.find(p => p.slug === slug || slugify(p.name) === slug);
+  
+  // Varsayılan beden seçimi
+  useEffect(() => {
+    if (product && product.sizes && product.sizes.length > 0) {
+      setSelectedSize(product.sizes[0]);
+    } else if (product && product.variations && product.variations.length > 0) {
+      setSelectedSize(product.variations[0].options[0]);
+    }
+  }, [product]);
 
   // Favori durumunu kontrol et
   useEffect(() => {
@@ -52,18 +64,6 @@ export default function ProductClient() {
     localStorage.setItem("favorites", JSON.stringify(newFavorites));
     window.dispatchEvent(new Event("favoritesUpdated"));
   };
-
-  // Ürünü bul
-  const product = products.find(p => p.slug === slug || slugify(p.name) === slug);
-  
-  // Varsayılan beden seçimi
-  useEffect(() => {
-    if (product && product.sizes && product.sizes.length > 0) {
-      setSelectedSize(product.sizes[0]);
-    } else if (product && product.variations && product.variations.length > 0) {
-      setSelectedSize(product.variations[0].options[0]);
-    }
-  }, [product]);
 
   if (isLoading) {
     return (
@@ -113,17 +113,34 @@ export default function ProductClient() {
           
           {/* Sol Kolon: Görseller */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-[3/4] bg-neutral/20 overflow-hidden">
+            <div 
+              className="relative aspect-[3/4] bg-neutral/20 overflow-hidden cursor-crosshair group/zoom"
+              onMouseMove={(e) => {
+                const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+                const x = ((e.pageX - left - window.scrollX) / width) * 100;
+                const y = ((e.pageY - top - window.scrollY) / height) * 100;
+                const img = e.currentTarget.querySelector('img');
+                if (img) {
+                  img.style.transformOrigin = `${x}% ${y}%`;
+                }
+              }}
+              onMouseLeave={(e) => {
+                const img = e.currentTarget.querySelector('img');
+                if (img) {
+                  img.style.transformOrigin = 'center';
+                }
+              }}
+            >
               <AnimatePresence mode="wait">
                 <motion.img
                   key={selectedImage}
-                  src={allImages[selectedImage]}
+                  src={allImages[selectedImage].replace('pictures_large', 'pictures_xlarge')}
                   alt={product.name}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-200 group-hover/zoom:scale-[2.5]"
                 />
               </AnimatePresence>
               
@@ -131,13 +148,13 @@ export default function ProductClient() {
                 <>
                   <button 
                     onClick={() => setSelectedImage(prev => (prev === 0 ? allImages.length - 1 : prev - 1))}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-secondary hover:text-primary transition-all"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-secondary hover:text-primary transition-all z-20"
                   >
                     <ChevronLeft size={20} />
                   </button>
                   <button 
                     onClick={() => setSelectedImage(prev => (prev === allImages.length - 1 ? 0 : prev + 1))}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-secondary hover:text-primary transition-all"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-secondary hover:text-primary transition-all z-20"
                   >
                     <ChevronRight size={20} />
                   </button>
