@@ -133,7 +133,7 @@ export default function SiteBuilderWizard() {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-serif text-[#C5A059]">Odelink Connector</h3>
+                  <h3 className="text-xl font-serif text-[#C5A059]">Odelink Omni-Scraper v6.0</h3>
                   <p className="text-[10px] text-[#F2EBE1]/50 leading-relaxed max-w-sm mx-auto">
                     Chrome eklentisini kurun, Shopier mağazanızı tarayın ve ürün paketinizi indirin.
                   </p>

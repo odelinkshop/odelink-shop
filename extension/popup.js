@@ -1,50 +1,48 @@
-// Odelink Professional Exporter - Logic v4
-document.getElementById('export-btn').addEventListener('click', async () => {
-  const btn = document.getElementById('export-btn');
-  const status = document.getElementById('status-msg');
+/**
+ * ODELINK OMNI-SCRAPER v6.0 - POPUP LOGIC
+ */
+
+document.getElementById('scanBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('scanBtn');
   const originalText = btn.textContent;
 
   try {
-    status.textContent = '🛰️ Mağaza Taranıyor...';
-    btn.disabled = true;
-
-    // Aktif tab'ı bul
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     
     if (!tab.url.includes('shopier.com')) {
-      status.textContent = '❌ Lütfen Shopier Mağazasında Çalıştırın.';
-      btn.disabled = false;
+      btn.textContent = 'LÜTFEN SHOPIER MAĞAZASINA GİDİN';
+      btn.style.background = '#ff4444';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '#C5A059';
+      }, 3000);
       return;
     }
 
-    // Content script'e "ürünleri çek" emri gönder
-    const response = await chrome.tabs.sendMessage(tab.id, { action: 'extract_products' });
+    // Trigger the siber-scanner in the content script
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        const mainBtn = document.getElementById('odelink-main-btn');
+        if (mainBtn) {
+          mainBtn.click();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          alert('Omni-Scraper v6.0 Hazırlanıyor... Sayfayı yenileyip tekrar deneyin.');
+        }
+      }
+    });
+
+    btn.textContent = 'TARAMA BAŞLATILDI!';
+    btn.style.background = '#F2EBE1';
+    btn.style.color = '#0A0A0A';
     
-    if (response && response.success) {
-      status.textContent = `🚀 ${response.products.length} Ürün Paketlendi!`;
-      
-      // JSON dosyasını oluştur ve indir
-      const blob = new Blob([JSON.stringify(response.products, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const timestamp = new Date().toISOString().split('T')[0];
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `odelink_mağaza_paketi_${timestamp}.json`;
-      a.click();
-      
-      URL.revokeObjectURL(url);
-      status.textContent = '✅ Dosya İndirildi. Odelink Paneline Yükleyin.';
-    } else {
-      status.textContent = '❌ Ürünler Çekilemedi.';
-    }
-  } catch (e) {
-    console.error('Export Error:', e);
-    status.textContent = '❌ Hata: Sayfayı yenileyip deneyin.';
-  } finally {
-    btn.disabled = false;
     setTimeout(() => {
-      btn.textContent = originalText;
-    }, 3000);
+      window.close();
+    }, 1500);
+
+  } catch (e) {
+    console.error('Omni-Scraper Error:', e);
+    btn.textContent = 'BAĞLANTI HATASI';
   }
 });
