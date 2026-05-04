@@ -1,54 +1,94 @@
 /**
- * ODELINK PROFESSIONAL EXPORTER v4.2
- * Shopier Infinite Scroll + Doğru Seçiciler
+ * ODELINK ELITE EXPORTER v5.0 (ULTIMATE EDITION)
+ * Shopier için Deep Scrape + Pro UI + Progress Counter
  */
 
-console.log('%c🏛️ ODELINK PRO EXPORTER v4.2', 'color: #C5A059; font-weight: bold; font-size: 16px;');
+console.log('%c🏛️ ODELINK ELITE v5.0', 'color: #C5A059; font-weight: bold; font-size: 20px; text-shadow: 0 0 10px rgba(197,160,89,0.5);');
 
-// ─── SHOPIER KESİN SEÇİCİLER ───
 const PRODUCT_SELECTOR = 'a.product-card__link.product-image-link-store';
 
-// ─── ELITE UI ───
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap');
+  
   #odelink-root { all: initial; font-family: 'Outfit', sans-serif; }
+  
   .odelink-floating-btn {
     position: fixed; bottom: 30px; right: 30px;
     background: linear-gradient(135deg, #C5A059 0%, #9A7B4F 100%);
-    color: #000; padding: 14px 28px; border-radius: 16px;
+    color: #000; padding: 16px 32px; border-radius: 20px;
     cursor: pointer; z-index: 2147483647;
-    display: flex; align-items: center; gap: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.3);
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.4);
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
     border: 1px solid rgba(0,0,0,0.1); user-select: none;
-    animation: odelink-bounce 2s infinite ease-in-out;
   }
+
   .odelink-floating-btn:hover {
-    transform: scale(1.05) translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 15px rgba(197,160,89,0.4);
-    animation: none;
+    transform: scale(1.08) translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 25px rgba(197,160,89,0.6);
   }
+
   .odelink-logo-box {
-    width: 28px; height: 28px; background: #000; border-radius: 8px;
+    width: 32px; height: 32px; background: #000; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; color: #C5A059; font-size: 14px;
+    font-weight: 900; color: #C5A059; font-size: 16px;
+    box-shadow: 0 0 10px rgba(197,160,89,0.3);
   }
-  .odelink-btn-text { font-weight: 800; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
-  .odelink-scanner {
-    position: fixed; top: 0; left: 0; width: 100%; height: 4px;
-    background: linear-gradient(90deg, transparent, #C5A059, transparent);
-    z-index: 2147483646; box-shadow: 0 0 20px #C5A059; display: none;
+
+  .odelink-btn-text { font-weight: 900; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
+
+  .odelink-scanner-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+    z-index: 2147483645; display: none; pointer-events: none;
   }
-  @keyframes odelink-scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
-  @keyframes odelink-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-  .odelink-toast {
-    position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
-    background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px);
-    border: 1px solid rgba(197, 160, 89, 0.3); color: #F2EBE1;
-    padding: 16px 32px; border-radius: 50px; font-size: 13px;
-    font-weight: 700; letter-spacing: 1px; z-index: 2147483647;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6); opacity: 0; transition: all 0.5s;
+
+  .odelink-scan-line {
+    position: fixed; top: 0; left: 0; width: 100%; height: 2px;
+    background: #C5A059; box-shadow: 0 0 30px #C5A059, 0 0 60px #C5A059;
+    z-index: 2147483646; display: none;
+    animation: odelink-scan-move 3s infinite ease-in-out;
   }
+
+  @keyframes odelink-scan-move {
+    0% { top: 0; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  .odelink-panel {
+    position: fixed; top: 40px; right: 40px;
+    background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(25px);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    padding: 24px; border-radius: 24px; width: 320px;
+    color: #fff; z-index: 2147483647;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    transform: translateX(400px); transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .odelink-panel.active { transform: translateX(0); }
+
+  .odelink-progress-container { margin-top: 20px; }
+  .odelink-progress-bar {
+    height: 8px; background: rgba(255,255,255,0.1);
+    border-radius: 4px; overflow: hidden; margin-bottom: 12px;
+  }
+  .odelink-progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #9A7B4F, #C5A059);
+    box-shadow: 0 0 15px #C5A059; transition: width 0.3s;
+  }
+
+  .odelink-stats { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #C5A059; }
+  .odelink-status-text { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 8px; font-style: italic; }
+
+  .odelink-pulse {
+    width: 8px; height: 8px; background: #C5A059; border-radius: 50%;
+    display: inline-block; margin-right: 8px;
+    animation: odelink-pulse-anim 1.5s infinite;
+  }
+  @keyframes odelink-pulse-anim { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
 `;
 
 function injectStyles() {
@@ -57,165 +97,176 @@ function injectStyles() {
   document.head.appendChild(s);
 }
 
-function createFloatingUI() {
+function createEliteUI() {
   if (document.getElementById('odelink-root')) return;
   const root = document.createElement('div');
   root.id = 'odelink-root';
-  const scanner = document.createElement('div');
-  scanner.className = 'odelink-scanner';
-  const btn = document.createElement('div');
-  btn.className = 'odelink-floating-btn';
-  btn.innerHTML = `<div class="odelink-logo-box">O</div><span class="odelink-btn-text">PAKETLE</span>`;
-  const toast = document.createElement('div');
-  toast.className = 'odelink-toast';
-  root.appendChild(scanner);
-  root.appendChild(btn);
-  root.appendChild(toast);
+  
+  root.innerHTML = `
+    <div class="odelink-scanner-overlay"></div>
+    <div class="odelink-scan-line"></div>
+    <div class="odelink-floating-btn">
+      <div class="odelink-logo-box">O</div>
+      <span class="odelink-btn-text">PROFESYONEL PAKETLE</span>
+    </div>
+    <div class="odelink-panel">
+      <div style="font-weight: 900; font-size: 18px; color: #C5A059;">ELITE SCANNER</div>
+      <div class="odelink-progress-container">
+        <div class="odelink-progress-bar"><div class="odelink-progress-fill"></div></div>
+        <div class="odelink-stats">
+          <span id="odelink-count">0 / 0</span>
+          <span id="odelink-percent">%0</span>
+        </div>
+        <div class="odelink-status-text"><span class="odelink-pulse"></span><span id="odelink-msg">Sistem hazır...</span></div>
+      </div>
+    </div>
+  `;
+  
   document.body.appendChild(root);
-  btn.onclick = () => doFullScanAndExport();
+  root.querySelector('.odelink-floating-btn').onclick = () => startEliteExport();
 }
 
-// ─── ANA TARAMA MOTORU ───
-async function doFullScanAndExport() {
-  const btn = document.querySelector('.odelink-floating-btn');
-  const scanner = document.querySelector('.odelink-scanner');
-  const toast = document.querySelector('.odelink-toast');
+async function startEliteExport() {
+  const panel = document.querySelector('.odelink-panel');
+  const overlay = document.querySelector('.odelink-scanner-overlay');
+  const scanLine = document.querySelector('.odelink-scan-line');
+  const msg = document.getElementById('odelink-msg');
+  const countLabel = document.getElementById('odelink-count');
+  const fill = document.querySelector('.odelink-progress-fill');
 
-  btn.style.opacity = '0.5';
-  btn.style.pointerEvents = 'none';
-  scanner.style.display = 'block';
-  scanner.style.animation = 'odelink-scan 2s infinite linear';
-  showToast(toast, '💎 Derin Tarama Başlatıldı...');
+  panel.classList.add('active');
+  overlay.style.display = 'block';
+  scanLine.style.display = 'block';
+  msg.innerText = 'Sayfa taranıyor...';
 
-  const products = await deepScanProducts(toast);
+  // 1. SCROLL VE TOPLAMA
+  const productCards = await performInfiniteScroll(countLabel, fill);
+  
+  // 2. DERİN DETAY ÇEKİMİ (DEEP SCRAPE)
+  msg.innerText = 'Ürün detayları arka planda çekiliyor...';
+  const eliteProducts = await deepScrapeDetails(productCards, countLabel, fill, msg);
 
-  scanner.style.display = 'none';
-  btn.style.opacity = '1';
-  btn.style.pointerEvents = 'auto';
+  // 3. İNDİRME
+  downloadEliteJSON(eliteProducts);
 
-  if (products.length > 0) {
-    showToast(toast, `✅ ${products.length} Ürün Paketlendi! Dosya İndiriliyor...`);
-    downloadJSON(products);
-    setTimeout(() => hideToast(toast), 5000);
-  } else {
-    showToast(toast, '❌ Sayfada Ürün Bulunamadı.');
-    setTimeout(() => hideToast(toast), 3000);
-  }
+  msg.innerText = 'Tamamlandı!';
+  setTimeout(() => {
+    panel.classList.remove('active');
+    overlay.style.display = 'none';
+    scanLine.style.display = 'none';
+  }, 3000);
 }
 
-// ─── DERİN TARAMA (Infinite Scroll Desteği) ───
-async function deepScanProducts(toast) {
-  // Sayfayı en başa al
+async function performInfiniteScroll(label, fill) {
   window.scrollTo(0, 0);
-  await new Promise(r => setTimeout(r, 500));
-
   let previousCount = 0;
   let sameCountRetries = 0;
-  const maxRetries = 5; // Aynı sayıda 5 kez üst üste gelirse dur
+  
+  // Mağazadaki toplam ürün sayısını bulmaya çalış (296 urun yazısından)
+  const totalText = document.body.innerText.match(/(\d+)\s+ürün/i)?.[1] || 0;
 
-  while (sameCountRetries < maxRetries) {
-    // Sayfanın en altına kaydır (infinite scroll tetiklemek için)
+  while (sameCountRetries < 8) { // 8 kez bekle (Shopier bazen çok yavaş)
     window.scrollTo(0, document.body.scrollHeight);
+    await new Promise(r => setTimeout(r, 2000));
+
+    const currentCards = document.querySelectorAll(PRODUCT_SELECTOR);
+    const count = currentCards.length;
     
-    // Shopier'in AJAX isteğini tamamlaması için UZUN BEKLE
-    await new Promise(r => setTimeout(r, 1500));
+    label.innerText = `${count} / ${totalText || '?'}`;
+    if (totalText > 0) fill.style.width = `${Math.min(95, (count / totalText) * 100)}%`;
 
-    const currentCount = document.querySelectorAll(PRODUCT_SELECTOR).length;
-    showToast(toast, `🛰️ Taranıyor: ${currentCount} Ürün Yüklendi...`);
-
-    if (currentCount === previousCount) {
+    if (count === previousCount) {
       sameCountRetries++;
-      // Biraz daha bekle, belki yavaş yükleniyor
-      await new Promise(r => setTimeout(r, 1000));
     } else {
-      sameCountRetries = 0; // Yeni ürünler geldi, sayacı sıfırla
+      sameCountRetries = 0;
     }
-    
-    previousCount = currentCount;
+    previousCount = count;
+
+    // Eğer toplam sayıya ulaştıysak dur
+    if (totalText > 0 && count >= parseInt(totalText)) break;
   }
-
-  showToast(toast, `📦 ${previousCount} Ürün Bulundu, Paketleniyor...`);
-
-  // En üste geri dön
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  await new Promise(r => setTimeout(r, 500));
-
-  return extractAllProducts();
+  
+  return Array.from(document.querySelectorAll(PRODUCT_SELECTOR));
 }
 
-// ─── ÜRÜN ÇEKME MOTORU ───
-function extractAllProducts() {
+async function deepScrapeDetails(cards, label, fill, msg) {
   const products = [];
-  const seen = new Set();
+  const total = cards.length;
 
-  const cards = document.querySelectorAll(PRODUCT_SELECTOR);
-  console.log(`🔍 [Odelink] ${cards.length} gerçek ürün kartı bulundu.`);
+  for (let i = 0; i < total; i++) {
+    const card = cards[i];
+    const href = card.getAttribute('href');
+    const fullUrl = href.startsWith('http') ? href : `https://www.shopier.com${href}`;
+    
+    label.innerText = `Detay: ${i + 1} / ${total}`;
+    fill.style.width = `${(i / total) * 100}%`;
+    msg.innerText = `${card.querySelector('h3')?.textContent || 'Ürün'} işleniyor...`;
 
-  cards.forEach((card, index) => {
     try {
-      const href = card.getAttribute('href') || '';
-      
-      // javascript:void(0) gibi sahte linkleri atla
-      if (!href || href.includes('javascript:') || href === '#') return;
-      
-      const fullUrl = href.startsWith('http') ? href : `https://www.shopier.com${href}`;
-      if (seen.has(fullUrl)) return;
-      seen.add(fullUrl);
+      // Ürün sayfasını arka planda çek (Fetch) - Tek tek girmeden!
+      const res = await fetch(fullUrl);
+      const html = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
 
-      const name = card.querySelector('h3')?.textContent?.trim() || `Ürün ${index + 1}`;
+      // Detaylı verileri ayıkla
+      const description = doc.querySelector('.product-description')?.innerText?.trim() || '';
       
-      // Fiyat: Tüm span'ları topla (örn: "1.699" + "TL")
-      const spans = card.querySelectorAll('span');
-      let price = '';
-      spans.forEach(s => { price += s.textContent?.trim() + ' '; });
-      price = price.trim() || '0 TL';
-      
-      const img = card.querySelector('img')?.getAttribute('src') || 
-                  card.querySelector('img')?.getAttribute('data-src') || '';
-      const id = href.split('/').filter(Boolean).pop() || `p${index}`;
+      // BEDEN VE RENK (Varyasyonlar)
+      const variants = [];
+      doc.querySelectorAll('.product-variant-item, select option').forEach(opt => {
+        const text = opt.innerText?.trim();
+        if (text && !text.includes('Seçiniz')) variants.push(text);
+      });
 
-      products.push({ id, name, price, image: img, url: fullUrl });
+      // EK GÖRSELLER
+      const images = [];
+      doc.querySelectorAll('.product-image-thumb img, .swiper-slide img').forEach(img => {
+        const src = img.getAttribute('src') || img.getAttribute('data-src');
+        if (src) images.push(src.replace('/pictures_small/', '/pictures_original/'));
+      });
+
+      products.push({
+        id: fullUrl.split('/').pop(),
+        name: doc.querySelector('h1')?.innerText?.trim() || card.querySelector('h3')?.innerText?.trim(),
+        price: doc.querySelector('.product-price')?.innerText?.trim() || '0 TL',
+        description,
+        variants: [...new Set(variants)],
+        images: [...new Set(images)],
+        url: fullUrl
+      });
+
+      // Rate limit'e takılmamak için hafif bekleme
+      if (i % 5 === 0) await new Promise(r => setTimeout(r, 300));
+
     } catch (e) {
-      console.warn('⚠️ Ürün parse hatası:', e);
+      console.error('Deep Scrape Hatası:', e);
+      // Fallback: Sadece kart verisi
+      products.push({
+        id: fullUrl.split('/').pop(),
+        name: card.querySelector('h3')?.innerText?.trim(),
+        price: card.querySelector('span')?.innerText?.trim(),
+        url: fullUrl,
+        error: 'Detay çekilemedi'
+      });
     }
-  });
-
-  console.log(`✅ [Odelink] ${products.length} ürün başarıyla ayıklandı.`);
+  }
   return products;
 }
 
-// ─── JSON İNDİRME ───
-function downloadJSON(products) {
+function downloadEliteJSON(products) {
   const data = {
     exportDate: new Date().toISOString(),
-    totalProducts: products.length,
-    source: window.location.href,
+    totalExported: products.length,
     products: products
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `odelink_magaza_${new Date().toISOString().split('T')[0]}.json`;
-  document.body.appendChild(a);
+  a.download = `odelink_elite_export_${new Date().getTime()}.json`;
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }
 
-// ─── YARDIMCI ───
-function showToast(el, msg) { el.innerHTML = msg; el.style.opacity = '1'; el.style.top = '40px'; }
-function hideToast(el) { el.style.opacity = '0'; el.style.top = '30px'; }
-
-// ─── POPUP KOMUTLARI ───
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'extract_products') {
-    deepScanProducts(document.querySelector('.odelink-toast') || document.createElement('div'))
-      .then(products => { sendResponse({ success: true, products }); });
-    return true;
-  }
-});
-
-// ─── BAŞLAT ───
 injectStyles();
-createFloatingUI();
+createEliteUI();
