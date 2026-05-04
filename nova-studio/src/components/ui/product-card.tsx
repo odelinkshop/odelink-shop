@@ -27,10 +27,11 @@ const formatPrice = (price: string | number): string => {
 
 /** Görsel url geçerliyse kullan, yoksa fallback */
 const safeImage = (src: string | undefined): string => {
-  if (!src || src.trim() === "" || src.includes('placeholder')) return "/hero_italian.png";
+  if (!src || src.trim() === "" || src.includes('placeholder')) return "";
   
   // Shopier resim kalitesini 2K'ya (XLarge) yükselt (Tüm formatları tanı)
   if (src.includes('cdn.shopier.app/pictures')) {
+    // HAR dosyasına göre mid formatı garanti, xlarge'ı deneyeceğiz
     return src.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large|thumb)/, 'pictures_xlarge');
   }
   return src;
@@ -123,9 +124,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               onError={(e) => {
                 const img = e.currentTarget as HTMLImageElement;
                 if (img.src.includes('pictures_xlarge')) {
-                  img.src = img.src.replace('pictures_xlarge', 'pictures_mid');
-                } else if (!img.src.includes('hero_italian.png')) {
-                  img.src = "/hero_italian.png";
+                  img.src = img.src.replace('pictures_xlarge', 'pictures_large');
+                } else if (img.src.includes('pictures_large')) {
+                  img.src = img.src.replace('pictures_large', 'pictures_mid');
+                } else {
+                  // Resim tamamen yoksa manken basma, görünmez yap veya sil
+                  img.style.display = 'none';
                 }
               }}
             />
