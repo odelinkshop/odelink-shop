@@ -107,25 +107,25 @@ const mapProduct = (p: any, index: number): Product => {
     variations = [{ name: 'Beden', options: sizes }];
   }
 
-  const sanitizeImg = (img: any): string => {
-    if (!img) return "";
-    let src = "";
-    if (typeof img === 'object') {
-      src = (img.url || img.src || img.original || img.large || "").toString();
-    } else {
-      src = img.toString().trim();
+  const sanitizeImg = (p: any) => {
+    if (!p) return "/hero_italian.png";
+    let url = "";
+    if (typeof p === 'string') url = p;
+    else if (p.imageUrl) url = p.imageUrl;
+    else if (p.image) url = p.image;
+    else if (p.thumb) url = p.thumb;
+    else if (p.image_url) url = p.image_url;
+    else if (Array.isArray(p.images) && p.images.length > 0) url = p.images[0];
+    
+    if (!url) return "/hero_italian.png";
+    
+    // Shopier 2K Force - Daha esnek hale getirildi
+    if (url.includes('cdn.shopier.app/pictures')) {
+      // Eğer link zaten bir resimse ve placeholder değilse, xlarge'a zorla
+      return url.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large|thumb)/, 'pictures_xlarge');
     }
     
-    if (!src) return "";
-
-    // Shopier resim kalitesini her zaman en yükseğe (xlarge) çekmeye çalış, 
-    // ama linki bozma!
-    if (src.includes('cdn.shopier.app/pictures')) {
-      src = src.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large)/, 'pictures_xlarge');
-    }
-
-    if (src.startsWith('http')) return src;
-    return `https://cdn.shopier.app/pictures_xlarge/${src}`;
+    return url;
   };
 
   const finalImages = (Array.isArray(p.images) && p.images.length > 0)

@@ -27,10 +27,11 @@ const formatPrice = (price: string | number): string => {
 
 /** Görsel url geçerliyse kullan, yoksa fallback */
 const safeImage = (src: string | undefined): string => {
-  if (!src || src.trim() === "") return "/hero_italian.png";
-  // Shopier resim kalitesini 2K'ya (XLarge) yükselt
-  if (src.includes('cdn.shopier.app/pictures_large/')) {
-    return src.replace('pictures_large', 'pictures_xlarge');
+  if (!src || src.trim() === "" || src.includes('placeholder')) return "/hero_italian.png";
+  
+  // Shopier resim kalitesini 2K'ya (XLarge) yükselt (Tüm formatları tanı)
+  if (src.includes('cdn.shopier.app/pictures')) {
+    return src.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large|thumb)/, 'pictures_xlarge');
   }
   return src;
 };
@@ -120,7 +121,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               className="object-cover"
               onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "/hero_italian.png";
+                const img = e.currentTarget as HTMLImageElement;
+                if (img.src.includes('pictures_xlarge')) {
+                  img.src = img.src.replace('pictures_xlarge', 'pictures_mid');
+                } else if (!img.src.includes('hero_italian.png')) {
+                  img.src = "/hero_italian.png";
+                }
               }}
             />
           </motion.div>

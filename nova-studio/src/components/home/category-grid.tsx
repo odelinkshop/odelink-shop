@@ -17,7 +17,7 @@ export const CategoryGrid = () => {
         const catSlug = catName.toLowerCase().replace(/\s+/g, '-');
         acc.set(catName, {
           name: catName,
-          image: p.images?.[0] || "/hero_italian.png",
+          image: p.images?.[0] || "",
           href: `/shop?category=${encodeURIComponent(catName)}`
         });
       }
