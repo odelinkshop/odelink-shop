@@ -170,16 +170,16 @@ const UserPanel = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-16 sm:pt-24 pb-32 relative">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 mb-12 sm:mb-16">
-          <div>
-            <h1 className="text-3xl sm:text-5xl font-serif tracking-tight text-[#F2EBE1] mb-2">Mağaza Paneli</h1>
-            <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.4em] text-[#C5A059] font-bold opacity-60">Komuta Merkezi & Aristokratik Kontrol</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 px-2">
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl sm:text-5xl font-serif tracking-tight text-[#F2EBE1] mb-1 sm:mb-2">Mağaza Paneli</h1>
+            <p className="text-[7px] sm:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.4em] text-[#C5A059] font-black opacity-60">Komuta Merkezi & Aristokratik Kontrol</p>
           </div>
           <button 
             onClick={() => navigate('/site-builder')}
-            className="flex items-center justify-center gap-3 bg-[#C5A059] text-[#0A0A0A] px-6 sm:px-8 py-3.5 sm:py-4 font-bold uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-[#C5A059]/20"
+            className="flex items-center justify-center gap-2 bg-[#C5A059] text-[#0A0A0A] w-full md:w-auto px-6 py-4 font-black uppercase tracking-widest text-[9px] sm:text-[11px] hover:bg-[#F2EBE1] transition-all shadow-xl shadow-[#C5A059]/10"
           >
-            <Plus size={18} /> YENİ MAĞAZA OLUŞTUR
+            <Plus size={16} /> YENİ MAĞAZA OLUŞTUR
           </button>
         </div>
 
@@ -208,22 +208,22 @@ const UserPanel = () => {
           ].map((stat, i) => (
             <motion.div 
               key={i}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className={`bg-white/[0.02] border p-6 sm:p-8 relative group transition-all ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'border-[#C5A059]/40 bg-[#C5A059]/5' : 'border-[#C5A059]/10 hover:border-[#C5A059]/30'}`}
+              className={`bg-white/[0.02] border p-5 sm:p-8 relative group transition-all rounded-sm ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'border-[#C5A059]/40 bg-[#C5A059]/5' : 'border-white/5 hover:border-[#C5A059]/30'}`}
             >
-              <div className="flex justify-between items-start mb-5 sm:mb-6">
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 border flex items-center justify-center ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'bg-[#C5A059] text-[#0A0A0A] border-transparent' : 'bg-[#C5A059]/5 border-[#C5A059]/10 text-[#C5A059]'}`}>
-                  <stat.icon size={20} />
+              <div className="flex justify-between items-start mb-4 sm:mb-6">
+                <div className={`w-10 h-10 border flex items-center justify-center ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'bg-[#C5A059] text-[#0A0A0A] border-transparent' : 'bg-white/5 border-white/10 text-[#C5A059]'}`}>
+                  <stat.icon size={18} />
                 </div>
                 {stat.isPlan && capabilities?.tier !== 'profesyonel' && (
-                  <button onClick={() => navigate('/premium')} className="px-3 py-1 bg-[#C5A059] text-[#0A0A0A] text-[8px] font-black uppercase tracking-tighter hover:bg-white transition-colors">YÜKSELT</button>
+                  <button onClick={() => navigate('/premium')} className="px-3 py-1 bg-[#C5A059] text-[#0A0A0A] text-[8px] font-black uppercase tracking-tighter">YÜKSELT</button>
                 )}
               </div>
-              <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#C5A059] font-black opacity-40 mb-1">{stat.label}</div>
-              <div className={`text-2xl sm:text-3xl font-serif mb-2 ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'text-[#C5A059]' : 'text-[#F2EBE1]'}`}>{stat.value}</div>
-              <div className="text-[9px] sm:text-[10px] text-[#F2EBE1]/40 italic font-medium tracking-wide">{stat.sub}</div>
+              <div className="text-[8px] uppercase tracking-wider text-[#C5A059] font-black opacity-40 mb-1">{stat.label}</div>
+              <div className={`text-2xl font-serif mb-1 ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'text-[#C5A059]' : 'text-[#F2EBE1]'}`}>{stat.value}</div>
+              <div className="text-[8px] text-[#F2EBE1]/30 font-bold tracking-tight uppercase">{stat.sub}</div>
             </motion.div>
           ))}
         </div>
@@ -233,35 +233,32 @@ const UserPanel = () => {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-gradient-to-r from-[#C5A059]/10 to-transparent border-l-4 border-[#C5A059] p-6 sm:p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-8"
+            className="bg-white/[0.03] border border-white/5 p-5 sm:p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6"
           >
-            <div className="flex items-center gap-4 sm:gap-6 w-full md:w-auto">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#C5A059] flex items-center justify-center shadow-xl shrink-0">
-                <Zap size={24} className="text-[#0A0A0A]" />
+            <div className="flex items-center gap-4 w-full md:w-auto text-left">
+              <div className="w-12 h-12 bg-[#C5A059] flex items-center justify-center shadow-lg shrink-0 rounded-sm">
+                <Zap size={22} className="text-[#0A0A0A]" />
               </div>
               <div>
-                <h3 className="text-base sm:text-xl font-serif text-[#F2EBE1]">Yıllık Avantajlar Aktif</h3>
-                <p className="text-[8px] sm:text-[11px] text-[#F2EBE1]/40 uppercase tracking-[0.15em] sm:tracking-widest mt-1 font-bold">Öncelikli Destek & Rapor Erişimi</p>
+                <h3 className="text-sm sm:text-xl font-serif text-[#F2EBE1]">Avantajlar Aktif</h3>
+                <p className="text-[7px] sm:text-[11px] text-[#C5A059] uppercase tracking-[0.1em] mt-0.5 font-black">Öncelikli Destek & Rapor Erişimi</p>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-center md:items-end gap-3 w-full md:w-auto">
-                <div className="flex flex-row gap-2 sm:gap-4 w-full sm:w-auto">
-                  <button 
-                    onClick={handleDownloadReport}
-                    disabled={isDownloading}
-                    className="flex-1 sm:flex-none px-3 sm:px-6 py-3 border border-[#C5A059]/20 text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-[#C5A059] hover:bg-[#C5A059]/5 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-wait"
-                  >
-                    {isDownloading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />} 
-                    {isDownloading ? '...' : 'RAPOR'}
-                  </button>
-                  <button 
-                    onClick={() => navigate('/vip-support')}
-                    className="flex-1 sm:flex-none px-3 sm:px-6 py-3 bg-[#F2EBE1] text-[#0A0A0A] text-[8px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-[#C5A059] transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <Headphones size={12} /> VIP DESTEK
-                  </button>
-                </div>
-               {reportError && <p className="text-[8px] text-rose-500 font-bold uppercase tracking-widest text-center sm:text-right">{reportError}</p>}
+            <div className="flex flex-row items-center gap-2 w-full md:w-auto">
+              <button 
+                onClick={handleDownloadReport}
+                disabled={isDownloading}
+                className="flex-1 px-4 py-3 border border-[#C5A059]/30 text-[8px] font-black uppercase tracking-widest text-[#C5A059] hover:bg-[#C5A059] hover:text-black transition-all flex items-center justify-center gap-2"
+              >
+                {isDownloading ? <Loader2 size={10} className="animate-spin" /> : <Download size={10} />} 
+                RAPOR
+              </button>
+              <button 
+                onClick={() => navigate('/vip-support')}
+                className="flex-1 px-4 py-3 bg-[#F2EBE1] text-[#0A0A0A] text-[8px] font-black uppercase tracking-widest hover:bg-[#C5A059] transition-all flex items-center justify-center gap-2"
+              >
+                <Headphones size={10} /> DESTEK
+              </button>
             </div>
           </motion.div>
         )}
@@ -295,41 +292,41 @@ const UserPanel = () => {
 
                    <div className="flex justify-between items-start mb-10 relative z-10">
                       <div>
-                         <h3 className="text-2xl font-serif text-[#F2EBE1] mb-2">{site.name}</h3>
-                         <div className="flex items-center gap-2 text-[10px] text-[#C5A059] font-black tracking-widest uppercase">
-                            <CircleDot size={10} className="animate-pulse" /> YAYINDA
+                         <h3 className="text-xl sm:text-2xl font-serif text-[#F2EBE1] mb-1">{site.name}</h3>
+                         <div className="flex items-center gap-2 text-[8px] text-[#C5A059] font-black tracking-widest uppercase">
+                            <CircleDot size={8} className="animate-pulse" /> YAYINDA
                          </div>
                       </div>
                       <button 
                         onClick={() => openPublicSiteNewTab(site)}
-                        className="w-12 h-12 bg-white/5 border border-white/10 flex items-center justify-center text-[#F2EBE1]/40 hover:text-[#C5A059] hover:border-[#C5A059]/40 transition-all"
+                        className="w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/10 flex items-center justify-center text-[#F2EBE1]/40 hover:text-[#C5A059] hover:border-[#C5A059]/40 transition-all"
                       >
-                        <ExternalLink size={18} />
+                        <ExternalLink size={16} />
                       </button>
                    </div>
 
                    <div className="grid grid-cols-1 gap-3 relative z-10">
-                      <div className="grid grid-cols-2 gap-3">
-                         <button 
-                           onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/analytics`)}
-                           className="py-4 border border-[#C5A059]/10 text-[10px] font-bold uppercase tracking-widest text-[#F2EBE1]/40 hover:text-[#C5A059] hover:border-[#C5A059]/30 transition-all flex items-center justify-center gap-2"
-                         >
-                           <BarChart3 size={14} /> ANALİTİK
-                         </button>
-                         <button 
-                           onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/settings/design`)}
-                           className="py-4 bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center gap-2"
-                         >
-                           <Layout size={14} /> TEMA EDİTÖRÜ
-                         </button>
-                      </div>
+                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                          <button 
+                            onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/analytics`)}
+                            className="py-3.5 border border-white/5 text-[8px] font-black uppercase tracking-widest text-white/30 hover:text-[#C5A059] transition-all flex items-center justify-center gap-2"
+                          >
+                            <BarChart3 size={12} /> ANALİTİK
+                          </button>
+                          <button 
+                            onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/settings/design`)}
+                            className="py-3.5 bg-white/5 border border-white/5 text-[8px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-all flex items-center justify-center gap-2"
+                          >
+                            <Layout size={12} /> TASARIM
+                          </button>
+                       </div>
                       <button 
                         onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/domain`)}
-                        className={`py-4 border text-[10px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(197,160,89,0.05)] ${!capabilities?.allowCustomDomain ? 'bg-white/5 border-white/10 text-white/20' : 'bg-[#C5A059]/10 border-[#C5A059]/20 text-[#C5A059] hover:bg-[#C5A059] hover:text-[#0A0A0A]'}`}
+                        className={`py-3.5 border text-[8px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${!capabilities?.allowCustomDomain ? 'bg-white/5 border-white/5 text-white/20' : 'bg-[#C5A059]/5 border-[#C5A059]/20 text-[#C5A059] hover:bg-[#C5A059] hover:text-black'}`}
                       >
-                        {!capabilities?.allowCustomDomain ? <Lock size={12} /> : <Globe size={14} />} 
-                        ÖZEL ALAN ADI YÖNETİMİ
-                        {!capabilities?.allowCustomDomain && <span className="ml-2 px-2 py-0.5 bg-[#C5A059] text-[#0A0A0A] text-[7px] font-black">PRO</span>}
+                        {!capabilities?.allowCustomDomain ? <Lock size={10} /> : <Globe size={10} />} 
+                        DOMAİN YÖNETİMİ
+                        {!capabilities?.allowCustomDomain && <span className="ml-2 px-1.5 py-0.5 bg-[#C5A059] text-[#0A0A0A] text-[6px] font-black">PRO</span>}
                       </button>
                     </div>
 

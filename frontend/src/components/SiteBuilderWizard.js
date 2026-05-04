@@ -109,8 +109,8 @@ export default function SiteBuilderWizard() {
       <main className="max-w-2xl mx-auto px-6 pt-32 pb-20 relative text-center">
         <div className="space-y-10">
           <div className="space-y-3">
-            <h2 className="text-2xl sm:text-3xl font-serif leading-tight">Mağaza Kurulumu</h2>
-            <p className="text-[#C5A059] uppercase tracking-[0.2em] sm:tracking-[0.4em] text-[8px] sm:text-[9px] font-black">2 Adımda Profesyonel Vitrin</p>
+            <h2 className="text-2xl sm:text-3xl font-serif leading-tight text-[#F2EBE1]">Mağaza Kurulumu</h2>
+            <p className="text-[#C5A059] uppercase tracking-[0.1em] sm:tracking-[0.4em] text-[7px] sm:text-[9px] font-black opacity-60">2 Adımda Profesyonel Vitrin</p>
           </div>
 
           {/* ADIM GÖSTERGESİ */}
@@ -126,34 +126,33 @@ export default function SiteBuilderWizard() {
 
           {/* ADIM 1: EKLENTİ İNDİR */}
           {step === 1 && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#111] border border-[#C5A059]/20 p-8 rounded-3xl shadow-2xl">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#111] border border-[#C5A059]/20 p-6 rounded-3xl shadow-2xl">
               <div className="flex flex-col items-center space-y-6">
                 <div className="w-16 h-16 bg-[#C5A059] rounded-xl flex items-center justify-center shadow-lg">
                   <Chrome className="w-8 h-8 text-black" />
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className="text-xl font-serif text-[#C5A059]">Odelink Omni-Scraper v6.0</h3>
-                  <p className="text-[10px] text-[#F2EBE1]/50 leading-relaxed max-w-sm mx-auto">
-                    Chrome eklentisini kurun, Shopier mağazanızı tarayın ve ürün paketinizi indirin.
+                <div className="text-center mb-6 px-2">
+                  <h3 className="text-lg font-serif text-[#F2EBE1] mb-2">Odelink Omni-Scraper v6.8</h3>
+                  <p className="text-[10px] text-white/30 uppercase tracking-widest font-black leading-relaxed">
+                    Shopier ürünlerini 2K kalitede sömüren aristokratik uzantı.
                   </p>
                 </div>
 
-                <a href="/odelink-extension.zip" download className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[9px] sm:text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 no-underline shadow-lg shadow-[#C5A059]/10">
+                <a href="/odelink-extension.zip" download className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 no-underline shadow-lg shadow-[#C5A059]/10 mb-4">
                   <Download size={14} /> EKLENTİYİ İNDİR (.ZIP)
                 </a>
 
-                <div className="w-full border-t border-white/5 pt-5 space-y-3">
-                  <div className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.3em]">Kurulum</div>
+                <div className="grid grid-cols-1 gap-2 text-left w-full">
                   {[
-                    'İndirdiğiniz ZIP dosyasını klasöre çıkartın.',
-                    <span key="ext-link">Chrome → <a href="chrome://extensions" target="_blank" rel="noreferrer" className="text-[#C5A059] underline font-bold">chrome://extensions</a> → Geliştirici Modu açın.</span>,
-                    '"Paketlenmemiş öğe yükle" ile klasörü seçin.',
-                    'Shopier mağazanıza gidin, "PAKETLE" butonuna tıklayın.'
-                  ].map((t, i) => (
-                    <div key={i} className="flex gap-3 items-start text-left">
-                      <div className="w-5 h-5 bg-[#C5A059]/10 border border-[#C5A059]/20 rounded flex items-center justify-center text-[10px] font-bold text-[#C5A059] shrink-0">{i + 1}</div>
-                      <p className="text-[10px] text-white/40 leading-tight">{t}</p>
+                    "İndirdiğiniz ZIP dosyasını klasöre çıkartın.",
+                    "Chrome → Uzantılar → Geliştirici Modu'nu açın.",
+                    "Paketlenmemiş öğe yükle ile klasörü seçin.",
+                    "Shopier mağazanıza gidin ve TARAYIN."
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-start gap-3 bg-white/[0.02] border border-white/5 p-3 rounded-lg">
+                      <span className="w-5 h-5 bg-[#C5A059] text-black text-[9px] font-black flex items-center justify-center rounded-full shrink-0">{i+1}</span>
+                      <p className="text-[9px] text-white/40 font-black uppercase tracking-wider leading-tight">{text}</p>
                     </div>
                   ))}
                 </div>
@@ -167,18 +166,18 @@ export default function SiteBuilderWizard() {
 
           {/* ADIM 2: DOSYA YÜKLE */}
           {step === 2 && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#111] border border-[#C5A059]/20 p-8 rounded-3xl shadow-2xl">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#111] border border-[#C5A059]/20 p-6 rounded-3xl shadow-2xl">
               <div className="flex flex-col items-center space-y-6">
                 <div className="w-16 h-16 bg-[#C5A059] rounded-xl flex items-center justify-center shadow-lg">
                   <FileJson className="w-8 h-8 text-black" />
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className="text-xl font-serif text-[#C5A059]">Ürün Paketini Yükle</h3>
-                  <p className="text-[10px] text-[#F2EBE1]/50 leading-relaxed max-w-sm mx-auto">
-                    Eklentiden indirdiğiniz .json dosyasını aşağıya sürükleyin veya seçin.
-                  </p>
-                </div>
+                <div className="text-center mb-8 px-2">
+                <h3 className="text-xl font-serif text-[#F2EBE1] mb-2">Ürün Paketini Yükle</h3>
+                <p className="text-[10px] text-white/30 uppercase tracking-widest font-black leading-relaxed">
+                  İndirdiğiniz .json dosyasını saniyeler içinde dükkana işle.
+                </p>
+              </div>
 
                 {/* DRAG & DROP ALANI */}
                 <div
