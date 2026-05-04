@@ -372,7 +372,7 @@ const SimpleAdminPanel = () => {
                   </div>
 
                   <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                       <AreaChart data={chartData}>
                         <defs>
                           <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
