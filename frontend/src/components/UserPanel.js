@@ -173,7 +173,7 @@ const UserPanel = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 mb-12 sm:mb-16">
           <div>
             <h1 className="text-3xl sm:text-5xl font-serif tracking-tight text-[#F2EBE1] mb-2">Mağaza Paneli</h1>
-            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[#C5A059] font-bold opacity-60">Komuta Merkezi & Aristokratik Kontrol</p>
+            <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.4em] text-[#C5A059] font-bold opacity-60">Komuta Merkezi & Aristokratik Kontrol</p>
           </div>
           <button 
             onClick={() => navigate('/site-builder')}
@@ -240,27 +240,27 @@ const UserPanel = () => {
                 <Zap size={24} className="text-[#0A0A0A]" />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-serif text-[#F2EBE1]">Yıllık Avantajlar Aktif</h3>
-                <p className="text-[9px] sm:text-[11px] text-[#F2EBE1]/40 uppercase tracking-widest mt-1 font-bold">Öncelikli Destek & Rapor Erişimi</p>
+                <h3 className="text-base sm:text-xl font-serif text-[#F2EBE1]">Yıllık Avantajlar Aktif</h3>
+                <p className="text-[8px] sm:text-[11px] text-[#F2EBE1]/40 uppercase tracking-[0.15em] sm:tracking-widest mt-1 font-bold">Öncelikli Destek & Rapor Erişimi</p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center md:items-end gap-3 w-full md:w-auto">
-               <div className="flex gap-2 sm:gap-4 w-full sm:w-auto">
+                <div className="flex flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                   <button 
                     onClick={handleDownloadReport}
                     disabled={isDownloading}
-                    className="flex-1 sm:flex-none px-4 sm:px-6 py-3 border border-[#C5A059]/20 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#C5A059] hover:bg-[#C5A059]/5 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-wait"
+                    className="flex-1 sm:flex-none px-3 sm:px-6 py-3 border border-[#C5A059]/20 text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-[#C5A059] hover:bg-[#C5A059]/5 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-wait"
                   >
                     {isDownloading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />} 
                     {isDownloading ? '...' : 'RAPOR'}
                   </button>
                   <button 
                     onClick={() => navigate('/vip-support')}
-                    className="flex-1 sm:flex-none px-4 sm:px-6 py-3 bg-[#F2EBE1] text-[#0A0A0A] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-[#C5A059] transition-all flex items-center justify-center gap-2"
+                    className="flex-1 sm:flex-none px-3 sm:px-6 py-3 bg-[#F2EBE1] text-[#0A0A0A] text-[8px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-[#C5A059] transition-all flex items-center justify-center gap-1.5"
                   >
                     <Headphones size={12} /> VIP DESTEK
                   </button>
-               </div>
+                </div>
                {reportError && <p className="text-[8px] text-rose-500 font-bold uppercase tracking-widest text-center sm:text-right">{reportError}</p>}
             </div>
           </motion.div>
@@ -344,7 +344,7 @@ const UserPanel = () => {
            <div className="flex flex-col md:flex-row justify-between items-start gap-12">
               <div className="max-w-md">
                  <h3 className="text-xl font-serif text-[#F2EBE1] mb-4">Siber Altyapı & Kaynaklar</h3>
-                 <p className="text-[11px] text-[#F2EBE1]/40 leading-relaxed font-bold uppercase tracking-widest">
+                 <p className="text-[10px] sm:text-[11px] text-[#F2EBE1]/40 leading-relaxed font-bold uppercase tracking-[0.15em] sm:tracking-widest">
                    Nova SaaS İmparatorluğu'nun global kaynaklarına buradan erişebilirsiniz. Özel alan adı bağlantıları, SSL sertifikaları ve VIP teknik destek dökümantasyonları merkezidir.
                  </p>
               </div>
