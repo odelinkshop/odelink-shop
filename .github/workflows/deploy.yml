@@ -49,42 +49,40 @@ jobs:
             mkdir -p backend
             
             # Using simple echo for each line to avoid any YAML heredoc indentation issues
-            echo "PORT=5000" > backend/.env
-            echo "NODE_ENV=production" >> backend/.env
-            echo "FRONTEND_URL=https://www.odelink.shop" >> backend/.env
-            echo "DB_HOST=postgres" >> backend/.env
-            echo "DB_PORT=5432" >> backend/.env
-            echo "DB_NAME=odelink_shop" >> backend/.env
-            echo "DB_USER=postgres" >> backend/.env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
-            echo "DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD }}@postgres:5432/odelink_shop" >> backend/.env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> backend/.env
-            echo "JWT_EXPIRE=7d" >> backend/.env
-            echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> backend/.env
-            echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> backend/.env
-            echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> backend/.env
-            echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> backend/.env
-            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> backend/.env
-            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> backend/.env
-            echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> backend/.env
-            echo "CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}" >> backend/.env
-            echo "DODO_API_KEY=vhi8S1rR9NdSqCPF.kHiCp-C1imb76d38wvN5Xc9Su41apI015a88Ct7SdcKbfpck" >> backend/.env
-            echo "DODO_WEBHOOK_SECRET=whsec_ASE/8kEPnr7GEy3B0ZiwuGbcpzGDPDJK" >> backend/.env
-            echo "DODO_PRODUCT_ID_STANDART=pdt_0NdSWrFKux1QaNXAl7VDM" >> backend/.env
-            echo "DODO_PRODUCT_ID_PRO=pdt_0NdSXJ8qDtlv6SeYHT7o5" >> backend/.env
-            echo "BACKEND_URL=https://api.odelink.shop" >> backend/.env
-            echo "GIT_COMMIT=${CURRENT_COMMIT}" >> backend/.env
-            echo "CORS_ORIGINS=https://www.odelink.shop,https://odelink.shop,https://demo.odelink.shop" >> backend/.env
-            echo "SERVE_FRONTEND=true" >> backend/.env
-            echo "AUTO_BUILD_FRONTEND=false" >> backend/.env
-            echo "PUPPETEER_HEADLESS=true" >> backend/.env
-            echo "PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox" >> backend/.env
-            echo "CLOUDINARY_CLOUD_NAME=demo" >> backend/.env
-            echo "APP_NAME=Ödelink" >> backend/.env
-            echo "EMAIL_FROM_NAME=Ödelink Destek" >> backend/.env
-            echo "SUPPORT_EMAIL=odelinkdestek@gmail.com" >> backend/.env
-            echo "NOVA_ENABLED=true" >> backend/.env
-            echo "NOVA_URL=http://nova:3001" >> backend/.env
+            cat <<EOF > backend/.env
+PORT=5000
+NODE_ENV=production
+FRONTEND_URL=https://www.odelink.shop
+DB_HOST=postgres
+DB_PORT=5432
+DB_NAME=odelink_shop
+DB_USER=postgres
+DB_PASSWORD=odelink_production_password_change_me
+DATABASE_URL=postgresql://postgres:odelink_production_password_change_me@postgres:5432/odelink_shop
+JWT_SECRET=${{ secrets.JWT_SECRET }}
+JWT_EXPIRE=7d
+EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+EMAIL_USER=${{ secrets.EMAIL_USER }}
+EMAIL_PASS=${{ secrets.EMAIL_PASS }}
+GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}
+CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}
+BACKEND_URL=https://api.odelink.shop
+GIT_COMMIT=${CURRENT_COMMIT}
+CORS_ORIGINS=https://www.odelink.shop,https://odelink.shop,https://demo.odelink.shop
+SERVE_FRONTEND=true
+AUTO_BUILD_FRONTEND=false
+PUPPETEER_HEADLESS=true
+PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox
+CLOUDINARY_CLOUD_NAME=demo
+APP_NAME=Ödelink
+EMAIL_FROM_NAME=Ödelink Destek
+SUPPORT_EMAIL=odelinkdestek@gmail.com
+NOVA_ENABLED=true
+NOVA_URL=http://nova:3001
+EOF
 
             echo "---- DEPLOY: Building and starting containers (Zero Downtime) ----"
             # Try docker compose first, then docker-compose as fallback

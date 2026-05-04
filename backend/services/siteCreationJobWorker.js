@@ -139,7 +139,14 @@ const runOneJob = async (job) => {
             ...buildSiteSettings({
               normalizedShopierUrl,
               description,
-              products: existingProducts,
+              products: (Array.isArray(existingProducts) ? existingProducts : []).map(p => {
+                if (!p || typeof p !== 'object') return null;
+                const price = Number(p.price || 0);
+                return {
+                  ...p,
+                  price: isNaN(price) || price < 0 ? 0 : price
+                };
+              }).filter(Boolean),
               categories: existingCategories,
               totalProducts: existingTotal
             })

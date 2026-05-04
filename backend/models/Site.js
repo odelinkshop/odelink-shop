@@ -1,36 +1,7 @@
 const pool = require('../config/database');
 const { optimizeSiteSettings } = require('../services/imageOptimizationService');
 
-const slugify = (raw) => {
-  let s = (raw || '').toString().trim().toLowerCase();
-  // Kötü kelimeleri çıkar (shopier, mağaza, store vb)
-  s = s.replace(/shopier|magaza|store|official|resmi/gi, '');
-  const ascii = s
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ı/g, 'i')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c');
-  const cleaned = ascii
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-  // Maksimum 20 karakter - kısa ve profesyonel
-  return (cleaned || 'magaza').slice(0, 20);
-};
-
-const clampSubdomain = (raw, maxLen = 20) => {
-  const cleaned = (raw || '')
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-  return (cleaned || '').slice(0, Math.max(1, Number(maxLen) || 20));
-};
+const { slugify, clampSubdomain, isSubdomainReserved, SUBDOMAIN_BLACKLIST } = require('../utils/stringUtils');
 
 const buildCandidateWithSuffix = (base, suffix, maxLen = 20) => {
   const safeSuffix = (suffix || '').toString();
@@ -42,17 +13,18 @@ const buildCandidateWithSuffix = (base, suffix, maxLen = 20) => {
 };
 
 const buildUniqueSubdomain = async (name) => {
-  const base = slugify(name);
+  let base = slugify(name);
+  if (isSubdomainReserved(base)) {
+    base = buildCandidateWithSuffix(base, '-shop');
+  }
   let candidate = base;
   let n = 1;
-  // Avoid infinite loops; 200 attempts is plenty.
   while (n < 200) {
     const exists = await pool.query('SELECT 1 FROM sites WHERE subdomain = $1 LIMIT 1', [candidate]);
-    if (exists.rowCount === 0) return candidate;
+    if (exists.rowCount === 0 && !isSubdomainReserved(candidate)) return candidate;
     n += 1;
     candidate = buildCandidateWithSuffix(base, `-${n}`);
   }
-  // Worst-case fallback: use a timestamp suffix (still readable-ish)
   return buildCandidateWithSuffix(base, `-${Date.now().toString().slice(-6)}`);
 };
 

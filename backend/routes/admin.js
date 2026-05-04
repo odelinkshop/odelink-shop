@@ -449,24 +449,6 @@ router.post('/reset-owner', authMiddleware, adminOnly, ownerOnly, async (req, re
 
 router.get('/ip-logs', authMiddleware, adminOnly, async (req, res) => {
   try {
-    await pool.query(
-      `
-      CREATE TABLE IF NOT EXISTS user_ip_logs (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-        email VARCHAR(255),
-        ip VARCHAR(64),
-        user_agent TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-      `
-    );
-    await pool.query("ALTER TABLE user_ip_logs ADD COLUMN IF NOT EXISTS event_type VARCHAR(32)");
-    await pool.query("ALTER TABLE user_ip_logs ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP");
-    await pool.query("ALTER TABLE user_ip_logs ADD COLUMN IF NOT EXISTS deleted_batch_id UUID");
-    await pool.query("ALTER TABLE user_ip_logs ADD COLUMN IF NOT EXISTS ip_source VARCHAR(32)");
-    await pool.query("ALTER TABLE user_ip_logs ADD COLUMN IF NOT EXISTS ip_chain TEXT");
-
     const q = `
       SELECT
         l.id,

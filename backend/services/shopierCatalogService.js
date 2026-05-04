@@ -617,7 +617,7 @@ module.exports = {
         html = res.data;
       } catch (e) {
         // Bloklanırsak ScraperAPI ile dene
-        const SCRAPER_API_KEY = 'eeb06f813ed7ad2ddda12ab18184d212';
+        const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY;
         const res = await axios.get('http://api.scraperapi.com', {
             params: { api_key: SCRAPER_API_KEY, url: url, render: 'false' },
             timeout: 30000
