@@ -12,9 +12,9 @@ import { slugify } from "@/lib/utils";
 // Fiyat formatlama
 const formatPrice = (price: string | number): string => {
   if (!price && price !== 0) return "-";
-  const str = String(price).trim();
+  let str = String(price).trim();
   if (/[₺TL$€£]/.test(str)) return str;
-  const n = parseFloat(str.replace(',', '.'));
+  const n = parseFloat(str.replace(/\./g, '').replace(',', '.'));
   if (isNaN(n)) return str;
   return `${n.toLocaleString('tr-TR')} ₺`;
 };
@@ -28,6 +28,30 @@ export default function ProductClient() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Favori durumunu kontrol et
+  useEffect(() => {
+    if (product) {
+      const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      setIsFavorite(favorites.includes(product.id));
+    }
+  }, [product]);
+
+  const toggleFavorite = () => {
+    if (!product) return;
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+    let newFavorites;
+    if (favorites.includes(product.id)) {
+      newFavorites = favorites.filter((id: string) => id !== product.id);
+      setIsFavorite(false);
+    } else {
+      newFavorites = [...favorites, product.id];
+      setIsFavorite(true);
+    }
+    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+    window.dispatchEvent(new Event("favoritesUpdated"));
+  };
 
   // Ürünü bul
   const product = products.find(p => p.slug === slug || slugify(p.name) === slug);
@@ -144,8 +168,8 @@ export default function ProductClient() {
                 <p className="text-[10px] tracking-[0.3em] uppercase text-accent font-bold">
                   {product.category || "Koleksiyon"}
                 </p>
-                <h1 className="text-5xl font-serif text-secondary uppercase leading-none">
-                  {product.name}
+                <h1 className="text-4xl md:text-5xl font-serif text-secondary uppercase leading-none tracking-tighter">
+                  {product.name.split('|')[0].trim()}
                 </h1>
               </div>
 
@@ -228,8 +252,12 @@ export default function ProductClient() {
                 </button>
               </div>
 
-              <button className="w-full h-14 border border-secondary/10 text-[10px] tracking-[0.3em] uppercase font-bold flex items-center justify-center hover:bg-secondary/5 transition-all">
-                <Heart size={16} className="mr-2" /> FAVORİLERİME EKLE
+              <button 
+                onClick={toggleFavorite}
+                className="w-full h-14 border border-secondary/10 text-[10px] tracking-[0.3em] uppercase font-bold flex items-center justify-center hover:bg-secondary hover:text-primary hover:border-secondary transition-all"
+              >
+                <Heart size={16} className={cn("mr-2 transition-colors", isFavorite ? "fill-red-500 text-red-500" : "")} /> 
+                {isFavorite ? "FAVORİLERİMDE" : "FAVORİLERİME EKLE"}
               </button>
             </div>
 

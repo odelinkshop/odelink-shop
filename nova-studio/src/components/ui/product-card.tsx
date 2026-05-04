@@ -16,11 +16,11 @@ interface ProductCardProps {
 /** Fiyatı düzgün göstermek için: "150 TL" ya da 150 → "150 TL" */
 const formatPrice = (price: string | number): string => {
   if (!price && price !== 0) return "-";
-  const str = String(price).trim();
-  // Zaten para birimi içeriyorsa direkt döndür
+  let str = String(price).trim();
   if (/[₺TL$€£]/.test(str)) return str;
-  // Sayısal ise ₺ ekle
-  const n = parseFloat(str.replace(',', '.'));
+  
+  // Binlik ayracı olan noktayı temizle, virgülü noktaya çevir
+  const n = parseFloat(str.replace(/\./g, '').replace(',', '.'));
   if (isNaN(n)) return str;
   return `${n.toLocaleString('tr-TR')} ₺`;
 };
@@ -92,7 +92,18 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       viewport={{ once: true }}
       className="group relative cursor-pointer"
     >
-      <Link href={`/product/${product.slug}`}>
+      {/* Favori butonu - Link'in dışında olması şart */}
+      <button
+        onClick={toggleFavorite}
+        className="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center border border-secondary/10 hover:bg-white transition-all duration-300 z-30"
+      >
+        <Heart 
+          size={18} 
+          className={cn("transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-secondary")} 
+        />
+      </button>
+
+      <Link href={`/product/${product.slug}`} className="block relative z-10">
         {/* Görsel */}
         <div className="relative aspect-[3/4] overflow-hidden bg-neutral/10 mb-5 group">
           <motion.div
@@ -113,17 +124,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               }}
             />
           </motion.div>
-
-          {/* Favori butonu */}
-          <button
-            onClick={toggleFavorite}
-            className="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center border border-secondary/10 hover:bg-white transition-all duration-300 z-10"
-          >
-            <Heart 
-              size={18} 
-              className={cn("transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-secondary")} 
-            />
-          </button>
 
           {/* Yeni etiketi */}
           {product.isNew && (
@@ -169,7 +169,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {/* Varyasyonlar (beden önizlemesi) */}
           {product.variations && product.variations.length > 0 && (
             <div className="flex flex-wrap gap-1 justify-center pt-1">
-              {product.variations[0]?.options?.slice(0, 4).map((opt) => (
+              {product.variations[0]?.options?.slice(0, 4).map((opt: string) => (
                 <span
                   key={opt}
                   className="text-[9px] border border-secondary/10 px-2 py-0.5 text-secondary/50 font-medium"
