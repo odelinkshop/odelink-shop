@@ -183,9 +183,9 @@
   const laser = document.getElementById('odelink-laser');
   const grid = document.getElementById('odelink-grid');
 
-  // Track Mouse for 3D Cursor
+  // Track Mouse for 3D Cursor (Only when NOT scanning)
   document.addEventListener('mousemove', (e) => {
-    if (isScanning) {
+    if (!isScanning) {
       cursorTracker.style.left = e.clientX + 'px';
       cursorTracker.style.top = e.clientY + 'px';
     }
@@ -194,10 +194,22 @@
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   async function deepScrapeProduct(productElement) {
+    // Move cursor to product for 4D feel
+    const rect = productElement.getBoundingClientRect();
+    const scrollY = window.scrollY;
+    
+    // Auto-Targeting Animation
+    cursorTracker.style.display = 'block';
+    cursorTracker.style.left = (rect.left + rect.width / 2) + 'px';
+    cursorTracker.style.top = (rect.top + rect.height / 2) + 'px';
+    cursorTracker.style.width = (rect.width + 40) + 'px';
+    cursorTracker.style.height = (rect.height + 40) + 'px';
+    
     productElement.classList.add('odelink-product-lock');
     
-    const titleEl = productElement.querySelector('.product-name, .title, h4, h3');
-    const priceEl = productElement.querySelector('.product-price, .price, .current-price');
+    // Comprehensive Shopier Selectors
+    const titleEl = productElement.querySelector('.product-name, .title, h4, h3, .product-card__title');
+    const priceEl = productElement.querySelector('.product-price, .price, .current-price, .product-card__price');
     const imgEl = productElement.querySelector('img');
     const linkEl = productElement.querySelector('a');
 
@@ -213,17 +225,10 @@
       category: 'Genel'
     };
 
-    // Deep Scrape Sim
     const descEl = productElement.querySelector('.product-desc, .description');
     if (descEl) data.description = descEl.innerText.trim();
     
-    const catEl = productElement.closest('.category-section')?.querySelector('h2');
-    if (catEl) {
-      data.category = catEl.innerText.trim();
-      scrapedData.categories.add(data.category);
-    }
-
-    await sleep(200);
+    await sleep(400); // Analysis time
     productElement.classList.remove('odelink-product-lock');
     return data;
   }
@@ -242,37 +247,48 @@
 
     let laserPos = 0;
     const laserAnim = setInterval(() => {
-      laserPos += 5;
+      laserPos += 8;
       if (laserPos > window.innerHeight) laserPos = 0;
       laser.style.top = laserPos + 'px';
     }, 20);
 
     while (isScanning) {
-      const items = document.querySelectorAll('.product-item, .shop-product, .item');
+      // Extended Selectors for Shopier
+      const items = document.querySelectorAll('.product-item, .shop-product, .item, .product-item-column, .product-card');
       
+      if (items.length === 0) {
+        console.warn('No products found with standard selectors, trying broad search...');
+      }
+
       for (const item of items) {
         if (!isScanning) break;
-        const itemKey = item.innerText.slice(0, 50);
+        // Check visibility
+        const rect = item.getBoundingClientRect();
+        if (rect.height < 50) continue; 
+
+        const itemKey = item.innerText.slice(0, 100);
         if (!processedIds.has(itemKey)) {
           processedIds.add(itemKey);
           
-          const rect = item.getBoundingClientRect();
-          cursorTracker.style.width = (rect.width + 40) + 'px';
-          cursorTracker.style.height = (rect.height + 40) + 'px';
+          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          await sleep(500); // Wait for scroll
           
           const product = await deepScrapeProduct(item);
           scrapedData.products.push(product);
           cursorCount.innerText = scrapedData.products.length;
-          
-          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          await sleep(400);
         }
       }
 
+      const prevHeight = window.scrollY;
       window.scrollBy(0, 600);
-      await sleep(1200);
+      await sleep(1500);
 
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) break;
+      if (window.scrollY === prevHeight) {
+        // Double check bottom
+        window.scrollBy(0, 200);
+        await sleep(500);
+        if (window.scrollY === prevHeight) break;
+      }
     }
 
     clearInterval(laserAnim);
