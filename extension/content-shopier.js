@@ -34,8 +34,8 @@
       position: absolute;
       inset: 0;
       background-image: 
-        linear-gradient(rgba(197, 160, 89, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(197, 160, 89, 0.05) 1px, transparent 1px);
+        linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
       background-size: 50px 50px;
       perspective: 1000px;
       transform: rotateX(20deg);
@@ -46,8 +46,8 @@
     #odelink-laser {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 4px;
-      background: linear-gradient(90deg, transparent, #C5A059, #fff, #C5A059, transparent);
-      box-shadow: 0 0 30px #C5A059, 0 0 60px #C5A059;
+      background: linear-gradient(90deg, transparent, #FF0000, #fff, #FF0000, transparent);
+      box-shadow: 0 0 30px #FF0000, 0 0 60px #FF0000;
       z-index: 2;
       display: none;
     }
@@ -56,21 +56,22 @@
       position: fixed;
       width: 120px;
       height: 120px;
-      border: 2px solid rgba(197, 160, 89, 0.5);
+      border: 3px solid #FF0000;
       border-radius: 50%;
       pointer-events: none;
       z-index: 10000000;
       display: none;
       transform: translate(-50%, -50%);
-      transition: width 0.3s, height 0.3s;
-      background: radial-gradient(circle, rgba(197, 160, 89, 0.1) 0%, transparent 70%);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 70%);
+      box-shadow: 0 0 40px rgba(255, 0, 0, 0.4);
     }
 
     #odelink-cursor-tracker::before {
       content: '';
       position: absolute;
       inset: -10px;
-      border: 1px dashed rgba(255,255,255,0.2);
+      border: 2px dashed rgba(255, 255, 255, 0.4);
       border-radius: 50%;
       animation: rotate-3d 10s linear infinite;
     }
@@ -81,36 +82,37 @@
       transform: translate(-50%, -50%);
       color: #fff;
       font-weight: 900;
-      font-size: 24px;
-      text-shadow: 0 0 10px #C5A059;
+      font-size: 28px;
+      text-shadow: 0 0 15px #FF0000;
     }
 
     #odelink-status-tag {
       position: absolute;
-      bottom: -30px;
+      bottom: -35px;
       left: 50%;
       transform: translateX(-50%);
-      background: #C5A059;
-      color: #000;
-      font-size: 10px;
+      background: #FF0000;
+      color: #fff;
+      font-size: 11px;
       font-weight: 900;
-      padding: 2px 10px;
+      padding: 4px 15px;
       border-radius: 4px;
       white-space: nowrap;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+      box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
     }
 
     @keyframes rotate-3d { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .odelink-product-lock {
-      outline: 4px solid #C5A059 !important;
-      outline-offset: -4px;
+      outline: 5px solid #FF0000 !important;
+      outline-offset: -5px;
       position: relative;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      transform: scale(1.02) translateZ(50px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: scale(1.05) translateZ(50px);
       z-index: 100;
-      box-shadow: 0 0 50px rgba(197, 160, 89, 0.5) !important;
+      box-shadow: 0 0 70px rgba(255, 0, 0, 0.6) !important;
     }
 
     #odelink-control-panel {
@@ -118,41 +120,42 @@
       bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.9);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(197, 160, 89, 0.3);
-      padding: 10px 20px;
+      border: 2px solid #FF0000;
+      padding: 12px 25px;
       border-radius: 100px;
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 25px;
       z-index: 10000001;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
     }
 
     .odelink-btn {
-      background: #C5A059;
-      color: #000;
+      background: #FF0000;
+      color: #fff;
       border: none;
-      padding: 12px 24px;
+      padding: 14px 30px;
       border-radius: 50px;
       font-weight: 900;
-      font-size: 13px;
+      font-size: 14px;
       cursor: pointer;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
       transition: all 0.3s;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(255, 0, 0, 0.3);
     }
 
     .odelink-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(197, 160, 89, 0.4);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 35px rgba(255, 0, 0, 0.5);
     }
 
-    .odelink-btn.stop { background: #ff4444; color: #fff; }
+    .odelink-btn.stop { background: #333; color: #fff; }
   `;
   document.head.appendChild(style);
 
@@ -194,24 +197,19 @@
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   async function deepScrapeProduct(productElement) {
-    // Move cursor to product for 4D feel
     const rect = productElement.getBoundingClientRect();
-    const scrollY = window.scrollY;
-    
-    // Auto-Targeting Animation
     cursorTracker.style.display = 'block';
     cursorTracker.style.left = (rect.left + rect.width / 2) + 'px';
     cursorTracker.style.top = (rect.top + rect.height / 2) + 'px';
     cursorTracker.style.width = (rect.width + 40) + 'px';
     cursorTracker.style.height = (rect.height + 40) + 'px';
-    
     productElement.classList.add('odelink-product-lock');
     
-    // Comprehensive Shopier Selectors
     const titleEl = productElement.querySelector('.product-name, .title, h4, h3, .product-card__title');
     const priceEl = productElement.querySelector('.product-price, .price, .current-price, .product-card__price');
     const imgEl = productElement.querySelector('img');
     const linkEl = productElement.querySelector('a');
+    const productUrl = linkEl?.href;
 
     const data = {
       id: Date.now() + Math.random(),
@@ -219,7 +217,7 @@
       price: parseFloat(priceEl?.innerText?.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0,
       imageUrl: imgEl?.src || '',
       image: imgEl?.src || '',
-      url: linkEl?.href || '',
+      url: productUrl || '',
       description: '',
       images: [imgEl?.src].filter(Boolean),
       variants: [],
@@ -227,10 +225,28 @@
       slug: (titleEl?.innerText || 'urun').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
     };
 
-    const descEl = productElement.querySelector('.product-desc, .description');
-    if (descEl) data.description = descEl.innerText.trim();
-    
-    await sleep(400); // Analysis time
+    if (productUrl) {
+      try {
+        const resp = await fetch(productUrl);
+        const html = await resp.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // TÜM RESİMLERİ 2K OLARAK SÖMÜR
+        const allImgs = Array.from(doc.querySelectorAll('img'))
+          .map(img => img.getAttribute('data-src') || img.getAttribute('src'))
+          .filter(src => src && src.includes('cdn.shopier.app/pictures'))
+          .map(src => src.replace(/pictures_(mid|large|small|mid_mid)/, 'pictures_xlarge'))
+          .filter(src => src.startsWith('http'));
+        
+        if (allImgs.length > 0) {
+          data.images = [...new Set(allImgs)];
+          data.imageUrl = data.images[0];
+          data.image = data.images[0];
+        }
+      } catch (e) {}
+    }
+    await sleep(300); 
     productElement.classList.remove('odelink-product-lock');
     return data;
   }
@@ -264,16 +280,15 @@
 
       for (const item of items) {
         if (!isScanning) break;
-        // Check visibility
-        const rect = item.getBoundingClientRect();
-        if (rect.height < 50) continue; 
+        
+        const linkEl = item.querySelector('a');
+        const itemKey = linkEl?.href || item.innerText.slice(0, 50); // URL varsa URL kullan, yoksa isim
 
-        const itemKey = item.innerText.slice(0, 100);
         if (!processedIds.has(itemKey)) {
           processedIds.add(itemKey);
           
           item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          await sleep(500); // Wait for scroll
+          await sleep(300); 
           
           const product = await deepScrapeProduct(item);
           scrapedData.products.push(product);

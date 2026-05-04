@@ -107,16 +107,20 @@ const mapProduct = (p: any, index: number): Product => {
     variations = [{ name: 'Beden', options: sizes }];
   }
 
-  // Resim linklerini garantiye al (obje gelirse stringe çevir)
-  const sanitizeImg = (img: any): string => {
-    if (!img) return '';
-    if (typeof img === 'object') return (img.url || img.src || '').toString();
-    return img.toString().trim();
+  const sanitizeImg = (img: string | undefined) => {
+    if (!img || typeof img !== 'string') return "";
+    let src = img.trim();
+    // Shopier resim kalitesini her zaman en yükseğe (xlarge) çek
+    if (src.includes('cdn.shopier.app/pictures')) {
+      src = src.replace(/pictures_(mid|large|small|mid_mid|standard)/, 'pictures_xlarge');
+    }
+    if (src.startsWith('http')) return src;
+    return `https://cdn.shopier.app/pictures_xlarge/${src}`;
   };
 
   const finalImages = (Array.isArray(p.images) && p.images.length > 0)
     ? p.images.map(sanitizeImg).filter(Boolean)
-    : [sanitizeImg(p.image || p.imageUrl || p.primary_image || p.main_image)].filter(Boolean);
+    : [sanitizeImg(p.image || p.imageUrl || p.primary_image || p.main_image || p.img || p.thumb)].filter(Boolean);
 
   return {
     id: p.id || `p-${index}`,
