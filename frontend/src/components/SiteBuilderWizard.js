@@ -109,18 +109,18 @@ export default function SiteBuilderWizard() {
       <main className="max-w-2xl mx-auto px-6 pt-32 pb-20 relative text-center">
         <div className="space-y-10">
           <div className="space-y-3">
-            <h2 className="text-3xl font-serif leading-tight">Mağaza Kurulumu</h2>
-            <p className="text-[#C5A059] uppercase tracking-[0.4em] text-[9px] font-black">2 Adımda Profesyonel Vitrin</p>
+            <h2 className="text-2xl sm:text-3xl font-serif leading-tight">Mağaza Kurulumu</h2>
+            <p className="text-[#C5A059] uppercase tracking-[0.2em] sm:tracking-[0.4em] text-[8px] sm:text-[9px] font-black">2 Adımda Profesyonel Vitrin</p>
           </div>
 
           {/* ADIM GÖSTERGESİ */}
-          <div className="flex items-center justify-center gap-4">
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${step === 1 ? 'bg-[#C5A059] text-black' : 'bg-white/5 text-white/30'}`}>
-              <Download size={12} /> Eklenti
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all ${step === 1 ? 'bg-[#C5A059] text-black' : 'bg-white/5 text-white/30'}`}>
+              <Download size={10} /> Eklenti
             </div>
-            <div className="w-8 h-px bg-white/10" />
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${step === 2 ? 'bg-[#C5A059] text-black' : 'bg-white/5 text-white/30'}`}>
-              <Upload size={12} /> Yükle
+            <div className="w-6 h-px bg-white/10" />
+            <div className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all ${step === 2 ? 'bg-[#C5A059] text-black' : 'bg-white/5 text-white/30'}`}>
+              <Upload size={10} /> Yükle
             </div>
           </div>
 
@@ -139,7 +139,7 @@ export default function SiteBuilderWizard() {
                   </p>
                 </div>
 
-                <a href="/odelink-connector-PRO.zip" download className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 no-underline">
+                <a href="/odelink-extension.zip" download className="w-full py-4 bg-[#C5A059] text-black font-black uppercase text-[9px] sm:text-[10px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 no-underline shadow-lg shadow-[#C5A059]/10">
                   <Download size={14} /> EKLENTİYİ İNDİR (.ZIP)
                 </a>
 
