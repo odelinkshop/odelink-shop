@@ -703,6 +703,78 @@ textarea {
     height: 54px !important;
   }
 
+  /* --- PREMIUM SCALING & TYPOGRAPHY --- */
+  h1, .site-title { 
+    font-size: clamp(1.5rem, 4vw, 2.2rem) !important; 
+    letter-spacing: 0.15em !important; 
+    text-transform: uppercase !important;
+    font-weight: 900 !important;
+    margin: 0.5em 0 !important;
+  }
+
+  .product-card {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none !important;
+    background: transparent !important;
+    max-width: 280px; /* Medium/Small size as requested */
+    margin: 0 auto;
+  }
+
+  .product-card:hover {
+    transform: translateY(-8px);
+  }
+
+  .product-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    aspect-ratio: 3/4;
+  }
+
+  .product-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .product-card:hover .product-image-container img {
+    transform: scale(1.15); /* 2K High Quality Zoom */
+  }
+
+  .product-info {
+    padding: 1rem 0 !important;
+    text-align: center;
+  }
+
+  .product-name {
+    font-size: 0.85rem !important; /* Elegant & Small */
+    font-weight: 600 !important;
+    color: #1a1a1a;
+    margin-bottom: 0.3rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .product-price {
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    color: #c5a059 !important; /* Gold premium price */
+  }
+
+  /* --- LOGO CLEANER --- */
+  .header-logo {
+    max-height: 50px !important;
+    display: block;
+    margin: 0 auto !important;
+  }
+
+  /* --- OVERLAY FIX --- */
+  .hero-overlay h1 {
+    font-size: clamp(2rem, 8vw, 4rem) !important; /* Fixed the 'devastating' big text */
+    line-height: 1 !important;
+  }
+
   /* Bottom navigation spacing */
   .pb-safe {
     padding-bottom: calc(env(safe-area-inset-bottom) + 3.5rem) !important;

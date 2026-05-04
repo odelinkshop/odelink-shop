@@ -62,8 +62,8 @@ export default function Home() {
             <span className="text-accent text-xs tracking-[0.8em] uppercase mb-8 block font-bold">
               {heroBadge}
             </span>
-            <h2 className="text-6xl md:text-[9rem] font-serif text-primary leading-none tracking-tighter uppercase mb-12">
-              {heroTitle}
+            <h2 className="text-5xl md:text-[6rem] font-serif text-primary leading-none tracking-[-0.05em] uppercase mb-12">
+              {heroTitle.split('|')[0].trim()}
             </h2>
             {heroDesc && (
               <p className="text-primary/80 text-sm md:text-base max-w-lg mx-auto mb-10 font-light leading-relaxed">

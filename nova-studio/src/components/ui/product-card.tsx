@@ -5,8 +5,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Product } from "@/types/product";
 import { cn } from "@/lib/utils";
-import { Plus, ShoppingBag } from "lucide-react";
+import { Plus, ShoppingBag, Heart } from "lucide-react";
 import { useCart } from "@/store/useCart";
+import { useState, useEffect } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -27,11 +28,39 @@ const formatPrice = (price: string | number): string => {
 /** Görsel url geçerliyse kullan, yoksa fallback */
 const safeImage = (src: string | undefined): string => {
   if (!src || src.trim() === "") return "/hero_italian.png";
+  // Shopier resim kalitesini 2K'ya (XLarge) yükselt
+  if (src.includes('cdn.shopier.app/pictures_large/')) {
+    return src.replace('pictures_large', 'pictures_xlarge');
+  }
   return src;
 };
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   const addItem = useCart((state) => state.addItem);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Favori durumunu localStorage'dan kontrol et
+  useEffect(() => {
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+    setIsFavorite(favorites.includes(product.id));
+  }, [product.id]);
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+    let newFavorites;
+    if (favorites.includes(product.id)) {
+      newFavorites = favorites.filter((id: string) => id !== product.id);
+      setIsFavorite(false);
+    } else {
+      newFavorites = [...favorites, product.id];
+      setIsFavorite(true);
+    }
+    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+    // Özel bir event tetikleyerek diğer bileşenleri haberdar et
+    window.dispatchEvent(new Event("favoritesUpdated"));
+  };
 
   const mainImage = safeImage(product.images?.[0] || product.image);
 
@@ -39,13 +68,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Varyasyon yoksa direkt ekle
     if (!product.variations || product.variations.length === 0) {
       const firstSize = product.sizes?.[0] || "OS";
       addItem({
         id: `${product.id}-${firstSize}`,
         productId: product.id,
-        name: product.name,
+        name: product.name.split('|')[0].trim(),
         price: product.price,
         quantity: 1,
         size: firstSize,
@@ -54,7 +82,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       return;
     }
 
-    // Varyasyon varsa ürün sayfasına yönlendir
     window.location.href = `/product/${product.slug}`;
   };
 
@@ -67,29 +94,41 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     >
       <Link href={`/product/${product.slug}`}>
         {/* Görsel */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-neutral/40 mb-6">
-          <Image
-            src={mainImage}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = "/hero_italian.png";
-            }}
-          />
+        <div className="relative aspect-[3/4] overflow-hidden bg-neutral/10 mb-5 group">
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
+            className="w-full h-full"
+          >
+            <Image
+              src={mainImage}
+              alt={product.name}
+              fill
+              quality={100}
+              priority={product.isNew}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              className="object-cover"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = "/hero_italian.png";
+              }}
+            />
+          </motion.div>
+
+          {/* Favori butonu */}
+          <button
+            onClick={toggleFavorite}
+            className="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center border border-secondary/10 hover:bg-white transition-all duration-300 z-10"
+          >
+            <Heart 
+              size={18} 
+              className={cn("transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-secondary")} 
+            />
+          </button>
 
           {/* Yeni etiketi */}
           {product.isNew && (
-            <span className="absolute top-4 left-4 bg-accent text-secondary text-[9px] font-black tracking-[0.2em] uppercase px-3 py-1">
+            <span className="absolute top-4 left-4 bg-secondary text-primary text-[8px] font-black tracking-[0.2em] uppercase px-3 py-1.5 backdrop-blur-sm">
               YENİ
-            </span>
-          )}
-
-          {/* Ücretsiz kargo etiketi */}
-          {product.hasFreeShipping && (
-            <span className="absolute top-4 right-14 bg-emerald-600 text-white text-[8px] font-black tracking-[0.1em] uppercase px-2 py-1">
-              ÜCRETSİZ
             </span>
           )}
 
@@ -97,16 +136,16 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           <button
             onClick={handleQuickAdd}
             title="Sepete Ekle"
-            className="absolute bottom-4 right-4 w-10 h-10 bg-background border border-secondary/10 flex items-center justify-center hover:bg-secondary hover:text-primary transition-all duration-300 z-10"
+            className="absolute bottom-4 right-4 w-11 h-11 bg-secondary text-primary border border-secondary/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 z-10"
           >
-            <Plus size={18} strokeWidth={1.5} />
+            <ShoppingBag size={18} strokeWidth={2} />
           </button>
         </div>
 
         {/* Metin alanı */}
-        <div className="space-y-2 text-center px-2">
-          <h4 className="text-[11px] tracking-widest uppercase font-medium text-secondary/80 line-clamp-2 min-h-[32px] leading-relaxed">
-            {product.name}
+        <div className="space-y-1 text-center px-1">
+          <h4 className="text-[12px] tracking-tight uppercase font-bold text-secondary line-clamp-1 leading-tight">
+            {product.name.split('|')[0].trim()}
           </h4>
 
           <div className="flex flex-col items-center space-y-1">
@@ -120,8 +159,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             )}
 
             {/* Güncel fiyat */}
-            <div className="bg-secondary text-primary text-[11px] px-4 py-1.5 font-bold tracking-widest">
-              {formatPrice(product.price)}
+            <div className="mt-1">
+              <span className="text-[12px] font-black tracking-widest text-secondary">
+                {formatPrice(product.price)}
+              </span>
             </div>
           </div>
 

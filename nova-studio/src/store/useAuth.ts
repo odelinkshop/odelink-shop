@@ -22,7 +22,7 @@ export const useAuth = create<AuthState>()(
       customer: null,
       token: null,
       isLoggedIn: false,
-      setAuth: (customer, token) => set({ customer, token, isLoggedIn: true }),
+      setAuth: (customer: Customer, token: string) => set({ customer, token, isLoggedIn: true }),
       logout: () => set({ customer: null, token: null, isLoggedIn: false }),
     }),
     {

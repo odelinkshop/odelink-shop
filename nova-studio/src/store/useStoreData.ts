@@ -116,7 +116,7 @@ const mapProduct = (p: any, index: number): Product => {
 
   const finalImages = (Array.isArray(p.images) && p.images.length > 0)
     ? p.images.map(sanitizeImg).filter(Boolean)
-    : [sanitizeImg(p.image || p.imageUrl)].filter(Boolean);
+    : [sanitizeImg(p.image || p.imageUrl || p.primary_image || p.main_image)].filter(Boolean);
 
   return {
     id: p.id || `p-${index}`,
@@ -251,7 +251,7 @@ export const useStoreData = create<StoreState>((set, get) => ({
       }
 
       set({
-        siteName: site.name || 'Nova Luxury',
+        siteName: (site.name || 'Nova Luxury').split('|')[0].trim(),
         subdomain: site.subdomain,
         settings: {
           name: site.name,

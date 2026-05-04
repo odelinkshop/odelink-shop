@@ -84,10 +84,10 @@ const Navbar = () => {
           {/* Center: Logo */}
           <Link href="/" className="flex justify-center group">
             <h1 className={cn(
-              "text-2xl sm:text-3xl lg:text-5xl font-serif tracking-tighter transition-colors uppercase",
+              "text-xl sm:text-2xl lg:text-3xl font-serif tracking-[-0.05em] transition-colors uppercase",
               isActive ? "text-secondary" : "text-primary"
             )}>
-              {siteName}
+              {siteName.split('|')[0].trim()}
             </h1>
           </Link>
 

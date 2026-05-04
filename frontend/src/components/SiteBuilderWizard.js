@@ -147,7 +147,7 @@ export default function SiteBuilderWizard() {
                   <div className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.3em]">Kurulum</div>
                   {[
                     'İndirdiğiniz ZIP dosyasını klasöre çıkartın.',
-                    'Chrome → chrome://extensions → Geliştirici Modu açın.',
+                    <span key="ext-link">Chrome → <a href="chrome://extensions" target="_blank" rel="noreferrer" className="text-[#C5A059] underline font-bold">chrome://extensions</a> → Geliştirici Modu açın.</span>,
                     '"Paketlenmemiş öğe yükle" ile klasörü seçin.',
                     'Shopier mağazanıza gidin, "PAKETLE" butonuna tıklayın.'
                   ].map((t, i) => (

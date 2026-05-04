@@ -33,7 +33,7 @@ interface CartStore {
 export const useCart = create<CartStore>((set, get) => ({
   items: [],
   total: 0,
-  addItem: (newItem) => {
+  addItem: (newItem: CartItem) => {
     const items = get().items;
     const existingItem = items.find(item => item.id === newItem.id);
     let newItems: CartItem[];
@@ -48,11 +48,11 @@ export const useCart = create<CartStore>((set, get) => ({
     }
     set({ items: newItems, total: calcTotal(newItems) });
   },
-  removeItem: (id) => {
+  removeItem: (id: string) => {
     const newItems = get().items.filter(item => item.id !== id);
     set({ items: newItems, total: calcTotal(newItems) });
   },
-  updateQuantity: (id, quantity) => {
+  updateQuantity: (id: string, quantity: number) => {
     const newItems = get().items.map(item =>
       item.id === id ? { ...item, quantity } : item
     );

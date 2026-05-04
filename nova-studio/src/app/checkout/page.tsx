@@ -18,7 +18,7 @@ export default function CheckoutPage() {
       {/* Header */}
       <header className="py-8 px-6 lg:px-12 border-b border-secondary/10 flex justify-between items-center bg-background">
         <Link href="/">
-          <h1 className="text-3xl font-serif tracking-tighter">NOVA</h1>
+          <h1 className="text-2xl font-serif tracking-[-0.05em] uppercase">NOVA</h1>
         </Link>
         <div className="flex items-center space-x-2 text-xs tracking-widest uppercase text-secondary/40">
           <Lock size={14} />
@@ -146,12 +146,12 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-sm font-serif">{item.name}</h4>
+                    <h4 className="text-sm font-serif">{item.name.split('|')[0].trim()}</h4>
                     <p className="text-[10px] tracking-widest uppercase text-secondary/40 mt-1">
-                      Size: {item.size || 'One Size'}
+                      Beden: {item.size || 'OS'}
                     </p>
                   </div>
-                  <span className="text-sm font-medium">${(toNum(item.price) * item.quantity).toLocaleString()}</span>
+                  <span className="text-sm font-medium">{(toNum(item.price) * item.quantity).toLocaleString('tr-TR')} ₺</span>
                 </div>
               ))}
             </div>
@@ -159,19 +159,19 @@ export default function CheckoutPage() {
             <div className="space-y-4 pt-8 border-t border-secondary/10">
               <div className="flex justify-between text-sm">
                 <span className="text-secondary/60">Ara Toplam</span>
-                <span>${total.toLocaleString()}</span>
+                <span>{total.toLocaleString('tr-TR')} ₺</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-secondary/60">Kargo</span>
-                <span>{total > 0 ? `$${shipping.toLocaleString()}` : '$0'}</span>
+                <span>{total > 0 ? `${shipping.toLocaleString('tr-TR')} ₺` : '0 ₺'}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-secondary/60">Vergi (8%)</span>
-                <span>${tax.toLocaleString()}</span>
+                <span>{tax.toLocaleString('tr-TR')} ₺</span>
               </div>
               <div className="flex justify-between text-xl font-serif pt-4 border-t border-secondary/10">
                 <span>Toplam</span>
-                <span className="text-accent">${(total + (total > 0 ? shipping : 0) + tax).toLocaleString()}</span>
+                <span className="text-accent">{(total + (total > 0 ? shipping : 0) + tax).toLocaleString('tr-TR')} ₺</span>
               </div>
             </div>
             
