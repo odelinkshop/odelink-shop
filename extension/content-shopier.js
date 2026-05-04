@@ -227,24 +227,44 @@
 
     if (productUrl) {
       try {
-        const resp = await fetch(productUrl);
+        // URL'yi garantiye al
+        const fullUrl = productUrl.startsWith('http') ? productUrl : window.location.origin + productUrl;
+        
+        const resp = await fetch(fullUrl);
+        if (!resp.ok) throw new Error('Fetch failed');
+        
         const html = await resp.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
-        // TÜM RESİMLERİ 2K OLARAK SÖMÜR
-        const allImgs = Array.from(doc.querySelectorAll('img'))
-          .map(img => img.getAttribute('data-src') || img.getAttribute('src'))
-          .filter(src => src && src.includes('cdn.shopier.app/pictures'))
-          .map(src => src.replace(/pictures_(mid|large|small|mid_mid)/, 'pictures_xlarge'))
-          .filter(src => src.startsWith('http'));
-        
-        if (allImgs.length > 0) {
-          data.images = [...new Set(allImgs)];
+        // 1. Resimleri sömür (Tüm ihtimaller)
+        const foundImages = [];
+        doc.querySelectorAll('img, [data-src], .product-images img, .slides img').forEach(el => {
+          const src = el.getAttribute('data-src') || el.getAttribute('src') || el.src;
+          if (src && src.includes('cdn.shopier.app/pictures')) {
+            const highRes = src.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large)/, 'pictures_xlarge');
+            if (highRes.startsWith('http')) foundImages.push(highRes);
+          }
+        });
+
+        if (foundImages.length > 0) {
+          data.images = [...new Set(foundImages)];
           data.imageUrl = data.images[0];
           data.image = data.images[0];
         }
-      } catch (e) {}
+
+        // 2. Açıklamayı sömür (Tüm ihtimaller)
+        const descSelectors = ['.product-desc', '#productDescription', '.description', '.product-details-content', '.desc-text'];
+        for (const sel of descSelectors) {
+          const el = doc.querySelector(sel);
+          if (el && el.innerText.trim().length > 2) {
+            data.description = el.innerHTML.trim();
+            break;
+          }
+        }
+      } catch (e) {
+        console.error('Deep scan error for:', productUrl, e);
+      }
     }
     await sleep(300); 
     productElement.classList.remove('odelink-product-lock');
