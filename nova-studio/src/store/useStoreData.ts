@@ -119,10 +119,9 @@ const mapProduct = (p: any, index: number): Product => {
     
     if (!url) return "/hero_italian.png";
     
-    // Shopier 2K Force - Daha esnek hale getirildi
+    // Shopier 4K Force kapatıldı (Bazı ürünlerde xlarge 404 dönüyor) -> Daha güvenilir olan 'large' boyutuna zorla
     if (url.includes('cdn.shopier.app/pictures')) {
-      // Eğer link zaten bir resimse ve placeholder değilse, xlarge'a zorla
-      return url.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large|thumb)/, 'pictures_xlarge');
+      return url.replace(/pictures_(mid|xlarge|small|mid_mid|standard|mid_large|thumb)/, 'pictures_large');
     }
     
     return url;

@@ -84,7 +84,7 @@ jobs:
             NOVA_URL=http://nova:3001
             EOF
 
-            echo "---- DEPLOY: Building and starting containers (Zero Downtime) ----"
+            echo "---- DEPLOY: Building new images (Zero Downtime) ----"
             # Try docker compose first, then docker-compose as fallback
             if command -v docker-compose &> /dev/null; then
               DOCKER_CMD="docker-compose"
@@ -92,14 +92,13 @@ jobs:
               DOCKER_CMD="docker compose"
             fi
             
-            # RADICAL CLEANUP to avoid naming conflicts on this VDS
-            echo "🔥 Cleaning up existing containers to avoid conflicts..."
-            $DOCKER_CMD down || true
-            docker rm -f $(docker ps -aq) || true
-            
-            # Use standard build to leverage caching for speed
+            # 1. Önce yeni imajları inşa et (Bu işlem sürerken site hala çalışıyor olacak)
+            echo "🏗️ Building new containers in background..."
             $DOCKER_CMD build
-            $DOCKER_CMD up -d --remove-orphans --force-recreate
+            
+            # 2. Sadece değişen konteynerleri yeniden başlat (Sadece saniyelik bir kesinti olur)
+            echo "🚀 Starting new containers..."
+            $DOCKER_CMD up -d --remove-orphans
 
             echo "---- DEPLOY: Cleanup old images ----"
             docker image prune -f

@@ -80,6 +80,7 @@ services:
       NODE_ENV: production
       PORT: 3001
       NEXT_PUBLIC_API_URL: https://www.odelink.shop/api
+      INTERNAL_API_URL: http://backend:5000/api
     ports:
       - "127.0.0.1:3001:3001"
     healthcheck:

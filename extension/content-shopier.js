@@ -222,7 +222,10 @@
       images: [imgEl?.src].filter(Boolean),
       variants: [],
       category: 'Genel',
-      slug: (titleEl?.innerText || 'urun').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+      slug: (titleEl?.innerText || 'urun').toLowerCase()
+        .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+        .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+        .replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
     };
 
     if (productUrl) {
@@ -242,7 +245,8 @@
         doc.querySelectorAll('img, [data-src], .product-images img, .slides img').forEach(el => {
           const src = el.getAttribute('data-src') || el.getAttribute('src') || el.src;
           if (src && src.includes('cdn.shopier.app/pictures')) {
-            const highRes = src.replace(/pictures_(mid|large|small|mid_mid|standard|mid_large)/, 'pictures_xlarge');
+            // xlarge bazı mağazalarda 404 verdiği için en güvenli ve yüksek çözünürlük olan 'large' kullanıyoruz
+            const highRes = src.replace(/pictures_(mid|xlarge|small|mid_mid|standard|mid_large)/, 'pictures_large');
             if (highRes.startsWith('http')) foundImages.push(highRes);
           }
         });

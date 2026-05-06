@@ -31,7 +31,7 @@ export async function getStoreData(hostname: string): Promise<StoreInfo | null> 
       subdomain = 'demo'; 
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const res = await fetch(`${apiUrl}/sites/public/${subdomain}`, {
       next: { revalidate: 3600 } // Cache for 1 hour
     });
