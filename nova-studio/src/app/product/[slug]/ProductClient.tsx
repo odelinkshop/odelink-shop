@@ -134,7 +134,7 @@ export default function ProductClient() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={selectedImage}
-                  src={allImages[selectedImage].replace('pictures_large', 'pictures_xlarge')}
+                  src={allImages[selectedImage]}
                   alt={product.name}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
