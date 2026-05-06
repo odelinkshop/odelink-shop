@@ -222,7 +222,10 @@
       images: [imgEl?.src].filter(Boolean),
       variants: [],
       category: 'Genel',
-      slug: (titleEl?.innerText || 'urun').toLowerCase()
+      slug: (titleEl?.innerText || 'urun')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
         .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
         .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
         .replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
@@ -230,9 +233,7 @@
 
     if (productUrl) {
       try {
-        // URL'yi garantiye al
         const fullUrl = productUrl.startsWith('http') ? productUrl : window.location.origin + productUrl;
-        
         const resp = await fetch(fullUrl);
         if (!resp.ok) throw new Error('Fetch failed');
         
@@ -240,14 +241,14 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
-        // 1. Resimleri sömür (Tüm ihtimaller)
+        // 1. Resimleri sömür (Tüm ihtimaller ve tüm Shopier CDN'leri)
         const foundImages = [];
-        doc.querySelectorAll('img, [data-src], .product-images img, .slides img').forEach(el => {
-          const src = el.getAttribute('data-src') || el.getAttribute('src') || el.src;
-          if (src && src.includes('cdn.shopier.app/pictures')) {
+        doc.querySelectorAll('img, [data-src], .product-images img, .slides img, a[href*=".jpeg"], a[href*=".png"]').forEach(el => {
+          let src = el.getAttribute('data-src') || el.getAttribute('src') || el.src || el.href;
+          if (src && (src.includes('cdn.shopier.app') || src.includes('shopier.app/pictures'))) {
             // xlarge bazı mağazalarda 404 verdiği için en güvenli ve yüksek çözünürlük olan 'large' kullanıyoruz
             const highRes = src.replace(/pictures_(mid|xlarge|small|mid_mid|standard|mid_large)/, 'pictures_large');
-            if (highRes.startsWith('http')) foundImages.push(highRes);
+            if (highRes.startsWith('http') && !foundImages.includes(highRes)) foundImages.push(highRes);
           }
         });
 

@@ -8,6 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 export const slugify = (text: string) => {
   return text
     .toString()
+    .normalize('NFD') // Unicode normalize
+    .replace(/[\u0300-\u036f]/g, '') // Aksanları kaldır
     .toLowerCase()
     .trim()
     .replace(/\s+/g, '-')
@@ -18,5 +20,7 @@ export const slugify = (text: string) => {
     .replace(/[öÖ]/g, 'o')
     .replace(/[çÇ]/g, 'c')
     .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-');
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
 };

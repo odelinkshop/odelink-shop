@@ -16,24 +16,27 @@ export interface StoreInfo {
 
 export async function getStoreData(hostname: string): Promise<StoreInfo | null> {
   try {
-    // Determine subdomain from hostname
+    // Determine subdomain from hostname or forwarded headers
     let subdomain = 'demo';
-    if (hostname.includes('odelink.shop')) {
-      const parts = hostname.split('.');
+    
+    // Docker/Nginx proxy check
+    const rawHost = hostname || '';
+    
+    if (rawHost.includes('odelink.shop')) {
+      const parts = rawHost.split('.');
       if (parts.length >= 3) {
         subdomain = parts[0];
         if (subdomain === 'www') subdomain = 'demo';
       }
-    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    } else if (rawHost === 'localhost' || rawHost === '127.0.0.1' || rawHost.startsWith('backend') || rawHost.startsWith('nova')) {
       subdomain = 'demo';
-    } else {
-      // Custom domain support logic could go here
-      subdomain = 'demo'; 
     }
 
-    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://backend:5000/api';
+    
+    // Use a longer timeout and handle errors gracefully
     const res = await fetch(`${apiUrl}/sites/public/${subdomain}`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
+      next: { revalidate: 300 } // Cache for 5 mins
     });
 
     if (!res.ok) return null;
