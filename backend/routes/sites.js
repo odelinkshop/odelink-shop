@@ -1664,88 +1664,7 @@ router.post('/request-build', authMiddleware, async (req, res) => {
   }
 });
 
-/**
- * POST /api/sites/create-automated
- * Apple-style 100% Automated Flow: Starts the background worker and returns the site ID.
- */
-const { spawn } = require('child_process');
-const path = require('path');
-
-router.post('/create-automated', authMiddleware, async (req, res) => {
-  try {
-    const { shopierUrl } = req.body;
-    if (!shopierUrl || !shopierUrl.includes('shopier.com/')) {
-      return res.status(400).json({ error: 'Geçerli bir Shopier mağaza linki giriniz.' });
-    }
-
-    const urlParts = shopierUrl.split('shopier.com/');
-    let shopNameGuess = urlParts.length > 1 ? urlParts[1].split('/')[0].split('?')[0] : 'Yeni Mağaza';
-    if (!shopNameGuess || shopNameGuess.trim() === '') shopNameGuess = 'Yeni Mağaza';
-
-    const slugify = (text) => (text || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-
-    const generateSubdomain = async (base) => {
-      const slug = slugify(base);
-      const res = await pool.query("SELECT id FROM sites WHERE subdomain = $1", [slug]);
-      if (res.rows.length === 0) return slug;
-      return slugify(slug + '-' + Math.random().toString(36).substring(2, 5));
-    };
-
-    const existingSites = await Site.findByUserId(req.userId);
-    let site;
-
-    if (existingSites && existingSites.length > 0) {
-      site = existingSites[0];
-      const newSubdomain = site.subdomain.includes('-') && site.subdomain.split('-').pop().length === 4 
-        ? await generateSubdomain(shopNameGuess) 
-        : site.subdomain;
-
-      await Site.update(site.id, { 
-        name: shopNameGuess,
-        subdomain: newSubdomain,
-        settings: {
-          ...(site.settings || {}),
-          shopierUrl: shopierUrl,
-          build_status: 'building',
-          build_progress: 5,
-          build_status_text: 'Talebiniz alınıyor...'
-        }
-      });
-      site.subdomain = newSubdomain;
-    } else {
-      const subdomain = await generateSubdomain(shopNameGuess);
-      site = await Site.create({
-        userId: req.userId,
-        name: shopNameGuess,
-        subdomain: subdomain,
-        settings: {
-          shopierUrl: shopierUrl,
-          build_status: 'building',
-          build_progress: 5,
-          build_status_text: 'Talebiniz alınıyor...'
-        }
-      });
-    }
-
-    // Spawn background worker
-    const workerPath = path.join(__dirname, '../workers/deep_scan_worker.js');
-    const worker = spawn('node', [workerPath, site.id, shopierUrl], {
-      detached: true,
-      stdio: 'ignore'
-    });
-    worker.unref(); // Let it run independently
-
-    return res.json({ 
-      success: true, 
-      siteId: site.id,
-      subdomain: site.subdomain
-    });
-
-  } catch (error) {
-    console.error('❌ Auto build error:', error);
-    return res.status(500).json({ error: 'Sistem hatası' });
-  }
-});
+// create-automated has been removed in favor of excel-first architecture
 
 /**
  * POST /api/sites/create-from-excel
@@ -1889,95 +1808,16 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
   }
 });
 
-/**
- * GET /api/sites/:siteId/build-status
- * Polling endpoint for the frontend progress bar.
- */
-router.get('/:id/build-status', authMiddleware, async (req, res) => {
-  try {
-    const site = await Site.findById(req.params.id);
-    if (!site) return res.status(404).json({ error: 'Site bulunamadı' });
-    if (site.user_id !== req.userId) return res.status(403).json({ error: 'Yetkisiz' });
-
-    const settings = site.settings || {};
-    return res.json({
-      status: settings.build_status || 'pending',
-      progress: settings.build_progress || 0,
-      text: settings.build_status_text || '',
-      error: settings.build_error || null,
-      subdomain: site.subdomain
-    });
-  } catch (e) {
-    return res.status(500).json({ error: 'Sunucu hatası' });
-  }
-});
-
-/**
- * POST /api/sites/create-from-export
-
- * Eklentiden dışa aktarılan JSON dosyasıyla otomatik site oluştur
- */
-router.post('/create-from-export', authMiddleware, async (req, res) => {
-  try {
-    const { products, categories, shopName, source, exportDate } = req.body;
-    if (!Array.isArray(products) || products.length === 0) {
-      return res.status(400).json({ error: 'Geçersiz veya boş ürün listesi' });
-    }
-
-    console.log(`📦 Omni-Export import: ${products.length} ürün, ${categories?.length || 0} kategori. Mağaza: ${shopName || 'Bilinmiyor'}`);
-
-    const existingSites = await Site.findByUserId(req.userId);
-    let site;
-
-    const slugify = (text) => (text || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-
-    if (existingSites && existingSites.length > 0) {
-      site = existingSites[0];
-      console.log(`📝 Mevcut site güncelleniyor: ${site.id}`);
-      if (shopName && (!site.name || site.name === 'Mağazam')) {
-        await Site.update(site.id, { name: shopName });
-      }
-    } else {
-      const subdomain = slugify(shopName || 'magazam-' + Math.random().toString(36).substring(2, 7));
-      site = await Site.create({
-        userId: req.userId,
-        name: shopName || 'Mağazam',
-        subdomain: subdomain,
-        settings: {}
-      });
-      console.log(`🆕 Yeni site oluşturuldu: ${site.id} (${subdomain})`);
-    }
-
-    const mappedProducts = products.map(p => ({
-      ...p,
-      price: p.currentPrice !== undefined ? p.currentPrice : p.price
-    }));
-
-    const updatedSettings = {
-      ...(site.settings || {}),
-      products_data: mappedProducts,
-      collections: categories || [],
-      catalog_total_products: mappedProducts.length,
-      catalog_refreshed_at: exportDate || new Date().toISOString(),
-      catalog_full_sync_complete: true,
-      last_sync_method: 'export_import',
-      export_source: source || 'shopier'
-    };
-
-    await Site.update(site.id, { settings: updatedSettings });
-
-    const siteUrl = `https://${site.subdomain}.odelink.shop`;
-
-    return res.json({
-      success: true,
-      message: `${products.length} ürün başarıyla aktarıldı ve siteniz oluşturuldu!`,
+    return res.status(201).json({
+      ok: true,
       siteId: site.id,
-      siteUrl: siteUrl,
-      count: products.length
+      subdomain: site.subdomain,
+      message: 'Mağazanız oluşturuldu! Ürünler yüklendi, fotoğraflar arka planda çekiliyor.'
     });
+
   } catch (error) {
-    console.error('❌ Export import error:', error);
-    return res.status(500).json({ error: 'İçe aktarma başarısız', message: error.message });
+    console.error('❌ Excel create error:', error);
+    return res.status(500).json({ error: 'Mağaza oluşturulamadı' });
   }
 });
 
