@@ -109,13 +109,13 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     const siteData = {
       userId: req.userId,
       name: shopName,
-      shopierUrl: '',
+      shopierUrl: shopierUrl,
       subdomain,
       status: 'active',
       settings: {
         created_at: new Date().toISOString(),
-        products_data: products,
-        catalog_total_products: products.length,
+        products_data: Array.isArray(products) ? products : (products.products || []),
+        catalog_total_products: Array.isArray(products) ? products.length : (products.totalProducts || 0),
         catalog_enrichment_status: 'api_loaded',
         catalog_full_sync_complete: true,
         catalog_refreshed_at: new Date().toISOString(),
