@@ -3,20 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { width: 300px; padding: 20px; font-family: sans-serif; background: #F8F5F2; color: #0A0A0A; }
-    h2 { font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-    button { 
-      width: 100%; padding: 12px; background: #0A0A0A; color: white; border: none; cursor: pointer; 
-      border-radius: 5px; font-weight: bold; transition: opacity 0.2s;
+    body { 
+      width: 320px; padding: 0; margin: 0; 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+      background: #F8F5F2; color: #0A0A0A;
+      overflow: hidden;
     }
-    button:hover { opacity: 0.8; }
-    #status { margin-top: 10px; font-size: 12px; color: #666; text-align: center; }
+    .header {
+      background: #0A0A0A; color: #F8F5F2; padding: 20px;
+      text-align: center; border-bottom: 2px solid #C5A059;
+    }
+    .header h2 { margin: 0; font-size: 18px; letter-spacing: 2px; font-weight: 300; }
+    .content { padding: 25px; }
+    .status-box {
+      background: white; border: 1px solid #E5E1DA; padding: 15px;
+      border-radius: 8px; margin-bottom: 20px; text-align: center;
+      font-size: 13px; color: #666; min-height: 40px; display: flex;
+      align-items: center; justify-content: center;
+    }
+    button { 
+      width: 100%; padding: 15px; background: #0A0A0A; color: white; 
+      border: 1px solid #C5A059; cursor: pointer; border-radius: 4px; 
+      font-weight: 500; font-size: 14px; letter-spacing: 1px;
+      transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    button:hover { background: #C5A059; color: #0A0A0A; transform: translateY(-2px); }
+    button:active { transform: translateY(0); }
+    .footer {
+      padding: 15px; font-size: 10px; color: #999; text-align: center;
+      letter-spacing: 1px; border-top: 1px solid #eee;
+    }
   </style>
 </head>
 <body>
-  <h2>Odelink Exporter</h2>
-  <button id="scrapeBtn">Ürünleri Excel Olarak İndir</button>
-  <div id="status">Mağaza sayfasında olun.</div>
+  <div class="header">
+    <h2>ODELINK EXPORTER</h2>
+  </div>
+  <div class="content">
+    <div class="status-box" id="status">
+      Shopier mağaza sayfasında olduğunuzdan emin olun.
+    </div>
+    <button id="scrapeBtn">VERİLERİ SÜPÜR VE İNDİR</button>
+  </div>
+  <div class="footer">
+    POWERED BY NOVA ENGINE
+  </div>
 
   <script src="xlsx.full.min.js"></script>
   <script src="popup.js"></script>

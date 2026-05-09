@@ -4,28 +4,38 @@ console.log("🚀 Odelink Scraper Active");
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "scrape") {
     const products = [];
+    const seenLinks = new Set();
     
-    // Shopier product selectors
-    const productElements = document.querySelectorAll('.product-item, .sp-product-item, [class*="product"]');
+    // Daha spesifik selectors
+    const productElements = document.querySelectorAll('.product-item, .sp-product-item, .product-detail, .shop-product');
     
-    productElements.forEach((el, index) => {
+    productElements.forEach((el) => {
       try {
-        const name = el.querySelector('.product-title, .sp-product-title, h3, h2')?.innerText?.trim() || "Adsız Ürün";
-        const price = el.querySelector('.product-price, .sp-product-price, .price')?.innerText?.trim() || "0 TL";
-        const link = el.querySelector('a')?.href || window.location.href;
-        const image = el.querySelector('img')?.src || "";
-        
-        if (name !== "Adsız Ürün") {
+        const nameEl = el.querySelector('.product-title, .sp-product-title, .title, h3, h2');
+        const priceEl = el.querySelector('.product-price, .sp-product-price, .price');
+        const linkEl = el.querySelector('a');
+        const imgEl = el.querySelector('img');
+
+        if (!nameEl || !priceEl) return;
+
+        const name = nameEl.innerText.trim();
+        const priceText = priceEl.innerText.trim();
+        const link = linkEl?.href || window.location.href;
+        const image = imgEl?.src || imgEl?.getAttribute('data-src') || "";
+
+        // Temizlik ve Validasyon
+        if (name && priceText !== "0 TL" && !seenLinks.has(link)) {
+          seenLinks.add(link);
           products.push({
             "Ürün Adı": name,
-            "Fiyat": price,
+            "Fiyat": priceText.replace(/\n/g, ' ').replace(/\s+/g, ' '),
             "Ürün Linki": link,
             "Resim": image,
             "Kategori": "Genel"
           });
         }
       } catch (err) {
-        console.error("Error scraping product:", err);
+        console.error("Scraping error:", err);
       }
     });
 
