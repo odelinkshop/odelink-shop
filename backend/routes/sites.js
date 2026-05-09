@@ -1459,33 +1459,31 @@ router.post('/:id/import-excel', authMiddleware, requireAccess, upload.single('f
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
 
+    const parsePrice = (p) => {
+      if (!p) return 0;
+      const s = p.toString().replace(/\n/g, '').replace(',', '.').replace(/[^0-9.]/g, '');
+      return parseFloat(s) || 0;
+    };
+
     const products = rows.map((row, index) => {
-      const name = (row['Ürün Adı'] || 'İsimsiz Ürün').toString();
-      const url = (row['Ürün Linki'] || '').toString();
+      const name = (row['Ürün Adı'] || row['Ürün İsmi'] || 'İsimsiz Ürün').toString();
+      const url = (row['Ürün Linki'] || row['Link'] || '').toString();
       const id = url.split('/').pop() || `p-${index}`;
       
-      // Fiyatları temizle (Bazen string gelebiliyor)
-      const parsePrice = (p) => {
-        if (!p) return 0;
-        const s = p.toString().replace(',', '.').replace(/[^0-9.]/g, '');
-        return parseFloat(s) || 0;
-      };
-
       return {
         id,
         name,
         slug: slugify(name) + '-' + id,
-        description: (row['Ürün Açıklaması'] || '').toString(),
-        price: parsePrice(row['İndirimli Fiyat'] || row['Orijinal Fiyat']),
-        originalPrice: parsePrice(row['Orijinal Fiyat']),
+        description: (row['Ürün Açıklaması'] || row['Açıklama'] || '').toString(),
+        price: parsePrice(row['İndirimli Fiyat'] || row['Fiyat'] || row['Ürün Fiyatı']),
+        originalPrice: parsePrice(row['Orijinal Fiyat'] || row['Eski Fiyat'] || '0'),
         currency: (row['Para Birimi'] || 'TL').toString(),
         url,
-        category: (row['Ürün Kategorisi'] || 'Genel').toString(),
-        stock: parseInt(row['Stok Adedi'] || 0),
+        category: (row['Ürün Kategorisi'] || row['Kategori'] || 'Genel').toString(),
+        stock: parseInt(row['Stok Adedi'] || row['Stok'] || 0),
         shippingType: (row['Kargo'] || '').toString(),
         shippingFee: (row['Kargo Ücreti'] || '0').toString(),
         productType: (row['Ürün Türü'] || 'Fiziksel').toString(),
-        images: [], 
         imageUrl: '',
         variations: row['Varyasyonlar'] ? row['Varyasyonlar'].toString().split(',').map(v => ({ value: v.trim(), label: v.trim() })) : []
       };
