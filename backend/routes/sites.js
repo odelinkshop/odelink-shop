@@ -1808,18 +1808,5 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
   }
 });
 
-    return res.status(201).json({
-      ok: true,
-      siteId: site.id,
-      subdomain: site.subdomain,
-      message: 'Mağazanız oluşturuldu! Ürünler yüklendi, fotoğraflar arka planda çekiliyor.'
-    });
-
-  } catch (error) {
-    console.error('❌ Excel create error:', error);
-    return res.status(500).json({ error: 'Mağaza oluşturulamadı' });
-  }
-});
-
 module.exports = router;
 
