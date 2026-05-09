@@ -5,16 +5,15 @@ import HomeClient from "./HomeClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const settings = await getStoreData();
+  const host = headersList.get("host") || "";
+  const settings = await getStoreData(host);
   
   return {
-    title: settings.name || "Odelink Shop",
-    description: settings.content?.aboutText || "Odelink Premium Storefront",
+    title: settings?.name || "Odelink Shop",
+    description: settings?.description || "Odelink Premium Storefront",
   };
 }
 
-export default async function Home() {
-  const settings = await getStoreData();
-  
-  return <HomeClient settings={settings} />;
+export default function Home() {
+  return <HomeClient />;
 }
