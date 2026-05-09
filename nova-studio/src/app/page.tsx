@@ -1,39 +1,20 @@
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { getStoreData } from "@/lib/store-data";
-import dynamic from 'next/dynamic';
-
-const HomeClient = dynamic(() => import('./HomeClient'), { 
-  ssr: false,
-  loading: () => <div className="min-h-screen bg-black" />
-});
+import HomeClient from "./HomeClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const store = await getStoreData(host);
-
-  if (!store) {
-    return {
-      title: "Resmi Mağaza",
-      description: "Saniyeler içinde profesyonel mağazanızı kurun."
-    };
-  }
-
-  const name = store.title || store.name || "Nova Luxury";
-  const desc = store.description || `${name} - Premium alışveriş deneyimi. Yeni sezon ürünleri keşfedin.`;
-
+  const settings = await getStoreData();
+  
   return {
-    title: name,
-    description: desc,
-    openGraph: {
-      title: name,
-      description: desc,
-      images: [store.logoUrl || "/hero_italian.png"],
-    }
+    title: settings.name || "Odelink Shop",
+    description: settings.content?.aboutText || "Odelink Premium Storefront",
   };
 }
 
-export default function Page() {
-  return <HomeClient />;
+export default async function Home() {
+  const settings = await getStoreData();
+  
+  return <HomeClient settings={settings} />;
 }
