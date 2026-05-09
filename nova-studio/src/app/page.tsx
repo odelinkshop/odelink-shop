@@ -1,8 +1,12 @@
-
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { getStoreData } from "@/lib/store-data";
-import HomeClient from "./HomeClient";
+import dynamic from 'next/dynamic';
+
+const HomeClient = dynamic(() => import('./HomeClient'), { 
+  ssr: false,
+  loading: () => <div className="min-h-screen bg-black" />
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();

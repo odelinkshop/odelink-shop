@@ -96,7 +96,12 @@ jobs:
             
             # 1. Hızlı Temizlik
             echo "🧹 Stopping and pruning..."
-            $DOCKER_CMD down --remove-orphans
+            $DOCKER_CMD down --remove-orphans || true
+            
+            # Ekstra Güvenlik: İsim çakışmalarını önlemek için ilgili tüm konteynerleri zorla sil
+            echo "🗑️ Forcing removal of any leftover containers..."
+            docker ps -a -q --filter "name=odelink-shop" | xargs -r docker rm -f || true
+            
             docker system prune -f
             
             # 2. Hızlı İnşa (Cache kullan, sadece değişenleri yap)
@@ -105,7 +110,7 @@ jobs:
             
             # 3. Ayağa Kaldır
             echo "🚀 Launching..."
-            $DOCKER_CMD up -d
+            $DOCKER_CMD up -d --force-recreate
 
             echo "---- DEPLOY: Cleanup old images ----"
             docker image prune -f
