@@ -1743,6 +1743,9 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
     // Mağaza adını iyileştir (Sayı ise ODELINK BOUTIQUE yap)
     const finalShopName = /^\d+$/.test(shopSlug) ? "ODELINK BOUTIQUE" : shopSlug.toUpperCase().replace(/-/g, ' ');
 
+    const existingSites = await Site.findByUserId(req.userId);
+    let site;
+
     const siteData = {
       userId: req.userId,
       name: finalShopName,
@@ -1763,17 +1766,30 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
       }
     };
 
-    const site = await Site.create(siteData);
+    if (existingSites && existingSites.length > 0) {
+      site = existingSites[0];
+      console.log(`📝 [${site.id}] Mevcut site güncelleniyor: ${site.subdomain}`);
+      // Mevcut siteyi güncelle
+      await Site.update(site.id, {
+        name: finalShopName,
+        settings: siteData.settings
+      });
+    } else {
+      console.log(`🆕 [${subdomain}] Yeni site oluşturuluyor...`);
+      site = await Site.create(siteData);
+    }
 
     // DNS Ekle
     setImmediate(async () => {
       try { await addDnsRecord(site.subdomain); } catch (e) { console.error('DNS Error:', e); }
     });
 
-    // Arka planda resimleri çek (Daha agresif ve hata toleranslı)
+    // Arka planda gerçek mağaza adını bul ve resimleri çek
     setImmediate(async () => {
       const updatedProducts = [...products];
-      console.log(`📸 [${site.id}] Resim senkronizasyonu başladı: ${updatedProducts.length} ürün`);
+      let realShopName = finalShopName;
+      
+      console.log(`📸 [${site.id}] Gerçek mağaza adı ve resim senkronizasyonu başladı...`);
       
       for (let i = 0; i < updatedProducts.length; i++) {
         const p = updatedProducts[i];
@@ -1781,18 +1797,27 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
         
         try {
           const response = await axios.get(p.url, { 
-            timeout: 8000, 
+            timeout: 10000, 
             headers: { 
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             } 
           });
           
           const $ = cheerio.load(response.data);
+          
+          // İlk üründe gerçek mağaza adını yakala
+          if (i === 0) {
+            const possibleName = $('.shop-name, .seller-name, title').first().text().split('|')[0].split('-')[0].trim();
+            if (possibleName && possibleName.length > 2 && !possibleName.includes('Shopier')) {
+               realShopName = possibleName.toUpperCase();
+               console.log(`🏷️ Mağaza Adı Bulundu: ${realShopName}`);
+               await Site.update(site.id, { name: realShopName });
+            }
+          }
+
           const ogImage = $('meta[property="og:image"]').attr('content');
           const gallery = [];
           
-          // Shopier spesifik resim seçicileri
           $('.carousel-item img, .product-image img, .sp-image, .product-detail-image img').each((_, el) => {
              const src = $(el).attr('src') || $(el).attr('data-src') || $(el).attr('data-lazy');
              if (src && src.startsWith('http')) {
@@ -1803,11 +1828,11 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
           p.imageUrl = ogImage || gallery[0] || '';
           p.images = gallery.length > 0 ? gallery : (ogImage ? [ogImage] : []);
           
-          // Her 5 üründe bir veya sonunda kaydet
           if (i % 5 === 0 || i === updatedProducts.length - 1) {
             const current = await Site.findById(site.id);
             if (current) {
               await Site.update(site.id, { 
+                name: realShopName, // İsmi her seferinde doğrula
                 settings: { 
                   ...current.settings, 
                   products_data: updatedProducts,
@@ -1817,7 +1842,7 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
             }
           }
         } catch (err) {
-          console.error(`⚠️ [${site.id}] Resim çekilemedi (${p.id}):`, err.message);
+          console.error(`⚠️ [${site.id}] Hata (${p.id}):`, err.message);
         }
       }
       
@@ -1832,7 +1857,7 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
           } 
         });
       }
-      console.log(`✅ [${site.id}] Resim senkronizasyonu tamamlandı.`);
+      console.log(`✅ [${site.id}] Senkronizasyon tamamlandı.`);
     });
 
     return res.status(201).json({

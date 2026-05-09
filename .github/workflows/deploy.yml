@@ -94,13 +94,18 @@ jobs:
               DOCKER_CMD="docker compose"
             fi
             
-            # 1. Önce yeni imajları inşa et (Bu işlem sürerken site hala çalışıyor olacak)
-            echo "🏗️ Building new containers in background..."
+            # 1. Temizlik (Yer aç ve eski çöpleri temizle)
+            echo "🧹 Cleaning up system..."
+            docker system prune -f --volumes
+            
+            # 2. Yeni imajları inşa et (Nova için cache kullanma ki CSS/JS güncellensin)
+            echo "🏗️ Building new containers (no-cache for nova)..."
+            $DOCKER_CMD build --no-cache nova
             $DOCKER_CMD build
             
-            # 2. Sadece değişen konteynerleri yeniden başlat (Sadece saniyelik bir kesinti olur)
+            # 3. Sadece değişen konteynerleri yeniden başlat
             echo "🚀 Starting new containers..."
-            $DOCKER_CMD up -d --remove-orphans
+            $DOCKER_CMD up -d --force-recreate --remove-orphans
 
             echo "---- DEPLOY: Cleanup old images ----"
             docker image prune -f
