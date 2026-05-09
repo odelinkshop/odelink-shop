@@ -284,8 +284,31 @@ async function verifyShopierToken(shopierUrl, apiToken) {
   }
 }
 
+/**
+ * Shopier mağaza ayarlarını çeker
+ * @param {string} apiToken - Kullanıcının API anahtarı
+ * @returns {Promise<Object>} Mağaza ayarları
+ */
+async function fetchShopierSettings(apiToken) {
+  if (!apiToken) return null;
+  try {
+    const response = await axios.get(`${SHOPIER_API_BASE_URL}/shop/settings`, {
+      headers: {
+        'Authorization': `Bearer ${apiToken}`,
+        'Accept': 'application/json'
+      },
+      timeout: 15000
+    });
+    return response.data || null;
+  } catch (error) {
+    console.error('❌ Shopier API Settings Hatası:', error.message);
+    return null;
+  }
+}
+
 module.exports = {
   fetchProductsFromShopierAPI,
   fetchAllProductsFromShopierAPI,
-  verifyShopierToken
+  verifyShopierToken,
+  fetchShopierSettings
 };

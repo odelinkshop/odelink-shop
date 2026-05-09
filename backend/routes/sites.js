@@ -13,7 +13,7 @@ const AnalyticsStore = require('../models/AnalyticsStore');
 const authMiddleware = require('../middleware/auth');
 const pool = require('../config/database');
 const { fetchShopierCatalog, normalizeShopierUrl, enrichCatalogProductsWithDetails, fetchProductDetail } = require('../services/shopierCatalogService');
-const { fetchProductsFromShopierAPI, verifyShopierToken, fetchAllProductsFromShopierAPI } = require('../services/shopierApiService');
+const { fetchProductsFromShopierAPI, verifyShopierToken, fetchAllProductsFromShopierAPI, fetchShopierSettings } = require('../services/shopierApiService');
 const { newJobId } = require('../services/siteCreationJobWorker');
 const { addDnsRecord, deleteDnsRecord } = require('../services/cloudflareService');
 const CacheService = require('../services/cacheService');
@@ -71,16 +71,28 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
 
     console.log(`🔑 [${req.userId}] API ile mağaza kurma isteği...`);
 
-    // 1. API'den ürünleri çek
-    const products = await fetchAllProductsFromShopierAPI('', apiKey);
+    // 1. Önce Mağaza Ayarlarını Çek (Bu genelde 403 vermez)
+    const shopSettings = await fetchShopierSettings(apiKey);
+    const shopierUrl = shopSettings?.url || '';
+    const shopName = shopSettings?.name || "MAĞAZAM";
+    const shopSlug = (shopierUrl || '').split('/').pop() || "magazam-" + Math.random().toString(36).substring(2, 7);
+
+    console.log(`📡 Mağaza Bilgileri Alındı: ${shopName} (${shopierUrl})`);
+
+    // 2. API'den ürünleri çekmeye çalış
+    let products = await fetchAllProductsFromShopierAPI('', apiKey);
+    
+    // 3. EĞER API ÜRÜNLERİ VERMEZSE (403 veya Boş), SCRAPING İLE ÇEK (HİBRİT FALLBACK)
+    if (!products || products.length === 0) {
+      if (shopierUrl) {
+        console.log(`⚠️ API Ürünleri Vermedi (403/Boş). Scraper Devreye Giriyor: ${shopierUrl}`);
+        products = await fetchShopierCatalog(shopierUrl);
+      }
+    }
     
     if (!products || products.length === 0) {
-      return res.status(400).json({ error: 'Shopier API ile ürün bulunamadı veya anahtar geçersiz. Lütfen anahtarınızı kontrol edin.' });
+      return res.status(400).json({ error: 'Shopier ürünleri ne API ne de Scraper ile çekilemedi. Mağazanın halka açık olduğundan emin olun.' });
     }
-
-    // 2. Mağaza adını belirle
-    const shopName = "MAĞAZAM";
-    const shopSlug = "magazam-" + Math.random().toString(36).substring(2, 7);
 
     const clampSubdomain = (raw) => {
       const cleaned = (raw || '').toString().trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '');
