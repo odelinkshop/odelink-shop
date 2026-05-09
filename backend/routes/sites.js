@@ -1871,5 +1871,82 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
   }
 });
 
+// --- API ile Mağaza Oluştur (Resmi Shopier API) ---
+router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) => {
+  try {
+    const { apiKey } = req.body;
+    if (!apiKey) return res.status(400).json({ error: 'Shopier API anahtarı zorunludur.' });
+
+    console.log(`🔑 [${req.userId}] API ile mağaza kurma isteği...`);
+
+    // 1. API'den ürünleri çek
+    const products = await fetchAllProductsFromShopierAPI('', apiKey);
+    
+    if (!products || products.length === 0) {
+      return res.status(400).json({ error: 'Shopier API ile ürün bulunamadı veya anahtar geçersiz. Lütfen anahtarınızı kontrol edin.' });
+    }
+
+    // 2. Mağaza adını belirle (API'den gelebilir ama şimdilik "MAGAZAM" diyelim)
+    const shopName = "MAĞAZAM";
+    const shopSlug = "magazam-" + Math.random().toString(36).substring(2, 7);
+
+    const clampSubdomain = (raw) => {
+      const cleaned = (raw || '').toString().trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      return (cleaned || 'magaza').slice(0, 30);
+    };
+
+    let subdomain = clampSubdomain(shopSlug);
+    const existing = await Site.findBySubdomain(subdomain);
+    if (existing) {
+      subdomain = clampSubdomain(subdomain + '-' + Math.random().toString(36).substring(2, 5));
+    }
+
+    // 3. Siteyi oluştur veya güncelle
+    const siteData = {
+      userId: req.userId,
+      name: shopName,
+      shopierUrl: '',
+      subdomain,
+      status: 'active',
+      settings: {
+        created_at: new Date().toISOString(),
+        products_data: products,
+        catalog_total_products: products.length,
+        catalog_enrichment_status: 'api_loaded',
+        catalog_full_sync_complete: true,
+        catalog_refreshed_at: new Date().toISOString(),
+        last_sync_method: 'shopier_api',
+        api_key: apiKey // Anahtarı sakla (Opsiyonel: Şifrelemek daha iyidir)
+      }
+    };
+
+    const existingSites = await Site.findByUserId(req.userId);
+    let site;
+
+    if (existingSites && existingSites.length > 0) {
+      site = existingSites[0];
+      await Site.update(site.id, {
+        settings: siteData.settings
+      });
+    } else {
+      site = await Site.create(siteData);
+    }
+
+    // DNS Ekle
+    setImmediate(async () => {
+      try { await addDnsRecord(site.subdomain); } catch (e) { console.error('DNS Error:', e); }
+    });
+
+    return res.json({
+      siteId: site.id,
+      subdomain: site.subdomain
+    });
+
+  } catch (error) {
+    console.error('❌ Create site from API error:', error);
+    return res.status(500).json({ error: 'Sunucu hatası: Mağaza kurulamadı.' });
+  }
+});
+
 module.exports = router;
 

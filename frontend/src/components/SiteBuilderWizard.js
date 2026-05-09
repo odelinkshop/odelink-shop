@@ -26,6 +26,43 @@ export default function SiteBuilderWizard() {
     if (!token) navigate('/auth');
   }, [navigate, ready, token]);
 
+  const [apiKey, setApiKey] = useState('');
+
+  const handleApiCreate = async () => {
+    if (!apiKey) {
+      setErrorMsg('Lütfen Shopier API anahtarınızı girin.');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const res = await fetch(`${API_BASE}/api/sites/create-from-api`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ apiKey })
+      });
+      
+      const data = await res.json();
+
+      if (res.ok) {
+        setSiteId(data.siteId);
+        setSubdomain(data.subdomain);
+        setIsCompleted(true);
+      } else {
+        setErrorMsg(data.error || 'API ile bağlanırken hata oluştu.');
+        setLoading(false);
+      }
+    } catch (err) {
+      setErrorMsg('Bağlantı hatası oluştu.');
+      setLoading(false);
+    }
+  };
+
   const handleExcelCreate = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -93,33 +130,53 @@ export default function SiteBuilderWizard() {
             {!siteId ? (
               <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[#111] border border-[#C5A059]/20 p-10 rounded-3xl shadow-2xl">
                 <div className="flex flex-col items-center space-y-8">
-                  <div className="w-full space-y-4">
-                     <input 
-                       type="file" 
-                       ref={fileInputRef} 
-                       onChange={handleExcelCreate} 
-                       accept=".xlsx, .xls" 
-                       className="hidden" 
-                     />
-                     <button
-                       onClick={() => fileInputRef.current?.click()}
-                       disabled={loading}
-                       className="w-full py-16 border-2 border-dashed border-[#C5A059]/20 hover:border-[#C5A059]/50 rounded-2xl flex flex-col items-center justify-center gap-6 group transition-all bg-white/5"
-                     >
-                        {loading ? (
-                          <Loader2 size={40} className="animate-spin text-[#C5A059]" />
-                        ) : (
-                          <div className="w-16 h-16 bg-[#C5A059] rounded-full flex items-center justify-center text-black group-hover:scale-110 transition-transform shadow-xl">
-                             <Download size={32} />
+                  <div className="w-full space-y-6">
+                     <div className="space-y-4">
+                        <div className="text-left">
+                          <label className="text-[10px] text-[#C5A059] font-black uppercase tracking-widest mb-2 block">1. Yol: Shopier API İle Bağlan (Önerilen)</label>
+                          <div className="relative group">
+                            <input 
+                              type="password"
+                              value={apiKey}
+                              onChange={(e) => setApiKey(e.target.value)}
+                              placeholder="Shopier API Anahtarınızı Buraya Yapıştırın"
+                              className="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-sm focus:border-[#C5A059] focus:outline-none transition-all pr-32"
+                            />
+                            <button 
+                              onClick={handleApiCreate}
+                              disabled={loading || !apiKey}
+                              className="absolute right-2 top-2 bottom-2 px-6 bg-[#C5A059] text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-[#F2EBE1] disabled:opacity-50 transition-all"
+                            >
+                              {loading ? '...' : 'BAĞLAN'}
+                            </button>
                           </div>
-                        )}
-                        <div className="text-center">
-                           <p className="text-sm font-black uppercase tracking-widest text-[#F2EBE1]">
-                             {loading ? 'MAĞAZANIZ OLUŞTURULUYOR...' : 'Shopier Excel Dosyasını Yükle'}
-                           </p>
-                           <p className="text-[10px] text-white/30 mt-2 uppercase tracking-widest">SADECE .XLSX DOSYASI DESTEKLENİR</p>
+                          <p className="text-[8px] text-white/30 mt-2 uppercase tracking-widest">Shopier Panel &gt; Entegrasyonlar &gt; API kısmından alabilirsiniz.</p>
                         </div>
-                     </button>
+
+                        <div className="relative py-4">
+                          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
+                          <div className="relative flex justify-center text-[9px] uppercase font-bold"><span className="bg-[#111] px-4 text-white/20 tracking-[0.3em]">VEYA</span></div>
+                        </div>
+
+                        <div className="text-left">
+                          <label className="text-[10px] text-[#C5A059] font-black uppercase tracking-widest mb-2 block">2. Yol: Excel İle Manuel Kurulum</label>
+                          <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleExcelCreate} 
+                            accept=".xlsx, .xls" 
+                            className="hidden" 
+                          />
+                          <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={loading}
+                            className="w-full py-8 border-2 border-dashed border-white/5 hover:border-[#C5A059]/30 rounded-xl flex items-center justify-center gap-4 group transition-all bg-white/[0.02]"
+                          >
+                             <Download size={20} className="text-[#C5A059]" />
+                             <span className="text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-[#F2EBE1]">Excel Dosyası Yükle</span>
+                          </button>
+                        </div>
+                     </div>
 
                      {errorMsg && (
                       <div className="text-red-400 text-[11px] font-medium bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-left">
