@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
-:root {
+@theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
   --font-serif: var(--font-playfair), ui-serif, Georgia;
   
   /* OLD MONEY ELITE PALETTE - OBSIDIAN & PARCHMENT */
-  --nova-primary: #F8F5F2 !important;    /* Parchment White */
-  --nova-secondary: #0A0A0A !important;  /* Obsidian Black */
-  --nova-accent: #C5A059 !important;     /* Muted Gold */
-  --nova-neutral: #E5E1DA !important;    /* Limestone Gray */
+  --nova-primary: #F8F5F2;    /* Parchment White - Soft and Expensive */
+  --nova-secondary: #0A0A0A;  /* Obsidian Black - Deep and Professional */
+  --nova-accent: #C5A059;     /* Muted Gold/Camel - Subtle Wealth */
+  --nova-neutral: #E5E1DA;    /* Limestone Gray */
   
   --background: var(--nova-primary);
   --foreground: var(--nova-secondary);
@@ -17,6 +17,14 @@
   --color-secondary: var(--nova-secondary);
   --color-accent: var(--nova-accent);
   --color-neutral: var(--nova-neutral);
+}
+
+:root {
+  --background: #F8F5F2 !important;
+  --foreground: #0A0A0A !important;
+  --nova-primary: #F8F5F2 !important;
+  --nova-secondary: #0A0A0A !important;
+  --nova-accent: #C5A059 !important;
 }
 
 * {

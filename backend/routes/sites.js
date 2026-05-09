@@ -1740,9 +1740,12 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
       subdomain = clampSubdomain(subdomain + '-' + Math.random().toString(36).substring(2, 5));
     }
 
+    // Mağaza adını iyileştir (Sayı ise ODELINK BOUTIQUE yap)
+    const finalShopName = /^\d+$/.test(shopSlug) ? "ODELINK BOUTIQUE" : shopSlug.toUpperCase().replace(/-/g, ' ');
+
     const siteData = {
       userId: req.userId,
-      name: shopSlug.toUpperCase(),
+      name: finalShopName,
       shopierUrl,
       subdomain,
       status: 'active',
@@ -1767,32 +1770,69 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
       try { await addDnsRecord(site.subdomain); } catch (e) { console.error('DNS Error:', e); }
     });
 
-    // Arka planda resimleri çek
+    // Arka planda resimleri çek (Daha agresif ve hata toleranslı)
     setImmediate(async () => {
       const updatedProducts = [...products];
+      console.log(`📸 [${site.id}] Resim senkronizasyonu başladı: ${updatedProducts.length} ürün`);
+      
       for (let i = 0; i < updatedProducts.length; i++) {
         const p = updatedProducts[i];
         if (!p.url) continue;
+        
         try {
-          const response = await axios.get(p.url, { timeout: 5000, headers: { 'User-Agent': 'Mozilla/5.0' } });
+          const response = await axios.get(p.url, { 
+            timeout: 8000, 
+            headers: { 
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+            } 
+          });
+          
           const $ = cheerio.load(response.data);
           const ogImage = $('meta[property="og:image"]').attr('content');
           const gallery = [];
-          $('.carousel-item img, .product-image img, .sp-image').each((_, el) => {
-             const src = $(el).attr('src') || $(el).attr('data-src');
-             if (src && src.startsWith('http')) gallery.push(src);
+          
+          // Shopier spesifik resim seçicileri
+          $('.carousel-item img, .product-image img, .sp-image, .product-detail-image img').each((_, el) => {
+             const src = $(el).attr('src') || $(el).attr('data-src') || $(el).attr('data-lazy');
+             if (src && src.startsWith('http')) {
+               if (!gallery.includes(src)) gallery.push(src);
+             }
           });
+          
           p.imageUrl = ogImage || gallery[0] || '';
           p.images = gallery.length > 0 ? gallery : (ogImage ? [ogImage] : []);
           
-          if (i % 10 === 0 || i === updatedProducts.length - 1) {
+          // Her 5 üründe bir veya sonunda kaydet
+          if (i % 5 === 0 || i === updatedProducts.length - 1) {
             const current = await Site.findById(site.id);
-            await Site.update(site.id, { settings: { ...current.settings, products_data: updatedProducts } });
+            if (current) {
+              await Site.update(site.id, { 
+                settings: { 
+                  ...current.settings, 
+                  products_data: updatedProducts,
+                  catalog_enrichment_progress: Math.round(((i+1)/updatedProducts.length)*100)
+                } 
+              });
+            }
           }
-        } catch (err) {}
+        } catch (err) {
+          console.error(`⚠️ [${site.id}] Resim çekilemedi (${p.id}):`, err.message);
+        }
       }
+      
       const final = await Site.findById(site.id);
-      await Site.update(site.id, { settings: { ...final.settings, products_data: updatedProducts, catalog_full_sync_complete: true } });
+      if (final) {
+        await Site.update(site.id, { 
+          settings: { 
+            ...final.settings, 
+            products_data: updatedProducts, 
+            catalog_full_sync_complete: true,
+            catalog_enrichment_status: 'completed'
+          } 
+        });
+      }
+      console.log(`✅ [${site.id}] Resim senkronizasyonu tamamlandı.`);
     });
 
     return res.status(201).json({

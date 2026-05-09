@@ -51,8 +51,6 @@ export default function Home() {
 
   const aboutTitle = settings.content?.aboutTitle || "THE PHILOSOPHY OF SILENCE";
   const aboutText = settings.content?.aboutText || "Modern aristokrasinin sessiz lüksü ile tanışın. Sadelik en üstün sofistikasyondur.";
-  
-  if (!mounted) return null;
 
   return (
     <main className="flex-1 bg-background text-secondary overflow-x-hidden">
