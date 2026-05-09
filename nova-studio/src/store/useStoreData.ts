@@ -130,7 +130,8 @@ const mapProduct = (p: any, index: number): Product => {
     name: name,
     description: description,
     price: displayPrice,
-    oldPrice: p.oldPrice || null,
+    oldPrice: p.oldPrice || p.originalPrice || null,
+    originalPrice: p.originalPrice || p.oldPrice || null,
     discountPercent: p.discountPercent || null,
     category: p.category || 'all',
     images: finalImages.length > 0 ? finalImages : [],
@@ -139,7 +140,11 @@ const mapProduct = (p: any, index: number): Product => {
     sizes: sizes,
     variants: {},
     variations: variations,
-    hasFreeShipping: Boolean(p.hasFreeShipping),
+    currency: p.currency || 'TL',
+    productType: p.productType || 'Fiziksel',
+    shippingType: p.shippingType || '',
+    shippingFee: p.shippingFee || 0,
+    hasFreeShipping: Boolean(p.hasFreeShipping || p.shippingType === 'Ücretsiz Kargo'),
     shopierUrl: p.url || p.link || ""
   };
 };

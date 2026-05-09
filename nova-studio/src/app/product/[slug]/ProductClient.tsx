@@ -118,6 +118,29 @@ export default function ProductClient() {
     );
   }
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const allImages = product.images && product.images.length > 0 ? product.images : [];
+
+  const handleAddToCart = () => {
+    addItem({
+      id: `${product.id}-${selectedSize || 'OS'}`,
+      productId: product.id,
+      name: product.name.split('|')[0].trim(),
+      price: product.price,
+      quantity: quantity,
+      size: selectedSize || "OS",
+      image: allImages[0],
+      currency: product.currency,
+    });
+    
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  if (!mounted) return null;
+
   // Ikas/Ticimax Seviyesi Ürün Şeması (JSON-LD)
   const productSchema = {
     "@context": "https://schema.org",
@@ -138,24 +161,6 @@ export default function ProductClient() {
       "availability": "https://schema.org/InStock",
       "itemCondition": "https://schema.org/NewCondition"
     }
-  };
-
-  const allImages = product.images && product.images.length > 0 ? product.images : [];
-
-  const handleAddToCart = () => {
-    addItem({
-      id: `${product.id}-${selectedSize || 'OS'}`,
-      productId: product.id,
-      name: product.name.split('|')[0].trim(),
-      price: product.price,
-      quantity: quantity,
-      size: selectedSize || "OS",
-      image: allImages[0],
-      currency: product.currency,
-    });
-    
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
   };
 
   return (

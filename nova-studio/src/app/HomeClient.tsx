@@ -23,6 +23,11 @@ export default function Home() {
   const [currentVideo, setCurrentVideo] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const videos = ["/hero_video_1.mp4", "/hero_video_2.mp4"];
 
@@ -46,6 +51,8 @@ export default function Home() {
 
   const aboutTitle = settings.content?.aboutTitle || "THE PHILOSOPHY OF SILENCE";
   const aboutText = settings.content?.aboutText || "Modern aristokrasinin sessiz lüksü ile tanışın. Sadelik en üstün sofistikasyondur.";
+  
+  if (!mounted) return null;
 
   return (
     <main className="flex-1 bg-background text-secondary overflow-x-hidden">
