@@ -94,18 +94,17 @@ jobs:
               DOCKER_CMD="docker compose"
             fi
             
-            # 1. Temizlik ve Hazırlık
-            echo "🧹 Stopping old containers and cleaning..."
+            # 1. Hızlı Temizlik
+            echo "🧹 Stopping and pruning..."
             $DOCKER_CMD down --remove-orphans
             docker system prune -f
             
-            # 2. Hızlı İnşa (Sadece Nova'yı tazele, diğerleri cache kullanabilir)
-            echo "🏗️ Building fresh images..."
-            $DOCKER_CMD build --no-cache nova
-            $DOCKER_CMD build
+            # 2. Hızlı İnşa (Cache kullan, sadece değişenleri yap)
+            echo "🏗️ Building containers..."
+            $DOCKER_CMD build --parallel
             
             # 3. Ayağa Kaldır
-            echo "🚀 Launching production..."
+            echo "🚀 Launching..."
             $DOCKER_CMD up -d
 
             echo "---- DEPLOY: Cleanup old images ----"
