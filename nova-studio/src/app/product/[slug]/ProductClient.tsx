@@ -35,6 +35,19 @@ const slugify = (text: string) => {
   return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[ğĞ]/g, 'g').replace(/[üÜ]/g, 'u').replace(/[şŞ]/g, 's').replace(/[ıİ]/g, 'i').replace(/[öÖ]/g, 'o').replace(/[çÇ]/g, 'c').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
 };
 
+const safeImage = (src: string | undefined): string => {
+  if (!src || src.trim() === "" || src.includes('placeholder')) return "";
+  let formattedSrc = src;
+  if (formattedSrc.startsWith('//')) {
+    formattedSrc = `https:${formattedSrc}`;
+  }
+  if (formattedSrc.includes('cdn.shopier.app')) {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
+    return `${apiBase}/sites/proxy-image?url=${encodeURIComponent(formattedSrc)}`;
+  }
+  return formattedSrc;
+};
+
 export default function ProductClient() {
   const { slug } = useParams();
    const { products, store, isLoading } = useStoreData();
@@ -147,7 +160,7 @@ export default function ProductClient() {
     "@type": "Product",
     "name": product.name,
     "description": product.description || `${product.name} - En uygun fiyatlarla ${store?.name || 'mağazamızda'}.`,
-    "image": product.images?.[0] || product.image,
+    "image": safeImage(product.images?.[0] || product.image),
     "sku": product.id,
     "brand": {
       "@type": "Brand",
@@ -175,7 +188,7 @@ export default function ProductClient() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={selectedImage}
-                  src={allImages[selectedImage]}
+                  src={safeImage(allImages[selectedImage])}
                   alt={product.name}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -221,7 +234,7 @@ export default function ProductClient() {
                     selectedImage === idx ? "border-secondary" : "border-transparent opacity-50 hover:opacity-100"
                   }`}
                 >
-                  <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={safeImage(img)} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
