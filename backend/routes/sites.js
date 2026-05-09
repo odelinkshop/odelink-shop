@@ -301,6 +301,38 @@ router.get('/public/:subdomain/product-detail', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/sites/proxy-image?url=<shopierCdnUrl>
+ * Proxies Shopier images to bypass hotlinking protection
+ */
+router.get('/proxy-image', async (req, res) => {
+  try {
+    const imageUrl = (req.query?.url || '').toString().trim();
+    if (!imageUrl) return res.status(400).send('URL gerekli');
+    
+    if (!imageUrl.includes('cdn.shopier.app')) {
+      return res.status(403).send('Sadece Shopier resimleri proxy edilebilir');
+    }
+
+    const axios = require('axios');
+    const response = await axios.get(imageUrl, {
+      responseType: 'stream',
+      headers: {
+        'Referer': 'https://www.shopier.com/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+      },
+      timeout: 10000
+    });
+
+    res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day cache
+    response.data.pipe(res);
+  } catch (error) {
+    console.error('❌ Image Proxy Error:', error.message);
+    res.status(500).send('Resim yüklenemedi');
+  }
+});
+
 router.put('/:id/policies', authMiddleware, requireAccess, async (req, res) => {
   try {
     const site = await Site.findById(req.params.id);
