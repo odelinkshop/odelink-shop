@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Store, Zap, ShieldCheck, Sparkles, Send, CheckCircle2, Link as LinkIcon, Loader2, ExternalLink } from 'lucide-react';
+import { Store, Zap, ShieldCheck, Sparkles, Send, CheckCircle2, Link as LinkIcon, Loader2, ExternalLink, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthSession from '../hooks/useAuthSession';
 import { getApiBase } from '../utils/apiBase';

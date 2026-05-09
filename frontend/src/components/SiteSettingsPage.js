@@ -41,7 +41,8 @@ import {
   Code,
   Maximize,
   Lock,
-  BookOpen
+  BookOpen,
+  Download
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
