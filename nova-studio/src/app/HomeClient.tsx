@@ -49,6 +49,16 @@ export default function Home() {
   const togglePlay = () => setIsPlaying(!isPlaying);
   const toggleMute = () => setIsMuted(!isMuted);
 
+  if (!mounted) {
+    return (
+      <main className="flex-1 bg-background text-secondary min-h-screen flex items-center justify-center">
+        <div className="animate-pulse font-serif text-sm tracking-widest uppercase opacity-50">
+          Initializing store for: {settings.name || 'odelink'}
+        </div>
+      </main>
+    );
+  }
+
   const aboutTitle = settings.content?.aboutTitle || "THE PHILOSOPHY OF SILENCE";
   const aboutText = settings.content?.aboutText || "Modern aristokrasinin sessiz lüksü ile tanışın. Sadelik en üstün sofistikasyondur.";
 
