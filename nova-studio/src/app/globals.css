@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui;
+  --font-serif: var(--font-playfair), ui-serif, Georgia;
+  
+  /* OLD MONEY ELITE PALETTE - OBSIDIAN & PARCHMENT */
+  --nova-primary: #F8F5F2;    /* Parchment White - Soft and Expensive */
+  --nova-secondary: #0A0A0A;  /* Obsidian Black - Deep and Professional */
+  --nova-accent: #C5A059;     /* Muted Gold/Camel - Subtle Wealth */
+  --nova-neutral: #E5E1DA;    /* Limestone Gray */
+  
+  --background: var(--nova-primary);
+  --foreground: var(--nova-secondary);
+  
+  --color-primary: var(--nova-primary);
+  --color-secondary: var(--nova-secondary);
+  --color-accent: var(--nova-accent);
+  --color-neutral: var(--nova-neutral);
+}
+
+:root {
+  --background: #F8F5F2 !important;
+  --foreground: #0A0A0A !important;
+  --nova-primary: #F8F5F2 !important;
+  --nova-secondary: #0A0A0A !important;
+  --nova-accent: #C5A059 !important;
+}
+
+* {
+  border-color: rgba(10, 10, 10, 0.08);
+  font-weight: 300;
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: #F8F5F2 !important;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  touch-action: pan-y;
+}
+
+body {
+  color: #0A0A0A !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* THIN PREMIUM TYPOGRAPHY */
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 200 !important;
+  letter-spacing: -0.02em;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.tracking-elite {
+  letter-spacing: 0.8em !important;
+}
+
+/* CUSTOM MINIMAL SCROLLBAR */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--nova-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--nova-secondary);
+  border-radius: 10px;
+}
+
+.glass-premium {
+  background: rgba(248, 245, 242, 0.7);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(10, 10, 10, 0.05);
+}
+
+.video-overlay {
+  background: linear-gradient(to bottom, rgba(10,10,10,0.4), rgba(10,10,10,0.1) 20%, rgba(10,10,10,0.1) 80%, rgba(10,10,10,0.4));
+}

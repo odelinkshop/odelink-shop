@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: odelink_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: odelink_shop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: odelink_local_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - odelink_pgdata:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d odelink_shop"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: odelink_backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: odelink_shop
+      DB_USER: postgres
+      DB_PASSWORD: odelink_local_password
+      FRONTEND_URL: http://localhost
+      CORS_ORIGINS: "*"
+      SERVE_FRONTEND: "true"
+      AUTO_BUILD_FRONTEND: "false"
+      PUPPETEER_HEADLESS: "true"
+      PUPPETEER_ARGS: "--no-sandbox,--disable-setuid-sandbox"
+      VPS_PATH: "/home/odelink/odelink-shop"
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - /home/odelink/odelink-shop/frontend/build:/app/frontend/build:rw
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5000/api/ready').then(async(r)=>{const body=await r.json().catch(()=>null);process.exit(r.ok&&body&&body.ok?0:1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  odelink_pgdata:

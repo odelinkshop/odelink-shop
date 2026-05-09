@@ -1,0 +1,109 @@
+name: Deploy to VDS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to VDS (Docker Compose)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VDS_HOST }}
+          username: ${{ secrets.VDS_USER }}
+          password: ${{ secrets.VDS_PASSWORD }}
+          port: ${{ secrets.VDS_PORT || 4383 }}
+          timeout: 120s
+          command_timeout: 60m
+          script: |
+            echo "✅ SSH connection successful!"
+            set -e
+            cd "$HOME/odelink-shop"
+            
+            echo "---- DEPLOY: Configure git safe.directory ----"
+            git config --global --add safe.directory "$HOME/odelink-shop"
+            
+            echo "---- DEPLOY: Configure git credentials ----"
+            git config --global credential.helper store
+            echo "https://${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
+            
+            # Configure git for HTTPS to avoid SSH key issues
+            git remote set-url origin https://github.com/odelinkshop/odelink-shop.git
+            
+            echo "---- DEPLOY: Starting git sync ----"
+            git fetch -v --prune origin main || git fetch origin main
+            git reset --hard origin/main
+            CURRENT_COMMIT="$(git rev-parse HEAD)"
+            echo "✅ Git sync complete. Current commit: ${CURRENT_COMMIT}"
+            
+            echo "---- DEPLOY: Update .env file ----"
+            mkdir -p backend
+            
+            # Using simple echo for each line to avoid any YAML heredoc indentation issues
+            cat <<EOF > backend/.env
+            PORT=5000
+            NODE_ENV=production
+            FRONTEND_URL=https://www.odelink.shop
+            DB_HOST=postgres
+            DB_PORT=5432
+            DB_NAME=odelink_shop
+            DB_USER=postgres
+            DB_PASSWORD=odelink_production_password_change_me
+            DATABASE_URL=postgresql://postgres:odelink_production_password_change_me@postgres:5432/odelink_shop
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRE=7d
+            EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+            EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+            EMAIL_USER=${{ secrets.EMAIL_USER }}
+            EMAIL_PASS=${{ secrets.EMAIL_PASS }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}
+            CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}
+            BACKEND_URL=https://api.odelink.shop
+            GIT_COMMIT=${CURRENT_COMMIT}
+            CORS_ORIGINS=https://www.odelink.shop,https://odelink.shop,https://demo.odelink.shop
+            SERVE_FRONTEND=true
+            AUTO_BUILD_FRONTEND=false
+            PUPPETEER_HEADLESS=true
+            PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox
+            CLOUDINARY_CLOUD_NAME=demo
+            APP_NAME=Ödelink
+            EMAIL_FROM_NAME=Ödelink Destek
+            SUPPORT_EMAIL=odelinkdestek@gmail.com
+            NOVA_ENABLED=true
+            NOVA_URL=http://nova:3001
+            GEMINI_API_KEY=AIzaSyCXWr-TqnACh6mE5GpQCQeeRN9DCVXrAao
+            SHOPIER_API_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI3NGQyMTlhMjg3ZDJkM2I2Y2RmYzI2ZjQ1M2JjZTBhNiIsImp0aSI6IjgzYzg5OTYxM2Q1YjljM2FkYTNkNDMxYjllMTZhMzFlYTVmZmYwYzM1Y2ZiYTBjYmQ4ODNkM2RlZmJlNWQ3MjJlMjYzNjZkMWI1YTE3NTk4ZTVmZjMzMTNkZTI2MWJjMTZhODkyMDYxMThiN2Y0ZmJlMWQ1OTI0Y2RhYTgwZTM0ZmUxOWM2NDc2ODVmNjQyOTE4YjZkNTU2N2E0N2IwNDMiLCJpYXQiOjE3NzcxNDMxOTMsIm5iZiI6MTc3NzE0MzE5MywiZXhwIjoxOTM0OTI3OTUzLCJzdWIiOjI5MTk5NzcsInNjb3BlcyI6WyJvcmRlcnM6cmVhZCIsIm9yZGVyczp3cml0ZSIsInByb2R1Y3RzOnJlYWQiLCJwcm9kdWN0czp3cml0ZSIsInNoaXBwaW5nczpyZWFkIiwic2hpcHBpbmdzOndyaXRlIiwiZGlzY291bnRzOnJlYWQiLCJkaXNzb3VudHM6d3JpdGUiLCJwYXlvdXRzOnJlYWQiLCJyZWZ1bmRzOnJlYWQiLCJyZWZ1bmRzOndyaXRlIiwic2hvcDpyZWFkIiwic2hvcDp3cml0ZSJdfQ.H5p8Hu9W_rMvPLNRsHJcIsCXxuy9MRTFJOQQUThTB7IqDcqpdbliAnJ-x2XI_KIA7F3jULnnTdHvOh_aZBY48YmsWvjG0PWvi24-sa6YCBaZyOkMeOlAouFaWWm-OstM4PMqWInyTSFAWNBs9CEkZCd4OyEEGSfciAPW_QrrrD2UVmp7y4jNIHCDrNiHWWYkBA3uPl1Ch8woEz3-JBi4L6VdfNWJLVBbK8-RAf26W343wIJ_N6_wdgfJGQD4BimUFa_8Dvb5gr8L6FAmJ114z7J0JqZOWL-e1lVTzgccNHbZjOC0GsU-y0qfhFdRQnmt4zookEWF8BtkHReQnGlvug
+            EOF
+
+            echo "---- DEPLOY: Building new images (Zero Downtime) ----"
+            # Try docker compose first, then docker-compose as fallback
+            if command -v docker-compose &> /dev/null; then
+              DOCKER_CMD="docker-compose"
+            else
+              DOCKER_CMD="docker compose"
+            fi
+            
+            # 1. Önce yeni imajları inşa et (Bu işlem sürerken site hala çalışıyor olacak)
+            echo "🏗️ Building new containers in background..."
+            $DOCKER_CMD build
+            
+            # 2. Sadece değişen konteynerleri yeniden başlat (Sadece saniyelik bir kesinti olur)
+            echo "🚀 Starting new containers..."
+            $DOCKER_CMD up -d --remove-orphans
+
+            echo "---- DEPLOY: Cleanup old images ----"
+            docker image prune -f
+            
+            echo "✅ Deployment complete!"
+            $DOCKER_CMD ps

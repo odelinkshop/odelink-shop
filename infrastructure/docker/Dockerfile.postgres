@@ -1,0 +1,11 @@
+FROM postgres:15-alpine
+
+# Copy init script
+COPY backend/database/init.sql /docker-entrypoint-initdb.d/
+
+# Set default environment variables
+ENV POSTGRES_DB=odelink_shop
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+
+EXPOSE 5432

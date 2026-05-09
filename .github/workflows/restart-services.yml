@@ -1,0 +1,59 @@
+name: Restart Services
+
+on:
+  workflow_dispatch:
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Connect and Restart Services
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VDS_HOST }}
+          username: ${{ secrets.VDS_USER }}
+          password: ${{ secrets.VDS_PASSWORD }}
+          port: ${{ secrets.VDS_PORT || 4383 }}
+          timeout: 120s
+          command_timeout: 5m
+          script: |
+            set -e
+            echo "=== SYSTEM STATUS CHECK ==="
+            echo "Hostname: $(hostname)"
+            echo "Uptime: $(uptime)"
+            echo "Memory: $(free -h | grep Mem)"
+            echo ""
+            
+            echo "=== CHECKING NGINX ==="
+            systemctl status nginx --no-pager || echo "Nginx not running"
+            
+            echo ""
+            echo "=== RESTARTING NGINX ==="
+            systemctl restart nginx
+            systemctl enable nginx
+            systemctl status nginx --no-pager
+            
+            echo ""
+            echo "=== CHECKING PM2 BACKEND ==="
+            pm2 status
+            
+            echo ""
+            echo "=== RESTARTING BACKEND ==="
+            cd ~/odelink-shop/backend
+            pm2 restart odelink-backend || pm2 start server.js --name odelink-backend
+            pm2 save
+            
+            echo ""
+            echo "=== CHECKING PORTS ==="
+            netstat -tlnp | grep -E ':(80|443|5000)'
+            
+            echo ""
+            echo "=== HEALTH CHECK ==="
+            sleep 3
+            curl -f http://localhost:5000/api/health || echo "Backend health check failed"
+            curl -f http://localhost/ || echo "Nginx health check failed"
+            
+            echo ""
+            echo "=== SERVICES RESTARTED SUCCESSFULLY ==="

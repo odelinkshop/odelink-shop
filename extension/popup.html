@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap');
+    
+    body {
+      width: 320px;
+      margin: 0;
+      padding: 0;
+      background: #0A0A0A;
+      color: #F2EBE1;
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(197, 160, 89, 0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      background: #C5A059;
+      border-radius: 16px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(197, 160, 89, 0.4);
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo svg {
+      width: 30px;
+      height: 30px;
+      fill: #0A0A0A;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subtitle {
+      font-size: 10px;
+      color: #C5A059;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      background: #C5A059;
+      color: #0A0A0A;
+      border: none;
+      border-radius: 16px;
+      font-weight: 900;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .btn:hover {
+      background: #F2EBE1;
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(197, 160, 89, 0.2);
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 8px;
+      color: rgba(242, 235, 225, 0.2);
+      font-weight: 900;
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+    </div>
+    <div class="title">Omni-Scraper</div>
+    <div class="subtitle">Neural Engine v6.0</div>
+    
+    <button id="scanBtn" class="btn">MAĞAZAYI PAKETLE (.JSON)</button>
+    
+    <div class="footer">ODELINK ELITE TECHNOLOGY</div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

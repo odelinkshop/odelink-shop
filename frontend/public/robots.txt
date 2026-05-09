@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://odelink.shop/sitemap.xml
+
+# Prevent indexing of sensitive panels
+Disallow: /panel/*
+Disallow: /nova-ceo-karargah-x67/*
+Disallow: /site-builder/*

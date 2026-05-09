@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odelink Auth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: green; }
+        .error { color: red; }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Odelink Auth Test</h1>
+    
+    <div class="test-box">
+        <h2>1. Backend Health Check</h2>
+        <button onclick="testHealth()">Test Health</button>
+        <div id="health-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>2. Google OAuth Config</h2>
+        <button onclick="testGoogleConfig()">Test Google Config</button>
+        <div id="google-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>3. CSRF Token</h2>
+        <button onclick="testCsrf()">Test CSRF</button>
+        <div id="csrf-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>4. Register Test</h2>
+        <button onclick="testRegister()">Test Register</button>
+        <div id="register-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>5. Console Errors</h2>
+        <div id="console-errors">
+            <p>Tarayıcı console'unu aç (F12) ve hataları kontrol et</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://www.odelink.shop';
+
+        async function testHealth() {
+            const result = document.getElementById('health-result');
+            result.innerHTML = '<p>Testing...</p>';
+            try {
+                const response = await fetch(`${API_BASE}/api/health`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                result.innerHTML = `
+                    <p class="success">✅ Success!</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testGoogleConfig() {
+            const result = document.getElementById('google-result');
+            result.innerHTML = '<p>Testing...</p>';
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/google/config`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                result.innerHTML = `
+                    <p class="success">✅ Success!</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <p>Google OAuth: ${data.enabled ? '✅ Enabled' : '❌ Disabled'}</p>
+                `;
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testCsrf() {
+            const result = document.getElementById('csrf-result');
+            result.innerHTML = '<p>Testing...</p>';
+            try {
+                const response = await fetch(`${API_BASE}/api/csrf-token`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                result.innerHTML = `
+                    <p class="success">✅ Success!</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testRegister() {
+            const result = document.getElementById('register-result');
+            result.innerHTML = '<p>Testing...</p>';
+            try {
+                const testEmail = `test${Date.now()}@test.com`;
+                const response = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        email: testEmail,
+                        password: 'test123456',
+                        phone: ''
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.innerHTML = `
+                        <p class="success">✅ Register Success!</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <p class="error">❌ Register Failed (${response.status})</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Capture console errors
+        window.addEventListener('error', (e) => {
+            const errorsDiv = document.getElementById('console-errors');
+            errorsDiv.innerHTML += `<p class="error">❌ ${e.message} (${e.filename}:${e.lineno})</p>`;
+        });
+
+        console.log('🔍 Test page loaded. Click buttons to test API endpoints.');
+    </script>
+</body>
+</html>
