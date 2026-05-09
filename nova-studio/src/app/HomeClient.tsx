@@ -24,19 +24,17 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const videos = ["/hero_video_1.mp4", "/hero_video_2.mp4"];
-
   const handleVideoEnd = () => {
     setCurrentVideo((prev) => (prev + 1) % videos.length);
   };
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (mounted && videoRef.current) {
       videoRef.current.muted = isMuted;
       if (isPlaying) {
         videoRef.current.play().catch(() => setIsPlaying(false));
@@ -44,19 +42,13 @@ export default function Home() {
         videoRef.current.pause();
       }
     }
-  }, [currentVideo, isPlaying, isMuted]);
+  }, [currentVideo, isPlaying, isMuted, mounted]);
 
   const togglePlay = () => setIsPlaying(!isPlaying);
   const toggleMute = () => setIsMuted(!isMuted);
 
   if (!mounted) {
-    return (
-      <main className="flex-1 bg-background text-secondary min-h-screen flex items-center justify-center">
-        <div className="animate-pulse font-serif text-sm tracking-widest uppercase opacity-50">
-          Initializing store for: {settings.name || 'odelink'}
-        </div>
-      </main>
-    );
+    return <div className="min-h-screen bg-black" />;
   }
 
   const aboutTitle = settings.content?.aboutTitle || "THE PHILOSOPHY OF SILENCE";

@@ -152,7 +152,7 @@ export default function ProductClient() {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  if (!mounted) return null;
+  if (!mounted) return <div className="min-h-screen bg-black" />;
 
   // Ikas/Ticimax Seviyesi Ürün Şeması (JSON-LD)
   const productSchema = {
