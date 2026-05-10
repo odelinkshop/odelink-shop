@@ -106,11 +106,12 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     }
     
     // 3. EĞER API ÜRÜNLERİ VERMEZSE (403 veya Boş), SCRAPING İLE ÇEK (HİBRİT FALLBACK)
+    let scrapeResult = null;
     if (!products || products.length === 0) {
       if (shopierUrl) {
         console.log(`🕷️ Scraper Devreye Giriyor: ${shopierUrl}`);
         try {
-          const scrapeResult = await fetchShopierCatalog(shopierUrl, {
+          scrapeResult = await fetchShopierCatalog(shopierUrl, {
             skipDetails: true,
             bypassCache: true
           });
@@ -140,7 +141,11 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     if (!products || products.length === 0) {
       return res.status(400).json({ 
         error: 'Ürünler çekilemedi',
-        message: 'Shopier mağazanızdan ürünler ne API ne de Scraper ile çekilemedi. Mağazanızın halka açık olduğundan ve ürünlerin listelendiğinden emin olun.' 
+        message: 'Shopier mağazanızdan ürünler ne API ne de Scraper ile çekilemedi.',
+        debug: {
+          scraperError: scrapeResult?.debug?.error || 'Bilinmeyen scraper hatası',
+          shopierUrl: shopierUrl
+        }
       });
     }
 

@@ -98,6 +98,18 @@ const scrapeWithMonsterEngine = async (url, shopSlug) => {
     console.error('❌ [MonsterEngine] 3. Katman da başarısız:', e.message);
   }
 
+  // 4. KATMAN: STANDART PUPPETEER (Last Resort)
+  console.log('🛡️ [MonsterEngine] 4. Katman (Standard Puppeteer) deneniyor...');
+  try {
+    const res4 = await getShopierHtml(url, shopSlug);
+    if (res4.html && res4.html.length > 5000) {
+      console.log('✅ [MonsterEngine] 4. Katman Başarılı!');
+      return res4;
+    }
+  } catch (e) {
+    console.error('❌ [MonsterEngine] 4. Katman da başarısız:', e.message);
+  }
+
   return { html: null, status: 500, error: 'Tüm yöntemler başarısız oldu' };
 };
 
@@ -525,14 +537,19 @@ async function getShopierHtml(url, shopSlug) {
     let browser;
     try {
         browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            headless: 'new',
+            args: [
+              '--no-sandbox', 
+              '--disable-setuid-sandbox',
+              '--disable-dev-shm-usage',
+              '--disable-gpu'
+            ]
         });
         const page = await browser.newPage();
         await page.setUserAgent(getRandomItem(USER_AGENTS));
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
         const html = await page.content();
-        return { html };
+        return { html, status: 200 };
     } catch (error) {
         console.error(`❌ [getShopierHtml] Hata:`, error.message);
         throw error;
