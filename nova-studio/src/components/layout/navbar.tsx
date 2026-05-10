@@ -123,23 +123,80 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Search Overlay & Mobile Menu (Keeping logic, updating styles) */}
+      {/* Mobile Menu - Professional Redesign */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-primary/99 backdrop-blur-2xl z-[60] flex flex-col p-8 lg:hidden"
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="fixed inset-0 bg-[#080808] z-[60] flex flex-col lg:hidden overflow-hidden"
           >
-            <div className="flex justify-between items-center mb-16">
-              <h1 className="text-2xl font-serif uppercase tracking-tight text-secondary font-normal truncate max-w-[80vw]">{siteName.split('|')[0].trim()}</h1>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="text-secondary flex-shrink-0"><X size={24} /></button>
-            </div>
-            <div className="flex flex-col space-y-8">
-              {navLinks.map((link) => (
-                <Link key={link.name} href={link.href} className="text-4xl font-serif text-secondary font-light" onClick={() => setIsMobileMenuOpen(false)}>
-                  {link.name}
-                </Link>
-              ))}
+            {/* Background Texture */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.png')] bg-repeat" />
+            <div className="absolute top-[-20%] right-[-20%] w-[60%] h-[60%] bg-accent/10 rounded-full blur-[120px]" />
+
+            <div className="relative z-10 flex flex-col h-full p-8 pt-12">
+              <div className="flex justify-between items-center mb-16">
+                <span className="text-[10px] font-black tracking-[0.6em] text-accent uppercase">ODELINK MENU</span>
+                <button 
+                  onClick={() => setIsMobileMenuOpen(false)} 
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white"
+                >
+                  <X size={18} strokeWidth={1} />
+                </button>
+              </div>
+
+              <nav className="flex-grow space-y-10">
+                {navLinks.map((link, i) => (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 + 0.2 }}
+                  >
+                    <Link 
+                      href={link.href} 
+                      className="group flex items-end space-x-4"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="text-4xl md:text-5xl font-serif text-white/90 font-light tracking-tighter group-hover:text-accent transition-colors italic">
+                        {link.name}
+                      </span>
+                      <div className="h-px flex-grow bg-white/5 mb-3 group-hover:bg-accent/20 transition-colors" />
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="mt-auto space-y-12 border-t border-white/5 pt-12"
+              >
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <p className="text-[8px] font-black tracking-[0.5em] text-white/30 uppercase">Destek</p>
+                    <a href="mailto:info@gmail.com" className="text-xs text-white/60 block hover:text-white transition-colors">info@gmail.com</a>
+                    <p className="text-xs text-white/60">+90 000 000 00 00</p>
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-[8px] font-black tracking-[0.5em] text-white/30 uppercase">Sosyal</p>
+                    <div className="flex space-x-6">
+                       <a href="#" className="text-white/40 hover:text-white transition-colors uppercase text-[10px] tracking-widest">IG</a>
+                       <a href="#" className="text-white/40 hover:text-white transition-colors uppercase text-[10px] tracking-widest">FB</a>
+                       <a href="#" className="text-white/40 hover:text-white transition-colors uppercase text-[10px] tracking-widest">TW</a>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between opacity-20">
+                  <p className="text-[8px] tracking-[0.5em] uppercase">© 2026 ODELINK</p>
+                  <div className="h-px w-12 bg-white" />
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         )}
