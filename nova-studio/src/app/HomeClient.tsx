@@ -56,7 +56,6 @@ export default function Home() {
 
   return (
     <main className="flex-1 bg-background text-secondary overflow-x-hidden">
-      <Navbar />
 
       {/* ————— HERO ————— */}
       <section className="relative h-[80vh] md:h-screen w-full overflow-hidden bg-black">

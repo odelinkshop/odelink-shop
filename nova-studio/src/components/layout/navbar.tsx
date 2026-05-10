@@ -72,7 +72,7 @@ const Navbar = () => {
 
           {/* Center: Navigation Links */}
           <div className="hidden lg:flex items-center justify-center flex-grow space-x-6 xl:space-x-12">
-            {navLinks.map((link) => (
+            {mounted && navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}

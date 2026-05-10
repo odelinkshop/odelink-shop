@@ -47,8 +47,8 @@ const Footer = () => {
   };
 
   const contact = settings.contact || {};
-  const year = new Date().getFullYear();
-  const storeDisplayName = siteName.split('|')[0].trim();
+  const year = mounted ? new Date().getFullYear() : 2026;
+  const storeDisplayName = mounted ? siteName.split('|')[0].trim() : "MAĞAZA";
 
   return (
     <footer className="bg-black text-white border-t border-white/10 font-sans overflow-hidden">
@@ -138,7 +138,7 @@ const Footer = () => {
              </a>
           </div>
 
-          <div className="flex items-center gap-4 opacity-40">
+          <div className="flex items-center gap-4 opacity-30 grayscale hover:grayscale-0 transition-all">
              <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Visa</span>
              <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Master</span>
              <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Troy</span>

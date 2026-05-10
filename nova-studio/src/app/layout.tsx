@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/layout/footer";
+import Navbar from "@/components/layout/navbar";
 import AnnouncementBar from "@/components/layout/announcement-bar";
 
 const inter = Inter({
@@ -127,6 +128,7 @@ export default async function RootLayout({
         )}
         <StoreInitializer />
         <AnnouncementBar />
+        <Navbar />
         {children}
         <Footer />
       </body>
