@@ -129,8 +129,12 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
 
     if (existingSites && existingSites.length > 0) {
       site = existingSites[0];
+      const currentSettings = site.settings || {};
       await Site.update(site.id, {
-        settings: siteData.settings
+        settings: {
+          ...currentSettings,
+          ...siteData.settings
+        }
       });
     } else {
       site = await Site.create(siteData);
@@ -777,23 +781,37 @@ router.get('/public/:subdomain', async (req, res) => {
         if (shouldSync) {
           autoHeal.background = true;
           const normalizedShopierUrl = normalizeShopierUrl(shopierUrl);
-          fetchShopierCatalog(normalizedShopierUrl, {
-            debug: false,
-            skipDetails: true,
-            detailConcurrency: 3,
-            detailMaxProducts: 200 // Increase limit to enrich more products
-          })
-            .then(async (catalog) => {
+          const apiKey = settings?.api_key || settings?.apiKey;
+
+          const syncPromise = apiKey 
+            ? fetchAllProductsFromShopierAPI(normalizedShopierUrl, apiKey)
+            : fetchShopierCatalog(normalizedShopierUrl, {
+                debug: false,
+                skipDetails: true,
+                detailConcurrency: 3,
+                detailMaxProducts: 200
+              });
+
+          syncPromise
+            .then(async (result) => {
               try {
-                const products = Array.isArray(catalog?.products) ? catalog.products : [];
-                const categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
-                const totalProducts = Number(catalog?.totalProducts || catalog?.totalCount || products.length || 0);
+                // Determine if result is from API or Scraping
+                const products = Array.isArray(result) ? result : (result?.products || []);
+                const categories = Array.isArray(result?.categories) ? result.categories : [];
+                const totalProducts = apiKey ? products.length : Number(result?.totalProducts || result?.totalCount || products.length || 0);
+                
                 const refreshedAt = new Date().toISOString();
+                
+                // ATOMIC UPDATE: Merge with existing settings to prevent data loss
+                const currentSite = await Site.findById(site.id);
+                const currentSettings = currentSite?.settings || {};
+                
                 await Site.update(site.id, {
                   settings: {
-                    products_data: products,
-                    collections: categories,
-                    catalog_total_products: totalProducts,
+                    ...currentSettings,
+                    products_data: products.length > 0 ? products : (currentSettings.products_data || []),
+                    collections: categories.length > 0 ? categories : (currentSettings.collections || []),
+                    catalog_total_products: totalProducts || currentSettings.catalog_total_products || 0,
                     catalog_full_sync_complete: true,
                     catalog_refreshed_at: refreshedAt,
                     shopier_url: normalizedShopierUrl,
