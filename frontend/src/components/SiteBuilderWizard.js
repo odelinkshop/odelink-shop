@@ -123,7 +123,7 @@ export default function SiteBuilderWizard() {
         <div className="space-y-10">
           <div className="space-y-3">
             <h2 className="text-2xl sm:text-4xl font-serif leading-tight text-[#F2EBE1]">Mağaza Kurulumu</h2>
-            <p className="text-[#C5A059] uppercase tracking-[0.1em] sm:tracking-[0.4em] text-[7px] sm:text-[9px] font-black opacity-60">EXCEL DOSYASINI YÜKLEYİN, SANİYELER İÇİNDE CANLIYA ALALIM</p>
+            <p className="text-[#C5A059] uppercase tracking-[0.1em] sm:tracking-[0.4em] text-[7px] sm:text-[9px] font-black opacity-60">API ANAHTARINIZI GİRİN, SANİYELER İÇİNDE LÜKS MAĞAZANIZI CANLIYA ALALIM</p>
           </div>
 
           <AnimatePresence mode="wait">
@@ -131,9 +131,9 @@ export default function SiteBuilderWizard() {
               <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[#111] border border-[#C5A059]/20 p-10 rounded-3xl shadow-2xl">
                 <div className="flex flex-col items-center space-y-8">
                   <div className="w-full space-y-6">
-                     <div className="space-y-4">
+                     <div className="space-y-6">
                         <div className="text-left">
-                          <label className="text-[10px] text-[#C5A059] font-black uppercase tracking-widest mb-2 block">1. Yol: Shopier API İle Bağlan (Önerilen)</label>
+                          <label className="text-[10px] text-[#C5A059] font-black uppercase tracking-widest mb-4 block">Shopier API İle Güvenli Bağlantı</label>
                           <div className="relative group">
                             <input 
                               type="password"
@@ -147,34 +147,12 @@ export default function SiteBuilderWizard() {
                               disabled={loading || !apiKey}
                               className="absolute right-2 top-2 bottom-2 px-6 bg-[#C5A059] text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-[#F2EBE1] disabled:opacity-50 transition-all"
                             >
-                              {loading ? '...' : 'BAĞLAN'}
+                              {loading ? '...' : 'BAĞLAN VE KUR'}
                             </button>
                           </div>
-                          <p className="text-[8px] text-white/30 mt-2 uppercase tracking-widest">Shopier Panel &gt; Entegrasyonlar &gt; API kısmından alabilirsiniz.</p>
-                        </div>
-
-                        <div className="relative py-4">
-                          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-                          <div className="relative flex justify-center text-[9px] uppercase font-bold"><span className="bg-[#111] px-4 text-white/20 tracking-[0.3em]">VEYA</span></div>
-                        </div>
-
-                        <div className="text-left">
-                          <label className="text-[10px] text-[#C5A059] font-black uppercase tracking-widest mb-2 block">2. Yol: Excel İle Manuel Kurulum</label>
-                          <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            onChange={handleExcelCreate} 
-                            accept=".xlsx, .xls" 
-                            className="hidden" 
-                          />
-                          <button
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={loading}
-                            className="w-full py-8 border-2 border-dashed border-white/5 hover:border-[#C5A059]/30 rounded-xl flex items-center justify-center gap-4 group transition-all bg-white/[0.02]"
-                          >
-                             <Download size={20} className="text-[#C5A059]" />
-                             <span className="text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-[#F2EBE1]">Excel Dosyası Yükle</span>
-                          </button>
+                          <p className="text-[8px] text-white/30 mt-3 uppercase tracking-[0.2em] leading-relaxed">
+                            Shopier Panel &gt; Entegrasyonlar &gt; API kısmından <a href="https://www.shopier.com/index.php?module=shop&page=shop_api_details" target="_blank" rel="noreferrer" className="text-[#C5A059] underline">buradan</a> alabilirsiniz.
+                          </p>
                         </div>
                      </div>
 
