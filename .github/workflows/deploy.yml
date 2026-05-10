@@ -96,7 +96,7 @@ jobs:
             
             # 1. Akıllı Build ve Ayağa Kaldırma (Site kapanmadan arkada yapar)
             echo "🏗️ Building and deploying in parallel..."
-            $DOCKER_CMD up -d --build --remove-orphans --parallel 4
+            $DOCKER_CMD up -d --build --remove-orphans
             
             # 2. Temizlik (Site açıldıktan sonra arkadan çöpleri toplar)
             echo "🧹 Post-deployment cleanup..."
