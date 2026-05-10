@@ -16,14 +16,14 @@ const createLimiter = (options) => rateLimit({
 
 const globalLimiter = createLimiter({
   windowMs: 60 * 1000,
-  max: 100,
+  max: 2000, // Artırıldı: 100 -> 2000
   message: 'Çok fazla istek gönderildi.',
   prefix: 'global'
 });
 
 const authLimiter = createLimiter({
   windowMs: 1 * 60 * 1000,
-  max: 100,
+  max: 1000, // Artırıldı: 100 -> 1000
   message: 'Çok fazla giriş denemesi.',
   prefix: 'auth'
 });
@@ -37,21 +37,21 @@ const supportLimiter = createLimiter({
 
 const sitesLimiter = createLimiter({
   windowMs: 60 * 1000,
-  max: 60,
+  max: 1000, // Artırıldı: 60 -> 1000
   message: 'Site işlemleri limiti aşıldı.',
   prefix: 'sites'
 });
 
 const shopierLimiter = createLimiter({
   windowMs: 1 * 60 * 1000,
-  max: 100,
+  max: 1000, // Artırıldı: 100 -> 1000
   message: 'Shopier bağlantı limiti.',
   prefix: 'shopier'
 });
 
 const metricsLimiter = createLimiter({
   windowMs: 60 * 1000,
-  max: 120,
+  max: 2000, // Artırıldı: 120 -> 2000
   message: 'Metrik limiti.'
 });
 
