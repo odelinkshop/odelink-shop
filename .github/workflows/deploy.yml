@@ -98,9 +98,12 @@ jobs:
             echo "🧹 Stopping and pruning..."
             $DOCKER_CMD down --remove-orphans || true
             
-            # Ekstra Güvenlik: İsim çakışmalarını önlemek için ilgili tüm konteynerleri zorla sil
+            # Ekstra Güvenlik: İsim çakışmalarını önlemek için tüm odelink konteynerlerini zorla sil
             echo "🗑️ Forcing removal of any leftover containers..."
-            docker ps -a -q --filter "name=odelink-shop" | xargs -r docker rm -f || true
+            docker ps -a -q --filter "name=odelink" | xargs -r docker rm -f || true
+            
+            # Kaynakların serbest bırakılması için kısa bir bekleme
+            sleep 3
             
             docker system prune -f
             
