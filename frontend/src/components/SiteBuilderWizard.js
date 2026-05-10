@@ -14,19 +14,8 @@ export default function SiteBuilderWizard() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
-  // Progress State
-  const [siteId, setSiteId] = useState(null);
-  const [subdomain, setSubdomain] = useState('');
-  const [isCompleted, setIsCompleted] = useState(false);
-
-  const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    if (!ready) return;
-    if (!token) navigate('/auth');
-  }, [navigate, ready, token]);
-
-  const [apiKey, setApiKey] = useState('');
+  const [productCount, setProductCount] = useState(0);
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleApiCreate = async () => {
     if (!apiKey) {
@@ -52,6 +41,8 @@ export default function SiteBuilderWizard() {
       if (res.ok) {
         setSiteId(data.siteId);
         setSubdomain(data.subdomain);
+        setProductCount(data.productCount || 0);
+        setSuccessMsg(data.message || 'Mağazanız başarıyla hazırlandı!');
         setIsCompleted(true);
       } else {
         setErrorMsg(data.error || 'API ile bağlanırken hata oluştu.');
@@ -60,43 +51,6 @@ export default function SiteBuilderWizard() {
     } catch (err) {
       setErrorMsg('Bağlantı hatası oluştu.');
       setLoading(false);
-    }
-  };
-
-  const handleExcelCreate = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setLoading(true);
-    setErrorMsg('');
-    
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await fetch(`${API_BASE}/api/sites/create-from-excel`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-      
-      const data = await res.json();
-
-      if (res.ok) {
-        setSiteId(data.siteId);
-        setSubdomain(data.subdomain);
-        setIsCompleted(true);
-      } else {
-        setErrorMsg(data.error || 'Mağaza oluşturulurken bir hata oluştu.');
-        setLoading(false);
-      }
-    } catch (err) {
-      setErrorMsg('Bağlantı hatası oluştu.');
-      setLoading(false);
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -176,15 +130,18 @@ export default function SiteBuilderWizard() {
             ) : (
               <motion.div key="progress" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#111] border border-[#C5A059]/20 p-12 rounded-3xl shadow-2xl relative overflow-hidden">
                 <div className="flex flex-col items-center space-y-8 text-center">
-                  <div className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/30">
-                    <ShieldCheck className="w-12 h-12 text-green-400" />
+                  <div className={`w-24 h-24 ${productCount > 0 ? 'bg-green-500/10 border-green-500/30' : 'bg-yellow-500/10 border-yellow-500/30'} rounded-full flex items-center justify-center border`}>
+                    {productCount > 0 ? <ShieldCheck className="w-12 h-12 text-green-400" /> : <Loader2 className="w-12 h-12 text-yellow-400 animate-spin" />}
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="text-3xl font-serif text-[#F2EBE1]">Mağazanız Yayında!</h3>
-                    <p className="text-sm text-white/40 max-w-sm mx-auto uppercase tracking-widest font-bold">
-                      {subdomain}.odelink.shop adresinden mağazanıza erişebilirsiniz.
-                    </p>
+                    <h3 className="text-3xl font-serif text-[#F2EBE1]">{productCount > 0 ? 'Mağazanız Yayında!' : 'Hazırlanıyor...'}</h3>
+                    <div className="space-y-1">
+                      <p className="text-xs text-[#C5A059] font-black uppercase tracking-[0.2em]">{successMsg}</p>
+                      <p className="text-[10px] text-white/40 max-w-sm mx-auto uppercase tracking-widest font-bold">
+                        {subdomain}.odelink.shop
+                      </p>
+                    </div>
                   </div>
                   
                   <div className="w-full flex flex-col gap-3 pt-6">

@@ -109,106 +109,95 @@ async function fetchProductsFromShopierAPI(shopierUrl, apiToken) {
   }
 }
 
-/**
- * Pagination ile tüm ürünleri çeker
- * @param {string} shopierUrl - Shopier mağaza URL'i
- * @param {string} apiToken - Kullanıcının kendi API anahtarı (Opsiyonel)
- * @returns {Promise<Array>} Tüm ürünler
- */
 async function fetchAllProductsFromShopierAPI(shopierUrl, apiToken) {
   const token = apiToken || SHOPIER_API_TOKEN;
-  
-  if (!token) {
-    console.warn('⚠️ Shopier API anahtarı bulunamadı, scraping kullanılacak');
-    return null; // Scraping'e fallback
-  }
+  if (!token) return null;
 
   try {
-    let shopUsername = shopierUrl.replace(/\/+$/, '').split('/').pop().replace('www.', '');
+    console.log(`🚀 [TURBO] Shopier API'den tüm ürünler paralel çekiliyor: ${shopierUrl}`);
     
-    // Türkçe karakterleri normalize et
-    shopUsername = shopUsername
-      .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
-      .replace(/ü/g, 'u').replace(/Ü/g, 'U')
-      .replace(/ş/g, 's').replace(/Ş/g, 'S')
-      .replace(/ı/g, 'i').replace(/İ/g, 'I')
-      .replace(/ö/g, 'o').replace(/Ö/g, 'O')
-      .replace(/ç/g, 'c').replace(/Ç/g, 'C');
-    let allProducts = [];
-    let currentPage = 1;
-    let hasMore = true;
-
-    while (hasMore) {
-      console.log(`📄 Sayfa ${currentPage} çekiliyor...`);
-
-      const response = await axios.get(`${SHOPIER_API_BASE_URL}/products`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
-        },
-        params: {
-          per_page: 100,
-          page: currentPage
-        },
-        timeout: 30000
-      });
-
-      const products = response.data?.data || response.data?.products || [];
-      
-      if (products.length === 0) {
-        hasMore = false;
-      } else {
-        allProducts = allProducts.concat(products);
-        currentPage++;
-        
-        // Rate limit'e saygılı ol
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-    }
-
-    console.log(`✅ Toplam ${allProducts.length} ürün Shopier API'den çekildi`);
-
-    // Standart formata dönüştür
-    return allProducts.map(product => {
-      // Fiyat temizleme: "1.299,90" -> 1299.90
-      let rawPrice = product.price || 0;
-      let cleanPrice = 0;
-      if (typeof rawPrice === 'string') {
-        cleanPrice = parseFloat(rawPrice.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.'));
-      } else {
-        cleanPrice = parseFloat(rawPrice);
-      }
-
-      // Görsel kalitesini artır
-      let rawImage = product.image || product.image_url || product.images?.[0] || '';
-      let upgradedImage = rawImage;
-      if (typeof rawImage === 'string' && rawImage.includes('shopier.app')) {
-        upgradedImage = rawImage
-          .replace('/pictures_small/', '/pictures_original/')
-          .replace('/pictures_mid/', '/pictures_original/')
-          .replace('/pictures_big/', '/pictures_original/')
-          .replace('/pictures_large/', '/pictures_original/');
-      }
-
-      return {
-        id: product.id || product.product_id,
-        name: product.name || product.title,
-        price: isNaN(cleanPrice) ? 0 : cleanPrice,
-        currency: product.currency || 'TRY',
-        image: upgradedImage,
-        url: product.url || `${shopierUrl}/product/${product.id}`,
-        stock: product.stock || product.stock_quantity || 0,
-        description: product.description || '',
-        category: product.category || '',
-        variants: product.variants || []
-      };
+    // 1. Önce ilk sayfayı çekip toplam sayıyı öğrenelim
+    const firstPage = await axios.get(`${SHOPIER_API_BASE_URL}/products`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+      params: { per_page: 100, page: 1 },
+      timeout: 20000
     });
 
+    const initialData = firstPage.data?.data || firstPage.data?.products || [];
+    const totalCount = firstPage.data?.total || firstPage.data?.meta?.total || initialData.length;
+    
+    let allRawProducts = [...initialData];
+    const totalPages = Math.ceil(totalCount / 100);
+
+    // 2. Eğer birden fazla sayfa varsa, kalanları PARALEL çek
+    if (totalPages > 1) {
+      const pageRequests = [];
+      for (let p = 2; p <= totalPages; p++) {
+        pageRequests.push(
+          axios.get(`${SHOPIER_API_BASE_URL}/products`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+            params: { per_page: 100, page: p },
+            timeout: 20000
+          }).catch(err => {
+            console.error(`⚠️ Sayfa ${p} çekilemedi:`, err.message);
+            return { data: { data: [] } };
+          })
+        );
+      }
+      const results = await Promise.all(pageRequests);
+      results.forEach(res => {
+        const pageData = res.data?.data || res.data?.products || [];
+        allRawProducts = allRawProducts.concat(pageData);
+      });
+    }
+
+    console.log(`✅ [TURBO] Toplam ${allRawProducts.length} ürün paralel olarak çekildi.`);
+
+    // 3. Ortak mapi kullan (KOD TEKRARINI ÖNLE)
+    return allRawProducts.map(p => mapShopierProduct(p, shopierUrl));
+
   } catch (error) {
-    console.error('❌ Shopier API hatası:', error.message);
-    console.warn('⚠️ Scraping\'e fallback yapılacak');
-    return null; // Scraping'e fallback
+    console.error('❌ Shopier Turbo API hatası:', error.message);
+    return null;
   }
+}
+
+/**
+ * Shopier ürününü bizim standart formatımıza dönüştürür
+ */
+function mapShopierProduct(product, shopierUrl) {
+  // Fiyat temizleme
+  let rawPrice = product.price || 0;
+  let cleanPrice = 0;
+  if (typeof rawPrice === 'string') {
+    cleanPrice = parseFloat(rawPrice.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.'));
+  } else {
+    cleanPrice = parseFloat(rawPrice);
+  }
+
+  // Görsel iyileştirme
+  let rawImage = product.image || product.image_url || product.images?.[0] || '';
+  let upgradedImage = rawImage;
+  if (typeof rawImage === 'string' && rawImage.includes('shopier.app')) {
+    upgradedImage = rawImage
+      .replace('/pictures_small/', '/pictures_original/')
+      .replace('/pictures_mid/', '/pictures_original/')
+      .replace('/pictures_big/', '/pictures_original/')
+      .replace('/pictures_large/', '/pictures_original/');
+  }
+
+  return {
+    id: product.id || product.product_id,
+    name: product.name || product.title,
+    price: isNaN(cleanPrice) ? 0 : cleanPrice,
+    currency: product.currency || 'TRY',
+    image: upgradedImage,
+    url: product.url || `${shopierUrl}/product/${product.id}`,
+    stock: product.stock || product.stock_quantity || 0,
+    description: product.description || '',
+    category: product.category || '',
+    variants: product.variants || []
+  };
 }
 
 /**

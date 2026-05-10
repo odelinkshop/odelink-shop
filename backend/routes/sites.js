@@ -106,6 +106,7 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     }
 
     // 3. Siteyi oluştur veya güncelle
+    const productCount = Array.isArray(products) ? products.length : 0;
     const siteData = {
       userId: req.userId,
       name: shopName,
@@ -115,12 +116,19 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
       settings: {
         created_at: new Date().toISOString(),
         products_data: Array.isArray(products) ? products : [],
-        catalog_total_products: Array.isArray(products) ? products.length : 0,
+        catalog_total_products: productCount,
         catalog_enrichment_status: 'api_loaded',
         catalog_full_sync_complete: true,
         catalog_refreshed_at: new Date().toISOString(),
         last_sync_method: 'shopier_api',
-        api_key: apiKey
+        api_key: apiKey,
+        // KURUMSAL KARANLIK MOD VARSAYILANLARI (CRYSTAL DARK)
+        theme: 'dark',
+        bg_color: '#050505',
+        text_color: '#F2EBE1',
+        accent_color: '#C5A059',
+        nav_style: 'minimal',
+        font_family: 'serif'
       }
     };
 
@@ -147,7 +155,9 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
 
     return res.json({
       siteId: site.id,
-      subdomain: site.subdomain
+      subdomain: site.subdomain,
+      productCount,
+      message: productCount > 0 ? `${productCount} Ürün Başarıyla Çekildi ve Mağazanız Hazır!` : 'Ürün bulunamadı, lütfen Shopier API anahtarınızı kontrol edin.'
     });
 
   } catch (error) {
