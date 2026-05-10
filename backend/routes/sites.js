@@ -72,29 +72,68 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     console.log(`🔑 [${req.userId}] API ile mağaza kurma isteği...`);
 
     // 1. Önce Mağaza Ayarlarını Çek (Bu genelde 403 vermez)
-    const shopSettings = await fetchShopierSettings(apiKey);
+    let shopSettings = null;
+    try {
+      shopSettings = await fetchShopierSettings(apiKey);
+    } catch (e) {
+      console.error('❌ API Settings Fetch Error:', e.message);
+    }
+
     const shopierUrl = shopSettings?.url || '';
     const shopName = shopSettings?.name || "MAĞAZAM";
-    const shopSlug = (shopierUrl || '').split('/').pop() || "magazam-" + Math.random().toString(36).substring(2, 7);
+    const shopSlug = (shopierUrl || '').split('/').pop() || "magaza-" + Math.random().toString(36).substring(2, 7);
 
     console.log(`📡 Mağaza Bilgileri Alındı: ${shopName} (${shopierUrl})`);
 
-    // 2. API'den ürünleri çekmeye çalış (URL'i doğru geçerek)
-    let products = await fetchAllProductsFromShopierAPI(shopierUrl, apiKey);
+    let products = [];
+    
+    // 2. API'den ürünleri çekmeye çalış (URL varsa)
+    if (shopierUrl) {
+      try {
+        const apiProducts = await fetchAllProductsFromShopierAPI(shopierUrl, apiKey);
+        if (apiProducts && apiProducts.length > 0) {
+          products = apiProducts;
+          console.log(`✅ API ile ${products.length} ürün çekildi.`);
+        }
+      } catch (apiErr) {
+        console.error('⚠️ API ürün çekme hatası:', apiErr.message);
+      }
+    }
     
     // 3. EĞER API ÜRÜNLERİ VERMEZSE (403 veya Boş), SCRAPING İLE ÇEK (HİBRİT FALLBACK)
     if (!products || products.length === 0) {
+      // Eğer API URL vermediyse ama biz biliyorsak (veya varsayılan bir yöntem varsa)
+      // Şimdilik sadece URL varsa scraper'ı çalıştırıyoruz.
       if (shopierUrl) {
         console.log(`⚠️ API Ürünleri Vermedi (403/Boş). Scraper Devreye Giriyor: ${shopierUrl}`);
-        const scrapeResult = await fetchShopierCatalog(shopierUrl);
-        if (scrapeResult && scrapeResult.products) {
-          products = scrapeResult.products;
+        try {
+          const scrapeResult = await fetchShopierCatalog(shopierUrl, {
+            skipDetails: true,
+            bypassCache: true
+          });
+          
+          // Scraper sonucunu güvenli bir şekilde ayıkla (Array veya Object)
+          const scrapedProducts = Array.isArray(scrapeResult) ? scrapeResult : (scrapeResult?.products || []);
+          
+          if (scrapedProducts.length > 0) {
+            products = scrapedProducts;
+            console.log(`✅ Scraper ile ${products.length} ürün çekildi.`);
+          } else {
+            console.warn('⚠️ Scraper da ürün bulamadı.');
+          }
+        } catch (scrapeErr) {
+          console.error('❌ Scraper Hatası:', scrapeErr.message);
         }
+      } else {
+        console.error('❌ Shopier URL bulunamadı, scraper çalıştırılamıyor.');
       }
     }
     
     if (!products || products.length === 0) {
-      return res.status(400).json({ error: 'Shopier ürünleri ne API ne de Scraper ile çekilemedi. Mağazanın halka açık olduğundan emin olun.' });
+      return res.status(400).json({ 
+        error: 'Ürünler çekilemedi',
+        message: 'Shopier mağazanızdan ürünler ne API ne de Scraper ile çekilemedi. Mağazanızın halka açık olduğundan ve ürünlerin listelendiğinden emin olun.' 
+      });
     }
 
     const clampSubdomain = (raw) => {
