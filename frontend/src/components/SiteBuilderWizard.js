@@ -11,6 +11,9 @@ export default function SiteBuilderWizard() {
   const navigate = useNavigate();
   const { token, ready } = useAuthSession();
 
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  
   // Progress State
   const [siteId, setSiteId] = useState(null);
   const [subdomain, setSubdomain] = useState('');
