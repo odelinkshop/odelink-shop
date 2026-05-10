@@ -82,9 +82,9 @@ const Footer = () => {
           </p>
         </MotionDiv>
 
-        {/* Main Grid */}
+        {/* Main Grid: Mobile (2-cols) / Desktop (4-cols) */}
         <MotionDiv
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-16"
+          className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 md:gap-10 mb-16"
           {...(disableDesktopMotion
             ? {}
             : {
@@ -118,17 +118,7 @@ const Footer = () => {
             delay={0.2}
           />
 
-          <MotionDiv
-            {...(disableDesktopMotion
-              ? {}
-              : {
-                  variants: itemVariants,
-                  initial: 'hidden',
-                  whileInView: 'visible',
-                  viewport: { once: true },
-                  transition: { duration: 0.5, delay: 0.3 },
-                })}
-          >
+          <div className="col-span-1 md:col-span-1">
             <FooterSection
               title="İletişim"
               isContactSection={true}
@@ -140,7 +130,7 @@ const Footer = () => {
                 disableMotion={disableDesktopMotion}
               />
             </FooterSection>
-          </MotionDiv>
+          </div>
         </MotionDiv>
 
         {/* Divider */}

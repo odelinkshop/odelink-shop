@@ -41,7 +41,7 @@ const FooterSection = ({
       {...(disableMotion ? {} : { variants: containerVariants, initial: 'hidden', whileInView: 'visible', viewport: { once: true } })}
     >
       {title && (
-        <h3 className="text-sm font-bold text-white mb-6 pb-2 border-b border-white/10 uppercase tracking-wider">
+        <h3 className="text-[10px] md:text-sm font-bold text-white mb-4 md:mb-6 pb-2 border-b border-white/10 uppercase tracking-[0.2em] md:tracking-wider">
           {title}
         </h3>
       )}
@@ -51,7 +51,7 @@ const FooterSection = ({
           {children}
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-2.5 md:space-y-3">
           {links?.map((link) => (
             <MotionDiv
               key={link.id}
@@ -61,7 +61,7 @@ const FooterSection = ({
               <button
                 type="button"
                 onClick={() => onLinkClick?.(link)}
-                className="text-gray-300 hover:text-white transition-colors duration-300 text-sm font-medium"
+                className="text-gray-400 md:text-gray-300 hover:text-white transition-colors duration-300 text-[11px] md:text-sm font-medium uppercase md:capitalize tracking-widest md:tracking-normal"
                 aria-label={link.label}
               >
                 {link.label}
