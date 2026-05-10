@@ -629,6 +629,56 @@ router.get('/:id/analytics/stream', authMiddleware, async (req, res) => {
 });
 
 /**
+ * POST /api/sites/public/:subdomain/newsletter
+ * Bülten aboneliği (Gerçek veri kaydı)
+ */
+router.post('/public/:subdomain/newsletter', async (req, res) => {
+  try {
+    const subdomain = (req.params.subdomain || '').toString().trim().toLowerCase();
+    const { email } = req.body;
+
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Geçerli bir e-posta adresi gerekli' });
+    }
+
+    const site = await Site.findBySubdomain(subdomain);
+    if (!site) {
+      return res.status(404).json({ error: 'Mağaza bulunamadı' });
+    }
+
+    // Mevcut bülten listesini al
+    const settings = site.settings || {};
+    const currentEmails = settings.newsletter_emails || [];
+
+    // Eğer zaten kayıtlıysa başarılı dön (çakışma olmasın)
+    if (currentEmails.includes(email.toLowerCase())) {
+      return res.status(200).json({ message: 'Zaten abonesiniz!', alreadyExists: true });
+    }
+
+    // Yeni e-postayı ekle
+    const updatedEmails = [...currentEmails, email.toLowerCase()];
+    
+    await Site.update(site.id, {
+      settings: {
+        ...settings,
+        newsletter_emails: updatedEmails,
+        last_newsletter_signup_at: new Date().toISOString()
+      }
+    });
+
+    console.log(`📩 Yeni bülten aboneliği: ${email} (${subdomain})`);
+
+    return res.status(201).json({ 
+      success: true, 
+      message: 'Bültene başarıyla abone oldunuz!' 
+    });
+  } catch (error) {
+    console.error('❌ Newsletter error:', error);
+    return res.status(500).json({ error: 'Abonelik sırasında bir hata oluştu' });
+  }
+});
+
+/**
  * GET /api/sites/public/:subdomain
  * Public site verisi (tema scripti bu endpoint'i kullanır)
  */
