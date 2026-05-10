@@ -21,6 +21,8 @@ const USER_AGENTS = [
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
 ];
 
+const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY || 'eeb06f813ed7ad2ddda12ab18184d212';
+
 function normalizeShopierUrl(url) {
   if (!url) return '';
   let clean = url.trim().replace(/\/+$/, '');
@@ -83,7 +85,6 @@ const scrapeWithMonsterEngine = async (url, shopSlug) => {
 
   // 3. KATMAN: SCRAPER API (Elite Proxy Fallback)
   console.log('🛡️ [MonsterEngine] 3. Katman (ScraperAPI) deneniyor...');
-  const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY || 'eeb06f813ed7ad2ddda12ab18184d212';
   try {
     const res3 = await axios.get('http://api.scraperapi.com', {
       params: { api_key: SCRAPER_API_KEY, url: url, render: 'false' },

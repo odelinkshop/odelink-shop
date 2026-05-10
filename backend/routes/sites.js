@@ -86,7 +86,10 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     if (!products || products.length === 0) {
       if (shopierUrl) {
         console.log(`⚠️ API Ürünleri Vermedi (403/Boş). Scraper Devreye Giriyor: ${shopierUrl}`);
-        products = await fetchShopierCatalog(shopierUrl);
+        const scrapeResult = await fetchShopierCatalog(shopierUrl);
+        if (scrapeResult && scrapeResult.products) {
+          products = scrapeResult.products;
+        }
       }
     }
     
