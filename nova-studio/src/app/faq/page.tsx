@@ -1,54 +1,44 @@
 "use client";
 
-import React from "react";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
+import InfoPage from '@/components/layout/info-page-template';
 
 export default function FAQPage() {
+  const faqs = [
+    {
+      q: "Siparişim ne zaman kargoya verilir?",
+      a: "Siparişleriniz genellikle 1-3 iş günü içerisinde özenle paketlenerek kargoya teslim edilir. Kargo takip numaranız e-posta adresinize iletilecektir."
+    },
+    {
+      q: "Ödememi nasıl yapabilirim?",
+      a: "Tüm ödemeleriniz Shopier güvencesiyle 256bit SSL sertifikalı ödeme sayfası üzerinden kredi kartı veya banka kartı ile güvenle gerçekleştirebilirsiniz."
+    },
+    {
+      q: "Yurtdışına gönderim yapıyor musunuz?",
+      a: "Şu an için sadece Türkiye sınırları içerisine gönderim yapmaktayız. Gelecekte yurtdışı operasyonlarımız için bizi takip etmeye devam edin."
+    }
+  ];
+
   return (
-    <main className="min-h-screen bg-background">
-      <Navbar />
-      
-      <div className="pt-40 pb-24 px-6 lg:px-12 max-w-[900px] mx-auto">
-        <div className="text-center mb-24 space-y-6">
-          <span className="text-xs tracking-[0.6em] uppercase text-accent font-bold italic">Support Editor Mode</span>
-          <h1 className="text-6xl font-serif text-secondary uppercase tracking-tighter">Sıkça Sorulan Sorular Yapılandırması</h1>
-          <p className="text-secondary/60 italic">Müşterilerinizin en çok merak edeceği soruları burada yanıtlayın.</p>
-        </div>
-
+    <InfoPage 
+      title="Sıkça Sorulan Sorular" 
+      subtitle="YARDIM MERKEZİ" 
+      content={
         <div className="space-y-12">
-          <div className="p-10 border-2 border-dashed border-secondary/20 space-y-12">
-             
-             <div className="space-y-4">
-                <h3 className="text-2xl font-serif text-secondary">KATEGORİ 1: Sipariş & Gönderim</h3>
-                <p className="text-sm text-secondary/70 leading-relaxed italic">
-                   <span className="font-bold text-secondary not-italic underline">Öneri:</span> "Kargom kaç günde gelir?", "Hangi kargo şirketi ile çalışıyorsunuz?", "Kargo ücretli mi?" gibi soruları burada yanıtlayın. Özellikle $500 üzeri ücretsiz kargo gibi avantajlarınızı vurgulayın.
-                </p>
-             </div>
-
-             <div className="space-y-4">
-                <h3 className="text-2xl font-serif text-secondary">KATEGORİ 2: Ödeme & Güvenlik</h3>
-                <p className="text-sm text-secondary/70 leading-relaxed italic">
-                   <span className="font-bold text-secondary not-italic underline">Öneri:</span> "Taksit imkanı var mı?", "Kapıda ödeme kabul ediyor musunuz?", "Kart bilgilerim güvende mi?" gibi güven veren açıklamalar ekleyin. SSL sertifikalarınızdan bahsedin.
-                </p>
-             </div>
-
-             <div className="space-y-4">
-                <h3 className="text-2xl font-serif text-secondary">KATEGORİ 3: Ürün & Beden</h3>
-                <p className="text-sm text-secondary/70 leading-relaxed italic">
-                   <span className="font-bold text-secondary not-italic underline">Öneri:</span> "Bedenimi nasıl seçerim?", "Ürünleriniz orijinal mi?", "Özel üretim yapıyor musunuz?" gibi ürün odaklı sorulara yer vererek satış kaçırmamanızı sağlayın.
-                </p>
-             </div>
-
+          <div className="space-y-8">
+            {faqs.map((faq, i) => (
+              <div key={i} className="border-b border-white/5 pb-8 space-y-4">
+                <h3 className="text-xl font-serif text-white">{faq.q}</h3>
+                <p className="text-secondary/60 leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
           </div>
 
-          <div className="mt-12 text-center">
-             <p className="text-xs text-secondary/40">Bu bölüm dinamik bir SSS (Accordion) bileşeniyle entegre edilebilir.</p>
+          <div className="bg-white/5 p-8 rounded-sm border border-white/10 italic">
+            <p className="text-accent text-xs font-black tracking-widest uppercase mb-4">EDİTÖR TAVSİYESİ:</p>
+            "Buraya müşterilerinizden en çok gelen soruları ve cevaplarını ekleyin. İyi bir SSS sayfası, destek taleplerini %40 oranında azaltabilir."
           </div>
         </div>
-      </div>
-
-      <Footer />
-    </main>
+      } 
+    />
   );
 }

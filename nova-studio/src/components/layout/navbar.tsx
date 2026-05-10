@@ -38,9 +38,9 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "OUTLET", href: "/shop/outlet" },
+    { name: "OUTLET", href: "/shop" },
     { name: "KOLEKSİYON", href: "/shop" },
-    { name: "EDITORIAL", href: "/blog" },
+    { name: "EDITORIAL", href: "/faq" },
     { name: "HAKKIMIZDA", href: "/about" },
   ];
 

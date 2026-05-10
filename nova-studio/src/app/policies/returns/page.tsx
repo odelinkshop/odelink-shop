@@ -1,57 +1,42 @@
 "use client";
 
-import React from "react";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
+import InfoPage from '@/components/layout/info-page-template';
 
 export default function ReturnsPage() {
   return (
-    <main className="min-h-screen bg-background">
-      <Navbar />
-      
-      <div className="pt-40 pb-24 px-6 lg:px-12 max-w-[1000px] mx-auto">
-        <div className="mb-24 space-y-6 text-center lg:text-left">
-          <span className="text-xs tracking-[0.6em] uppercase text-accent font-bold italic">SaaS Editor Mode</span>
-          <h1 className="text-6xl font-serif text-secondary uppercase tracking-tighter">İptal & İade Politikası Düzenleme Alanı</h1>
-          <p className="text-secondary/60 italic">Bu sayfa, site sahibinin kendi politikalarını girmesi için hazırlanmış bir şablondur.</p>
-        </div>
-
-        <div className="prose prose-neutral max-w-none space-y-16">
+    <InfoPage 
+      title="İade ve İptal Koşulları" 
+      subtitle="GÜVENLİ ALIŞVERİŞ" 
+      content={
+        <div className="space-y-8">
+          <p>
+            Müşteri memnuniyeti bizim için her şeyden önce gelir. Aldığınız ürün beklentilerinizi karşılamıyorsa, aşağıdaki koşullar çerçevesinde iade veya değişim yapabilirsiniz.
+          </p>
           
-          <div className="p-12 bg-neutral/10 border-2 border-dashed border-secondary/20 rounded-none space-y-8">
-             <div className="space-y-4">
-                <h3 className="text-2xl font-serif text-secondary">BÖLÜM 1: İade Şartlarını Belirleyin</h3>
-                <p className="text-sm text-secondary/70 leading-relaxed">
-                  <span className="font-bold text-secondary underline">TALİMAT:</span> Buraya müşterilerinizin hangi durumlarda ürün iade edebileceğini yazın. 
-                  Genellikle 14 günlük yasal cayma hakkından, ürünün kullanılmamış olması gerektiğinden ve orijinal ambalaj şartından bahsedilir. 
-                  Lüks bir marka olduğunuz için ürünlerin etiketlerinin sökülmemiş olması gerektiğini vurgulamanız önemlidir.
-                </p>
-             </div>
-
-             <div className="space-y-4">
-                <h3 className="text-2xl font-serif text-secondary">BÖLÜM 2: Geri Ödeme Sürecini Tanımlayın</h3>
-                <p className="text-sm text-secondary/70 leading-relaxed">
-                  <span className="font-bold text-secondary underline">TALİMAT:</span> İade onaylandıktan sonra paranın kaç gün içinde hesaba yatacağını belirtin. 
-                  Standart olarak "7-10 iş günü" ibaresi kullanılır. Banka komisyonları veya taksitli ödemelerin iade şekli (taksit taksit mi yoksa tek seferde mi) hakkında bilgi vermeniz müşteri memnuniyetini artırır.
-                </p>
-             </div>
-
-             <div className="space-y-4">
-                <h3 className="text-2xl font-serif text-secondary">BÖLÜM 3: İstisnaları Listeleyin</h3>
-                <p className="text-sm text-secondary/70 leading-relaxed">
-                  <span className="font-bold text-secondary underline">TALİMAT:</span> Hijyen veya özel üretim nedeniyle iade edilemeyecek ürünleri (küpe, iç giyim, kişiye özel tasarım vb.) buraya açıkça yazın. 
-                  Bu bölüm hukuki olarak sizi koruyacak en önemli kısımdır.
-                </p>
-             </div>
+          <div className="space-y-6">
+            <h3 className="text-xl font-serif">1. İade Süreci</h3>
+            <p>
+              Ürününüzü teslim aldığınız tarihten itibaren 14 gün içerisinde iade etme hakkına sahipsiniz. İade edilecek ürünün kullanılmamış, etiketleri sökülmemiş ve orijinal ambalajında olması gerekmektedir.
+            </p>
           </div>
 
-          <div className="p-8 bg-secondary text-primary text-center">
-             <p className="text-[10px] tracking-widest uppercase font-bold">BU ALAN DİNAMİK OLARAK YÖNETİM PANELİNDEN DOLDURULACAKTIR</p>
+          <div className="bg-white/5 p-8 rounded-sm border border-white/10 italic">
+            <p className="text-accent text-xs font-black tracking-widest uppercase mb-4">ÖNEMLİ HATIRLATMA:</p>
+            "Buraya Shopier üzerindeki iade politikanızı veya kendi özel şartlarınızı detaylıca ekleyin. Kargo ücreti kime ait, geri ödeme ne kadar sürede yapılır gibi bilgileri belirtmeniz güven oluşturur."
           </div>
+
+          <div className="space-y-6">
+            <h3 className="text-xl font-serif">2. Değişim Koşulları</h3>
+            <p>
+              Beden veya renk değişikliği yapmak isterseniz, stok durumuna bağlı olarak değişim sürecinizi başlatabiliriz. Lütfen destek ekibimizle iletişime geçin.
+            </p>
+          </div>
+
+          <p className="text-sm opacity-50 uppercase tracking-widest">
+            Tüm iade süreçleri Tüketiciyi Koruma Kanunu çerçevesinde yürütülmektedir.
+          </p>
         </div>
-      </div>
-
-      <Footer />
-    </main>
+      } 
+    />
   );
 }

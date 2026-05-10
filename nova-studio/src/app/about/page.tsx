@@ -1,65 +1,29 @@
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import Navbar from '@/components/layout/navbar';
-import { useStoreData } from '@/store/useStoreData';
+import InfoPage from '@/components/layout/info-page-template';
 
 export default function AboutPage() {
-  const { siteName, settings } = useStoreData();
-  
   return (
-    <main className="flex-1 bg-background text-secondary min-h-screen">
-      <Navbar />
-      
-      <div className="pt-40 pb-24 px-6 lg:px-24">
-        <div className="max-w-4xl mx-auto space-y-16">
-          <header className="space-y-4">
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-[10px] tracking-[0.5em] uppercase text-accent font-bold"
-            >
-              HİKAYEMİZ
-            </motion.span>
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-5xl md:text-7xl font-serif tracking-tight uppercase"
-            >
-              {siteName}
-            </motion.h1>
-          </header>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="prose prose-lg prose-invert max-w-none"
-          >
-            <p className="text-xl md:text-2xl text-secondary/70 leading-relaxed font-light italic">
-              "{settings.description || 'Zamansız zarafeti ve sessiz lüksü modern bir aristokrasi ile birleştiriyoruz.'}"
-            </p>
-            
-            <div className="h-[1px] w-full bg-secondary/10 my-12" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-secondary/60 font-light leading-relaxed">
-              <p>
-                Mağazamız, kaliteyi ve estetiği her şeyin üzerinde tutan bir vizyonla kuruldu. 
-                Her bir parçamız, sadece bir ürün değil, aynı zamanda bir yaşam tarzının yansımasıdır. 
-                Geleneksel zanaatkarlığı modern tasarım anlayışıyla harmanlayarak, müşterilerimize 
-                sıradanlıktan uzak bir deneyim sunmayı hedefliyoruz.
-              </p>
-              <p>
-                Seçtiğimiz her doku, her renk ve her form; size kendinizi özel hissettirmek için 
-                özenle kürate edildi. Mağazamızda sadece modayı değil, aynı zamanda zamana 
-                meydan okuyan bir duruşu bulacaksınız. Bizimle bu yolculuğa katıldığınız için teşekkür ederiz.
-              </p>
-            </div>
-          </motion.div>
+    <InfoPage 
+      title="Hakkımızda" 
+      subtitle="BİZ KİMİZ?" 
+      content={
+        <div className="space-y-8">
+          <p className="text-xl italic font-serif">
+            "Sadelik en üstün sofistikasyondur." — Leonardo da Vinci
+          </p>
+          <p>
+            [MAĞAZA İSMİ], modern aristokrasinin sessiz lüksünü ve zamansız tasarım anlayışını dijital dünyaya taşımak amacıyla kuruldu. Her parçamızda kaliteyi, zarafeti ve minimalizmi ön planda tutuyoruz.
+          </p>
+          <div className="bg-white/5 p-8 rounded-sm border border-white/10 italic">
+            <p className="text-accent text-xs font-black tracking-widest uppercase mb-4">Editörün Notu:</p>
+            "Buraya mağazanızın hikayesini, vizyonunu ve müşterilerinize sunduğunuz özel değeri anlatan etkileyici bir metin yazın. Müşterileriniz kimden alışveriş yaptıklarını bilmek isterler."
+          </div>
+          <p>
+            Koleksiyonlarımız, sadece birer ürün değil; birer yaşam biçimi sunar. Sizi, gereksiz kalabalıktan arınmış, sadece en iyinin kaldığı o özel dünyaya davet ediyoruz.
+          </p>
         </div>
-      </div>
-    </main>
+      } 
+    />
   );
 }

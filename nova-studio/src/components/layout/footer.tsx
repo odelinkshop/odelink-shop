@@ -87,7 +87,7 @@ const Footer = () => {
             <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">İLETİŞİM</h4>
             <div className="flex flex-col space-y-2 text-[11px] font-light tracking-wide">
               <a href={`tel:${contact.phone || "+90 000 000 00 00"}`} className="hover:opacity-50 transition-opacity">{mounted ? (contact.phone || "+90 000 000 00 00") : "..."}</a>
-              <a href={`mailto:${contact.email || "destek@odelink.shop"}`} className="hover:opacity-50 transition-opacity">{mounted ? (contact.email || "destek@odelink.shop") : "..."}</a>
+              <a href="mailto:info@gmail.com" className="hover:opacity-50 transition-opacity">info@gmail.com</a>
               <p className="opacity-60 text-[10px]">İSTANBUL / TÜRKİYE</p>
             </div>
           </div>
@@ -95,18 +95,20 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">KURUMSAL</h4>
             <ul className="flex flex-col space-y-2 text-[11px] font-light tracking-wide">
-              {["HAKKIMIZDA", "İLETİŞİM", "SÖZLEŞMELER", "GİZLİLİK"].map(item => (
-                <li key={item}><Link href="#" className="hover:opacity-50 transition-opacity">{item}</Link></li>
-              ))}
+              <li><Link href="/about" className="hover:opacity-50 transition-opacity">HAKKIMIZDA</Link></li>
+              <li><Link href="/contact" className="hover:opacity-50 transition-opacity">İLETİŞİM</Link></li>
+              <li><Link href="/policies/terms" className="hover:opacity-50 transition-opacity">SÖZLEŞMELER</Link></li>
+              <li><Link href="/policies/privacy" className="hover:opacity-50 transition-opacity">GİZLİLİK</Link></li>
             </ul>
           </div>
 
           <div className="space-y-4">
             <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">YARDIM</h4>
             <ul className="flex flex-col space-y-2 text-[11px] font-light tracking-wide">
-              {["İADE KOŞULLARI", "KARGO TAKİP", "SIKÇA SORULANLAR", "BLOG"].map(item => (
-                <li key={item}><Link href="#" className="hover:opacity-50 transition-opacity">{item}</Link></li>
-              ))}
+              <li><Link href="/policies/returns" className="hover:opacity-50 transition-opacity">İADE KOŞULLARI</Link></li>
+              <li><Link href="/faq" className="hover:opacity-50 transition-opacity">KARGO TAKİP</Link></li>
+              <li><Link href="/faq" className="hover:opacity-50 transition-opacity">SIKÇA SORULANLAR</Link></li>
+              <li><Link href="/faq" className="hover:opacity-50 transition-opacity">BLOG</Link></li>
             </ul>
           </div>
 
