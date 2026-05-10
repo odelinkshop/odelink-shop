@@ -249,6 +249,7 @@ function parseProductsFromHtml(html, shopSlug) {
 }
 
 async function fetchShopierCatalog(shopierUrl, opts = {}) {
+  try {
   const normalized = normalizeShopierUrl(shopierUrl);
   const shopSlug = (normalized.endsWith('/') ? normalized.slice(0, -1) : normalized).split('/').pop();
   
@@ -493,12 +494,31 @@ async function fetchShopierCatalog(shopierUrl, opts = {}) {
   
   console.log(`✅ [MonsterEngine] Aşama 3 Tamamlandı! Tüm ürün detayları eklendi.`);
 
+  console.log(`🏁 MonsterEngine Bitti. Bulunan: ${allProducts.length}`);
   return { 
     products: allProducts, 
     totalProducts: allProducts.length, 
     categories,
-    debug: { url: normalized, method: 'SCRAPER_API_HACK_ENRICHED' } 
+    debug: { 
+      url: normalized, 
+      method: allProducts.length > 0 ? 'SCRAPER_SUCCESS' : 'SCRAPER_FAILED',
+      error: allProducts.length === 0 ? 'No products found by any method' : null,
+      methodUsed: allProducts.length > 0 ? 'MonsterEngine V11' : 'None'
+    } 
   };
+} catch (error) {
+  console.error('❌ MonsterEngine FATAL ERROR:', error.message);
+  return { 
+    products: [], 
+    totalProducts: 0, 
+    categories: [], 
+    debug: { 
+      url: normalized, 
+      error: error.message,
+      stack: error.stack
+    } 
+  };
+}
 }
 
 async function getShopierHtml(url, shopSlug) {

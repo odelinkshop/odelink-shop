@@ -115,7 +115,7 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
             bypassCache: true
           });
           
-          console.log('🔍 Scraper Sonucu:', scrapeResult ? 'Alındı' : 'null');
+          console.log('🔍 Scraper Sonucu Alındı:', JSON.stringify(scrapeResult?.debug));
           
           // Scraper sonucunu güvenli bir şekilde ayıkla
           const scrapedProducts = Array.isArray(scrapeResult) ? scrapeResult : (scrapeResult?.products || []);
@@ -125,7 +125,7 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
             products = scrapedProducts;
             console.log(`✅ Scraper ile ${products.length} ürün çekildi.`);
           } else {
-            console.warn('⚠️ Scraper hiç ürün bulamadı.');
+            console.warn('⚠️ Scraper hiç ürün bulamadı. Hata:', scrapeResult?.debug?.error);
           }
         } catch (scrapeErr) {
           console.error('❌ Scraper Hatası:', scrapeErr.message);
