@@ -2,8 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { Phone, Mail, MapPin, Globe } from "lucide-react";
+import { Phone, Mail, MapPin, Instagram, Facebook, Twitter, Youtube } from "lucide-react";
 import { useStoreData } from "@/store/useStoreData";
+import { motion } from "framer-motion";
 
 const Footer = () => {
   const { siteName, settings, subdomain } = useStoreData();
@@ -28,122 +29,194 @@ const Footer = () => {
   };
 
   const contact = settings.contact || {};
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-secondary text-primary pt-40 pb-20 px-6 lg:px-24 border-t border-primary/5 relative overflow-hidden">
-      {/* Decorative Background Element */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/[0.02] -skew-x-12 translate-x-1/2 pointer-events-none" />
+    <footer className="bg-[#0a0a0a] text-white border-t border-white/5 font-sans">
+      {/* Top Section: Socials & Newsletter */}
+      <div className="border-b border-white/5 py-12 px-6 lg:px-24">
+        <div className="max-w-[1400px] mx-auto flex flex-col items-center space-y-12">
+          {/* Social Icons */}
+          <div className="flex items-center space-x-6">
+            {[
+              { icon: <Instagram size={20} />, href: "#" },
+              { icon: <Facebook size={20} />, href: "#" },
+              { icon: <Twitter size={20} />, href: "#" },
+              { icon: <Youtube size={20} />, href: "#" },
+            ].map((social, i) => (
+              <Link 
+                key={i} 
+                href={social.href} 
+                className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
+              >
+                {social.icon}
+              </Link>
+            ))}
+          </div>
 
-      <div className="max-w-[1800px] mx-auto relative z-10">
-        
-        {/* Upper Section: Brand & Newsletter */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-20 mb-40">
-           <div className="xl:col-span-7 space-y-12 overflow-hidden pr-4">
-              <div className="space-y-6">
-                <h2 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-light tracking-tighter uppercase leading-none truncate w-full">{siteName.split('|')[0].trim()}</h2>
-                <div className="h-px w-20 bg-accent/40" />
-              </div>
-              <p className="text-[11px] md:text-[13px] tracking-[0.15em] text-primary/60 uppercase max-w-md font-light leading-relaxed">
-                Modern aristokrasinin sessiz lüksü ile tanışın. <br />
-                Sadelik en üstün sofistikasyondur. <br />
-                Her parça, zamansız bir hikayenin mirasıdır.
-              </p>
-           </div>
+          {/* Newsletter Header */}
+          <div className="text-center space-y-2">
+            <h3 className="text-xl md:text-2xl font-bold tracking-widest uppercase">HABER BÜLTENİMİZE ABONE OL</h3>
+            <p className="text-white/40 text-sm font-light tracking-wide italic">Yeni koleksiyonlar ve özel indirimlerden ilk siz haberdar olun.</p>
+          </div>
 
-           <div className="xl:col-span-4 xl:col-start-9 space-y-10">
-              <div className="space-y-2">
-                <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase text-accent">İmza Listesi</h3>
-                <p className="text-[9px] tracking-[0.2em] text-primary/40 uppercase font-light">Koleksiyon güncellemeleri ve özel davetler için.</p>
-              </div>
-              <form onSubmit={handleNewsletter} className="group relative">
-                <input 
-                  type="email" required value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="E-POSTA ADRESİNİZ" 
-                  className="w-full bg-transparent border-b border-primary/20 pb-4 outline-none text-[10px] tracking-[0.3em] uppercase placeholder:text-primary/20 text-primary font-light transition-all focus:border-accent"
-                />
-                <button 
-                  disabled={status === "loading"}
-                  className="absolute right-0 bottom-4 text-[10px] font-medium tracking-[0.3em] uppercase hover:text-accent transition-all transform hover:translate-x-1"
-                >
-                  {status === "loading" ? "..." : "KAYDOL"}
-                </button>
-              </form>
-           </div>
+          {/* Newsletter Form */}
+          <form onSubmit={handleNewsletter} className="w-full max-w-2xl flex flex-col md:flex-row gap-4">
+            <input 
+              type="email" 
+              required 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="E-Posta adresinizi yazın..." 
+              className="flex-1 bg-white/5 border border-white/10 px-6 py-4 outline-none text-sm tracking-wider focus:border-white/30 transition-all rounded-sm"
+            />
+            <button 
+              disabled={status === "loading"}
+              className="bg-white text-black px-12 py-4 text-sm font-bold tracking-widest uppercase hover:bg-white/90 transition-all rounded-sm active:scale-95"
+            >
+              {status === "loading" ? "..." : "GÖNDER"}
+            </button>
+          </form>
+          {status === "success" && <p className="text-green-400 text-xs tracking-widest">Aramıza hoş geldin!</p>}
         </div>
+      </div>
 
-        {/* Links Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-40">
-          <div className="space-y-10">
-            <h4 className="text-[10px] font-bold tracking-[0.4em] uppercase text-accent/80">KEŞFET</h4>
-            <ul className="space-y-4">
-              {["Koleksiyonlar", "En Çok Satanlar", "Yeni Gelenler", "Outlet"].map((item) => (
-                <li key={item}>
-                  <Link href="/shop" className="text-[10px] text-primary/40 hover:text-accent transition-all tracking-[0.2em] font-light uppercase">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-10">
-            <h4 className="text-[10px] font-bold tracking-[0.4em] uppercase text-accent/80">KURUMSAL</h4>
-            <ul className="space-y-4">
-              {["Hakkımızda", "Atölye", "Sürdürülebilirlik", "Editorial"].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-[10px] text-primary/40 hover:text-accent transition-all tracking-[0.2em] font-light uppercase">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-10">
-            <h4 className="text-[10px] font-bold tracking-[0.4em] uppercase text-accent/80">YARDIM</h4>
-            <ul className="space-y-4">
-              {["İade & İptal", "Kargo Takip", "S.S.S", "Beden Rehberi"].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-[10px] text-primary/40 hover:text-accent transition-all tracking-[0.2em] font-light uppercase">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-10">
-            <h4 className="text-[10px] font-bold tracking-[0.4em] uppercase text-accent/80">İLETİŞİM</h4>
-            <div className="space-y-5">
-              <div className="flex flex-col space-y-1">
-                <span className="text-[8px] text-primary/20 tracking-widest uppercase">E-Posta</span>
-                <Link href={`mailto:${contact.email || `info@${subdomain}.shop`}`} className="text-[10px] tracking-widest font-light hover:text-accent transition-colors">
-                  {contact.email || `info@${subdomain}.shop`}
-                </Link>
-              </div>
-              <div className="flex flex-col space-y-1">
-                <span className="text-[8px] text-primary/20 tracking-widest uppercase">Sosyal</span>
-                <Link href="#" className="text-[10px] tracking-widest font-light hover:text-accent transition-colors">
-                  INSTAGRAM / TIKTOK
-                </Link>
+      {/* Main Links Section */}
+      <div className="py-20 px-6 lg:px-24">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-8">
+          
+          {/* Column 1: Bize Ulaşın */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-bold tracking-[0.2em] uppercase border-b border-white/10 pb-4 inline-block">Bize Ulaşın</h4>
+            <div className="space-y-6">
+              <Link href={`tel:${contact.phone || "0532 171 34 09"}`} className="flex items-center space-x-4 group">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                  <Phone size={16} />
+                </div>
+                <span className="text-sm text-white/60 font-light group-hover:text-white transition-colors">{contact.phone || "0532 171 34 09"}</span>
+              </Link>
+              <Link href={`mailto:${contact.email || "nomarc857@gmail.com"}`} className="flex items-center space-x-4 group">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                  <Mail size={16} />
+                </div>
+                <span className="text-sm text-white/60 font-light group-hover:text-white transition-colors">{contact.email || "nomarc857@gmail.com"}</span>
+              </Link>
+              <div className="flex items-start space-x-4 group">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                  <MapPin size={16} />
+                </div>
+                <span className="text-sm text-white/60 font-light leading-relaxed">İstanbul / Türkiye</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-12 border-t border-primary/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center space-x-12 opacity-20 grayscale scale-90">
-             <span className="text-[8px] tracking-[0.4em] font-light">VISA</span>
-             <span className="text-[8px] tracking-[0.4em] font-light">MASTERCARD</span>
-             <span className="text-[8px] tracking-[0.4em] font-light">AMEX</span>
+          {/* Column 2: Kurumsal */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-bold tracking-[0.2em] uppercase border-b border-white/10 pb-4 inline-block">Kurumsal</h4>
+            <ul className="space-y-4">
+              {[
+                { label: "Hakkımızda", href: "/about" },
+                { label: "İletişim", href: "/contact" },
+                { label: "Aydınlatma Metni", href: "/policies/kvkk" },
+                { label: "Sürdürülebilirlik", href: "#" },
+              ].map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="text-sm text-white/40 hover:text-white hover:pl-2 transition-all duration-300 font-light">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <p className="text-[9px] tracking-[0.4em] text-primary/30 uppercase font-light text-center md:text-right">
-            © {new Date().getFullYear()} {siteName}. RESMİ WEB SİTESİ. <br className="md:hidden" />
-            <span className="text-primary/10 ml-2">POWERED BY NOVA ENGINE</span>
-          </p>
+          {/* Column 3: Önemli Bilgiler */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-bold tracking-[0.2em] uppercase border-b border-white/10 pb-4 inline-block">Önemli Bilgiler</h4>
+            <ul className="space-y-4">
+              {[
+                { label: "İptal & İade Şartları", href: "/policies/returns" },
+                { label: "Sıkça Sorulan Sorular", href: "/faq" },
+                { label: "Kargo Takip", href: "#" },
+                { label: "Beden Rehberi", href: "#" },
+                { label: "Blog", href: "/blog" },
+              ].map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="text-sm text-white/40 hover:text-white hover:pl-2 transition-all duration-300 font-light">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Hızlı Erişim */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-bold tracking-[0.2em] uppercase border-b border-white/10 pb-4 inline-block">Hızlı Erişim</h4>
+            <ul className="space-y-4">
+              {[
+                "Tişörtler", "Outlet Ürünler", "Eşofman Altları", "Jeanler", "Gömlekler"
+              ].map((item) => (
+                <li key={item}>
+                  <Link href="/shop" className="text-sm text-white/40 hover:text-white hover:pl-2 transition-all duration-300 font-light">
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment & App Section */}
+      <div className="border-t border-white/5 py-12 px-6 lg:px-24 bg-white/[0.02]">
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          {/* App Stores */}
+          <div className="flex items-center space-x-6">
+             <div className="flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-2 rounded-md hover:bg-white/10 cursor-pointer transition-all">
+                <div className="text-xs">
+                  <p className="text-[8px] uppercase opacity-40 leading-none">Download on</p>
+                  <p className="font-bold leading-none">App Store</p>
+                </div>
+             </div>
+             <div className="flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-2 rounded-md hover:bg-white/10 cursor-pointer transition-all">
+                <div className="text-xs">
+                  <p className="text-[8px] uppercase opacity-40 leading-none">Get it on</p>
+                  <p className="font-bold leading-none">Google Play</p>
+                </div>
+             </div>
+          </div>
+
+          {/* Payment Icons */}
+          <div className="flex items-center gap-6 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+             <span className="text-xs font-bold tracking-widest">IYZICO</span>
+             <span className="text-xs font-bold tracking-widest">VISA</span>
+             <span className="text-xs font-bold tracking-widest">MASTERCARD</span>
+             <span className="text-xs font-bold tracking-widest">AMEX</span>
+             <span className="text-xs font-bold tracking-widest">TROY</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Copyright Section */}
+      <div className="bg-black py-12 px-6 lg:px-24">
+        <div className="max-w-[1400px] mx-auto flex flex-col items-center space-y-8 text-center">
+          <div className="space-y-4">
+            <p className="text-sm text-white/60 tracking-wider">
+              Bu Site <span className="text-white font-bold uppercase">{siteName.split('|')[0].trim()}</span> Tarafından Yönetilmektedir.
+            </p>
+            <p className="text-[11px] text-white/30 tracking-widest leading-relaxed max-w-4xl">
+              Copyright© {year} {siteName.split('|')[0].trim()} All rights reserved. <br className="md:hidden" />
+              Kredi kartı bilgileriniz <span className="text-white/50">Shopier</span> Tarafından 256bit SSL sertifikası ile korunmaktadır.
+            </p>
+          </div>
+
+          {/* Odelink Logo (Ticimax style) */}
+          <div className="pt-8 border-t border-white/5 w-full flex flex-col items-center space-y-4">
+             <div className="flex items-center space-x-2 opacity-50 hover:opacity-100 transition-opacity">
+                <span className="text-xl font-black tracking-tighter italic">ödelink</span>
+             </div>
+             <p className="text-[8px] tracking-[0.5em] text-white/20 uppercase font-bold">POWERED BY ODELINK ENGINE</p>
+          </div>
         </div>
       </div>
     </footer>
