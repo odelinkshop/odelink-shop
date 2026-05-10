@@ -174,7 +174,16 @@ export const useStoreData = create<StoreState>((set, get) => ({
     if (newSettings.manualProducts) {
       const shopierProducts = currentState.products.filter(p => !p.id.toString().startsWith('manual-'));
       const newManualMapped = newSettings.manualProducts.map((p: any, i: number) => mapProduct(p, i + 1000));
-      updatedProducts = [...shopierProducts, ...newManualMapped];
+      
+      // De-duplicate in Editor too
+      const seen = new Set();
+      updatedProducts = [...shopierProducts, ...newManualMapped].filter(p => {
+        if (!p) return false;
+        const key = (p.shopierUrl || p.url || p.name || "").toString().toLowerCase().trim();
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
     }
 
     set({
@@ -208,6 +217,16 @@ export const useStoreData = create<StoreState>((set, get) => ({
       const design = { ...DEFAULT_DESIGN, ...(settings.design || {}) };
       const content = { ...DEFAULT_CONTENT, ...(settings.content || {}) };
       
+      // De-duplicate: Use Shopier URL or name as unique key
+      const seen = new Set();
+      const uniqueCombined = combined.filter(p => {
+        if (!p) return false;
+        const key = (p.url || p.link || p.name || "").toString().toLowerCase().trim();
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
       const tc = settings.themeCustomization || {};
       if (tc.announcementBar) content.announcementBar = tc.announcementBar;
       if (tc.heroBadge) content.heroBadge = tc.heroBadge;
@@ -247,7 +266,7 @@ export const useStoreData = create<StoreState>((set, get) => ({
           policies: settings.policies,
           contact: settings.contact
         },
-        products: combined.map((p, i) => mapProduct(p, i)),
+        products: uniqueCombined.map((p, i) => mapProduct(p, i)),
         isLoading: false
       });
     } catch (err: any) {
