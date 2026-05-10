@@ -83,43 +83,49 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     const shopName = shopSettings?.name || "MAĞAZAM";
     const shopSlug = (shopierUrl || '').split('/').pop() || "magaza-" + Math.random().toString(36).substring(2, 7);
 
-    console.log(`📡 Mağaza Bilgileri Alındı: ${shopName} (${shopierUrl})`);
+    console.log(`📡 Mağaza Bilgileri Alındı: ${shopName} (URL: ${shopierUrl}, Slug: ${shopSlug})`);
 
     let products = [];
     
     // 2. API'den ürünleri çekmeye çalış (URL varsa)
     if (shopierUrl) {
       try {
+        console.log('🚀 API ile ürün çekme denemesi başlatılıyor...');
         const apiProducts = await fetchAllProductsFromShopierAPI(shopierUrl, apiKey);
         if (apiProducts && apiProducts.length > 0) {
           products = apiProducts;
           console.log(`✅ API ile ${products.length} ürün çekildi.`);
+        } else {
+          console.log('⚠️ API ürün döndürmedi (boş veya null).');
         }
       } catch (apiErr) {
         console.error('⚠️ API ürün çekme hatası:', apiErr.message);
       }
+    } else {
+      console.log('⚠️ Shopier URL boş, API ürün çekme atlanıyor.');
     }
     
     // 3. EĞER API ÜRÜNLERİ VERMEZSE (403 veya Boş), SCRAPING İLE ÇEK (HİBRİT FALLBACK)
     if (!products || products.length === 0) {
-      // Eğer API URL vermediyse ama biz biliyorsak (veya varsayılan bir yöntem varsa)
-      // Şimdilik sadece URL varsa scraper'ı çalıştırıyoruz.
       if (shopierUrl) {
-        console.log(`⚠️ API Ürünleri Vermedi (403/Boş). Scraper Devreye Giriyor: ${shopierUrl}`);
+        console.log(`🕷️ Scraper Devreye Giriyor: ${shopierUrl}`);
         try {
           const scrapeResult = await fetchShopierCatalog(shopierUrl, {
             skipDetails: true,
             bypassCache: true
           });
           
-          // Scraper sonucunu güvenli bir şekilde ayıkla (Array veya Object)
+          console.log('🔍 Scraper Sonucu:', scrapeResult ? 'Alındı' : 'null');
+          
+          // Scraper sonucunu güvenli bir şekilde ayıkla
           const scrapedProducts = Array.isArray(scrapeResult) ? scrapeResult : (scrapeResult?.products || []);
+          console.log(`🔍 Scraped Products Count: ${scrapedProducts.length}`);
           
           if (scrapedProducts.length > 0) {
             products = scrapedProducts;
             console.log(`✅ Scraper ile ${products.length} ürün çekildi.`);
           } else {
-            console.warn('⚠️ Scraper da ürün bulamadı.');
+            console.warn('⚠️ Scraper hiç ürün bulamadı.');
           }
         } catch (scrapeErr) {
           console.error('❌ Scraper Hatası:', scrapeErr.message);
@@ -128,6 +134,8 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
         console.error('❌ Shopier URL bulunamadı, scraper çalıştırılamıyor.');
       }
     }
+    
+    console.log(`🏁 Final Ürün Sayısı: ${products.length}`);
     
     if (!products || products.length === 0) {
       return res.status(400).json({ 
