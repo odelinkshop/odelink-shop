@@ -18,6 +18,11 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredSearch = products.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -60,7 +65,7 @@ const Navbar = () => {
                 "text-base sm:text-lg lg:text-xl xl:text-2xl font-serif tracking-[-0.03em] transition-all uppercase font-normal truncate max-w-[200px]",
                 isActive ? "text-secondary" : "text-white"
               )}>
-                {siteName.split('|')[0].trim()}
+                {mounted ? siteName.split('|')[0].trim() : "..."}
               </h1>
             </Link>
           </div>
@@ -111,7 +116,7 @@ const Navbar = () => {
                 "absolute -top-1.5 -right-1.5 text-[8px] w-4 h-4 flex items-center justify-center rounded-full",
                 isActive ? "bg-secondary text-primary" : "bg-white text-secondary"
               )}>
-                {items.length}
+                {mounted ? items.length : 0}
               </span>
             </Link>
           </div>

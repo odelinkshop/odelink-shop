@@ -23,6 +23,11 @@ const Footer = () => {
   const { siteName, settings, subdomain } = useStoreData();
   const [email, setEmail] = React.useState("");
   const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,17 +110,17 @@ const Footer = () => {
           <div className="space-y-8">
             <h4 className="text-xs font-black tracking-[0.3em] uppercase border-b-2 border-white/20 pb-4 inline-block text-white">MÜŞTERİ DESTEK</h4>
             <div className="space-y-6">
-              <a href="tel:+900000000000" className="flex items-center space-x-4 group">
+              <a href={`tel:${contact.phone || "+90 000 000 00 00"}`} className="flex items-center space-x-4 group">
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-300">
                   <Phone size={16} />
                 </div>
-                <span className="text-sm text-white/50 font-medium group-hover:text-white transition-colors tracking-widest">+90 000 000 00 00</span>
+                <span className="text-sm text-white/50 font-medium group-hover:text-white transition-colors tracking-widest">{mounted ? (contact.phone || "+90 000 000 00 00") : "..."}</span>
               </a>
-              <a href="mailto:destek@odelink.shop" className="flex items-center space-x-4 group">
+              <a href={`mailto:${contact.email || "destek@odelink.shop"}`} className="flex items-center space-x-4 group">
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-300">
                   <Mail size={16} />
                 </div>
-                <span className="text-sm text-white/50 font-medium group-hover:text-white transition-colors tracking-wider">destek@odelink.shop</span>
+                <span className="text-sm text-white/50 font-medium group-hover:text-white transition-colors tracking-wider">{mounted ? (contact.email || "destek@odelink.shop") : "..."}</span>
               </a>
               <div className="flex items-start space-x-4 group">
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">

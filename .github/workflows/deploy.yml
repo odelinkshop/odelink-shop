@@ -86,7 +86,7 @@ jobs:
             SHOPIER_API_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI3NGQyMTlhMjg3ZDJkM2I2Y2RmYzI2ZjQ1M2JjZTBhNiIsImp0aSI6IjgzYzg5OTYxM2Q1YjljM2FkYTNkNDMxYjllMTZhMzFlYTVmZmYwYzM1Y2ZiYTBjYmQ4ODNkM2RlZmJlNWQ3MjJlMjYzNjZkMWI1YTE3NTk4ZTVmZjMzMTNkZTI2MWJjMTZhODkyMDYxMThiN2Y0ZmJlMWQ1OTI0Y2RhYTgwZTM0ZmUxOWM2NDc2ODVmNjQyOTE4YjZkNTU2N2E0N2IwNDMiLCJpYXQiOjE3NzcxNDMxOTMsIm5iZiI6MTc3NzE0MzE5MywiZXhwIjoxOTM0OTI3OTUzLCJzdWIiOjI5MTk5NzcsInNjb3BlcyI6WyJvcmRlcnM6cmVhZCIsIm9yZGVyczp3cml0ZSIsInByb2R1Y3RzOnJlYWQiLCJwcm9kdWN0czp3cml0ZSIsInNoaXBwaW5nczpyZWFkIiwic2hpcHBpbmdzOndyaXRlIiwiZGlzY291bnRzOnJlYWQiLCJkaXNzb3VudHM6d3JpdGUiLCJwYXlvdXRzOnJlYWQiLCJyZWZ1bmRzOnJlYWQiLCJyZWZ1bmRzOndyaXRlIiwic2hvcDpyZWFkIiwic2hvcDp3cml0ZSJdfQ.H5p8Hu9W_rMvPLNRsHJcIsCXxuy9MRTFJOQQUThTB7IqDcqpdbliAnJ-x2XI_KIA7F3jULnnTdHvOh_aZBY48YmsWvjG0PWvi24-sa6YCBaZyOkMeOlAouFaWWm-OstM4PMqWInyTSFAWNBs9CEkZCd4OyEEGSfciAPW_QrrrD2UVmp7y4jNIHCDrNiHWWYkBA3uPl1Ch8woEz3-JBi4L6VdfNWJLVBbK8-RAf26W343wIJ_N6_wdgfJGQD4BimUFa_8Dvb5gr8L6FAmJ114z7J0JqZOWL-e1lVTzgccNHbZjOC0GsU-y0qfhFdRQnmt4zookEWF8BtkHReQnGlvug
             EOF
 
-            echo "---- DEPLOY: Building new images (Zero Downtime) ----"
+            echo "---- DEPLOY: Turbo-Launch (Zero Downtime) ----"
             # Try docker compose first, then docker-compose as fallback
             if command -v docker-compose &> /dev/null; then
               DOCKER_CMD="docker-compose"
@@ -94,29 +94,14 @@ jobs:
               DOCKER_CMD="docker compose"
             fi
             
-            # 1. Hızlı Temizlik
-            echo "🧹 Stopping and pruning..."
-            $DOCKER_CMD down --remove-orphans || true
+            # 1. Akıllı Build ve Ayağa Kaldırma (Site kapanmadan arkada yapar)
+            echo "🏗️ Building and deploying in parallel..."
+            $DOCKER_CMD up -d --build --remove-orphans --parallel 4
             
-            # Ekstra Güvenlik: İsim çakışmalarını önlemek için tüm odelink konteynerlerini zorla sil
-            echo "🗑️ Forcing removal of any leftover containers..."
-            docker ps -a -q --filter "name=odelink" | xargs -r docker rm -f || true
-            
-            # Kaynakların serbest bırakılması için kısa bir bekleme
-            sleep 3
-            
-            docker system prune -f
-            
-            # 2. Hızlı İnşa (Cache kullan, sadece değişenleri yap)
-            echo "🏗️ Building containers..."
-            $DOCKER_CMD build --parallel
-            
-            # 3. Ayağa Kaldır
-            echo "🚀 Launching..."
-            $DOCKER_CMD up -d --force-recreate
-
-            echo "---- DEPLOY: Cleanup old images ----"
+            # 2. Temizlik (Site açıldıktan sonra arkadan çöpleri toplar)
+            echo "🧹 Post-deployment cleanup..."
             docker image prune -f
+            docker system prune -f --volumes --filter "label!=keep" || true
             
-            echo "✅ Deployment complete!"
+            echo "✅ Turbo Deployment complete!"
             $DOCKER_CMD ps
