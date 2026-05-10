@@ -82,18 +82,8 @@ const Footer = () => {
           </p>
         </MotionDiv>
 
-        {/* Main Grid: Mobile (2-cols) / Desktop (4-cols) */}
-        <MotionDiv
-          className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 md:gap-10 mb-16"
-          {...(disableDesktopMotion
-            ? {}
-            : {
-                variants: containerVariants,
-                initial: 'hidden',
-                whileInView: 'visible',
-                viewport: { once: true },
-              })}
-        >
+        {/* Main Grid: Precision Mobile Layout */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10 md:gap-10 mb-16">
           <FooterSection
             title="Hızlı Linkler"
             links={quickLinks}
@@ -118,20 +108,18 @@ const Footer = () => {
             delay={0.2}
           />
 
-          <div className="col-span-1 md:col-span-1">
-            <FooterSection
-              title="İletişim"
-              isContactSection={true}
+          <FooterSection
+            title="İletişim"
+            isContactSection={true}
+            disableMotion={disableDesktopMotion}
+            delay={0.3}
+          >
+            <FooterContact
+              email={supportEmail}
               disableMotion={disableDesktopMotion}
-              delay={0.3}
-            >
-              <FooterContact
-                email={supportEmail}
-                disableMotion={disableDesktopMotion}
-              />
-            </FooterSection>
-          </div>
-        </MotionDiv>
+            />
+          </FooterSection>
+        </div>
 
         {/* Divider */}
         <div className="h-px bg-white/10 mb-8"></div>

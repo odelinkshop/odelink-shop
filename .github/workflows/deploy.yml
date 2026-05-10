@@ -40,15 +40,13 @@ jobs:
             git remote set-url origin https://github.com/odelinkshop/odelink-shop.git
             
             echo "---- DEPLOY: Starting git sync ----"
-            git fetch -v --prune origin main || git fetch origin main
+            git fetch --depth 1 origin main
             git reset --hard origin/main
             CURRENT_COMMIT="$(git rev-parse HEAD)"
-            echo "✅ Git sync complete. Current commit: ${CURRENT_COMMIT}"
+            echo "✅ Git sync complete. Commit: ${CURRENT_COMMIT}"
             
             echo "---- DEPLOY: Update .env file ----"
             mkdir -p backend
-            
-            # Using simple echo for each line to avoid any YAML heredoc indentation issues
             cat <<EOF > backend/.env
             PORT=5000
             NODE_ENV=production
@@ -87,21 +85,17 @@ jobs:
             EOF
 
             echo "---- DEPLOY: Turbo-Launch (Zero Downtime) ----"
-            # Try docker compose first, then docker-compose as fallback
-            if command -v docker-compose &> /dev/null; then
-              DOCKER_CMD="docker-compose"
-            else
-              DOCKER_CMD="docker compose"
-            fi
+            DOCKER_CMD="docker compose"
+            if ! command -v docker compose &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
-            # 1. Akıllı Build ve Ayağa Kaldırma (Site kapanmadan arkada yapar)
-            echo "🏗️ Building and deploying in parallel..."
-            $DOCKER_CMD up -d --build --remove-orphans
+            echo "🏗️ Building in parallel..."
+            COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 $DOCKER_CMD build --parallel
             
-            # 2. Temizlik (Site açıldıktan sonra arkadan çöpleri toplar)
-            echo "🧹 Post-deployment cleanup..."
+            echo "🚀 Launching services..."
+            $DOCKER_CMD up -d --remove-orphans
+            
+            echo "🧹 Quick cleanup..."
             docker image prune -f
-            docker system prune -f --volumes --filter "label!=keep" || true
             
             echo "✅ Turbo Deployment complete!"
             $DOCKER_CMD ps
