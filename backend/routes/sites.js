@@ -73,9 +73,11 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
 
     // 1. Önce Mağaza Ayarlarını Çek (Bu genelde 403 vermez)
     let shopSettings = null;
+    let settingsError = null;
     try {
       shopSettings = await fetchShopierSettings(apiKey);
     } catch (e) {
+      settingsError = e.message;
       console.error('❌ API Settings Fetch Error:', e.message);
     }
 
@@ -86,6 +88,7 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
     console.log(`📡 Mağaza Bilgileri Alındı: ${shopName} (URL: ${shopierUrl}, Slug: ${shopSlug})`);
 
     let products = [];
+    let apiError = null;
     
     // 2. API'den ürünleri çekmeye çalış (URL varsa)
     if (shopierUrl) {
@@ -99,6 +102,7 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
           console.log('⚠️ API ürün döndürmedi (boş veya null).');
         }
       } catch (apiErr) {
+        apiError = apiErr.message;
         console.error('⚠️ API ürün çekme hatası:', apiErr.message);
       }
     } else {
@@ -144,6 +148,8 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
         message: 'Shopier mağazanızdan ürünler ne API ne de Scraper ile çekilemedi.',
         debug: {
           scraperError: scrapeResult?.debug?.error || 'Bilinmeyen scraper hatası',
+          settingsError: settingsError,
+          apiError: apiError,
           shopierUrl: shopierUrl
         }
       });
