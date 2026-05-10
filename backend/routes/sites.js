@@ -79,8 +79,8 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
 
     console.log(`📡 Mağaza Bilgileri Alındı: ${shopName} (${shopierUrl})`);
 
-    // 2. API'den ürünleri çekmeye çalış
-    let products = await fetchAllProductsFromShopierAPI('', apiKey);
+    // 2. API'den ürünleri çekmeye çalış (URL'i doğru geçerek)
+    let products = await fetchAllProductsFromShopierAPI(shopierUrl, apiKey);
     
     // 3. EĞER API ÜRÜNLERİ VERMEZSE (403 veya Boş), SCRAPING İLE ÇEK (HİBRİT FALLBACK)
     if (!products || products.length === 0) {
@@ -114,8 +114,8 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
       status: 'active',
       settings: {
         created_at: new Date().toISOString(),
-        products_data: Array.isArray(products) ? products : (products.products || []),
-        catalog_total_products: Array.isArray(products) ? products.length : (products.totalProducts || 0),
+        products_data: Array.isArray(products) ? products : [],
+        catalog_total_products: Array.isArray(products) ? products.length : 0,
         catalog_enrichment_status: 'api_loaded',
         catalog_full_sync_complete: true,
         catalog_refreshed_at: new Date().toISOString(),

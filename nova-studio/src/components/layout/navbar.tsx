@@ -38,10 +38,10 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "OUTLET", href: "/shop" },
-    { name: "KOLEKSİYON", href: "/shop" },
-    { name: "EDITORIAL", href: "/faq" },
     { name: "HAKKIMIZDA", href: "/about" },
+    { name: "İLETİŞİM", href: "/contact" },
+    { name: "SIKÇA SORULANLAR", href: "/faq" },
+    { name: "KARGO TAKİP", href: "/faq" },
   ];
 
   const items = useCart((state) => state.items);
