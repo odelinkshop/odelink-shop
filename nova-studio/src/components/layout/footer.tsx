@@ -51,208 +51,118 @@ const Footer = () => {
   const storeDisplayName = siteName.split('|')[0].trim();
 
   return (
-    <footer className="bg-[#050505] text-[#f8f9fa] border-t border-white/5 font-sans overflow-hidden">
-      {/* Top Section: Socials & Newsletter */}
-      <div className="border-b border-white/5 py-12 px-6 lg:px-24 bg-gradient-to-b from-transparent to-white/[0.01]">
-        <div className="max-w-[1400px] mx-auto flex flex-col items-center space-y-12">
-          {/* Social Icons */}
-          <div className="flex items-center space-x-6">
-            {[
-              { icon: <InstagramIcon />, href: "https://instagram.com" },
-              { icon: <FacebookIcon />, href: "https://facebook.com" },
-              { icon: <TwitterIcon />, href: "https://twitter.com" },
-              { icon: <YoutubeIcon />, href: "https://youtube.com" },
-            ].map((social, i) => (
-              <a 
-                key={i} 
-                href={social.href} 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500 hover:scale-110 shadow-lg"
-              >
-                {social.icon}
-              </a>
-            ))}
+    <footer className="bg-black text-white border-t border-white/10 font-sans overflow-hidden">
+      {/* Newsletter Section - Ultra Minimalist */}
+      <div className="py-12 px-6 border-b border-white/5">
+        <div className="max-w-2xl mx-auto flex flex-col items-center space-y-6">
+          <div className="text-center">
+            <h3 className="text-xs font-black tracking-[0.4em] uppercase mb-2">BÜLTEN</h3>
+            <p className="text-[10px] text-white/60 tracking-wider font-light">Özel fırsatlar için aramıza katılın.</p>
           </div>
-
-          {/* Newsletter Header */}
-          <div className="text-center space-y-2">
-            <h3 className="text-xl md:text-2xl font-black tracking-[0.25em] uppercase text-white">HABER BÜLTENİMİZE ABONE OL</h3>
-            <p className="text-white/40 text-sm font-light tracking-wide italic">Yeni koleksiyonlar ve özel indirimlerden ilk siz haberdar olun.</p>
-          </div>
-
-          {/* Newsletter Form */}
-          <form onSubmit={handleNewsletter} className="w-full max-w-2xl flex flex-col md:flex-row gap-4">
+          <form onSubmit={handleNewsletter} className="w-full flex border-b border-white/20 pb-2">
             <input 
               type="email" 
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="E-Posta adresinizi yazın..." 
-              className="flex-1 bg-white/5 border border-white/10 px-6 py-4 outline-none text-sm tracking-wider focus:border-white/40 focus:bg-white/10 transition-all rounded-sm text-white placeholder:text-white/20"
+              placeholder="E-POSTA ADRESİNİZ" 
+              className="flex-1 bg-transparent outline-none text-[10px] tracking-widest placeholder:text-white/20 uppercase"
             />
             <button 
               disabled={status === "loading"}
-              className="bg-white text-black px-12 py-4 text-sm font-black tracking-widest uppercase hover:bg-white/90 transition-all rounded-sm active:scale-95 shadow-xl"
+              className="text-[10px] font-black tracking-[0.2em] hover:opacity-50 transition-opacity"
             >
-              {status === "loading" ? "İŞLENİYOR..." : "KAYIT OL"}
+              {status === "loading" ? "..." : "KAYIT"}
             </button>
           </form>
-          {status === "success" && <p className="text-green-400 text-xs tracking-widest font-bold animate-pulse">✨ Aramıza hoş geldin! Kaydın başarıyla alındı.</p>}
+          {status === "success" && <p className="text-green-400 text-[9px] tracking-widest font-bold">KAYIT TAMAMLANDI.</p>}
         </div>
       </div>
 
-      {/* Main Links Section */}
-      <div className="py-24 px-6 lg:px-24">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-12">
+      {/* Main Grid - Tight and Elegant */}
+      <div className="py-16 px-6 lg:px-24">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
           
-          {/* Column 1: Bize Ulaşın */}
-          <div className="space-y-8">
-            <h4 className="text-xs font-black tracking-[0.3em] uppercase border-b-2 border-white/20 pb-4 inline-block text-white">MÜŞTERİ DESTEK</h4>
-            <div className="space-y-6">
-              <a href={`tel:${contact.phone || "+90 000 000 00 00"}`} className="flex items-center space-x-4 group">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-300">
-                  <Phone size={16} />
-                </div>
-                <span className="text-sm text-white/50 font-medium group-hover:text-white transition-colors tracking-widest">{mounted ? (contact.phone || "+90 000 000 00 00") : "..."}</span>
-              </a>
-              <a href={`mailto:${contact.email || "destek@odelink.shop"}`} className="flex items-center space-x-4 group">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-300">
-                  <Mail size={16} />
-                </div>
-                <span className="text-sm text-white/50 font-medium group-hover:text-white transition-colors tracking-wider">{mounted ? (contact.email || "destek@odelink.shop") : "..."}</span>
-              </a>
-              <div className="flex items-start space-x-4 group">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                  <MapPin size={16} />
-                </div>
-                <span className="text-sm text-white/50 font-medium leading-relaxed tracking-wide">Merkez Ofis / İstanbul, Türkiye</span>
-              </div>
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">İLETİŞİM</h4>
+            <div className="flex flex-col space-y-2 text-[11px] font-light tracking-wide">
+              <a href={`tel:${contact.phone || "+90 000 000 00 00"}`} className="hover:opacity-50 transition-opacity">{mounted ? (contact.phone || "+90 000 000 00 00") : "..."}</a>
+              <a href={`mailto:${contact.email || "destek@odelink.shop"}`} className="hover:opacity-50 transition-opacity">{mounted ? (contact.email || "destek@odelink.shop") : "..."}</a>
+              <p className="opacity-60 text-[10px]">İSTANBUL / TÜRKİYE</p>
             </div>
           </div>
 
-          {/* Column 2: Kurumsal */}
-          <div className="space-y-8">
-            <h4 className="text-xs font-black tracking-[0.3em] uppercase border-b-2 border-white/20 pb-4 inline-block text-white">KURUMSAL</h4>
-            <ul className="space-y-4">
-              {[
-                { label: "Hakkımızda", href: "/about" },
-                { label: "İletişim", href: "/contact" },
-                { label: "Kullanıcı Sözleşmesi", href: "/policies/kvkk" },
-                { label: "Gizlilik Politikası", href: "#" },
-              ].map((item) => (
-                <li key={item.label}>
-                  <Link href={item.href} className="text-sm text-white/30 hover:text-white hover:pl-2 transition-all duration-300 font-medium tracking-wide flex items-center">
-                    <span className="w-0 h-[1px] bg-white group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>
-                    {item.label}
-                  </Link>
-                </li>
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">KURUMSAL</h4>
+            <ul className="flex flex-col space-y-2 text-[11px] font-light tracking-wide">
+              {["HAKKIMIZDA", "İLETİŞİM", "SÖZLEŞMELER", "GİZLİLİK"].map(item => (
+                <li key={item}><Link href="#" className="hover:opacity-50 transition-opacity">{item}</Link></li>
               ))}
             </ul>
           </div>
 
-          {/* Column 3: Önemli Bilgiler */}
-          <div className="space-y-8">
-            <h4 className="text-xs font-black tracking-[0.3em] uppercase border-b-2 border-white/20 pb-4 inline-block text-white">BİLGİ MERKEZİ</h4>
-            <ul className="space-y-4">
-              {[
-                { label: "İptal & İade Koşulları", href: "/policies/returns" },
-                { label: "Sıkça Sorulan Sorular", href: "/faq" },
-                { label: "Teslimat ve Kargo", href: "#" },
-                { label: "Güvenli Alışveriş", href: "#" },
-                { label: "Blog Yazıları", href: "/blog" },
-              ].map((item) => (
-                <li key={item.label}>
-                  <Link href={item.href} className="text-sm text-white/30 hover:text-white hover:pl-2 transition-all duration-300 font-medium tracking-wide">
-                    {item.label}
-                  </Link>
-                </li>
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">YARDIM</h4>
+            <ul className="flex flex-col space-y-2 text-[11px] font-light tracking-wide">
+              {["İADE KOŞULLARI", "KARGO TAKİP", "SIKÇA SORULANLAR", "BLOG"].map(item => (
+                <li key={item}><Link href="#" className="hover:opacity-50 transition-opacity">{item}</Link></li>
               ))}
             </ul>
           </div>
 
-          {/* Column 4: Hızlı Erişim */}
-          <div className="space-y-8">
-            <h4 className="text-xs font-black tracking-[0.3em] uppercase border-b-2 border-white/20 pb-4 inline-block text-white">HIZLI ERİŞİM</h4>
-            <ul className="space-y-4">
-              {[
-                "Yeni Sezon", "Çok Satanlar", "Koleksiyonlar", "İndirimli Ürünler", "Tüm Ürünler"
-              ].map((item) => (
-                <li key={item}>
-                  <Link href="/shop" className="text-sm text-white/30 hover:text-white hover:pl-2 transition-all duration-300 font-medium tracking-wide">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">SOSYAL</h4>
+            <div className="flex space-x-4">
+               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><InstagramIcon /></a>
+               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><FacebookIcon /></a>
+               <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><TwitterIcon /></a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Payment & Stores - Scaled Down */}
+      <div className="border-t border-white/5 py-8 px-6 lg:px-24">
+        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center space-x-4">
+             <a href="#" className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.1 2.48-1.34.03-1.77-.79-3.29-.79-1.53 0-2.01.76-3.27.82-1.31.05-2.31-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.65.06 2.87.6 3.72 1.84a6.49 6.49 0 0 0-3.32 5.56c.03 2.15 1.1 3.51 2.39 4.26zM15.48 5.44c.75-.91 1.25-2.18 1.11-3.44-1.09.04-2.41.72-3.19 1.63-.7.81-1.31 2.11-1.15 3.34 1.22.09 2.48-.62 3.23-1.53z"/></svg>
+                <div className="text-[10px] font-black tracking-tight leading-none">App Store</div>
+             </a>
+             <a href="#" className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3.25 3.125c-.121.121-.191.29-.191.472v16.811c0 .181.07.351.191.472l9.047-9.047-9.047-9.047zm.944-.944l9.22 5.32 2.99-2.99-12.21-7.05c-.171-.1-.384-.1-.555 0-.171.1-.285.281-.285.477v4.243zm12.21 6.264l-2.99 2.99 9.22 5.32c.171.1.384.1.555 0 .171-.1.285-.281.285-.477v-12.21c0-.196-.114-.377-.285-.477-.171-.1-.384-.1-.555 0l-6.23 3.593zM13.438 12.375l-9.22 5.32 12.21 7.05c.171.1.384.1.555 0 .171-.1.285-.281.285-.477v-4.243l-3.83-3.65z"/></svg>
+                <div className="text-[10px] font-black tracking-tight leading-none">Google Play</div>
+             </a>
+          </div>
+
+          <div className="flex items-center gap-4 opacity-40">
+             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Visa</span>
+             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Master</span>
+             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Troy</span>
+             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Amex</span>
           </div>
         </div>
       </div>
 
-      {/* Payment & App Section */}
-      <div className="border-t border-white/5 py-12 px-6 lg:px-24 bg-white/[0.01]">
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-          {/* App Stores */}
-          <div className="flex items-center space-x-6">
-             <a href="https://apple.com/app-store" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 bg-white/5 border border-white/10 px-6 py-3 rounded-xl hover:bg-white hover:text-black transition-all duration-300 group shadow-lg">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.1 2.48-1.34.03-1.77-.79-3.29-.79-1.53 0-2.01.76-3.27.82-1.31.05-2.31-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.65.06 2.87.6 3.72 1.84a6.49 6.49 0 0 0-3.32 5.56c.03 2.15 1.1 3.51 2.39 4.26zM15.48 5.44c.75-.91 1.25-2.18 1.11-3.44-1.09.04-2.41.72-3.19 1.63-.7.81-1.31 2.11-1.15 3.34 1.22.09 2.48-.62 3.23-1.53z"/></svg>
-                <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold opacity-50 group-hover:opacity-80 transition-opacity">Download on</p>
-                  <p className="text-sm font-black tracking-tight">App Store</p>
-                </div>
-             </a>
-             <a href="https://play.google.com" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 bg-white/5 border border-white/10 px-6 py-3 rounded-xl hover:bg-white hover:text-black transition-all duration-300 group shadow-lg">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3.25 3.125c-.121.121-.191.29-.191.472v16.811c0 .181.07.351.191.472l9.047-9.047-9.047-9.047zm.944-.944l9.22 5.32 2.99-2.99-12.21-7.05c-.171-.1-.384-.1-.555 0-.171.1-.285.281-.285.477v4.243zm12.21 6.264l-2.99 2.99 9.22 5.32c.171.1.384.1.555 0 .171-.1.285-.281.285-.477v-12.21c0-.196-.114-.377-.285-.477-.171-.1-.384-.1-.555 0l-6.23 3.593zM13.438 12.375l-9.22 5.32 12.21 7.05c.171.1.384.1.555 0 .171-.1.285-.281.285-.477v-4.243l-3.83-3.65z"/></svg>
-                <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold opacity-50 group-hover:opacity-80 transition-opacity">Get it on</p>
-                  <p className="text-sm font-black tracking-tight">Google Play</p>
-                </div>
-             </a>
-          </div>
-
-          {/* Payment Icons */}
-          <div className="flex items-center gap-4 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700 bg-white/5 p-4 rounded-2xl border border-white/5 shadow-inner">
-             {/* Visa */}
-             <svg width="40" height="25" viewBox="0 0 48 48" fill="none"><path d="M18.31 31.63L21.05 15H25.4l-2.74 16.63h-4.35zM38.89 15.4c-.81-.31-2.07-.64-3.61-.64-3.97 0-6.77 2.11-6.79 5.13-.03 2.23 2 3.47 3.52 4.21 1.56.76 2.08 1.25 2.08 1.93 0 1.04-1.25 1.51-2.4 1.51-1.6 0-2.46-.24-3.77-.82l-.53-.25-.56 3.49c.94.43 2.68.81 4.5 1.04l.11-.01.12.01c.26 0 .5-.01.73-.03 1.13-.07 2.14-.3 2.94-.74 2.87-1.37 3.99-3.23 3.99-4.8 0-1.87-1.12-3.28-3.58-4.45-1.49-.75-2.41-1.25-2.41-2.02 0-.71.77-1.47 2.45-1.47 1.38-.02 2.38.3 3.14.63l.37.18.57-3.36zm8.11-.4h-3.36c-1.04 0-1.82.3-2.27 1.39l-6.47 15.24h4.57l.91-2.52h5.58l.53 2.52h4.03L47 15zm-5.46 9.61l1.9-5.24 1.08 5.24h-2.98zM8.1 15L3.81 26.3c-.45 1.16-.76 1.54-1.74 2.06A17.9 17.9 0 0 1 0 29.17l.07.33h7.62c.96 0 1.83-.63 2.05-1.71l1.45-7.72L15.93 31.63h4.63L14 15H8.1z" fill="currentColor"/></svg>
-             {/* Mastercard */}
-             <svg width="40" height="25" viewBox="0 0 48 48" fill="none"><path d="M15.5 14C11.36 14 8 17.36 8 21.5c0 4.14 3.36 7.5 7.5 7.5s7.5-3.36 7.5-7.5c0-4.14-3.36-7.5-7.5-7.5z" fill="currentColor"/><path d="M32.5 14c-4.14 0-7.5 3.36-7.5 7.5 0 4.14 3.36 7.5 7.5 7.5s7.5-3.36 7.5-7.5c0-4.14-3.36-7.5-7.5-7.5z" fill="currentColor" opacity="0.8"/></svg>
-             {/* Troy */}
-             <span className="text-[10px] font-black tracking-tighter border border-white/20 px-2 py-1 rounded">TROY</span>
-             {/* Maestro */}
-             <svg width="40" height="25" viewBox="0 0 48 48" fill="none"><circle cx="16" cy="24" r="12" fill="currentColor" opacity="0.6"/><circle cx="32" cy="24" r="12" fill="currentColor" opacity="0.6"/></svg>
-             {/* Amex */}
-             <span className="text-[10px] font-black tracking-widest bg-white/10 px-2 py-1 rounded">AMEX</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Copyright Section */}
-      <div className="bg-black py-16 px-6 lg:px-24">
-        <div className="max-w-[1400px] mx-auto flex flex-col items-center space-y-10 text-center">
-          <div className="space-y-6">
-            <p className="text-sm text-white/60 tracking-[0.2em] font-medium">
-              Bu Site <Link href="/" className="text-white font-black hover:text-white/80 transition-colors border-b border-white/20 uppercase">{storeDisplayName}</Link> Tarafından Yönetilmektedir.
+      {/* Final Bottom Bar */}
+      <div className="bg-black py-10 px-6 border-t border-white/5">
+        <div className="max-w-[1200px] mx-auto flex flex-col items-center space-y-6">
+          <div className="text-center space-y-2">
+            <p className="text-[10px] font-medium tracking-widest">
+              BU SİTE <Link href="/" className="font-black underline underline-offset-4">{storeDisplayName}</Link> TARAFINDAN YÖNETİLMEKTEDİR.
             </p>
-            <div className="space-y-4">
-              <p className="text-[11px] text-white/30 tracking-[0.25em] leading-loose max-w-4xl uppercase font-bold">
-                Copyright© {year} {storeDisplayName} — Tüm Hakları Saklıdır. <br className="hidden md:block" />
-                Ödemeleriniz <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors underline decoration-white/20 underline-offset-4">Shopier</a> Güvencesiyle 256bit SSL Sertifikası Altında Korunmaktadır.
-              </p>
-            </div>
+            <p className="text-[9px] text-white/40 tracking-[0.2em] font-light uppercase">
+              COPYRIGHT© {year} {storeDisplayName} — TÜM HAKLARI SAKLIDIR.
+            </p>
+            <p className="text-[8px] text-white/20 tracking-widest uppercase">
+              ÖDEMELER <a href="https://www.shopier.com" className="underline">SHOPIER</a> GÜVENCESİYLE KORUNMAKTADIR.
+            </p>
           </div>
-
-          {/* Odelink Signature */}
-          <div className="pt-12 border-t border-white/5 w-full flex flex-col items-center space-y-4">
-             <a 
-              href="https://www.odelink.shop" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="flex flex-col items-center group"
-             >
-                <span className="text-2xl font-black tracking-tighter italic text-white/40 group-hover:text-white transition-all duration-500 transform group-hover:scale-105">ödelink</span>
-                <p className="text-[9px] tracking-[0.6em] text-white/10 group-hover:text-white/30 uppercase font-black mt-2 transition-all">Digital Commerce Experience</p>
-             </a>
-          </div>
+          <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center group opacity-30 hover:opacity-100 transition-opacity">
+            <span className="text-lg font-black tracking-tighter italic">ödelink</span>
+            <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
+          </a>
         </div>
       </div>
     </footer>
