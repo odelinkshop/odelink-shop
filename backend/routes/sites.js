@@ -79,7 +79,7 @@ router.post('/create-simple', authMiddleware, async (req, res) => {
 
     const newSite = await Site.create({
       userId: req.userId,
-      name: subdomain.toUpperCase() + " MAĞAZASI",
+      name: subdomain.toUpperCase(),
       subdomain: cleanSubdomain,
       settings: {
         theme: 'nova-premium',

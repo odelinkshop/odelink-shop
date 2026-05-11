@@ -161,10 +161,12 @@ const Footer = () => {
               ÖDEMELER <a href="https://www.shopier.com" className="underline">SHOPIER</a> GÜVENCESİYLE KORUNMAKTADIR.
             </p>
           </div>
-          <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center group opacity-30 hover:opacity-100 transition-opacity">
-            <span className="text-lg font-black tracking-tighter italic">ödelink</span>
-            <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
-          </a>
+          {!settings?.branding?.hide_odelink_credit && (
+            <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center group opacity-30 hover:opacity-100 transition-opacity">
+              <span className="text-lg font-black tracking-tighter italic">ödelink</span>
+              <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
+            </a>
+          )}
         </div>
       </div>
     </footer>

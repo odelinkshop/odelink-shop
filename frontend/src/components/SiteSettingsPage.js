@@ -34,6 +34,21 @@ const DEFAULT_SETTINGS = {
   color: 'blue'
 };
 
+function PreviewFrame({ site }) {
+  if (!site?.subdomain) return <div className="w-full h-full bg-[#08090A] flex items-center justify-center"><Loader2 className="animate-spin text-blue-500" /></div>;
+  return (
+    <iframe 
+      src={`https://${site.subdomain}.odelink.shop?preview=true&v=${Date.now()}`} 
+      className="w-full h-full border-none"
+      title="Store Preview"
+    />
+  );
+}
+
+function cn(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+
 export default function SiteSettingsPage() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -44,6 +59,24 @@ export default function SiteSettingsPage() {
   const [site, setSite] = useState(null);
   const [activeTab, setActiveTab] = useState('brand'); 
   const [previewMode, setPreviewMode] = useState('desktop');
+  
+  const handleSubdomainUpdate = async (newSub) => {
+    if (!newSub || newSub === site.subdomain) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/sites/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ subdomain: newSub })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('Mağaza adresi güncellendi.');
+        setSite({ ...site, subdomain: newSub, subdomain_change_count: (site.subdomain_change_count || 0) + 1 });
+      } else {
+        toast.error(data.error || 'Güncelleme başarısız.');
+      }
+    } catch (e) { toast.error('Bağlantı hatası.'); }
+  };
   
   // Enterprise States
   const [formData, setFormData] = useState(DEFAULT_SETTINGS);
@@ -159,14 +192,28 @@ export default function SiteSettingsPage() {
         <aside className="w-[400px] bg-[#0C0D0E] border-r border-white/5 flex flex-col overflow-y-auto custom-scrollbar">
           <div className="p-8 space-y-10">
             
-            {/* Subdomain Info */}
-            <div className="bg-blue-600/5 border border-blue-500/20 p-5 rounded-3xl">
+            {/* Subdomain Info - Interactive */}
+            <div className="bg-blue-600/5 border border-blue-500/20 p-5 rounded-3xl group">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Subdomain Yönetimi</span>
-                <span className="text-[9px] font-black text-white px-2 py-0.5 bg-blue-600 rounded-full">3/3 HAK</span>
+                <span className={cn(
+                  "text-[9px] font-black px-2 py-0.5 rounded-full",
+                  (3 - (site?.subdomain_change_count || 0)) > 0 ? "bg-blue-600 text-white" : "bg-rose-500/20 text-rose-500"
+                )}>
+                  {3 - (site?.subdomain_change_count || 0)}/3 HAK
+                </span>
               </div>
-              <p className="text-xs font-bold text-white mb-1">{site?.subdomain}.odelink.shop</p>
-              <p className="text-[9px] text-blue-400/60 font-medium leading-relaxed">Subdomain isminizi ayda en fazla 3 kez değiştirebilirsiniz. Bu işlem SEO ayarlarınızı etkileyebilir.</p>
+              <div className="flex items-center gap-2 bg-black/20 rounded-xl p-3 border border-white/5 group-focus-within:border-blue-500/50 transition-all">
+                <input 
+                  defaultValue={site?.subdomain} 
+                  onBlur={(e) => handleSubdomainUpdate(e.target.value)}
+                  disabled={(3 - (site?.subdomain_change_count || 0)) <= 0}
+                  className="bg-transparent border-none outline-none text-xs font-bold text-white w-full placeholder:text-white/20"
+                  placeholder="mağaza-adi"
+                />
+                <span className="text-[10px] font-black text-gray-600">.odelink.shop</span>
+              </div>
+              <p className="text-[9px] text-blue-400/60 font-medium leading-relaxed mt-3 uppercase tracking-tighter">Subdomain isminizi ayda en fazla 3 kez değiştirebilirsiniz.</p>
             </div>
 
             {/* Navigation Tabs */}
@@ -280,37 +327,59 @@ export default function SiteSettingsPage() {
         </aside>
 
         {/* --- LIVE PREVIEW MAIN --- */}
-        <main className="flex-1 bg-[#08090A] flex items-center justify-center p-12 relative overflow-hidden">
+        <main className="flex-1 bg-[#08090A] flex items-center justify-center p-6 lg:p-12 relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-blue-500/[0.03] blur-[200px] rounded-full animate-pulse" />
           </div>
 
           <motion.div 
             layout
-            className={`relative z-10 origin-center transition-all duration-700 bg-[#0C0D0E] rounded-[40px] shadow-[0_80px_180px_rgba(0,0,0,0.8)] border-[12px] border-[#1C1D1F] overflow-hidden ${
-              previewMode === 'mobile' ? 'w-[430px] h-[880px]' : 
-              previewMode === 'tablet' ? 'w-[820px] h-[1080px]' : 
-              'w-full h-full max-w-[1400px] max-h-[900px]'
-            }`}
+            transition={{ type: "spring", damping: 25, stiffness: 120 }}
+            className={cn(
+              "relative z-10 origin-center transition-all duration-700",
+              previewMode === 'mobile' ? 'w-[320px] h-[650px]' : 
+              previewMode === 'tablet' ? 'w-[720px] h-[900px]' : 
+              'w-full h-full max-w-[1200px] max-h-[750px]'
+            )}
           >
-            <div className="w-full h-full bg-black relative">
-              {/* Browser Header Bar */}
-              <div className="h-10 bg-[#1C1D1F] flex items-center px-6 gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-rose-500/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
-                <div className="flex-1 flex justify-center ml-[-30px]">
-                  <div className="bg-white/5 px-6 py-1 rounded-full text-[9px] font-black tracking-widest text-gray-500 flex items-center gap-2">
-                    <Lock size={10} /> {site?.subdomain}.odelink.shop
+            {/* Realistic Device Frames */}
+            {previewMode === 'mobile' ? (
+              <div className="relative w-full h-full border-[12px] border-[#1C1D1F] rounded-[50px] shadow-[0_50px_100px_rgba(0,0,0,0.8)] bg-black overflow-hidden ring-1 ring-white/10">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#1C1D1F] rounded-b-2xl z-50 flex items-center justify-center">
+                  <div className="w-10 h-1 bg-black/40 rounded-full" />
+                </div>
+                <PreviewFrame site={site} />
+              </div>
+            ) : previewMode === 'tablet' ? (
+              <div className="relative w-full h-full border-[15px] border-[#1C1D1F] rounded-[40px] shadow-[0_60px_120px_rgba(0,0,0,0.8)] bg-black overflow-hidden ring-1 ring-white/10">
+                <div className="absolute -left-[15px] top-20 w-[3px] h-16 bg-[#2C2D2F] rounded-r-lg" />
+                <PreviewFrame site={site} />
+              </div>
+            ) : (
+              <div className="relative w-full h-full flex flex-col shadow-[0_80px_150px_rgba(0,0,0,0.9)] rounded-2xl overflow-hidden border border-white/5 bg-[#0C0D0E]">
+                {/* Browser Top Bar */}
+                <div className="h-11 bg-[#1C1D1F] flex items-center px-4 gap-4 border-b border-black/20">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/40" />
+                  </div>
+                  <div className="flex-1 max-w-2xl mx-auto flex items-center gap-2 px-4 py-1.5 bg-black/40 rounded-lg border border-white/5 text-[10px] text-gray-500 font-bold tracking-widest uppercase">
+                    <ShieldCheck size={10} className="text-emerald-500" />
+                    {site?.subdomain}.odelink.shop
                   </div>
                 </div>
+                <div className="flex-1 bg-black">
+                  <PreviewFrame site={site} />
+                </div>
+                {/* iMac Chin Style Footer */}
+                <div className="h-12 bg-[#1C1D1F] flex items-center justify-center border-t border-black/20">
+                   <div className="w-8 h-8 bg-white/5 rounded-full flex items-center justify-center">
+                      <Sparkles size={14} className="text-blue-500/50" />
+                   </div>
+                </div>
               </div>
-              <iframe 
-                src={`https://${site?.subdomain}.odelink.shop?preview=true&v=${Date.now()}`} 
-                className="w-full h-full border-none"
-                title="Store Preview"
-              />
-            </div>
+            )}
           </motion.div>
 
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 px-8 py-3 bg-white/[0.02] border border-white/10 rounded-full backdrop-blur-3xl shadow-2xl z-20">
