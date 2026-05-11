@@ -313,11 +313,26 @@ class Site {
       WHERE user_id = $1
     `;
     
-    try {
-      const result = await pool.query(query, [userId]);
-      return result.rows[0];
-    } catch (error) {
-      throw new Error('Site istatistikleri alınamadı: ' + error.message);
+      try {
+        const result = await pool.query(query, [userId]);
+        return result.rows[0];
+      } catch (error) {
+        throw new Error('Site istatistikleri alınamadı: ' + error.message);
+      }
+    }
+
+  static async ensureSchema() {
+    const queries = [
+      `ALTER TABLE sites ADD COLUMN IF NOT EXISTS subdomain_change_count INTEGER DEFAULT 0`,
+      `ALTER TABLE sites ADD COLUMN IF NOT EXISTS last_subdomain_change_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
+      `CREATE INDEX IF NOT EXISTS idx_sites_subdomain ON sites(subdomain)`
+    ];
+    for (const q of queries) {
+      try {
+        await pool.query(q);
+      } catch (e) {
+        // Silently skip if column exists or other minor issues
+      }
     }
   }
 }

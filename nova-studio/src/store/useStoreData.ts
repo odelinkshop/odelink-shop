@@ -1,44 +1,28 @@
 import { create } from 'zustand';
 import { Product } from '@/types/product';
 
-interface StoreSettings {
-  name: string;
-  description: string;
-  logoUrl?: string;
-  design: {
-    primaryColor: string;
-    secondaryColor: string;
-    accentColor: string;
-    fontFamily: string;
+  contact_info?: {
+    phone?: string;
+    email?: string;
+    address?: string;
   };
-  content: {
-    announcementBar: string;
-    heroBadge?: string;
-    heroDescription?: string;
-    heroTitle: string;
-    heroSubtitle: string;
-    heroButtonText: string;
-    heroImageUrl?: string;
-    heroAccent?: string;
-    aboutTitle?: string;
-    aboutText?: string;
-    contactEmail?: string;
-    contactPhone?: string;
-    contactInstagram?: string;
+  social_links?: {
+    instagram?: string;
+    x?: string;
+    facebook?: string;
   };
-  manualProducts?: any[];
-  policies?: {
+  pages?: {
+    about?: string;
     privacy?: string;
-    terms?: string;
     returns?: string;
     shipping?: string;
-    kvkk?: string;
-    cookies?: string;
+    faq?: string;
+    blog?: string;
   };
-  contact?: {
-    email?: string;
-    phone?: string;
-    instagram?: string;
+  branding?: {
+    hide_odelink_credit?: boolean;
+    logo_url?: string;
+    font_family?: string;
   };
 }
 
@@ -257,14 +241,17 @@ export const useStoreData = create<StoreState>((set, get) => ({
           logoUrl: settings.logoUrl
         },
         settings: {
+          ...settings,
           name: site.name,
           description: settings.description || '',
-          logoUrl: settings.logoUrl,
+          logoUrl: settings.logo_url || settings.branding?.logo_url || '',
           design,
           content,
           manualProducts: settings.manualProducts || [],
-          policies: settings.policies,
-          contact: settings.contact
+          policies: settings.policies || settings.pages || {},
+          contact: settings.contact || settings.contact_info || {},
+          social_links: settings.social_links || {},
+          branding: settings.branding || {}
         },
         products: uniqueCombined.map((p, i) => mapProduct(p, i)),
         isLoading: false

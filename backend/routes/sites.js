@@ -1455,116 +1455,73 @@ router.post('/', authMiddleware, requireAccess, async (req, res) => {
 
 /**
  * PUT /api/sites/:id
- * Site güncelle
+ * Site güncelle - Kurumsal Sürüm
  */
 router.put('/:id', authMiddleware, requireAccess, async (req, res) => {
   try {
-    const { error, value } = updateSiteSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ 
-        error: 'Validation error', 
-        details: error.details[0].message 
-      });
-    }
+    const siteId = req.params.id;
+    const existingSite = await Site.findById(siteId);
+    
+    if (!existingSite) return res.status(404).json({ error: 'Mağaza bulunamadı' });
+    if (existingSite.user_id !== req.userId) return res.status(403).json({ error: 'Erişim izniniz yok' });
 
-    const existingSite = await Site.findById(req.params.id);
-    if (!existingSite) {
-      return res.status(404).json({ error: 'Site bulunamadı' });
-    }
+    const { name, subdomain, settings, customDomain } = req.body;
+    const updateData = { name, settings, customDomain };
 
-    if (existingSite.user_id !== req.userId) {
-      return res.status(403).json({ error: 'Erişim izniniz yok' });
-    }
-
-    // Feature gating (plan enforcement)
-    try {
-      const caps = await Subscription.getUserCapabilities(req.userId);
-
-      const nextCustomDomain = (value?.customDomain == null ? '' : String(value.customDomain)).trim();
-      if (nextCustomDomain) {
-        if (!caps?.allowCustomDomain) {
-          return res.status(403).json({
-            error: 'Bu özellik mevcut pakette kullanılamıyor: Özel alan adı (custom domain)'
-          });
-        }
-      }
-
-      const incomingSettings = (value?.settings && typeof value.settings === 'object') ? value.settings : null;
+    // --- SUBDOMAIN DEĞİŞİM SINIRI (AYDA 3 KEZ) ---
+    if (subdomain && subdomain !== existingSite.subdomain) {
+      const lastChange = new Date(existingSite.last_subdomain_change_at || 0);
+      const now = new Date();
+      const isSameMonth = lastChange.getMonth() === now.getMonth() && lastChange.getFullYear() === now.getFullYear();
       
-      // Branding check
-      const wantsHideBranding = Boolean(incomingSettings && incomingSettings.hideBranding);
-      if (wantsHideBranding && !caps?.allowHideBranding) {
-        return res.status(403).json({
-          error: 'Bu özellik mevcut pakette kullanılamıyor: Branding kaldırma'
+      let changeCount = isSameMonth ? (existingSite.subdomain_change_count || 0) : 0;
+
+      if (changeCount >= 3) {
+        return res.status(400).json({ 
+          error: 'Subdomain değişim sınırı doldu.', 
+          message: 'Kurumsal güvenlik gereği, mağaza adınızı bir ay içinde en fazla 3 kez değiştirebilirsiniz.' 
         });
       }
 
-      // Color check
-      const incomingColor = incomingSettings?.color;
-      if (incomingColor && !caps?.allowedColors?.includes(incomingColor)) {
-        const standardColors = ['blue', 'purple', 'green', 'amber'];
-        if (!standardColors.includes(incomingColor)) {
-          return res.status(403).json({
-            error: 'Seçilen renk tonu mevcut pakette kullanılamıyor. Lütfen Profesyonel plana geçin.'
-          });
-        }
+      // Mükerrer Kontrolü
+      const duplicate = await pool.query('SELECT id FROM sites WHERE subdomain = $1 AND id != $2', [subdomain, siteId]);
+      if (duplicate.rows.length > 0) {
+        return res.status(400).json({ error: 'Bu mağaza adı zaten kullanımda.' });
       }
 
-      // Design controls check
-      const wantsGlass = incomingSettings?.themeCustomization?.glassmorphism;
-      if (wantsGlass && !caps?.allowedDesignControls?.includes('custom_css')) {
-        // We might allow it if it's already set to true in existing site to avoid breaking
-        if (!existingSite.settings?.themeCustomization?.glassmorphism) {
-          return res.status(403).json({ error: 'Cam efekti (Glassmorphism) Profesyonel plana özeldir.' });
-        }
-      }
-    } catch (gateErr) {
-      console.error('❌ Feature gate error:', gateErr);
-      return res.status(500).json({
-        error: 'Paket kontrolü yapılamadı',
-        message: (gateErr?.message || String(gateErr)).toString().slice(0, 500)
-      });
-    }
-
-    const site = await Site.update(req.params.id, value);
-    
-    // Clear cache
-    try {
-      if (site.subdomain) await CacheService.clearStoreCache(`${site.subdomain}.odelink.shop`);
-      if (site.custom_domain) await CacheService.clearStoreCache(site.custom_domain);
-      if (existingSite.custom_domain && existingSite.custom_domain !== site.custom_domain) {
-        await CacheService.clearStoreCache(existingSite.custom_domain);
-      }
-    } catch (e) {
-      console.error('❌ Cache clear error:', e);
-    }
-    
-    // CLOUDFLARE CUSTOM HOSTNAME ENTEGRASYONU
-    const nextCustomDomain = (value?.customDomain == null ? '' : String(value.customDomain)).trim().toLowerCase();
-    if (nextCustomDomain && nextCustomDomain !== existingSite.custom_domain) {
+      // Sınırı güncelle ve subdomaini set et
+      await pool.query(
+        'UPDATE sites SET subdomain = $1, subdomain_change_count = $2, last_subdomain_change_at = NOW() WHERE id = $3',
+        [subdomain, changeCount + 1, siteId]
+      );
+      
+      // DNS Kaydını Güncelle (Arka planda)
       setImmediate(async () => {
         try {
-          const { addCustomHostname } = require('../services/cloudflareService');
-          await addCustomHostname(nextCustomDomain);
-          console.log(`✅ Custom Hostname Cloudflare'e eklendi: ${nextCustomDomain}`);
-        } catch (err) {
-          console.error(`❌ Custom Hostname Cloudflare hatası: ${nextCustomDomain}`, err);
-        }
+          await deleteDnsRecord(existingSite.subdomain);
+          await addDnsRecord(subdomain);
+        } catch (e) { console.error('DNS Update Error:', e); }
       });
     }
+
+    // --- SİTEYİ GÜNCELLE ---
+    const site = await Site.update(siteId, updateData);
+    
+    // Cache Temizleme
+    try {
+      await CacheService.clearStoreCache(`${existingSite.subdomain}.odelink.shop`);
+      await CacheService.clearStoreCache(`${site.subdomain}.odelink.shop`);
+    } catch (e) { console.error('Cache Clear Error:', e); }
 
     return res.json({
       success: true,
-      message: 'Site güncellendi',
+      message: 'Değişiklikler başarıyla yayına alındı.',
       site
     });
 
   } catch (error) {
     console.error('❌ Update site error:', error);
-    return res.status(500).json({
-      error: 'Site güncellenemedi',
-      message: (error?.message || String(error)).toString().slice(0, 500)
-    });
+    return res.status(500).json({ error: 'Mağaza güncellenirken bir hata oluştu.' });
   }
 });
 
