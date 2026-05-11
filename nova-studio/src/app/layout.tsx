@@ -106,11 +106,13 @@ export default async function RootLayout({
   return (
     <html lang="tr" className="h-full" suppressHydrationWarning>
       <head>
-        {/* Anti-Flash Theme Script - Locked to Parchment */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function() {
-            document.documentElement.style.backgroundColor = '#F8F5F2';
-          })();
+        {/* Anti-Flash Theme Script - Safer for Hydration */}
+        <script id="anti-flash-script" dangerouslySetInnerHTML={{ __html: `
+          try {
+            var html = document.documentElement;
+            html.style.backgroundColor = '#F8F5F2';
+            html.classList.add('js-ready');
+          } catch (e) {}
         `}} />
       </head>
       <body

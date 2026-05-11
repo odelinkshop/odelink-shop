@@ -95,6 +95,7 @@ try {
 try {
   SiteModel = require('./models/Site');
   console.log('✅ Site model loaded');
+  SiteModel.ensureSchema().catch(e => console.error('❌ Site schema failed:', e.message));
 } catch (e) {
   console.error('❌ Site model failed:', e.message);
 }
