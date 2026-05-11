@@ -26,20 +26,27 @@ let io = null;
 
 // Sentry Initialization
 const Sentry = require("@sentry/node");
-const { nodeProfilingIntegration } = require("@sentry/profiling-node");
+// Conditionally require Sentry profiling to avoid crashes on unsupported local environments
+const nodeProfilingIntegration = process.platform !== 'win32' 
+  ? require("@sentry/profiling-node").nodeProfilingIntegration 
+  : () => ({ name: 'mock-profiling-integration', setupOnce: () => {} });
 
 if (process.env.SENTRY_DSN) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    integrations: [
-      nodeProfilingIntegration(),
-    ],
-    // Performance Monitoring
-    tracesSampleRate: 1.0, //  Capture 100% of the transactions
-    // Set sampling rate for profiling - this is relative to tracesSampleRate
-    profilesSampleRate: 1.0,
-  });
-  console.log('✅ Sentry initialized');
+  try {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      integrations: [
+        // Skip profiling on Windows local if it fails
+        ...(process.platform !== 'win32' ? [nodeProfilingIntegration()] : []),
+      ],
+      tracesSampleRate: 1.0,
+      profilesSampleRate: 1.0,
+    });
+    console.log('✅ Sentry initialized');
+  } catch (e) {
+    console.log('⚠️ Sentry profiling failed, starting without it');
+    Sentry.init({ dsn: process.env.SENTRY_DSN });
+  }
 } else {
   console.log('⚠️ Sentry DSN not found, skipping initialization');
 }
