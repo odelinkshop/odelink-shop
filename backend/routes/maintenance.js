@@ -42,4 +42,16 @@ router.get('/status', (req, res) => {
   });
 });
 
+
+// Migration: Add subdomain tracking columns
+router.get('/migrate/subdomain-rights', async (req, res) => {
+  try {
+    await pool.query('ALTER TABLE sites ADD COLUMN IF NOT EXISTS subdomain_change_count INTEGER DEFAULT 0');
+    await pool.query('ALTER TABLE sites ADD COLUMN IF NOT EXISTS last_subdomain_change_at TIMESTAMP');
+    res.json({ success: true, message: 'Subdomain rights columns added successfully.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;
