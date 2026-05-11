@@ -1,6 +1,32 @@
 import { create } from 'zustand';
 import { Product } from '@/types/product';
 
+interface StoreSettings {
+  name: string;
+  description: string;
+  logoUrl?: string;
+  design: {
+    primaryColor: string;
+    secondaryColor: string;
+    accentColor: string;
+    fontFamily: string;
+  };
+  content: {
+    announcementBar: string;
+    heroBadge?: string;
+    heroDescription?: string;
+    heroTitle: string;
+    heroSubtitle: string;
+    heroButtonText: string;
+    heroImageUrl?: string;
+    heroAccent?: string;
+    aboutTitle?: string;
+    aboutText?: string;
+    contactEmail?: string;
+    contactPhone?: string;
+    contactInstagram?: string;
+  };
+  manualProducts?: any[];
   contact_info?: {
     phone?: string;
     email?: string;
