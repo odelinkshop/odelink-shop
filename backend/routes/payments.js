@@ -7,13 +7,13 @@ const ShopierService = require('../services/ShopierService');
 const Product = require('../models/Product');
 
 // Import auth middleware
-const auth = require('../middleware/auth');
+const authMiddleware = require('../middleware/auth');
 
 /**
  * Create Dodo Checkout Link
  * POST /api/payments/create-link
  */
-router.post('/create-link', auth, async (req, res) => {
+router.post('/create-link', authMiddleware, async (req, res) => {
   try {
     const { planId } = req.body;
     const userId = req.userId; // Matches authMiddleware (req.userId = userId)

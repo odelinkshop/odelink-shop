@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
-const { authenticateToken } = require('../middleware/auth');
+const authMiddleware = require('../middleware/auth');
 
 // Tüm ürünlerimi getir
-router.get('/my-products', authenticateToken, async (req, res) => {
+router.get('/my-products', authMiddleware, async (req, res) => {
   try {
-    const products = await Product.findByUserId(req.user.userId);
+    const products = await Product.findByUserId(req.userId);
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -14,10 +14,10 @@ router.get('/my-products', authenticateToken, async (req, res) => {
 });
 
 // Yeni ürün ekle
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const product = await Product.create({
-      userId: req.user.userId,
+      userId: req.userId,
       ...req.body
     });
     res.status(201).json(product);
@@ -27,9 +27,9 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Ürün güncelle
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const product = await Product.update(req.params.id, req.user.userId, req.body);
+    const product = await Product.update(req.params.id, req.userId, req.body);
     if (!product) return res.status(404).json({ error: 'Ürün bulunamadı' });
     res.json(product);
   } catch (error) {
@@ -38,9 +38,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Ürün sil
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const product = await Product.delete(req.params.id, req.user.userId);
+    const product = await Product.delete(req.params.id, req.userId);
     if (!product) return res.status(404).json({ error: 'Ürün bulunamadı' });
     res.json({ message: 'Ürün başarıyla silindi' });
   } catch (error) {
