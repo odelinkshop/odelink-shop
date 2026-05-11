@@ -980,7 +980,14 @@ router.post('/refresh', async (req, res) => {
 
 router.get('/session', async (req, res) => {
   try {
-    const session = await resolveAuthenticatedUser(req, res, { allowRefresh: true });
+    let session = null;
+    try {
+      session = await resolveAuthenticatedUser(req, res, { allowRefresh: true });
+    } catch (innerError) {
+      console.warn('⚠️ Session resolution warning (likely schema mismatch):', innerError.message);
+      session = null;
+    }
+
     if (!session?.user?.id) {
       clearSessionCookies(req, res);
       return res.status(401).json({ error: 'Aktif oturum bulunamadi' });
@@ -993,9 +1000,9 @@ router.get('/session', async (req, res) => {
       token: session.token
     });
   } catch (error) {
-    console.error('Get session error:', error);
+    console.error('❌ Get session critical error:', error);
     clearSessionCookies(req, res);
-    return res.status(500).json({ error: 'Oturum bilgisi alinamadi' });
+    return res.status(500).json({ error: 'Sunucu hatası: Oturum bilgisi alınamadı' });
   }
 });
 

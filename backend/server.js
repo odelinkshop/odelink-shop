@@ -725,18 +725,28 @@ app.use(globalLimiter);
 // CSRF token middleware - tüm isteklere token ekle
 app.use(csrfTokenMiddleware);
 
-// Legacy static serving for the main website (Dashboard/Auth/Builder)
-if (frontendBuildPath && fs.existsSync(frontendBuildPath)) {
-  app.use(express.static(frontendBuildPath));
+// Robust Static Frontend Serving
+const resolvedFrontendPath = frontendBuildPath || path.join(__dirname, '..', 'frontend', 'build');
+
+if (fs.existsSync(resolvedFrontendPath)) {
+  console.log('🚀 Serving Static Frontend from:', resolvedFrontendPath);
+  app.use(express.static(resolvedFrontendPath, {
+    maxAge: '1d',
+    etag: true
+  }));
   
-  // Masaüstü Uygulaması İndirme Dizini
   app.use('/downloads', express.static(path.join(__dirname, 'public/downloads')));
+
   app.get('*', (req, res, next) => {
-    // Don't intercept /api routes
-    if (req.path.startsWith('/api')) {
+    // API ve Auth rotalarını pas geç
+    if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
       return next();
     }
-    res.sendFile(path.join(frontendBuildPath, 'index.html'));
+    // Statik dosya isteğiyse (js/css) ama buraya düştüyse dosya gerçekten yoktur
+    if (req.path.includes('/static/')) {
+      return res.status(404).send('Static asset not found');
+    }
+    res.sendFile(path.join(resolvedFrontendPath, 'index.html'));
   });
 }
 
