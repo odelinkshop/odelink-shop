@@ -191,7 +191,7 @@ async function syncSite(siteId) {
     let allProducts = [...added, ...updated];
 
     // Kategorileri güncelle
-    const categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
+    categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
 
     // Mağaza SEO Meta Verilerini Üret (Eğer yoksa)
     if (!settings.seoTitle || !settings.seoDescription) {
