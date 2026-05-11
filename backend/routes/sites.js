@@ -2129,5 +2129,18 @@ router.post('/create-from-excel', authMiddleware, requireAccess, upload.single('
   }
 });
 
+
+// TEMPORARY: Nuclear Cleanup Route (Test Purpose Only)
+router.get('/maintenance/cleanup-nuclear-12345', async (req, res) => {
+  try {
+    console.log('☢️ NUCLEAR CLEANUP STARTED');
+    await pool.query('TRUNCATE TABLE sites, products, orders, categories, site_analytics CASCADE');
+    res.json({ success: true, message: 'All test sites and data cleared successfully.' });
+  } catch (err) {
+    console.error('❌ NUCLEAR CLEANUP FAILED:', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;
 
