@@ -183,9 +183,15 @@ try {
   console.error('❌ storeAuthRoutes failed:', e.message);
 }
 
+const ProductModel = require('./models/Product');
+ProductModel.ensureSchema().catch(e => console.error('❌ Product schema failed:', e.message));
+const productsRoutes = require('./routes/products');
+
 const paymentRoutes = require('./routes/payments');
 const Transaction = require('./models/Transaction');
 Transaction.ensureSchema().catch(e => console.error('❌ Transaction schema failed:', e.message));
+const OrderModel = require('./models/Order');
+OrderModel.ensureSchema().catch(e => console.error('❌ Order schema failed:', e.message));
 
 try {
   reportsRoutes = require('./routes/reports');
@@ -772,12 +778,20 @@ app.get('/api/csrf-token', (req, res) => {
 const maintenanceRoutes = require('./routes/maintenance');
 app.use('/api/maintenance', maintenanceRoutes);
 
+const productsRoutes = require('./routes/products');
+const Product = require('./models/Product');
+Product.ensureSchema();
+
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/sites', sitesLimiter, siteRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/shopier', shopierLimiter, shopierRoutes);
 app.use('/api/real-shopier', realShopierLimiter, realShopierRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/products', productsRoutes);
+if (realShopierRoutes) {
+  app.use('/api/real-shopier', realShopierLimiter, realShopierRoutes);
+}
 app.use('/api/metrics', metricsLimiter, metricsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/support', supportLimiter, supportRoutes);

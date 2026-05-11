@@ -5,6 +5,7 @@ const path = require('path');
 const AuthSession = require('../models/AuthSession');
 const User = require('../models/User');
 const Site = require('../models/Site');
+const Order = require('../models/Order');
 const Subscription = require('../models/Subscription');
 const pool = require('../config/database');
 const authMiddleware = require('../middleware/auth');
@@ -96,6 +97,40 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Dashboard error:', error);
     res.status(500).json({ error: 'Dashboard verileri alinamadi' });
+  }
+});
+
+router.get('/shopier-settings', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
+
+    res.json({
+      apiKey: user.shopier_api_key,
+      apiSecret: user.shopier_api_secret,
+      currency: user.shop_currency
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Ayarlar alınamadı' });
+  }
+});
+
+router.put('/shopier-settings', authMiddleware, async (req, res) => {
+  try {
+    const { apiKey, apiSecret, currency } = req.body;
+    const result = await User.updateShopierSettings(req.userId, { apiKey, apiSecret, currency });
+    res.json({ message: 'Shopier ayarları başarıyla güncellendi', settings: result });
+  } catch (error) {
+    res.status(500).json({ error: 'Ayarlar güncellenemedi' });
+  }
+});
+
+router.get('/my-orders', authMiddleware, async (req, res) => {
+  try {
+    const orders = await Order.findByUserId(req.userId);
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: 'Siparişler alınamadı' });
   }
 });
 

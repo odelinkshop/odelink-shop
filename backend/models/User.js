@@ -39,6 +39,16 @@ class User {
     return ensureEmailSchemaPromise;
   }
 
+  static async ensureShopierSchema() {
+    try {
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS shopier_api_key VARCHAR(255)');
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS shopier_api_secret VARCHAR(255)');
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS shop_currency VARCHAR(10) DEFAULT \'TRY\'');
+    } catch (error) {
+      console.error('Error ensuring shopier schema:', error);
+    }
+  }
+
   static async create(userData) {
     const { name, email, password, phone } = userData;
     const normalizedName = normalizeDisplayName(name);
@@ -56,6 +66,7 @@ class User {
 
     try {
       const result = await pool.query(query, [normalizedName, normalizedEmail, hashedPassword, normalizedPhone || null]);
+      await this.ensureShopierSchema();
       return result.rows[0];
     } catch (error) {
       throw new Error('Kullanici olusturulamadi: ' + (error?.message || error?.code || 'Bilinmeyen hata'));
@@ -74,7 +85,7 @@ class User {
   }
 
   static async findById(id) {
-    const query = 'SELECT id, name, email, phone, subscription_id, created_at, updated_at FROM users WHERE id = $1';
+    const query = 'SELECT id, name, email, phone, subscription_id, shopier_api_key, shopier_api_secret, shop_currency, created_at, updated_at FROM users WHERE id = $1';
     try {
       const result = await pool.query(query, [id]);
       return result.rows[0];
@@ -148,6 +159,23 @@ class User {
       return result.rows[0];
     } catch (error) {
       throw new Error('Abonelik bilgileri alinamadi: ' + (error?.message || error?.code || 'Bilinmeyen hata'));
+    }
+  }
+
+  static async updateShopierSettings(userId, settings) {
+    const { apiKey, apiSecret, currency } = settings;
+    const query = `
+      UPDATE users
+      SET shopier_api_key = $1, shopier_api_secret = $2, shop_currency = $3, updated_at = NOW()
+      WHERE id = $4
+      RETURNING id, shopier_api_key, shop_currency
+    `;
+
+    try {
+      const result = await pool.query(query, [apiKey, apiSecret, currency || 'TRY', userId]);
+      return result.rows[0];
+    } catch (error) {
+      throw new Error('Shopier ayarlari guncellenemedi: ' + error.message);
     }
   }
 }

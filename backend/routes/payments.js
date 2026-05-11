@@ -3,6 +3,8 @@ const router = express.Router();
 const Subscription = require('../models/Subscription');
 const User = require('../models/User');
 const DodoPaymentService = require('../services/dodoPaymentService');
+const ShopierService = require('../services/ShopierService');
+const Product = require('../models/Product');
 
 // Import auth middleware
 const auth = require('../middleware/auth');
@@ -94,6 +96,96 @@ router.post('/dodo-callback', async (req, res) => {
   } catch (error) {
     console.error('❌ Dodo Callback Error:', error);
     res.status(500).send('Internal Server Error');
+  }
+});
+
+/**
+ * SHOPİER ÖDEME ENTEGRASYONU
+ */
+
+// Ödeme Başlatma (Müşteri için)
+router.post('/create-shopier-payment', async (req, res) => {
+  try {
+    const { productId, buyerName, buyerSurname, buyerEmail, buyerPhone, siteOwnerId } = req.body;
+
+    // 1. Satıcının Shopier bilgilerini al
+    const seller = await User.findById(siteOwnerId);
+    if (!seller || !seller.shopier_api_key || !seller.shopier_api_secret) {
+      return res.status(400).json({ error: 'Satıcı ödeme altyapısını henüz yapılandırmamış.' });
+    }
+
+    // 2. Ürün bilgilerini kontrol et
+    const productQuery = 'SELECT * FROM products WHERE id = $1';
+    const productRes = await pool.query(productQuery, [productId]);
+    const product = productRes.rows[0];
+    if (!product) return res.status(404).json({ error: 'Ürün bulunamadı.' });
+
+    // 3. Siparişi veritabanına kaydet (Statü: pending)
+    const orderId = `ORD-${Date.now()}`;
+    await pool.query(
+      'INSERT INTO orders (id, user_id, product_id, amount, status, buyer_email, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW())',
+      [orderId, siteOwnerId, productId, product.price, 'pending', buyerEmail]
+    );
+
+    // 4. Shopier formunu oluştur
+    const paymentForm = ShopierService.createPaymentForm(
+      seller.shopier_api_key,
+      seller.shopier_api_secret,
+      {
+        orderId: orderId,
+        totalAmount: product.price,
+        buyerName,
+        buyerSurname,
+        buyerEmail,
+        buyerPhone,
+        callbackUrl: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/payments/shopier-callback`,
+        currency: seller.shop_currency === 'USD' ? '1' : seller.shop_currency === 'EUR' ? '2' : '0'
+      }
+    );
+
+    res.json(paymentForm);
+  } catch (error) {
+    console.error('Shopier Payment error:', error);
+    res.status(500).json({ error: 'Ödeme başlatılamadı.' });
+  }
+});
+
+// Shopier Callback (Ödeme Bildirimi)
+router.post('/shopier-callback', async (req, res) => {
+  try {
+    const postData = req.body;
+    const orderId = postData.res_platform_order_id;
+
+    if (!orderId) return res.status(400).send('Missing order id');
+
+    // 1. Siparişi bul
+    const orderQuery = 'SELECT * FROM orders WHERE id = $1';
+    const orderRes = await pool.query(orderQuery, [orderId]);
+    const order = orderRes.rows[0];
+    if (!order) return res.status(404).send('Order not found');
+
+    // 2. Satıcıyı bul (İmza doğrulaması için Secret lazım)
+    const seller = await User.findById(order.user_id);
+    if (!seller) return res.status(404).send('Seller not found');
+
+    // 3. İmzayı doğrula
+    const isValid = ShopierService.verifyCallback(seller.shopier_api_secret, postData);
+    if (!isValid) {
+      console.error('❌ Shopier signature mismatch for order:', orderId);
+      return res.status(401).send('Invalid signature');
+    }
+
+    // 4. Sipariş durumunu güncelle
+    const status = postData.res_status === 'success' ? 'completed' : 'failed';
+    await pool.query('UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2', [status, orderId]);
+
+    console.log(`✅ Shopier Payment ${status.toUpperCase()} for order:`, orderId);
+
+    // Shopier sistemine başarılı yanıt dön
+    res.send('OK');
+  } catch (error) {
+    console.error('Shopier Callback error:', error);
+    res.status(500).send('Internal Error');
   }
 });
 

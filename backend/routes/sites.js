@@ -7,6 +7,8 @@ const express = require('express');
 const Joi = require('joi');
 const nodemailer = require('nodemailer');
 const Site = require('../models/Site');
+const User = require('../models/User');
+const Product = require('../models/Product');
 const Subscription = require('../models/Subscription');
 const AutoBuildJobStore = require('../models/AutoBuildJobStore');
 const AnalyticsStore = require('../models/AnalyticsStore');
@@ -1139,14 +1141,14 @@ router.get('/public-by-host', async (req, res) => {
       return res.status(404).json({ error: 'Site bulunamadı' });
     }
 
+    // Fetch manual products for this site owner
+    const products = await Product.findByUserId(site.user_id);
+    site.manual_products = products;
+
     // Cache for 1 hour
     await CacheService.set(cacheKey, site, 3600);
 
-    if (!site) {
-      return res.status(404).json({ error: 'Site bulunamadı' });
-    }
-
-    return res.json({ site });
+    return res.json({ site, products });
   } catch (error) {
     console.error('❌ Get public site by host error:', error);
     return res.status(500).json({ error: 'Site alınamadı' });
