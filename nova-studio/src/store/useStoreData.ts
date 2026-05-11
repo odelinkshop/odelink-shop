@@ -27,6 +27,12 @@ interface StoreSettings {
     contactInstagram?: string;
   };
   manualProducts?: any[];
+  contact?: {
+    email?: string;
+    phone?: string;
+    address?: string;
+    instagram?: string;
+  };
   contact_info?: {
     phone?: string;
     email?: string;
@@ -284,6 +290,7 @@ export const useStoreData = create<StoreState>((set, get) => ({
           policies: settings.policies || settings.pages || {},
           pages: settings.pages || settings.policies || {},
           contact: settings.contact || settings.contact_info || {},
+          contact_info: settings.contact_info || settings.contact || {},
           social_links: settings.social_links || {},
           branding: settings.branding || {}
         },
