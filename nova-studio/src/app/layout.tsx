@@ -104,7 +104,7 @@ export default async function RootLayout({
   const storeData = await getStoreData(host);
 
   return (
-    <html lang="tr" className="h-full">
+    <html lang="tr" className="h-full" suppressHydrationWarning>
       <head>
         {/* Anti-Flash Theme Script - Locked to Parchment */}
         <script dangerouslySetInnerHTML={{ __html: `

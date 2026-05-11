@@ -5,7 +5,14 @@ import { useStoreData } from "@/store/useStoreData";
 
 const AnnouncementBar = () => {
   const { settings } = useStoreData();
-  const text = settings.content.announcementBar || "FREE WORLDWIDE SHIPPING ON ORDERS OVER $500 • COMPLIMENTARY ITALIAN WRAPPING •";
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Use a stable default or server-provided value until mounted to prevent hydration mismatch
+  const text = mounted ? (settings.content.announcementBar || "FREE WORLDWIDE SHIPPING ON ORDERS OVER $500 • COMPLIMENTARY ITALIAN WRAPPING •") : "LÜKS MAĞAZA DENEYİMİ — ODELINK ENTERPRISE STUDIO —";
 
   return (
     <div className="w-full bg-secondary text-primary py-2.5 overflow-hidden border-b border-primary/5 relative z-50">

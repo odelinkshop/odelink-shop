@@ -65,7 +65,7 @@ const Navbar = () => {
                 "text-base sm:text-lg lg:text-xl xl:text-2xl font-serif tracking-[-0.03em] transition-all uppercase font-normal truncate max-w-[200px]",
                 isActive ? "text-secondary" : "text-white"
               )}>
-                {mounted ? siteName.split('|')[0].trim() : "..."}
+                {mounted ? (siteName.split('|')[0].trim() || "MAĞAZA") : "MAĞAZA"}
               </h1>
             </Link>
           </div>
