@@ -188,7 +188,6 @@ ProductModel.ensureSchema().catch(e => console.error('❌ Product schema failed:
 const productsRoutes = require('./routes/products');
 
 const paymentRoutes = require('./routes/payments');
-const Transaction = require('./models/Transaction');
 Transaction.ensureSchema().catch(e => console.error('❌ Transaction schema failed:', e.message));
 const OrderModel = require('./models/Order');
 OrderModel.ensureSchema().catch(e => console.error('❌ Order schema failed:', e.message));
@@ -778,9 +777,8 @@ app.get('/api/csrf-token', (req, res) => {
 const maintenanceRoutes = require('./routes/maintenance');
 app.use('/api/maintenance', maintenanceRoutes);
 
-const productsRoutes = require('./routes/products');
 const Product = require('./models/Product');
-Product.ensureSchema();
+Product.ensureSchema().catch(e => console.error('❌ Product schema failed:', e.message));
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/sites', sitesLimiter, siteRoutes);
