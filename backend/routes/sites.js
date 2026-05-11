@@ -55,13 +55,51 @@ const pickPolicies = (raw) => {
 // Shopier mağaza linki yeterli — ürünler scraping ile otomatik çekilir.
 const createSiteSchema = Joi.object({
   name: Joi.string().min(2).max(100).optional(),
-  shopierUrl: Joi.string().min(3).max(500).required(),
-  apiKey: Joi.string().allow('').max(500).optional(),
-  settings: Joi.object({
-    description: Joi.string().allow('').optional(),
-    logoUrl: Joi.string().allow('').optional(),
-    shopier_user: Joi.string().allow('').optional()
-  }).unknown(true).default({})
+  subdomain: Joi.string().min(3).max(30).required(),
+  shopierUrl: Joi.string().allow('').optional(),
+  apiKey: Joi.string().allow('').optional(),
+  settings: Joi.object().unknown(true).default({})
+});
+
+// --- 2026 Basit Mağaza Oluşturma (Sadece Subdomain) ---
+router.post('/create-simple', authMiddleware, async (req, res) => {
+  try {
+    const { subdomain } = req.body;
+    
+    if (!subdomain) return res.status(400).json({ error: 'Mağaza adı (subdomain) gereklidir.' });
+    
+    // Temizleme ve Kontrol
+    const cleanSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    
+    // Mükerrer Kontrolü
+    const existing = await pool.query('SELECT id FROM sites WHERE subdomain = $1', [cleanSubdomain]);
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ error: 'Bu mağaza adı zaten alınmış. Başka bir tane dene.' });
+    }
+
+    const newSite = await Site.create({
+      userId: req.userId,
+      name: subdomain.toUpperCase() + " MAĞAZASI",
+      subdomain: cleanSubdomain,
+      settings: {
+        theme: 'nova-premium',
+        primaryColor: '#2563eb', // Electric Cobalt Blue
+        heroTitle: 'Hoş Geldiniz',
+        description: 'En yeni ürünlerimiz burada.'
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      siteId: newSite.id,
+      subdomain: newSite.subdomain,
+      message: 'Mağazanız saniyeler içinde hazırlandı!'
+    });
+
+  } catch (error) {
+    console.error('❌ Simple Create Error:', error);
+    res.status(500).json({ error: 'Mağaza oluşturulurken bir hata oluştu.' });
+  }
 });
 
 

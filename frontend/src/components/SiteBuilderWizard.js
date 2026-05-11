@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Store, ShieldCheck, Zap, Loader2, ExternalLink, Download } from 'lucide-react';
+import { Globe, Shield, Activity, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthSession from '../hooks/useAuthSession';
 import { getApiBase } from '../utils/apiBase';
@@ -9,22 +9,18 @@ const API_BASE = getApiBase();
 
 export default function SiteBuilderWizard() {
   const navigate = useNavigate();
-  const { token, ready } = useAuthSession();
+  const { token } = useAuthSession();
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
-  // Progress State
   const [siteId, setSiteId] = useState(null);
   const [subdomain, setSubdomain] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [productCount, setProductCount] = useState(0);
-  const [successMsg, setSuccessMsg] = useState('');
 
-  const handleApiCreate = async () => {
-    if (!apiKey) {
-      setErrorMsg('Lütfen Shopier API anahtarınızı girin.');
+  const handleSimpleCreate = async () => {
+    if (!subdomain || subdomain.length < 3) {
+      setErrorMsg('Lütfen geçerli bir mağaza adı (en az 3 karakter) belirleyin.');
       return;
     }
 
@@ -32,135 +28,170 @@ export default function SiteBuilderWizard() {
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${API_BASE}/api/sites/create-from-api`, {
+      const res = await fetch(`${API_BASE}/api/sites/create-simple`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ apiKey })
+        body: JSON.stringify({ subdomain })
       });
       
       const data = await res.json();
 
       if (res.ok) {
         setSiteId(data.siteId);
-        setSubdomain(data.subdomain);
-        setProductCount(data.productCount || 0);
-        setSuccessMsg(data.message || 'Mağazanız başarıyla hazırlandı!');
         setIsCompleted(true);
       } else {
-        setErrorMsg(data.error || 'API ile bağlanırken hata oluştu.');
+        setErrorMsg(data.error || 'Yapılandırma sırasında bir hata oluştu.');
         setLoading(false);
       }
     } catch (err) {
-      setErrorMsg('Bağlantı hatası oluştu.');
+      setErrorMsg('Ağ bağlantısı doğrulanamadı.');
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#F2EBE1] font-sans selection:bg-[#C5A059]/30 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5" />
-        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] bg-[#C5A059]/10 blur-[120px] rounded-full" />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#1E293B] font-sans selection:bg-[#38BDF8]/20 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#1E293B 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       </div>
 
-      <header className="fixed top-0 inset-x-0 z-50 bg-black/40 backdrop-blur-md border-b border-[#C5A059]/10">
-        <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
+      <header className="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#C5A059] flex items-center justify-center shadow-2xl shadow-[#C5A059]/20 rounded-lg">
-              <Store className="w-5 h-5 text-[#0A0A0A]" />
+            <div className="w-8 h-8 bg-[#0F172A] flex items-center justify-center rounded-md">
+              <Globe className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-xl font-black tracking-tighter text-[#F2EBE1]">ODELINK <span className="text-[#C5A059] font-serif font-normal italic">Studio</span></h1>
+            <h1 className="text-lg font-bold tracking-tight text-[#0F172A]">ODELINK <span className="text-slate-400 font-medium">Enterprise</span></h1>
           </div>
-          <button onClick={() => navigate('/panel')} className="text-[10px] uppercase tracking-widest font-bold text-[#F2EBE1]/40 hover:text-[#C5A059] transition-all">PANELE DÖN</button>
+          <button 
+            onClick={() => navigate('/panel')} 
+            className="text-[11px] font-bold tracking-widest text-slate-500 hover:text-[#0F172A] transition-colors uppercase"
+          >
+            Panele Dön
+          </button>
         </div>
       </header>
 
-      <main className="max-w-xl mx-auto px-6 pt-40 pb-20 relative text-center">
-        <div className="space-y-10">
-          <div className="space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-serif leading-tight text-[#F2EBE1]">Mağaza Kurulumu</h2>
-            <p className="text-[#C5A059] uppercase tracking-[0.1em] sm:tracking-[0.4em] text-[7px] sm:text-[9px] font-black opacity-60">API ANAHTARINIZI GİRİN, SANİYELER İÇİNDE LÜKS MAĞAZANIZI CANLIYA ALALIM</p>
+      <main className="max-w-4xl mx-auto px-6 pt-40 pb-20 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full">
+                <Activity size={12} className="text-[#38BDF8]" />
+                <span className="text-[10px] font-bold text-[#38BDF8] uppercase tracking-wider">Sistem Aktif v2.6</span>
+              </div>
+              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-[#0F172A] leading-[1.1]">
+                Dijital Mağaza <br /> Altyapısı.
+              </h2>
+              <p className="text-slate-500 text-lg leading-relaxed max-w-md">
+                Kurumsal standartlarda mağaza yapılandırmanızı saniyeler içinde tamamlayın ve ticari faaliyetlerinize başlayın.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-4">
+              {[
+                { icon: Shield, text: 'SSL & Güvenli Veri Katmanı' },
+                { icon: Globe, text: 'Global CDN Yönlendirmesi' },
+                { icon: CheckCircle2, text: 'Kurumsal Ödeme Gateway Entegrasyonu' }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center">
+                    <item.icon size={10} className="text-slate-600" />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-600">{item.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <AnimatePresence mode="wait">
-            {!siteId ? (
-              <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[#111] border border-[#C5A059]/20 p-10 rounded-3xl shadow-2xl">
-                <div className="flex flex-col items-center space-y-8">
-                  <div className="w-full space-y-6">
-                     <div className="space-y-6">
-                        <div className="text-left">
-                          <label className="text-[10px] text-[#C5A059] font-black uppercase tracking-widest mb-4 block">Shopier API İle Güvenli Bağlantı</label>
-                          <div className="relative group">
-                            <input 
-                              type="password"
-                              value={apiKey}
-                              onChange={(e) => setApiKey(e.target.value)}
-                              placeholder="Shopier API Anahtarınızı Buraya Yapıştırın"
-                              className="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-sm focus:border-[#C5A059] focus:outline-none transition-all pr-32"
-                            />
-                            <button 
-                              onClick={handleApiCreate}
-                              disabled={loading || !apiKey}
-                              className="absolute right-2 top-2 bottom-2 px-6 bg-[#C5A059] text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-[#F2EBE1] disabled:opacity-50 transition-all"
-                            >
-                              {loading ? '...' : 'BAĞLAN VE KUR'}
-                            </button>
-                          </div>
-                          <p className="text-[8px] text-white/30 mt-3 uppercase tracking-[0.2em] leading-relaxed">
-                            Shopier Panel &gt; Entegrasyonlar &gt; API kısmından <a href="https://www.shopier.com/index.php?module=shop&page=shop_api_details" target="_blank" rel="noreferrer" className="text-[#C5A059] underline">buradan</a> alabilirsiniz.
-                          </p>
-                        </div>
-                     </div>
-
-                     {errorMsg && (
-                      <div className="text-red-400 text-[11px] font-medium bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-left">
-                        ⚠️ {errorMsg}
+            {!isCompleted ? (
+              <motion.div 
+                key="form"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="bg-white border border-slate-200 p-8 sm:p-12 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)]"
+              >
+                <div className="space-y-8">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Mağaza Adresi (Subdomain)</label>
+                    <div className="relative">
+                      <input 
+                        type="text"
+                        value={subdomain}
+                        onChange={(e) => setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                        placeholder="magazaadi"
+                        className="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl text-lg font-bold text-[#0F172A] focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/5 outline-none transition-all pr-32"
+                      />
+                      <div className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">
+                        .odelink.shop
                       </div>
-                    )}
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-medium">Sadece küçük harf, rakam ve tire kullanabilirsiniz.</p>
                   </div>
 
-                  <div className="flex items-center justify-center gap-8 pt-4 border-t border-white/5 w-full">
-                    <div className="flex items-center gap-2 text-[10px] text-white/30 font-bold uppercase tracking-wider">
-                      <ShieldCheck size={14} className="text-[#C5A059]" /> Güvenli Aktarım
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] text-white/30 font-bold uppercase tracking-wider">
-                      <Zap size={14} className="text-[#C5A059]" /> 1 Dakikada Canlıda
-                    </div>
-                  </div>
+                  {errorMsg && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-red-500" />
+                      <p className="text-[11px] font-bold text-red-600 uppercase tracking-tight">{errorMsg}</p>
+                    </motion.div>
+                  )}
+
+                  <button 
+                    onClick={handleSimpleCreate}
+                    disabled={loading || subdomain.length < 3}
+                    className="w-full bg-[#0F172A] text-white p-5 rounded-2xl font-bold text-sm tracking-widest hover:bg-[#38BDF8] disabled:bg-slate-100 disabled:text-slate-400 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200"
+                  >
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>YAPILANDIRMAYI BAŞLAT <ArrowRight size={16} /></>}
+                  </button>
                 </div>
               </motion.div>
             ) : (
-              <motion.div key="progress" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#111] border border-[#C5A059]/20 p-12 rounded-3xl shadow-2xl relative overflow-hidden">
-                <div className="flex flex-col items-center space-y-8 text-center">
-                  <div className={`w-24 h-24 ${productCount > 0 ? 'bg-green-500/10 border-green-500/30' : 'bg-yellow-500/10 border-yellow-500/30'} rounded-full flex items-center justify-center border`}>
-                    {productCount > 0 ? <ShieldCheck className="w-12 h-12 text-green-400" /> : <Loader2 className="w-12 h-12 text-yellow-400 animate-spin" />}
-                  </div>
+              <motion.div 
+                key="success"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-[#0F172A] p-12 rounded-3xl shadow-2xl text-center space-y-8"
+              >
+                <div className="w-20 h-20 bg-[#38BDF8]/10 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-10 h-10 text-[#38BDF8]" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold text-white tracking-tight">Aktivasyon Başarılı</h3>
+                  <p className="text-slate-400 text-sm">Dijital mağaza altyapınız global ağlara başarıyla yansıtıldı.</p>
+                </div>
+                
+                <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                  <p className="text-[11px] font-bold text-[#38BDF8] tracking-widest uppercase mb-1">Erişim Adresi</p>
+                  <p className="text-white font-mono text-sm">{subdomain}.odelink.shop</p>
+                </div>
 
-                  <div className="space-y-3">
-                    <h3 className="text-3xl font-serif text-[#F2EBE1]">{productCount > 0 ? 'Mağazanız Yayında!' : 'Hazırlanıyor...'}</h3>
-                    <div className="space-y-1">
-                      <p className="text-xs text-[#C5A059] font-black uppercase tracking-[0.2em]">{successMsg}</p>
-                      <p className="text-[10px] text-white/40 max-w-sm mx-auto uppercase tracking-widest font-bold">
-                        {subdomain}.odelink.shop
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="w-full flex flex-col gap-3 pt-6">
-                    <a href={`https://${subdomain}.odelink.shop`} target="_blank" rel="noreferrer" className="w-full py-5 bg-[#C5A059] text-black font-black uppercase text-[12px] tracking-widest rounded-xl hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 no-underline shadow-xl shadow-[#C5A059]/10">
-                      MAĞAZAYI GÖRÜNTÜLE <ExternalLink size={18} />
-                    </a>
-                    <button onClick={() => navigate('/panel')} className="w-full py-5 border border-white/10 text-white/40 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-white/5 transition-all">
-                      YÖNETİM PANELİNE GİT
-                    </button>
-                  </div>
+                <div className="grid grid-cols-1 gap-3">
+                  <a 
+                    href={`https://${subdomain}.odelink.shop`} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="w-full bg-white text-[#0F172A] p-4 rounded-xl font-bold text-[11px] tracking-widest uppercase hover:bg-[#38BDF8] hover:text-white transition-all no-underline"
+                  >
+                    Vitrini Görüntüle
+                  </a>
+                  <button 
+                    onClick={() => navigate('/panel')} 
+                    className="w-full bg-white/5 text-white/40 p-4 rounded-xl font-bold text-[10px] tracking-widest uppercase hover:bg-white/10 transition-all"
+                  >
+                    Kontrol Paneli
+                  </button>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
+
         </div>
       </main>
     </div>
