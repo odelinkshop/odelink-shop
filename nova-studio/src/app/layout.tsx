@@ -106,19 +106,9 @@ export default async function RootLayout({
   return (
     <html lang="tr" className="h-full" suppressHydrationWarning>
       <head>
-        {/* Anti-Flash Theme Script - Safer for Hydration */}
-        <script id="anti-flash-script" dangerouslySetInnerHTML={{ __html: `
-          try {
-            var html = document.documentElement;
-            html.style.backgroundColor = '#F8F5F2';
-            html.classList.add('js-ready');
-          } catch (e) {}
-        `}} />
+        {/* Anti-Flash is now handled by globals.css to prevent hydration mismatch */}
       </head>
-      <body
-        className={`${inter.variable} ${playfair.variable} font-sans min-h-full flex flex-col antialiased bg-background`}
-        style={{ backgroundColor: '#F8F5F2' }}
-      >
+      <body className={`${inter.variable} ${playfair.variable} font-sans min-h-full flex flex-col antialiased bg-[#F8F5F2]`}>
         <CustomCursor />
         {storeData && (
           <StoreSchema 

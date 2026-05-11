@@ -125,20 +125,41 @@ async function syncSite(siteId) {
 
     // Mevcut ayarları al
     const settings = site?.settings && typeof site.settings === 'object' ? site.settings : {};
-    const apiKey = settings?.shopier_api_key || '';
+    const apiKey = settings?.shopier_pat || settings?.shopier_api_key || '';
 
     // Shopier'dan güncel ürünleri çek
-    console.log(`📦 Shopier'dan çekiliyor: ${normalizedUrl} ${apiKey ? '(API Key kullanılıyor)' : '(Scraping)'}`);
-    const catalog = await fetchShopierCatalog(normalizedUrl, {
-      debug: false,
-      skipDetails: false,
-      detailConcurrency: 5,
-      detailMaxProducts: 9999,
-      apiKey: apiKey,
-      bypassCache: true // Taze veri çek, eski veriyi unut!
-    });
+    console.log(`📦 Shopier'dan çekiliyor: ${normalizedUrl} ${apiKey ? '(Turbo API Modu Aktif)' : '(Scraping Modu)'}`);
+    
+    let newProducts = [];
+    let categories = [];
 
-    const newProducts = Array.isArray(catalog?.products) ? catalog.products : [];
+    if (apiKey) {
+      // 1. Resmi API ile tıkır tıkır çek (Turbo Mod)
+      const { fetchAllProductsFromShopierAPI } = require('./shopierApiService');
+      const apiProducts = await fetchAllProductsFromShopierAPI(normalizedUrl, apiKey);
+      
+      if (apiProducts && apiProducts.length > 0) {
+        newProducts = apiProducts;
+        // API'den gelen ürünlerin kategorilerini topla
+        categories = [...new Set(apiProducts.map(p => p.category).filter(Boolean))].map(name => ({ id: name, name }));
+        console.log(`🚀 Turbo API ile ${newProducts.length} ürün saniyeler içinde çekildi.`);
+      }
+    }
+
+    // 2. Eğer API anahtarı yoksa veya API başarısız olduysa Scraping'e dön (Fallback)
+    if (newProducts.length === 0) {
+      const catalog = await fetchShopierCatalog(normalizedUrl, {
+        debug: false,
+        skipDetails: false,
+        detailConcurrency: 5,
+        detailMaxProducts: 9999,
+        apiKey: apiKey,
+        bypassCache: true
+      });
+      newProducts = Array.isArray(catalog?.products) ? catalog.products : [];
+      categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
+    }
+
     if (!newProducts.length) {
       console.log(`⚠️ Shopier'dan ürün çekilemedi: ${siteId}`);
       return { success: false, error: 'No products from Shopier' };
