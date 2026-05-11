@@ -37,6 +37,13 @@ interface StoreSettings {
     x?: string;
     facebook?: string;
   };
+  policies?: {
+    privacy?: string;
+    returns?: string;
+    shipping?: string;
+    kvkk?: string;
+    cookies?: string;
+  };
   pages?: {
     about?: string;
     privacy?: string;
@@ -275,6 +282,7 @@ export const useStoreData = create<StoreState>((set, get) => ({
           content,
           manualProducts: settings.manualProducts || [],
           policies: settings.policies || settings.pages || {},
+          pages: settings.pages || settings.policies || {},
           contact: settings.contact || settings.contact_info || {},
           social_links: settings.social_links || {},
           branding: settings.branding || {}
