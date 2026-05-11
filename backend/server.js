@@ -188,6 +188,7 @@ ProductModel.ensureSchema().catch(e => console.error('❌ Product schema failed:
 const productsRoutes = require('./routes/products');
 
 const paymentRoutes = require('./routes/payments');
+const Transaction = require('./models/Transaction');
 Transaction.ensureSchema().catch(e => console.error('❌ Transaction schema failed:', e.message));
 const OrderModel = require('./models/Order');
 OrderModel.ensureSchema().catch(e => console.error('❌ Order schema failed:', e.message));
