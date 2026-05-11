@@ -89,7 +89,6 @@ const ShopierSettings = () => {
           <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold opacity-60">Ödeme Altyapısı & Güvenlik Yapılandırması</p>
         </div>
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Form Section */}
         <div className="lg:col-span-2 space-y-6">
@@ -100,30 +99,26 @@ const ShopierSettings = () => {
             className="bg-white/[0.02] border border-white/5 p-8 space-y-6"
           >
             <div className="space-y-4">
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest text-[#C5A059] font-black mb-2">Shopier API Key</label>
-                <div className="relative">
-                  <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4" />
-                  <input 
-                    type="text"
-                    value={settings.apiKey}
-                    onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
-                    className="w-full bg-white/[0.03] border border-white/10 px-12 py-4 text-sm focus:border-[#C5A059]/50 focus:outline-none transition-all font-mono"
-                    placeholder="Shopier Panelinden Alınan API Key"
-                  />
-                </div>
+              <div className="bg-[#C5A059]/10 border border-[#C5A059]/20 p-4 mb-6">
+                 <div className="flex items-center gap-3 text-[#C5A059]">
+                    <Zap size={18} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Modern Entegrasyon Aktif</span>
+                 </div>
+                 <p className="text-[9px] text-[#F2EBE1]/60 mt-1 font-bold uppercase tracking-widest">
+                   Yeni nesil Shopier PAT (Personal Access Token) sistemini kullanıyorsunuz. Artık Secret anahtarına gerek yok.
+                 </p>
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-[#C5A059] font-black mb-2">Shopier API Secret</label>
+                <label className="block text-[10px] uppercase tracking-widest text-[#C5A059] font-black mb-2">Shopier Kişisel Erişim Anahtarı (PAT)</label>
                 <div className="relative">
-                  <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4" />
-                  <input 
-                    type="password"
-                    value={settings.apiSecret}
-                    onChange={(e) => setSettings({ ...settings, apiSecret: e.target.value })}
-                    className="w-full bg-white/[0.03] border border-white/10 px-12 py-4 text-sm focus:border-[#C5A059]/50 focus:outline-none transition-all font-mono"
-                    placeholder="••••••••••••••••"
+                  <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C5A059] w-4 h-4" />
+                  <textarea 
+                    rows="3"
+                    value={settings.apiKey}
+                    onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
+                    className="w-full bg-white/[0.03] border border-white/10 px-12 py-4 text-sm focus:border-[#C5A059]/50 focus:outline-none transition-all font-mono leading-relaxed resize-none"
+                    placeholder="Shopier Geliştirici sayfasından aldığınız uzun erişim kodunu buraya yapıştırın..."
                   />
                 </div>
               </div>
@@ -155,7 +150,7 @@ const ShopierSettings = () => {
               className="w-full bg-[#C5A059] text-[#0A0A0A] py-4 font-black uppercase tracking-widest text-xs hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#C5A059]/10"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save size={16} />}
-              AYARLARI KAYDET
+              AYARLARI KAYDET & BAĞLANTIYI DOĞRULA
             </button>
           </motion.form>
         </div>
