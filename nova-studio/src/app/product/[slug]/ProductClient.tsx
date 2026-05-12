@@ -5,7 +5,16 @@ import Navbar from "@/components/layout/navbar";
 import { useStoreData } from "@/store/useStoreData";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Heart, ChevronLeft, ChevronRight, Star, ShieldCheck, Truck, RefreshCw, Plus, Minus, Zap } from "lucide-react";
+import { 
+  ShoppingBag, 
+  Heart, 
+  ChevronLeft, 
+  ChevronRight, 
+  Truck, 
+  RefreshCw, 
+  ShieldCheck, 
+  Zap 
+} from "lucide-react";
 import { useCart } from "@/store/useCart";
 import { cn } from "@/lib/utils";
 
@@ -13,15 +22,11 @@ import { cn } from "@/lib/utils";
 const formatPrice = (price: string | number, currency: string = "TL"): string => {
   if (price === undefined || price === null || price === "") return "-";
   
-  // Eğer zaten sembol içeriyorsa temizle ve parse et
   let cleanPrice = String(price).replace(/[₺TL$€£]/g, '').trim();
   
-  // Nokta ve virgül karmaşasını çöz: 2.450,00 -> 2450.00
-  // Eğer hem nokta hem virgül varsa, binlik ayracı noktadır.
   if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
   } else if (cleanPrice.includes(',')) {
-    // Sadece virgül varsa kuruş ayracıdır
     cleanPrice = cleanPrice.replace(',', '.');
   }
   
@@ -114,26 +119,20 @@ export default function ProductClient() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-[#C5A059] text-xs tracking-[0.8em] uppercase font-bold animate-pulse"
-        >
-          Koleksiyon Yükleniyor
-        </motion.div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-[#F2EBE1]">
-        <div className="text-center space-y-8 max-w-md px-6">
-          <h1 className="text-5xl font-serif tracking-tighter uppercase">Kayıp Parça</h1>
-          <p className="text-[10px] opacity-40 uppercase tracking-[0.4em] leading-relaxed">Aradığınız nadide parça şu an koleksiyonumuzda mevcut değil.</p>
-          <button onClick={() => window.location.href = '/'} className="w-full py-5 bg-[#C5A059] text-[#0A0A0A] text-[10px] uppercase tracking-[0.3em] font-black hover:bg-white transition-all">
-            Ana Sayfaya Dön
+      <div className="min-h-screen flex items-center justify-center bg-white text-black">
+        <div className="text-center space-y-6 max-w-sm px-6">
+          <h1 className="text-2xl font-medium tracking-tight">Ürün Bulunamadı</h1>
+          <p className="text-sm text-gray-400 leading-relaxed">Aradığınız ürün şu an stoklarımızda bulunmuyor.</p>
+          <button onClick={() => window.location.href = '/'} className="inline-block border-b border-black pb-1 text-xs uppercase tracking-widest font-bold">
+            Mağazaya Dön
           </button>
         </div>
       </div>
@@ -161,122 +160,106 @@ export default function ProductClient() {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  if (!mounted) return <div className="min-h-screen bg-[#0A0A0A]" />;
+  if (!mounted) return <div className="min-h-screen bg-white" />;
 
   return (
     <>
       <Navbar />
-      <main className="bg-[#0A0A0A] text-[#F2EBE1] min-h-screen pt-40 pb-24 px-4 md:px-12 lg:px-24">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+      <main className="bg-white text-black min-h-screen pt-32 pb-24 px-6 md:px-12 lg:px-20">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
             
-            {/* SOL KOLON: PREMIUM GALERİ */}
-            <div className="lg:col-span-7">
-              <div className="space-y-6">
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="relative aspect-[3/4] bg-white/[0.02] border border-white/5 group overflow-hidden"
-                >
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={selectedImage}
-                      src={safeImage(allImages[selectedImage])}
-                      alt={product.name}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.8 }}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
-                  </AnimatePresence>
-
-                  {/* Fiyat Rozeti (Mobil için) */}
-                  {(product.originalPrice || product.oldPrice) && Number(product.originalPrice || product.oldPrice) > Number(product.price) && (
-                    <div className="absolute top-8 left-8 bg-red-600 text-white text-[8px] font-black px-4 py-2 uppercase tracking-[0.2em] z-10">
-                      Özel İndirim
-                    </div>
-                  )}
-                </motion.div>
-
-                {/* Thumbnaillar */}
+            {/* GALLERY SECTION */}
+            <div className="space-y-4">
+              <div className="relative aspect-square bg-[#fbfbfb] overflow-hidden group border border-gray-50">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={selectedImage}
+                    src={safeImage(allImages[selectedImage])}
+                    alt={product.name}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full object-contain p-4 md:p-8"
+                  />
+                </AnimatePresence>
+                
                 {allImages.length > 1 && (
-                  <div className="grid grid-cols-5 gap-4">
-                    {allImages.map((img, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedImage(idx)}
-                        className={`relative aspect-[3/4] bg-white/[0.02] border transition-all duration-500 overflow-hidden ${
-                          selectedImage === idx ? "border-[#C5A059]" : "border-white/5 opacity-40 hover:opacity-100"
-                        }`}
-                      >
-                        <img src={safeImage(img)} alt="" className="w-full h-full object-cover" />
-                        {selectedImage === idx && <div className="absolute inset-0 bg-[#C5A059]/10" />}
-                      </button>
-                    ))}
+                  <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => setSelectedImage(prev => (prev === 0 ? allImages.length - 1 : prev - 1))} className="w-10 h-10 bg-white/90 shadow-sm flex items-center justify-center rounded-full hover:bg-black hover:text-white transition-all">
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button onClick={() => setSelectedImage(prev => (prev === allImages.length - 1 ? 0 : prev + 1))} className="w-10 h-10 bg-white/90 shadow-sm flex items-center justify-center rounded-full hover:bg-black hover:text-white transition-all">
+                      <ChevronRight size={18} />
+                    </button>
                   </div>
                 )}
               </div>
+
+              {/* THUMBNAILS BELOW */}
+              {allImages.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {allImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImage(idx)}
+                      className={`flex-shrink-0 w-16 h-16 bg-[#fbfbfb] border transition-all ${
+                        selectedImage === idx ? "border-black" : "border-transparent opacity-60"
+                      }`}
+                    >
+                      <img src={safeImage(img)} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* SAĞ KOLON: STICKY ÜRÜN BİLGİSİ */}
-            <div className="lg:col-span-5">
-              <div className="sticky top-40 space-y-12">
-                
-                {/* Üst Başlık ve Fiyat */}
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <span className="text-[9px] tracking-[0.4em] uppercase text-[#C5A059] font-black">
-                        {product.category || "Mağaza Seçkisi"}
-                      </span>
-                      <div className="h-px w-8 bg-white/10" />
-                      {product.sku && (
-                        <span className="text-[9px] tracking-[0.4em] uppercase text-white/20 font-black">
-                          Kod: {product.sku}
-                        </span>
-                      )}
-                    </div>
-                    <h1 className="text-4xl md:text-6xl font-serif text-white uppercase leading-[0.95] tracking-tighter">
-                      {product.name.split('|')[0].trim()}
-                    </h1>
+            {/* PRODUCT INFO SECTION */}
+            <div className="flex flex-col">
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400 font-bold">
+                      {product.category || "Mağaza"}
+                    </span>
+                    {product.sku && (
+                      <>
+                        <span className="w-1 h-1 bg-gray-200 rounded-full" />
+                        <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400 font-bold">SKU: {product.sku}</span>
+                      </>
+                    )}
                   </div>
-
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex items-baseline gap-4">
-                      <span className="text-4xl font-serif text-[#C5A059]">
-                        {formatPrice(product.price, product.currency)}
+                  <h1 className="text-2xl md:text-3xl font-medium tracking-tight">
+                    {product.name.split('|')[0].trim()}
+                  </h1>
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-xl font-medium">
+                      {formatPrice(product.price, product.currency)}
+                    </span>
+                    {(product.originalPrice || product.oldPrice) && Number(product.originalPrice || product.oldPrice) > Number(product.price) && (
+                      <span className="text-sm text-gray-300 line-through">
+                        {formatPrice((product.originalPrice || product.oldPrice) as any, product.currency)}
                       </span>
-                      {(product.originalPrice || product.oldPrice) && Number(product.originalPrice || product.oldPrice) > Number(product.price) && (
-                        <span className="text-lg text-white/20 line-through font-medium">
-                          {formatPrice((product.originalPrice || product.oldPrice) as any, product.currency)}
-                        </span>
-                      )}
-                    </div>
-                    {/* Stok Durumu */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-[8px] font-black uppercase tracking-[0.2em] text-green-500/80">Stokta Mevcut - Hemen Teslim</span>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Beden Seçimi */}
+                {/* VARIANT SELECTION */}
                 {((product.sizes && product.sizes.length > 0) || (product.variations && product.variations.length > 0)) && (
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                      <label className="text-[10px] tracking-[0.3em] uppercase font-black text-white/40">Beden / Varyant</label>
-                      <button className="text-[9px] tracking-[0.2em] uppercase text-[#C5A059] font-black underline underline-offset-4">Beden Rehberi</button>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold">
+                      <span className="text-gray-400">Seçenekler</span>
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2">
                       {((product.sizes && product.sizes.length > 0) ? product.sizes : (product.variations?.[0]?.options || [])).map((size: string) => (
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`min-w-[70px] h-14 flex items-center justify-center text-[10px] tracking-widest uppercase border transition-all duration-500 ${
+                          className={`px-4 h-11 flex items-center justify-center text-[11px] tracking-tighter border transition-all duration-200 ${
                             selectedSize === size
-                              ? "bg-white text-[#0A0A0A] border-white"
-                              : "border-white/10 text-white/60 hover:border-[#C5A059] hover:text-[#C5A059]"
+                              ? "bg-black text-white border-black"
+                              : "border-gray-100 text-gray-500 hover:border-gray-300"
                           }`}
                         >
                           {size}
@@ -286,68 +269,51 @@ export default function ProductClient() {
                   </div>
                 )}
 
-                {/* Butonlar */}
+                {/* BUY BUTTONS */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isAdded}
+                    className={cn(
+                      "flex-1 h-14 text-[11px] tracking-[0.1em] font-bold transition-all duration-300 flex items-center justify-center gap-3",
+                      isAdded ? "bg-gray-100 text-black cursor-default" : "bg-black text-white hover:bg-gray-800 active:scale-95"
+                    )}
+                  >
+                    {isAdded ? "SEPETE EKLENDİ" : "SEPETE EKLE"}
+                    <ShoppingBag size={16} />
+                  </button>
+                  <button 
+                    onClick={toggleFavorite}
+                    className="w-14 h-14 border border-gray-100 flex items-center justify-center hover:border-gray-300 transition-all active:scale-90"
+                  >
+                    <Heart size={18} className={cn("transition-colors", isFavorite ? "fill-black text-black" : "text-gray-300")} />
+                  </button>
+                </div>
+
+                {/* TRUST CARDS - MINIMAL GRID */}
+                <div className="grid grid-cols-3 gap-2 py-6 border-y border-gray-50">
+                  <div className="text-center space-y-1">
+                    <Truck size={14} className="mx-auto text-gray-400" />
+                    <p className="text-[9px] uppercase font-bold text-gray-400">Hızlı Kargo</p>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <RefreshCw size={14} className="mx-auto text-gray-400" />
+                    <p className="text-[9px] uppercase font-bold text-gray-400">Kolay İade</p>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <ShieldCheck size={14} className="mx-auto text-gray-400" />
+                    <p className="text-[9px] uppercase font-bold text-gray-400">Güvenli Ödeme</p>
+                  </div>
+                </div>
+
+                {/* DESCRIPTION AREA */}
                 <div className="space-y-4">
-                  <div className="flex gap-4">
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={isAdded}
-                      className={cn(
-                        "flex-[2] h-16 text-[11px] tracking-[0.4em] uppercase font-black transition-all duration-700 flex items-center justify-center gap-3 group relative overflow-hidden",
-                        isAdded ? "bg-green-600 text-white" : "bg-[#C5A059] text-[#0A0A0A] hover:bg-white"
-                      )}
-                    >
-                      <span className="relative z-10">{isAdded ? "KOLEKSİYONA EKLENDİ" : "SEPETE EKLE"}</span>
-                      <ShoppingBag size={18} className="relative z-10 group-hover:scale-110 transition-transform" />
-                    </button>
-                    
-                    <button 
-                      onClick={toggleFavorite}
-                      className="w-16 h-16 border border-white/10 flex items-center justify-center hover:bg-white/5 hover:border-white transition-all duration-500"
-                    >
-                      <Heart size={20} className={cn("transition-all duration-500", isFavorite ? "fill-red-500 text-red-500 scale-110" : "text-white/40")} />
-                    </button>
-                  </div>
-
-                  {product.shopierUrl && (
-                    <button
-                      onClick={() => window.open(product.shopierUrl, '_blank')}
-                      className="w-full h-16 border border-[#C5A059]/30 text-[#C5A059] text-[10px] tracking-[0.4em] uppercase font-black hover:bg-[#C5A059]/10 transition-all flex items-center justify-center gap-3"
-                    >
-                      SHOPIER GÜVENLİ ÖDEME
-                      <Zap size={14} className="fill-current" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Güven ve Bilgi */}
-                <div className="grid grid-cols-3 gap-1 py-8 border-y border-white/5">
-                  <div className="text-center space-y-3">
-                    <div className="mx-auto w-10 h-10 bg-white/[0.03] flex items-center justify-center text-[#C5A059]"><Truck size={18} /></div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Ücretsiz<br/>Kargo</p>
-                  </div>
-                  <div className="text-center space-y-3 border-x border-white/5">
-                    <div className="mx-auto w-10 h-10 bg-white/[0.03] flex items-center justify-center text-[#C5A059]"><RefreshCw size={18} /></div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30">14 Gün<br/>İade</p>
-                  </div>
-                  <div className="text-center space-y-3">
-                    <div className="mx-auto w-10 h-10 bg-white/[0.03] flex items-center justify-center text-[#C5A059]"><ShieldCheck size={18} /></div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Güvenli<br/>Altyapı</p>
-                  </div>
-                </div>
-
-                {/* Açıklama */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <h3 className="text-[10px] tracking-[0.3em] uppercase font-black text-[#C5A059]">Ürün Detayları</h3>
-                    <div className="flex-grow h-px bg-white/5" />
-                  </div>
+                  <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-300">Ürün Detayları</h3>
                   <div 
-                    className="text-white/40 text-sm leading-relaxed font-medium space-y-4"
-                    dangerouslySetInnerHTML={{ __html: product.description || "Bu nadide parça için özel bir açıklama hazırlanıyor." }}
+                    className="text-gray-600 text-xs leading-relaxed prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: product.description || "Açıklama mevcut değil." }}
                   />
                 </div>
-
               </div>
             </div>
 
