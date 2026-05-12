@@ -7,13 +7,20 @@ import { useCart, toNum } from "@/store/useCart";
 import { useStoreData } from "@/store/useStoreData";
 import { ChevronLeft, Lock, ShoppingBag, ShieldCheck, ArrowRight, ExternalLink } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export default function CheckoutPage() {
   const { items, total } = useCart();
   const { settings } = useStoreData();
+  const [isRedirecting, setIsRedirecting] = React.useState(false);
   
-  // Shopier URL'sini bul (Ayarlardan veya ürünlerden)
-  const shopierUrl = settings?.shopier_url || settings?.shopierUrl || (items.length > 0 ? (items[0] as any).shopierUrl : "");
+  // Shopier URL Önceliği: 
+  // 1. Eğer tek ürün varsa ve o ürünün kendi linki varsa doğrudan oraya (En hızlı satış)
+  // 2. Eğer çok ürün varsa mağazanın genel Shopier linkine
+  const shopierStoreUrl = settings?.shopier_url || settings?.shopierUrl || "";
+  const singleProductUrl = items.length === 1 ? (items[0] as any).shopierUrl : "";
+  
+  const finalTargetUrl = (items.length === 1 && singleProductUrl) ? singleProductUrl : shopierStoreUrl;
   
   const shipping = 0; // Ücretsiz kargo vurgusu için
   const totalInTL = total;
@@ -26,12 +33,18 @@ export default function CheckoutPage() {
   };
 
   const handleFinalRedirect = () => {
-    if (shopierUrl) {
-      window.location.href = shopierUrl;
-    } else {
-      // Eğer Shopier URL yoksa ana sayfaya dön (Güvenlik önlemi)
-      window.location.href = "/";
+    if (!finalTargetUrl) {
+      console.error("❌ Kritik Hata: Shopier URL bulunamadı!");
+      alert("Mağaza ödeme sistemi şu an yapılandırılmamış. Lütfen mağaza sahibi ile iletişime geçin.");
+      return;
     }
+    
+    setIsRedirecting(true);
+    
+    // Kısa bir bekleme ile profesyonel bir his yarat (Analytics vb. için zaman tanı)
+    setTimeout(() => {
+      window.location.href = finalTargetUrl;
+    }, 800);
   };
 
   if (items.length === 0) {
@@ -156,17 +169,43 @@ export default function CheckoutPage() {
             <div className="space-y-4">
               <Button 
                 size="lg" 
-                className="w-full h-20 bg-black text-white hover:bg-gray-900 transition-all shadow-xl group"
+                disabled={isRedirecting}
+                className={cn(
+                  "w-full h-20 bg-black text-white hover:bg-gray-900 transition-all shadow-xl group relative overflow-hidden",
+                  isRedirecting && "opacity-80 cursor-wait"
+                )}
                 onClick={handleFinalRedirect}
               >
-                <span className="text-[12px] font-black tracking-[0.3em] uppercase flex items-center gap-4">
-                  ÖDEMEYİ TAMAMLA
+                <div className={cn(
+                  "flex items-center gap-4 transition-all duration-500",
+                  isRedirecting ? "-translate-y-20 opacity-0" : "translate-y-0 opacity-100"
+                )}>
+                  <span className="text-[12px] font-black tracking-[0.3em] uppercase">
+                    ÖDEMEYİ TAMAMLA
+                  </span>
                   <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                </span>
+                </div>
+
+                {isRedirecting && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black animate-in fade-in slide-in-from-bottom-4">
+                    <span className="text-[10px] font-black tracking-[0.4em] uppercase flex items-center gap-3">
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      YÖNLENDİRİLİYORSUNUZ
+                    </span>
+                  </div>
+                )}
               </Button>
-              <div className="flex items-center justify-center gap-3 text-[10px] text-black/40 font-bold uppercase tracking-widest">
-                <ExternalLink size={12} />
-                <span>Shopier Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz</span>
+              
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center gap-2 text-[10px] text-black/40 font-bold uppercase tracking-widest">
+                  <ExternalLink size={12} />
+                  <span>Shopier Güvenli Ödeme Sayfasına Aktarılıyorsunuz</span>
+                </div>
+                {items.length > 1 && (
+                  <p className="text-[9px] text-black/30 font-medium text-center uppercase tracking-tight max-w-[280px]">
+                    Birden fazla ürün olduğu için mağaza ana sayfamıza aktarılacaksınız. Lütfen ürünleri sepetinize ekleyerek devam edin.
+                  </p>
+                )}
               </div>
             </div>
           </div>
