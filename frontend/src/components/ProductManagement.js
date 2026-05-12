@@ -67,12 +67,12 @@ const ProductManagement = () => {
   const fetchUserSites = async () => {
     try {
       const token = getAuthToken();
-      const res = await fetch(`${API_BASE}/api/sites/my-sites`, {
+      const res = await fetch(`${API_BASE}/api/sites`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
-        setSites(data);
+        setSites(data.sites || []);
       }
     } catch (e) {
       console.error('Sites fetch error:', e);
@@ -106,6 +106,22 @@ const ProductManagement = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const parsePrice = (val) => {
+    if (!val) return 0;
+    let s = val.toString().trim();
+    // Eğer virgül varsa, bu kuruş ayıracıdır. Noktaları (binlik) sil, virgülü noktaya çevir.
+    if (s.includes(',')) {
+      s = s.replace(/\./g, '').replace(/,/g, '.');
+    } else {
+      // Sadece nokta varsa ve sonrasında 3 rakam varsa, büyük ihtimalle binlik ayıracıdır (Örn: 1.990)
+      const parts = s.split('.');
+      if (parts.length > 1 && parts[parts.length - 1].length === 3) {
+        s = s.replace(/\./g, '');
+      }
+    }
+    return parseFloat(s) || 0;
   };
 
   const handleImageUpload = (e) => {
@@ -145,7 +161,11 @@ const ProductManagement = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          price: parsePrice(formData.price),
+          discountPrice: formData.discountPrice ? parsePrice(formData.discountPrice) : null
+        })
       });
 
       if (res.ok) {

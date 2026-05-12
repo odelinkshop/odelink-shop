@@ -525,6 +525,17 @@ router.get('/', authMiddleware, requireAccess, async (req, res) => {
   }
 });
 
+// Alias for frontend compatibility
+router.get('/my-sites', authMiddleware, requireAccess, async (req, res) => {
+  try {
+    const sites = await Site.findByUserId(req.userId);
+    return res.json({ sites: sites || [] });
+  } catch (error) {
+    console.error('❌ Get my-sites error:', error);
+    return res.status(500).json({ error: 'Siteler alınamadı' });
+  }
+});
+
 /**
  * GET /api/sites/:id/analytics
  * Site analytics summary

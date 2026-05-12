@@ -21,37 +21,60 @@ import {
 import { useCart } from "@/store/useCart";
 import { cn } from "@/lib/utils";
 
-const formatPrice = (price: string | number, currency: string = "TL"): string => {
-  if (price === undefined || price === null || price === "") return "-";
+const formatPrice = (price: string | number): string => {
+  if (price === undefined || price === null || price === "") return "0,00";
   let cleanPrice = String(price).replace(/[₺TL$€£]/g, '').trim();
+  
+  // Eğer giriş '1.990' gibi bir formatta ise (binlik ayracı nokta olan TR formatı)
+  // Ve eğer biz bunu doğrudan parseFloat yaparsak 1.99 olur. 
+  // O yüzden noktaları silip, virgülü noktaya çeviriyoruz.
   if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
   } else if (cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(',', '.');
+  } else if (cleanPrice.includes('.') && cleanPrice.split('.').pop()?.length === 3) {
+    // Eğer sadece nokta varsa ve sonu 3 haneliyse (Örn: 1.990)
+    cleanPrice = cleanPrice.replace(/\./g, '');
   }
+  
   const n = parseFloat(cleanPrice);
   if (isNaN(n)) return String(price);
-  const formatted = n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return `${formatted} TL`;
+  
+  return new Intl.NumberFormat('tr-TR', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  }).format(n);
 };
 
 const slugify = (text: string) => {
   return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[ğĞ]/g, 'g').replace(/[üÜ]/g, 'u').replace(/[şŞ]/g, 's').replace(/[ıİ]/g, 'i').replace(/[öÖ]/g, 'o').replace(/[çÇ]/g, 'c').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
 };
 
-// ULTRA HD GÖRÜNTÜ MANTIĞI - Hiçbir küçültme yapmadan en büyük boyutu zorluyoruz
 const safeImage = (src: string | undefined): string => {
   if (!src || src.trim() === "" || src.includes('placeholder')) return "";
   let formattedSrc = src;
   if (formattedSrc.startsWith('//')) {
     formattedSrc = `https:${formattedSrc}`;
   }
+  
   // Shopier CDN'inden en büyük boyutu (pictures_large) zorluyoruz ve kaliteyi %100 yapıyoruz
   if (formattedSrc.includes('cdn.shopier.app')) {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
-    const hdSrc = formattedSrc.replace('/pictures_mid/', '/pictures_large/').replace('/pictures_small/', '/pictures_large/');
-    return `${apiBase}/sites/proxy-image?url=${encodeURIComponent(hdSrc)}&quality=100`;
+    let hdSrc = formattedSrc
+      .replace('/pictures_mid/', '/pictures_large/')
+      .replace('/pictures_small/', '/pictures_large/');
+    
+    // Kalite parametresini zorla ekle
+    if (hdSrc.includes('?')) {
+      hdSrc = hdSrc.split('?')[0] + '?quality=100';
+    } else {
+      hdSrc += '?quality=100';
+    }
+    
+    return `${apiBase}/sites/proxy-image?url=${encodeURIComponent(hdSrc)}`;
   }
+  
+  // Diğer kaynaklar (Google vb.) doğrudan döndürülür
   return formattedSrc;
 };
 
@@ -257,14 +280,14 @@ export default function ProductClient() {
 
               <div className="flex flex-col gap-1">
                 <div className="text-4xl font-black italic tracking-tighter text-black">
-                  {formatPrice(product.price)}
+                  {formatPrice(product.price)} ₺
                 </div>
                 {(product.originalPrice || product.oldPrice) && Number(product.originalPrice || product.oldPrice) > Number(product.price) && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg text-gray-300 line-through font-medium">
-                      {formatPrice((product.originalPrice || product.oldPrice) as any)}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl text-red-600/60 line-through decoration-black/20 font-medium">
+                      {formatPrice((product.originalPrice || product.oldPrice) as any)} ₺
                     </span>
-                    <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-sm">
+                    <span className="bg-red-600 text-white text-[10px] font-black px-3 py-1 uppercase tracking-widest">
                       İNDİRİM
                     </span>
                   </div>
