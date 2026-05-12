@@ -1,5 +1,9 @@
+const express = require('express');
+const router = express.Router();
+const Product = require('../models/Product');
 const Site = require('../models/Site');
 const cacheService = require('../services/cacheService');
+const authMiddleware = require('../middleware/auth');
 
 const clearUserSiteCaches = async (userId) => {
   try {
