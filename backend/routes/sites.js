@@ -821,7 +821,7 @@ router.get('/public/:subdomain', async (req, res) => {
     }
 
     if (!site) {
-      // FOR DEMO/DEV: If subdomain is 'demo', return a mock site object instead of 404
+      // ... (demo logic preserved below)
       if (subdomain === 'demo') {
         return res.json({
           ok: true,
@@ -840,15 +840,6 @@ router.get('/public/:subdomain', async (req, res) => {
                   images: ['/images/products/linen-shirt.png'],
                   badge: 'Sezon İndirimi',
                   isNew: true
-                },
-                {
-                  id: 'p2',
-                  name: 'Cashmere Polo Triko — Lacivert',
-                  slug: 'cashmere-polo-triko-lacivert',
-                  price: 1899.90,
-                  originalPrice: 3299.90,
-                  images: ['/images/products/cashmere-polo.png'],
-                  isNew: false
                 }
               ]
             }
@@ -856,6 +847,30 @@ router.get('/public/:subdomain', async (req, res) => {
         });
       }
       return res.status(404).json({ error: 'Site bulunamadı' });
+    }
+
+    // Fetch and inject manual products for Nova Studio
+    try {
+      const Product = require('../models/Product');
+      const manualProducts = await Product.findByUserId(site.user_id);
+      if (!site.settings) site.settings = {};
+      
+      // Map to Nova format if needed, but Product.js fields are already close
+      // ShopClient.tsx's mapProduct will handle the rest
+      site.settings.manualProducts = [
+        ...(Array.isArray(site.settings.manualProducts) ? site.settings.manualProducts : []),
+        ...manualProducts.map(p => ({
+          ...p,
+          name: p.title, // Nova expects 'name'
+          price: p.price,
+          originalPrice: p.price, // Fallback
+          oldPrice: p.discount_price || null, // Nova uses oldPrice/originalPrice
+          images: Array.isArray(p.images) ? p.images : [],
+          url: '#' // Local product
+        }))
+      ];
+    } catch (err) {
+      console.error('❌ Error injecting manual products:', err);
     }
 
     // Auto-heal:

@@ -57,9 +57,35 @@ const ProductManagement = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [showNewCatInput, setShowNewCatInput] = useState(false);
 
+  const [sites, setSites] = useState([]);
+
   useEffect(() => {
     fetchProducts();
+    fetchUserSites();
   }, []);
+
+  const fetchUserSites = async () => {
+    try {
+      const token = getAuthToken();
+      const res = await fetch(`${API_BASE}/api/sites/my-sites`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSites(data);
+      }
+    } catch (e) {
+      console.error('Sites fetch error:', e);
+    }
+  };
+
+  const getProductPreviewLink = (product) => {
+    if (sites.length === 0) return '#';
+    const site = sites[0]; // Use first site for preview
+    const domain = site.custom_domain || `${site.subdomain}.odelink.shop`;
+    const protocol = window.location.protocol;
+    return `${protocol}//${domain}/shop`;
+  };
 
   const fetchProducts = async () => {
     try {
@@ -392,8 +418,9 @@ const ProductManagement = () => {
                      <Trash2 size={18} />
                    </button>
                    <a 
-                     href="#" 
+                     href={getProductPreviewLink(product)} 
                      target="_blank"
+                     rel="noopener noreferrer"
                      className="w-12 h-12 bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-all duration-300"
                    >
                      <Eye size={18} />
