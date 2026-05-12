@@ -1161,9 +1161,9 @@ router.get('/public-by-host', async (req, res) => {
       return res.status(400).json({ error: 'Host bulunamadı' });
     }
 
-    const cacheKey = `site:${host}`;
-    const cachedSite = await CacheService.get(cacheKey);
-    if (cachedSite) return res.json({ site: cachedSite });
+    const cacheKey = `site_full:${host}`;
+    const cachedData = await CacheService.get(cacheKey);
+    if (cachedData) return res.json(cachedData);
 
     const site = await (async () => {
       if (host.endsWith('odelink.shop')) {
@@ -1184,9 +1184,9 @@ router.get('/public-by-host', async (req, res) => {
     site.manual_products = products;
 
     // Cache for 1 hour
-    await CacheService.set(cacheKey, site, 3600);
-
-    return res.json({ site, products });
+    const responseData = { site, products };
+    await CacheService.set(cacheKey, responseData, 3600);
+    return res.json(responseData);
   } catch (error) {
     console.error('❌ Get public site by host error:', error);
     return res.status(500).json({ error: 'Site alınamadı' });

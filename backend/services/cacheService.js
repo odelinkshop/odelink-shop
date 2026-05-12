@@ -48,13 +48,13 @@ class CacheService {
     }
   }
 
-  async clearStoreCache(host) {
+  async clearSiteFullCache(host) {
     try {
-      await this.del(`store:${host}`);
-      await this.del(`products:${host}`);
-      logger.info(`🧹 Cache cleared for host: ${host}`);
+      await this.del(`site_full:${host}`);
+      await this.del(`site:${host}`);
+      logger.info(`🧹 Site Full Cache cleared for host: ${host}`);
     } catch (err) {
-      logger.error(`Cache Clear Error (${host}):`, err);
+      logger.error(`Site Full Cache Clear Error (${host}):`, err);
     }
   }
 }
