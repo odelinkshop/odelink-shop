@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/navbar";
 import { useStoreData } from "@/store/useStoreData";
 import { useParams } from "next/navigation";
@@ -39,18 +39,17 @@ const slugify = (text: string) => {
   return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[ğĞ]/g, 'g').replace(/[üÜ]/g, 'u').replace(/[şŞ]/g, 's').replace(/[ıİ]/g, 'i').replace(/[öÖ]/g, 'o').replace(/[çÇ]/g, 'c').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
 };
 
-// HD Görüntü Mantığı - Proxy kalitesini artırdık
+// ULTRA HD GÖRÜNTÜ MANTIĞI - Hiçbir küçültme yapmadan en büyük boyutu zorluyoruz
 const safeImage = (src: string | undefined): string => {
   if (!src || src.trim() === "" || src.includes('placeholder')) return "";
   let formattedSrc = src;
   if (formattedSrc.startsWith('//')) {
     formattedSrc = `https:${formattedSrc}`;
   }
-  // HD versiyonu çekmek için proxy parametrelerini zorluyoruz
+  // Shopier CDN'inden en büyük boyutu (pictures_large) zorluyoruz ve kaliteyi %100 yapıyoruz
   if (formattedSrc.includes('cdn.shopier.app')) {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
-    // pictures_mid yerine pictures_large veya orijinali deniyoruz
-    const hdSrc = formattedSrc.replace('pictures_mid', 'pictures_large').replace('pictures_small', 'pictures_large');
+    const hdSrc = formattedSrc.replace('/pictures_mid/', '/pictures_large/').replace('/pictures_small/', '/pictures_large/');
     return `${apiBase}/sites/proxy-image?url=${encodeURIComponent(hdSrc)}&quality=100`;
   }
   return formattedSrc;
@@ -68,8 +67,6 @@ export default function ProductClient() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>("ozellikler");
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const galleryRef = useRef<HTMLDivElement>(null);
 
   const product = products.find(p => {
     const currentSlug = typeof slug === 'string' ? slug : '';
@@ -194,12 +191,11 @@ export default function ProductClient() {
         )}
       </AnimatePresence>
 
-      <main className="bg-white text-black min-h-screen pt-28 pb-24 px-4 md:px-8 lg:px-12 max-w-[1600px]">
+      <main className="bg-white text-black min-h-screen pt-28 pb-24 px-4 md:px-8 lg:px-12 max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* SOL KOLON: HD GALERİ VE SLIDER */}
+          {/* SOL KOLON: HD GALERİ */}
           <div className="lg:col-span-7 flex flex-col md:flex-row-reverse gap-4">
-            {/* Ana Görsel HD */}
             <div className="flex-1 relative aspect-[3/4] bg-gray-50 overflow-hidden cursor-zoom-in group">
               <AnimatePresence mode="wait">
                 <motion.img
@@ -214,13 +210,7 @@ export default function ProductClient() {
                   onClick={() => setIsFullscreen(true)}
                 />
               </AnimatePresence>
-              <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="bg-white/80 backdrop-blur-md p-3 rounded-full shadow-lg">
-                  <Maximize2 size={20} />
-                </div>
-              </div>
               
-              {/* Slider Okları */}
               {allImages.length > 1 && (
                 <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => setSelectedImage(prev => (prev === 0 ? allImages.length - 1 : prev - 1))} className="w-12 h-12 bg-white/90 shadow-sm flex items-center justify-center rounded-full hover:bg-black hover:text-white transition-all">
@@ -233,7 +223,7 @@ export default function ProductClient() {
               )}
             </div>
 
-            {/* Yan Thumbnaillar - HD ve Net */}
+            {/* Yan Thumbnaillar - HD */}
             {allImages.length > 1 && (
               <div className="md:w-24 flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar">
                 {allImages.map((img, idx) => (
@@ -242,7 +232,7 @@ export default function ProductClient() {
                     onClick={() => setSelectedImage(idx)}
                     className={cn(
                       "flex-shrink-0 w-20 md:w-full aspect-[3/4] border-2 transition-all p-0.5",
-                      selectedImage === idx ? "border-black" : "border-transparent opacity-100"
+                      selectedImage === idx ? "border-black" : "border-transparent"
                     )}
                   >
                     <img src={safeImage(img)} alt="" className="w-full h-full object-cover" />
@@ -261,17 +251,28 @@ export default function ProductClient() {
                 </h1>
                 <div className="flex items-center gap-1">
                   {[1,2,3,4,5].map(i => <Star key={i} size={14} className="fill-orange-400 text-orange-400" />)}
-                  <span className="text-[11px] text-gray-400 ml-2 font-bold tracking-widest">(2 YORUM)</span>
+                  <span className="text-[11px] text-gray-400 ml-2 font-bold tracking-widest uppercase">(2 YORUM)</span>
                 </div>
               </div>
 
-              <div className="text-4xl font-black italic tracking-tighter text-black">
-                {formatPrice(product.price)}
+              <div className="flex flex-col gap-1">
+                <div className="text-4xl font-black italic tracking-tighter text-black">
+                  {formatPrice(product.price)}
+                </div>
+                {(product.originalPrice || product.oldPrice) && Number(product.originalPrice || product.oldPrice) > Number(product.price) && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg text-gray-300 line-through font-medium">
+                      {formatPrice((product.originalPrice || product.oldPrice) as any)}
+                    </span>
+                    <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-sm">
+                      İNDİRİM
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="space-y-8">
-              {/* Varyant ve Beden - Daha Ferah */}
               <div className="space-y-4">
                 <div className="text-[12px] font-black uppercase tracking-widest text-gray-400">Renk: <span className="text-black">Varsayılan</span></div>
                 <div className="flex gap-3">
@@ -280,7 +281,7 @@ export default function ProductClient() {
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
                       className={cn(
-                        "w-14 h-18 border-2 transition-all p-0.5 hover:border-gray-300",
+                        "w-14 h-18 border-2 transition-all p-0.5",
                         selectedImage === idx ? "border-black" : "border-gray-100"
                       )}
                     >
@@ -311,7 +312,7 @@ export default function ProductClient() {
               )}
             </div>
 
-            {/* SATIN ALMA ALANI - FERAH VE ŞIK */}
+            {/* SATIN ALMA ALANI - FIX: WHITESPACE-NOWRAP VE FERAH BUTONLAR */}
             <div className="flex flex-col sm:flex-row gap-4 items-stretch">
               <div className="flex items-center border border-gray-200 h-16 px-6 gap-8 bg-gray-50/50">
                 <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="text-gray-400 hover:text-black transition-colors"><Minus size={18} /></button>
@@ -324,24 +325,27 @@ export default function ProductClient() {
                   onClick={handleAddToCart}
                   disabled={isAdded}
                   className={cn(
-                    "flex-1 h-16 flex items-center justify-center gap-4 text-[13px] font-black tracking-widest transition-all px-8",
-                    isAdded ? "bg-green-600 text-white" : "bg-black text-white hover:bg-gray-800 active:scale-[0.98]"
+                    "flex-1 h-16 flex items-center justify-center gap-4 text-[13px] font-black tracking-widest transition-all px-8 whitespace-nowrap",
+                    isAdded ? "bg-green-600 text-white" : "bg-black text-white hover:bg-gray-800"
                   )}
                 >
                   <ShoppingBag size={20} />
-                  <span>{isAdded ? "SEPETE EKLENDİ" : "SEPETE EKLE"}</span>
+                  <span>{isAdded ? "EKLENDİ" : "SEPETE EKLE"}</span>
                 </button>
                 
                 <button 
                   onClick={toggleFavorite}
-                  className="w-16 h-16 bg-white border-2 border-black text-black flex items-center justify-center hover:bg-black hover:text-white transition-all active:scale-90"
+                  className={cn(
+                    "w-16 h-16 border-2 flex items-center justify-center transition-all active:scale-90",
+                    isFavorite ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-black"
+                  )}
                 >
-                  <Heart size={24} className={cn(isFavorite && "fill-current text-red-500 border-red-500")} />
+                  <Heart size={24} className={cn(isFavorite ? "fill-current text-red-500" : "text-black")} />
                 </button>
               </div>
             </div>
 
-            {/* GÜVEN İKONLARI - MODERN VE FERAH */}
+            {/* GÜVEN İKONLARI */}
             <div className="grid grid-cols-3 gap-4 py-8 border-y border-gray-100">
               <div className="flex flex-col items-center text-center gap-3">
                 <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center"><Truck size={24} strokeWidth={1.2} /></div>
@@ -357,7 +361,6 @@ export default function ProductClient() {
               </div>
             </div>
 
-            {/* AKORDİYONLAR */}
             <div className="pt-2">
               <Accordion 
                 id="ozellikler" 
@@ -370,17 +373,11 @@ export default function ProductClient() {
                 } 
               />
               <Accordion 
-                id="yorumlar" 
-                title="YORUMLAR (2)" 
-                content="Bu ürün için henüz yorum yapılmamış." 
-              />
-              <Accordion 
                 id="teslimat" 
                 title="GARANTİ VE TESLİMAT" 
                 content="Siparişleriniz 1-3 iş günü içerisinde kargoya verilir." 
               />
             </div>
-
           </div>
         </div>
       </main>
