@@ -18,9 +18,12 @@ import {
   Lock,
   Monitor,
   ShoppingBag,
-  ShoppingCart
+  ShoppingCart,
+  Link,
+  X,
+  Sparkles
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getApiBase } from '../utils/apiBase';
 import { getAuthHeaders, getAuthToken } from '../utils/authStorage';
 import ProductManagement from './ProductManagement';

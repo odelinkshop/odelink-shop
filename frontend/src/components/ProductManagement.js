@@ -504,8 +504,6 @@ const ProductManagement = () => {
           </div>
         )}
       </AnimatePresence>
-      </AnimatePresence>
-    </div>
     </div>
   );
 };
