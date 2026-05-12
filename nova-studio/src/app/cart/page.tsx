@@ -16,11 +16,10 @@ const toNum = (p: string | number): number => {
 
 const formatPrice = (price: string | number, qty = 1): string => {
   const num = toNum(price) * qty;
-  // Eğer orijinal string TL içeriyorsa ₺ kullan
-  const hasTL = typeof price === "string" && /TL|₺/i.test(price);
-  return hasTL || typeof price !== "number"
-    ? `${num.toLocaleString("tr-TR")} ₺`
-    : `$${num.toLocaleString()}`;
+  return new Intl.NumberFormat('tr-TR', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  }).format(num) + " ₺";
 };
 
 const safeImage = (src: string) =>
@@ -34,15 +33,9 @@ export default function CartPage() {
     0
   );
 
-  // Para birimi tahmini
-  const hasTL = items.some(
-    (item) => typeof item.price === "string" && /TL|₺/i.test(String(item.price))
-  );
-  const currencyLabel = hasTL ? "₺" : "$";
+  const currencyLabel = "₺";
   const formatTotal = (n: number) =>
-    hasTL
-      ? `${n.toLocaleString("tr-TR")} ₺`
-      : `$${n.toLocaleString()}`;
+    `${n.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`;
 
   return (
     <main className="min-h-screen bg-background">
@@ -129,7 +122,7 @@ export default function CartPage() {
                       <p className="text-sm font-bold text-secondary">
                         {formatPrice(item.price, item.quantity)}
                       </p>
-                      <p className="text-[10px] text-secondary/30 font-medium">
+                      <p className="text-[11px] text-secondary font-bold tracking-tight">
                         {formatPrice(item.price)} / adet
                       </p>
                       <button

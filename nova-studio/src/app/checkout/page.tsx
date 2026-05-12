@@ -1,188 +1,172 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useCart, toNum } from "@/store/useCart";
-import { ChevronLeft, Lock, Truck, CreditCard, CheckCircle2, ShieldCheck } from "lucide-react";
+import { useStoreData } from "@/store/useStoreData";
+import { ChevronLeft, Lock, ShoppingBag, ShieldCheck, ArrowRight, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 export default function CheckoutPage() {
   const { items, total } = useCart();
-  const [step, setStep] = useState(1);
-  const shipping = 50;
-  const tax = total * 0.08;
+  const { settings } = useStoreData();
+  
+  // Shopier URL'sini bul (Ayarlardan veya ürünlerden)
+  const shopierUrl = settings?.shopier_url || settings?.shopierUrl || (items.length > 0 ? (items[0] as any).shopierUrl : "");
+  
+  const shipping = 0; // Ücretsiz kargo vurgusu için
+  const totalInTL = total;
+
+  const formatPrice = (n: number) => {
+    return new Intl.NumberFormat('tr-TR', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    }).format(n) + " ₺";
+  };
+
+  const handleFinalRedirect = () => {
+    if (shopierUrl) {
+      window.location.href = shopierUrl;
+    } else {
+      // Eğer Shopier URL yoksa ana sayfaya dön (Güvenlik önlemi)
+      window.location.href = "/";
+    }
+  };
+
+  if (items.length === 0) {
+    return (
+      <main className="min-h-screen bg-white flex flex-col items-center justify-center space-y-8 p-6">
+        <ShoppingBag size={64} strokeWidth={1} className="text-secondary/20" />
+        <h2 className="text-2xl font-serif uppercase tracking-tight">Sepetiniz Boş</h2>
+        <Link href="/shop">
+          <Button className="bg-black text-white px-12 py-6 h-auto tracking-widest uppercase text-xs font-bold">
+            ALIŞVERİŞE BAŞLA
+          </Button>
+        </Link>
+      </main>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-[#FAF9F6] text-secondary">
+    <main className="min-h-screen bg-[#FAF9F6] text-black">
       {/* Header */}
-      <header className="py-8 px-6 lg:px-12 border-b border-secondary/10 flex justify-between items-center bg-background">
+      <header className="py-8 px-6 lg:px-12 border-b border-black/5 flex justify-between items-center bg-white">
         <Link href="/">
-          <h1 className="text-2xl font-serif tracking-[-0.05em] uppercase">NOVA</h1>
+          <h1 className="text-2xl font-serif tracking-tighter uppercase font-black italic">NOVA</h1>
         </Link>
-        <div className="flex items-center space-x-2 text-xs tracking-widest uppercase text-secondary/40">
-          <Lock size={14} />
-          <span>Secure Checkout</span>
+        <div className="flex items-center space-x-2 text-[10px] tracking-[0.2em] uppercase font-bold text-black/40">
+          <Lock size={12} />
+          <span>GÜVENLİ ÖDEME SİSTEMİ</span>
         </div>
       </header>
 
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-0">
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-[calc(100vh-100px)]">
         
-        {/* Left Side - Form */}
-        <div className="lg:col-span-7 p-6 lg:p-16 space-y-16">
-          <Link href="/cart" className="inline-flex items-center space-x-2 text-xs tracking-widest uppercase hover:text-accent transition-colors">
-            <ChevronLeft size={16} />
-            <span>Sepete Dön</span>
-          </Link>
-
-          {/* Steps */}
+        {/* SOL KOLON: SİPARİŞ ONAY VE BİLGİLENDİRME */}
+        <div className="lg:col-span-7 p-6 lg:p-20 space-y-16 bg-white">
           <div className="space-y-12">
-            {/* Step 1: Shipping */}
-            <div className={step >= 1 ? "opacity-100" : "opacity-30"}>
-              <div className="flex items-center space-x-4 mb-8">
-                <div className="w-8 h-8 rounded-full bg-secondary text-primary flex items-center justify-center text-xs font-bold">1</div>
-                <h2 className="text-2xl font-serif">Teslimat Bilgileri</h2>
-              </div>
-              
-              {step === 1 && (
-                <div className="grid grid-cols-2 gap-6 animate-fade-in">
-                  <div className="col-span-2 space-y-2">
-                    <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">E-Posta Adresi</label>
-                    <input type="email" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" placeholder="alex@example.com" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">Ad</label>
-                    <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">Soyad</label>
-                    <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" />
-                  </div>
-                  <div className="col-span-2 space-y-2">
-                    <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">Adres</label>
-                    <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" placeholder="Sokak, Mahalle, Kapı No" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">Şehir</label>
-                    <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">Posta Kodu</label>
-                    <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" />
-                  </div>
-                  <div className="col-span-2 pt-6">
-                    <Button size="lg" className="w-full" onClick={() => setStep(2)}>
-                      ÖDEMEYE GEÇ
-                    </Button>
-                  </div>
-                </div>
-              )}
+            <div className="space-y-4">
+              <Link href="/cart" className="inline-flex items-center space-x-2 text-[10px] tracking-[0.2em] uppercase font-bold hover:text-gray-500 transition-colors">
+                <ChevronLeft size={14} />
+                <span>SEPETE DÖN</span>
+              </Link>
+              <h2 className="text-4xl lg:text-5xl font-serif italic tracking-tighter">Sipariş Özeti</h2>
             </div>
 
-            {/* Step 2: Payment */}
-            <div className={step >= 2 ? "opacity-100" : "opacity-30"}>
-              <div className="flex items-center space-x-4 mb-8">
-                <div className={`w-8 h-8 rounded-full ${step >= 2 ? 'bg-secondary text-primary' : 'border border-secondary/20 text-secondary/20'} flex items-center justify-center text-xs font-bold`}>2</div>
-                <h2 className="text-2xl font-serif">Ödeme Yöntemi</h2>
-              </div>
-              
-              {step === 2 && (
-                <div className="space-y-8 animate-fade-in">
-                   <div className="p-6 border border-secondary bg-background/50">
-                      <div className="flex items-center space-x-4 mb-6">
-                        <CreditCard size={20} />
-                        <span className="text-sm font-medium">Kredi veya Banka Kartı</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="col-span-2 space-y-2">
-                          <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">Kart Numarası</label>
-                          <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" placeholder="0000 0000 0000 0000" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">Son Kullanma</label>
-                          <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" placeholder="MM/YY" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] tracking-widest uppercase font-bold opacity-40">CVC</label>
-                          <input type="text" className="w-full bg-transparent border-b border-secondary/20 py-3 focus:border-secondary outline-none transition-colors" placeholder="123" />
-                        </div>
-                      </div>
-                   </div>
-                   <Button size="lg" className="w-full" onClick={() => setStep(3)}>
-                      SİPARİŞİ TAMAMLA
-                   </Button>
+            <div className="space-y-8 py-10 border-y border-black/5">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center shrink-0 font-bold">1</div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-bold uppercase tracking-tight">Ürün Kontrolü</h3>
+                  <p className="text-sm text-black/60 leading-relaxed">
+                    Siparişinizdeki ürünleri ve adetleri son bir kez kontrol edin. Her şey hazırsa ödeme aşamasına geçebilirsiniz.
+                  </p>
                 </div>
-              )}
+              </div>
+
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-black/5 text-black rounded-full flex items-center justify-center shrink-0 font-bold">2</div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-bold uppercase tracking-tight">Güvenli Ödeme</h3>
+                  <p className="text-sm text-black/60 leading-relaxed">
+                    "Ödemeyi Tamamla" butonuna bastığınızda, Shopier altyapısı üzerinden güvenli ödeme sayfasına aktarılacaksınız.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Step 3: Success */}
-            {step === 3 && (
-              <div className="flex flex-col items-center justify-center text-center py-20 space-y-6 animate-fade-in">
-                <CheckCircle2 size={64} className="text-accent" />
-                <h2 className="text-4xl font-serif">Siparişiniz İçin Teşekkür Ederiz.</h2>
-                <p className="text-secondary/60 max-w-md">Siparişiniz #NOV-88219 alındı ve işleme konuldu. Onay e-postasını adresinize gönderdik.</p>
-                <Link href="/">
-                  <Button variant="outline" size="lg" className="mt-8">Anasayfaya Dön</Button>
-                </Link>
+            <div className="p-8 bg-gray-50 border border-black/5 space-y-6">
+              <div className="flex items-center space-x-4 text-emerald-600">
+                <ShieldCheck size={24} />
+                <span className="text-xs font-black uppercase tracking-widest">256-BIT SSL GÜVENLİ ÖDEME</span>
               </div>
-            )}
+              <p className="text-[12px] text-black/50 leading-relaxed font-medium">
+                Ödemeleriniz Shopier güvencesiyle uçtan uca şifrelenir. Kart bilgileriniz asla Nova sunucularında saklanmaz ve doğrudan banka altyapısı üzerinden işlenir.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Right Side - Summary */}
-        <div className="lg:col-span-5 bg-background p-6 lg:p-16 border-l border-secondary/10 min-h-screen">
-          <div className="sticky top-16 space-y-12">
-            <h3 className="text-xl font-serif">Sipariş Özeti</h3>
-            
-            <div className="space-y-8 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
-              {items.length === 0 ? (
-                <div className="text-center py-10 opacity-20 uppercase text-[10px] tracking-widest">Sepetiniz Boş</div>
-              ) : items.map((item) => (
+        {/* SAĞ KOLON: ÜRÜN LİSTESİ VE FİNAL BUTONU */}
+        <div className="lg:col-span-5 bg-[#FAF9F6] p-6 lg:p-20 lg:border-l border-black/5">
+          <div className="sticky top-12 space-y-12">
+            <div className="space-y-8">
+              {items.map((item) => (
                 <div key={item.id} className="flex items-center space-x-6">
-                  <div className="relative w-20 h-24 bg-neutral/30 overflow-hidden">
-                    <Image src={item.image} alt={item.name} fill className="object-cover" />
-                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-secondary text-primary text-[10px] flex items-center justify-center rounded-full">
+                  <div className="relative w-24 h-32 bg-white overflow-hidden shadow-sm border border-black/5 group">
+                    <Image 
+                      src={item.image} 
+                      alt={item.name} 
+                      fill 
+                      className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-black text-white text-[10px] flex items-center justify-center rounded-full font-bold shadow-lg">
                       {item.quantity}
                     </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-sm font-serif">{item.name.split('|')[0].trim()}</h4>
-                    <p className="text-[10px] tracking-widest uppercase text-secondary/40 mt-1">
-                      Beden: {item.size || 'OS'}
+                  <div className="flex-1 space-y-1">
+                    <h4 className="text-sm font-bold uppercase tracking-tight leading-snug">{item.name.split('|')[0].trim()}</h4>
+                    <p className="text-[10px] tracking-[0.2em] uppercase font-bold text-black/40">
+                      Beden: {item.size || 'Standart'}
                     </p>
+                    <div className="pt-2 text-sm font-black italic">
+                      {formatPrice(toNum(item.price) * item.quantity)}
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">{(toNum(item.price) * item.quantity).toLocaleString('tr-TR')} ₺</span>
                 </div>
               ))}
             </div>
 
-            <div className="space-y-4 pt-8 border-t border-secondary/10">
-              <div className="flex justify-between text-sm">
-                <span className="text-secondary/60">Ara Toplam</span>
-                <span>{total.toLocaleString('tr-TR')} ₺</span>
+            <div className="space-y-4 pt-10 border-t border-black/10">
+              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-black/50">
+                <span>Ara Toplam</span>
+                <span>{formatPrice(totalInTL)}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-secondary/60">Kargo</span>
-                <span>{total > 0 ? `${shipping.toLocaleString('tr-TR')} ₺` : '0 ₺'}</span>
+              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-emerald-600">
+                <span>Kargo</span>
+                <span className="font-black">ÜCRETSİZ</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-secondary/60">Vergi (8%)</span>
-                <span>{tax.toLocaleString('tr-TR')} ₺</span>
-              </div>
-              <div className="flex justify-between text-xl font-serif pt-4 border-t border-secondary/10">
-                <span>Toplam</span>
-                <span className="text-accent">{(total + (total > 0 ? shipping : 0) + tax).toLocaleString('tr-TR')} ₺</span>
+              <div className="flex justify-between text-2xl font-serif italic font-black pt-6 border-t border-black/10">
+                <span className="tracking-tighter">Toplam</span>
+                <span className="text-black tracking-tighter">{formatPrice(totalInTL)}</span>
               </div>
             </div>
             
-            <div className="p-6 bg-secondary/5 space-y-4">
-              <div className="flex items-center space-x-4">
-                <Truck size={18} />
-                <span className="text-xs font-medium">Express Worldwide Delivery</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <ShieldCheck size={18} />
-                <span className="text-xs font-medium">2-Year Material Guarantee</span>
+            <div className="space-y-4">
+              <Button 
+                size="lg" 
+                className="w-full h-20 bg-black text-white hover:bg-gray-900 transition-all shadow-xl group"
+                onClick={handleFinalRedirect}
+              >
+                <span className="text-[12px] font-black tracking-[0.3em] uppercase flex items-center gap-4">
+                  ÖDEMEYİ TAMAMLA
+                  <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                </span>
+              </Button>
+              <div className="flex items-center justify-center gap-3 text-[10px] text-black/40 font-bold uppercase tracking-widest">
+                <ExternalLink size={12} />
+                <span>Shopier Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz</span>
               </div>
             </div>
           </div>

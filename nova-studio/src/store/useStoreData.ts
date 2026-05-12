@@ -63,6 +63,8 @@ interface StoreSettings {
     logo_url?: string;
     font_family?: string;
   };
+  shopier_url?: string;
+  shopierUrl?: string;
 }
 
 interface StoreState {
