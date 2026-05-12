@@ -649,38 +649,57 @@ module.exports = {
   }),
   fetchProductDetail: async (url) => {
     try {
+      // 1. URL Normalization: Extract product ID if it's a store-relative URL
+      // Example: https://www.shopier.com/Odelink/46527715 -> https://www.shopier.com/46527715
+      let targetUrl = url;
+      const match = url.match(/\/(\d+)$/);
+      if (match && !url.includes('ShowProductNew')) {
+        targetUrl = `https://www.shopier.com/${match[1]}`;
+      }
+
+      console.log(`🔍 [fetchProductDetail] Fetching: ${targetUrl} (Original: ${url})`);
+
       // Önce basit axios ile dene (Hızlı)
       let html;
+      const axiosConfig = {
+        headers: { 'User-Agent': getRandomItem(USER_AGENTS) },
+        timeout: 15000
+      };
+
       try {
-        const res = await axios.get(url, {
-          headers: { 'User-Agent': getRandomItem(USER_AGENTS) },
-          timeout: 10000
-        });
+        const res = await axios.get(targetUrl, axiosConfig);
         html = res.data;
       } catch (e) {
-        // Bloklanırsak ScraperAPI ile dene
+        console.log(`⚠️  [fetchProductDetail] Axios failed, trying ScraperAPI fallback...`);
         const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY;
-        const res = await axios.get('http://api.scraperapi.com', {
-            params: { api_key: SCRAPER_API_KEY, url: url, render: 'false' },
-            timeout: 30000
-        });
-        html = res.data;
+        try {
+          const res = await axios.get('http://api.scraperapi.com', {
+              params: { api_key: SCRAPER_API_KEY, url: targetUrl, render: 'false' },
+              timeout: 30000
+          });
+          html = res.data;
+        } catch (sErr) {
+          console.log(`⚠️  [fetchProductDetail] ScraperAPI also failed.`);
+        }
       }
 
       // Eğer hem direkt axios hem de ScraperAPI başarısız olduysa Puppeteer ile son kez dene
       if (!html) {
-          console.log(`👻 [GhostDetail] API'ler başarısız, Puppeteer ile detay çekiliyor: ${url}`);
-          const ghost = await module.exports.fetchWithPuppeteerGhostDetail(url);
+          console.log(`👻 [GhostDetail] API'ler başarısız, Puppeteer ile detay çekiliyor: ${targetUrl}`);
+          const ghost = await module.exports.fetchWithPuppeteerGhostDetail(targetUrl);
           if (ghost) return ghost;
       }
 
       const $ = cheerio.load(html);
       
-      // All images (High Quality)
+      // All images (Aggressive search)
       const images = [];
       $('img').each((i, el) => {
         const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
-        if (src && (src.includes('cdn.shopier.app/pictures_large/') || src.includes('cdn.shopier.app/pictures/'))) {
+        if (src && src.includes('cdn.shopier.app')) {
+          // Skip icons and logos
+          if (src.includes('600icons') || src.includes('logo_') || src.includes('shopier.svg')) return;
+          
           const cleaned = src.split('?')[0];
           if (!images.includes(cleaned)) images.push(cleaned);
         }
@@ -688,8 +707,6 @@ module.exports = {
       
       // Variations (Sizes/Colors)
       const variations = [];
-      
-      // Select box varyasyonları
       $('select').each((i, el) => {
         const $select = $(el);
         const label = $select.closest('.variation-container').find('label').text().trim() || 
@@ -705,62 +722,49 @@ module.exports = {
         if (options.length > 0) variations.push({ name: label, options });
       });
 
-      // Radio button varyasyonları
-      $('.variation-container').each((i, el) => {
-          const $container = $(el);
-          if ($container.find('input[type="radio"]').length > 0) {
-              const label = $container.find('label, .variation-label').first().text().trim() || 'Seçenek';
-              const options = [];
-              $container.find('label').each((j, lbl) => {
-                  const val = $(lbl).text().trim();
-                  if (val && val !== label) options.push(val);
-              });
-              if (options.length > 0) variations.push({ name: label, options });
-          }
-      });
-      
       // Category (Breadcrumb)
       const breadcrumb = $('.breadcrumb li, .shopier-breadcrumb li').map((i, el) => $(el).text().trim()).get();
-      const category = breadcrumb.length > 1 ? breadcrumb[1] : '';
+      const category = breadcrumb.length > 1 ? breadcrumb[1] : 'Genel';
       
-      // Description (En geniş kapsamlı çekim)
+      // Description
       let description = $('.product-description').html() || 
                         $('#tab-description').html() || 
                         $('.description').html() || 
                         $('.product-details').html() || 
                         $('[class*="description"]').html() || '';
       
-      // HTML'den temizle ama yapıyı koru (Sadece çok kirliyse düzelt)
       if (description) {
-          // Gereksiz scriptleri ve gizli elemanları sil
-          description = description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-          description = description.trim();
+          description = description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim();
       }
       
-      // Title
-      const title = $('h1, .product-title, .product-name').first().text().trim() || 'Yeni Ürün';
+      // Title (Aggressive Selectors)
+      const title = $('.shopier-store--product-detail-title').first().text().trim() ||
+                    $('.product-title-text').first().text().trim() ||
+                    $('h1').first().text().trim() || 
+                    $('.product-title').first().text().trim() || 
+                    $('.product-name').first().text().trim() || 
+                    'Yeni Ürün';
       
-      // Price
-      const priceText = $('.price-current, .product-price, .price').first().text().trim();
-      const oldPriceText = $('.price-old, .product-old-price').first().text().trim();
-      
+      // Price (Aggressive Selectors)
       const parsePrice = (txt) => {
         if (!txt) return 0;
-        const cleaned = txt.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.');
+        const cleaned = txt.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
         return parseFloat(cleaned) || 0;
       };
 
-      const price = parsePrice(priceText);
-      const discountPrice = oldPriceText ? price : 0;
-      const finalPrice = oldPriceText ? parsePrice(oldPriceText) : price;
-      // Note: If there's an old price, the 'price' is the discounted one, 'oldPrice' is the original.
-      // We'll return them clearly.
+      const priceText = $('.price-current, .product-price, .price, .price-value').first().text().trim();
+      const oldPriceText = $('.price-old, .product-old-price').first().text().trim();
+      
+      const priceVal = parsePrice(priceText);
+      const oldPriceVal = parsePrice(oldPriceText);
+
+      console.log(`✅ [fetchProductDetail] Result: "${title}" | Price: ${priceVal} | Images: ${images.length}`);
       
       return { 
         url, 
         title, 
-        price: oldPriceText ? parsePrice(oldPriceText) : price, 
-        discountPrice: oldPriceText ? price : 0,
+        price: oldPriceVal > priceVal ? oldPriceVal : priceVal, 
+        discountPrice: oldPriceVal > priceVal ? priceVal : 0,
         images, 
         variations, 
         category, 
@@ -780,13 +784,13 @@ module.exports = {
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
       
       const details = await page.evaluate(() => {
-        const title = document.querySelector('h1, .product-title, .product-name')?.textContent.trim() || 'Yeni Ürün';
-        const priceText = document.querySelector('.price-current, .product-price, .price')?.textContent.trim() || '0';
+        const title = document.querySelector('.shopier-store--product-detail-title, .product-title-text, h1, .product-title, .product-name')?.textContent.trim() || 'Yeni Ürün';
+        const priceText = document.querySelector('.price-current, .product-price, .price, .price-value')?.textContent.trim() || '0';
         const oldPriceText = document.querySelector('.price-old, .product-old-price')?.textContent.trim() || '';
 
         const parseP = (txt) => {
           if (!txt) return 0;
-          const cleaned = txt.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.');
+          const cleaned = txt.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
           return parseFloat(cleaned) || 0;
         };
 
@@ -795,7 +799,7 @@ module.exports = {
 
         const images = Array.from(document.querySelectorAll('img'))
           .map(img => img.getAttribute('data-src') || img.getAttribute('src'))
-          .filter(src => src && (src.includes('cdn.shopier.app/pictures_large/') || src.includes('cdn.shopier.app/pictures/')))
+          .filter(src => src && src.includes('cdn.shopier.app') && !src.includes('600icons') && !src.includes('logo_'))
           .map(src => src.split('?')[0]);
           
         const variations = [];
@@ -808,14 +812,14 @@ module.exports = {
 
         const breadcrumb = Array.from(document.querySelectorAll('.breadcrumb li, .shopier-breadcrumb li'))
             .map(li => li.textContent.trim());
-        const category = breadcrumb.length > 1 ? breadcrumb[1] : '';
+        const category = breadcrumb.length > 1 ? breadcrumb[1] : 'Genel';
         
         const description = document.querySelector('.product-description, #tab-description, .description, .product-details, [class*="description"]')?.innerHTML || '';
         
         return { 
           title, 
-          price: op ? op : p,
-          discountPrice: op ? p : 0,
+          price: op > p ? op : p,
+          discountPrice: op > p ? p : 0,
           images: [...new Set(images)], 
           variations, 
           category, 
