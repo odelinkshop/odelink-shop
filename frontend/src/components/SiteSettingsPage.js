@@ -176,14 +176,24 @@ export default function SiteSettingsPage() {
           ))}
         </div>
 
-        <button 
-          onClick={handleSave}
-          disabled={saving}
-          className="h-12 px-8 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white text-xs font-black tracking-widest rounded-xl transition-all shadow-xl shadow-blue-500/10 flex items-center gap-3"
-        >
-          {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-          YAYINLA
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => window.open(`https://${site?.subdomain}.odelink.shop`, '_blank')}
+            className="h-12 px-6 bg-white/5 hover:bg-white/10 text-white text-[10px] font-black tracking-widest rounded-xl transition-all border border-white/10 flex items-center gap-3"
+          >
+            <Eye size={16} className="text-blue-400" />
+            MAĞAZAYI GÖR
+          </button>
+          
+          <button 
+            onClick={handleSave}
+            disabled={saving}
+            className="h-12 px-8 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white text-xs font-black tracking-widest rounded-xl transition-all shadow-xl shadow-blue-500/10 flex items-center gap-3"
+          >
+            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            YAYINLA
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
