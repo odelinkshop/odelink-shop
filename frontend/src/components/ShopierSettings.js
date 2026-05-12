@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Key, Info, CheckCircle2, Loader2, Save } from 'lucide-react';
+import { Shield, Key, Info, CheckCircle2, Loader2, Save, Zap } from 'lucide-react';
 import { getApiBase } from '../utils/apiBase';
 import { getAuthToken } from '../utils/authStorage';
 
