@@ -178,8 +178,6 @@ const UserPanel = () => {
         
         setShowBulkModal(false);
         setBulkLinks('');
-        // Refresh stats/dashboard if needed
-        window.location.reload(); 
       } else {
         toast.error(data.error || 'İçe aktarma sırasında hata oluştu.');
       }

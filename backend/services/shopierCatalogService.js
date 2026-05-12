@@ -649,129 +649,159 @@ module.exports = {
   }),
   fetchProductDetail: async (url) => {
     try {
-      // 1. URL Normalization: Extract product ID if it's a store-relative URL
-      // Example: https://www.shopier.com/Odelink/46527715 -> https://www.shopier.com/46527715
+      // 1. URL Normalization
       let targetUrl = url;
       const match = url.match(/\/(\d+)$/);
       if (match && !url.includes('ShowProductNew')) {
         targetUrl = `https://www.shopier.com/${match[1]}`;
       }
 
-      console.log(`🔍 [fetchProductDetail] Fetching: ${targetUrl} (Original: ${url})`);
+      console.log(`🔍 [fetchProductDetail] Fetching: ${targetUrl}`);
 
-      // Önce basit axios ile dene (Hızlı)
       let html;
       const axiosConfig = {
-        headers: { 'User-Agent': getRandomItem(USER_AGENTS) },
-        timeout: 15000
+        headers: { 
+            'User-Agent': getRandomItem(USER_AGENTS),
+            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7'
+        },
+        timeout: 20000
       };
 
       try {
         const res = await axios.get(targetUrl, axiosConfig);
         html = res.data;
       } catch (e) {
-        console.log(`⚠️  [fetchProductDetail] Axios failed, trying ScraperAPI fallback...`);
-        const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY;
+        console.log(`⚠️ [fetchProductDetail] Direct axios failed, trying ScraperAPI...`);
         try {
           const res = await axios.get('http://api.scraperapi.com', {
-              params: { api_key: SCRAPER_API_KEY, url: targetUrl, render: 'false' },
-              timeout: 30000
+              params: { api_key: process.env.SCRAPER_API_KEY, url: targetUrl },
+              timeout: 40000
           });
           html = res.data;
         } catch (sErr) {
-          console.log(`⚠️  [fetchProductDetail] ScraperAPI also failed.`);
+          console.log(`⚠️ [fetchProductDetail] ScraperAPI failed.`);
         }
       }
 
-      // Eğer hem direkt axios hem de ScraperAPI başarısız olduysa Puppeteer ile son kez dene
       if (!html) {
-          console.log(`👻 [GhostDetail] API'ler başarısız, Puppeteer ile detay çekiliyor: ${targetUrl}`);
-          const ghost = await module.exports.fetchWithPuppeteerGhostDetail(targetUrl);
-          if (ghost) return ghost;
+          console.log(`Ghost fallback for ${targetUrl}`);
+          return await module.exports.fetchWithPuppeteerGhostDetail(targetUrl);
       }
 
       const $ = cheerio.load(html);
       
-      // All images (Aggressive search)
-      const images = [];
-      $('img').each((i, el) => {
-        const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
-        if (src && src.includes('cdn.shopier.app')) {
-          // Skip icons and logos
-          if (src.includes('600icons') || src.includes('logo_') || src.includes('shopier.svg')) return;
-          
-          const cleaned = src.split('?')[0];
-          if (!images.includes(cleaned)) images.push(cleaned);
-        }
-      });
-      
-      // Variations (Sizes/Colors)
-      const variations = [];
-      $('select').each((i, el) => {
-        const $select = $(el);
-        const label = $select.closest('.variation-container').find('label').text().trim() || 
-                      $select.parent().find('label').text().trim() || 
-                      'Seçenek';
-        
-        const options = [];
-        $select.find('option').each((j, opt) => {
-          const val = $(opt).text().trim();
-          if (val && !val.includes('Seçiniz')) options.push(val);
-        });
-        
-        if (options.length > 0) variations.push({ name: label, options });
-      });
-
-      // Category (Breadcrumb)
-      const breadcrumb = $('.breadcrumb li, .shopier-breadcrumb li').map((i, el) => $(el).text().trim()).get();
-      const category = breadcrumb.length > 1 ? breadcrumb[1] : 'Genel';
-      
-      // Description
-      let description = $('.product-description').html() || 
-                        $('#tab-description').html() || 
-                        $('.description').html() || 
-                        $('.product-details').html() || 
-                        $('[class*="description"]').html() || '';
-      
-      if (description) {
-          description = description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim();
+      // --- NEW: JSON Extraction (Most reliable) ---
+      let jsonData = null;
+      try {
+          const scripts = $('script').map((i, el) => $(el).html()).get();
+          for (const script of scripts) {
+              if (script && script.includes('} = {')) {
+                  const jsonMatch = script.match(/\} = (\{.*?\});/s);
+                  if (jsonMatch) {
+                      jsonData = JSON.parse(jsonMatch[1]);
+                      console.log(`✅ [fetchProductDetail] JSON Data Found!`);
+                      break;
+                  }
+              }
+          }
+      } catch (jsonErr) {
+          console.log(`⚠️ [fetchProductDetail] JSON parse error:`, jsonErr.message);
       }
-      
-      // Title (Aggressive Selectors)
-      const title = $('.shopier-store--product-detail-title').first().text().trim() ||
-                    $('.product-title-text').first().text().trim() ||
-                    $('h1').first().text().trim() || 
-                    $('.product-title').first().text().trim() || 
-                    $('.product-name').first().text().trim() || 
-                    'Yeni Ürün';
-      
-      // Price (Aggressive Selectors)
-      const parsePrice = (txt) => {
+
+      // --- Title Extraction ---
+      let title = '';
+      if (jsonData?.product?.name) {
+          title = jsonData.product.name;
+      } else {
+          title = $('.product-name').first().text().trim() ||
+                  $('.product-title-text').first().text().trim() ||
+                  $('h1').first().text().trim() ||
+                  $('.product-title').first().text().trim() ||
+                  $('.shopier-store--product-detail-title').first().text().trim();
+          
+          // Fallback to <title> if still empty or generic
+          if (!title || title === 'Ürün Bilgisi' || title === 'Yeni Ürün') {
+              const headTitle = $('title').text().trim();
+              if (headTitle) title = headTitle.split('|')[0].trim();
+          }
+      }
+
+      // --- Price Extraction ---
+      let priceVal = 0;
+      let oldPriceVal = 0;
+
+      const parseP = (txt) => {
         if (!txt) return 0;
         const cleaned = txt.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
         return parseFloat(cleaned) || 0;
       };
 
-      const priceText = $('.price-current, .product-price, .price, .price-value').first().text().trim();
-      const oldPriceText = $('.price-old, .product-old-price').first().text().trim();
+      if (jsonData?.product?.price) {
+          priceVal = parseFloat(jsonData.product.price.price_formatted || 0);
+          // If there's an old price in JSON, handle it
+          // Shopier JSON structure varies, but we usually have the current price
+      }
       
-      const priceVal = parsePrice(priceText);
-      const oldPriceVal = parsePrice(oldPriceText);
+      if (priceVal === 0) {
+          // Try data-price attributes first (High precision)
+          const dp = $('[data-price]').first().attr('data-price');
+          if (dp) {
+              priceVal = parseP(dp);
+          } else {
+              const pTxt = $('.price-current, .product-price, .price, .price-value').first().text().trim();
+              priceVal = parseP(pTxt);
+          }
+          const opTxt = $('.price-old, .product-old-price, .product-price-old').first().text().trim() || 
+                        $('.product-price-old').first().attr('data-price');
+          oldPriceVal = parseP(opTxt);
+      }
 
-      console.log(`✅ [fetchProductDetail] Result: "${title}" | Price: ${priceVal} | Images: ${images.length}`);
+      // --- Image Extraction ---
+      const images = [];
+      if (jsonData?.product?.primary_variant_image) {
+          images.push(jsonData.product.primary_variant_image);
+      }
       
+      $('img').each((i, el) => {
+        const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
+        if (src && src.includes('cdn.shopier.app')) {
+          if (src.includes('600icons') || src.includes('logo_') || src.includes('shopier.svg')) return;
+          const cleaned = src.split('?')[0];
+          if (!images.includes(cleaned)) images.push(cleaned);
+        }
+      });
+
+      // --- Description ---
+      let description = jsonData?.product?.description || 
+                        $('.product-description').html() || 
+                        $('#tab-description').html() || 
+                        $('.description').html() || '';
+
+      if (description) {
+          description = description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim();
+      }
+
+      // Final Clean
+      title = title || 'Yeni Ürün';
+      if (title === 'Ürün Bilgisi') { // Fix for the "Tab Title" bug
+          const headTitle = $('title').text().trim();
+          if (headTitle) title = headTitle.split('|')[0].trim();
+      }
+
+      console.log(`✅ [fetchProductDetail] Final: "${title}" | Price: ${priceVal} | Images: ${images.length}`);
+
       return { 
         url, 
         title, 
         price: oldPriceVal > priceVal ? oldPriceVal : priceVal, 
         discountPrice: oldPriceVal > priceVal ? priceVal : 0,
-        images, 
-        variations, 
-        category, 
+        images: [...new Set(images)], 
+        variations: [], // Can be extracted if needed
+        category: 'Genel', 
         description 
       };
     } catch (e) {
-      console.error(`❌ [fetchProductDetail] Failed for ${url}:`, e.message);
+      console.error(`❌ [fetchProductDetail] Failed:`, e.message);
       return { url, title: 'Yeni Ürün', price: 0, images: [], variations: [], category: '', description: '' };
     }
   },
