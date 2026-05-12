@@ -11,38 +11,27 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Truck, 
-  RefreshCw, 
   ShieldCheck, 
-  Zap 
+  RefreshCw,
+  Plus,
+  Minus,
+  Star
 } from "lucide-react";
 import { useCart } from "@/store/useCart";
 import { cn } from "@/lib/utils";
 
-// Fiyat formatlama - Shopify Standard
 const formatPrice = (price: string | number, currency: string = "TL"): string => {
   if (price === undefined || price === null || price === "") return "-";
-  
   let cleanPrice = String(price).replace(/[₺TL$€£]/g, '').trim();
-  
   if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
   } else if (cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(',', '.');
   }
-  
   const n = parseFloat(cleanPrice);
   if (isNaN(n)) return String(price);
-  
-  const symbolMap: Record<string, string> = {
-    'TL': '₺', 'TRY': '₺', 'USD': '$', 'EUR': '€', 'GBP': '£'
-  };
-  
-  const symbol = symbolMap[currency.toUpperCase()] || currency;
   const formatted = n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  
-  return symbol === '$' || symbol === '€' || symbol === '£' 
-    ? `${symbol}${formatted}`
-    : `${formatted} ${symbol}`;
+  return `${formatted} TL`;
 };
 
 const slugify = (text: string) => {
@@ -72,6 +61,7 @@ export default function ProductClient() {
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>("ozellikler");
 
   const product = products.find(p => {
     const currentSlug = typeof slug === 'string' ? slug : '';
@@ -117,27 +107,8 @@ export default function ProductClient() {
     }
   }, [product, isLoading, store]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white text-black">
-        <div className="text-center space-y-6 max-w-sm px-6">
-          <h1 className="text-2xl font-medium tracking-tight">Ürün Bulunamadı</h1>
-          <p className="text-sm text-gray-400 leading-relaxed">Aradığınız ürün şu an stoklarımızda bulunmuyor.</p>
-          <button onClick={() => window.location.href = '/'} className="inline-block border-b border-black pb-1 text-xs uppercase tracking-widest font-bold">
-            Mağazaya Dön
-          </button>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <div className="min-h-screen bg-white" />;
+  if (!product) return <div className="min-h-screen bg-white" />;
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -155,166 +126,182 @@ export default function ProductClient() {
       image: allImages[0],
       currency: product.currency,
     });
-    
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  if (!mounted) return <div className="min-h-screen bg-white" />;
+  const Accordion = ({ id, title, content }: { id: string, title: string, content: React.ReactNode }) => (
+    <div className="border-b border-gray-100">
+      <button 
+        onClick={() => setOpenAccordion(openAccordion === id ? null : id)}
+        className="w-full py-5 flex justify-between items-center group"
+      >
+        <span className="text-[13px] font-bold tracking-tight uppercase group-hover:text-gray-500 transition-colors">{title}</span>
+        <Plus size={16} className={cn("transition-transform duration-300", openAccordion === id && "rotate-45")} />
+      </button>
+      <AnimatePresence>
+        {openAccordion === id && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="pb-8 text-[13px] text-gray-500 leading-relaxed">
+              {content}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  if (!mounted) return null;
 
   return (
     <>
       <Navbar />
-      <main className="bg-white text-black min-h-screen pt-32 pb-24 px-6 md:px-12 lg:px-20">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-            
-            {/* GALLERY SECTION */}
-            <div className="space-y-4">
-              <div className="relative aspect-square bg-[#fbfbfb] overflow-hidden group border border-gray-50">
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={selectedImage}
-                    src={safeImage(allImages[selectedImage])}
-                    alt={product.name}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full h-full object-contain p-4 md:p-8"
+      <main className="bg-white text-black min-h-screen pt-32 pb-24 px-4 md:px-12 lg:px-20 max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          
+          {/* SOL KOLON: GÖRSELLER */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {allImages.slice(0, 4).map((img, idx) => (
+                <div key={idx} className="aspect-[2/3] bg-gray-50 overflow-hidden">
+                  <img 
+                    src={safeImage(img)} 
+                    alt="" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" 
                   />
-                </AnimatePresence>
-                
-                {allImages.length > 1 && (
-                  <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => setSelectedImage(prev => (prev === 0 ? allImages.length - 1 : prev - 1))} className="w-10 h-10 bg-white/90 shadow-sm flex items-center justify-center rounded-full hover:bg-black hover:text-white transition-all">
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button onClick={() => setSelectedImage(prev => (prev === allImages.length - 1 ? 0 : prev + 1))} className="w-10 h-10 bg-white/90 shadow-sm flex items-center justify-center rounded-full hover:bg-black hover:text-white transition-all">
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                )}
-              </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-              {/* THUMBNAILS BELOW */}
-              {allImages.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                  {allImages.map((img, idx) => (
-                    <button
+          {/* SAĞ KOLON: ÜRÜN BİLGİSİ (SOKAK BUTIK STYLE) */}
+          <div className="lg:col-span-5 space-y-8">
+            <div className="space-y-4">
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight leading-tight">
+                {product.name}
+              </h1>
+              <div className="flex items-center gap-1">
+                {[1,2,3,4,5].map(i => <Star key={i} size={14} className="fill-orange-400 text-orange-400" />)}
+                <span className="text-[11px] text-gray-400 ml-2">(2)</span>
+              </div>
+              <div className="text-3xl font-black italic tracking-tighter">
+                {formatPrice(product.price)}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* Renk Seçimi (Thumbnail'lar) */}
+              <div className="space-y-3">
+                <div className="text-[13px] font-bold">Renk: <span className="font-normal text-gray-500">Yıkamalı Siyah</span></div>
+                <div className="flex gap-2">
+                  {allImages.slice(0, 4).map((img, idx) => (
+                    <button 
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
-                      className={`flex-shrink-0 w-16 h-16 bg-[#fbfbfb] border transition-all ${
+                      className={cn(
+                        "w-16 h-20 border-2 transition-all p-0.5",
                         selectedImage === idx ? "border-black" : "border-transparent opacity-60"
-                      }`}
+                      )}
                     >
                       <img src={safeImage(img)} alt="" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Beden Seçimi */}
+              {((product.sizes && product.sizes.length > 0) || (product.variations && product.variations.length > 0)) && (
+                <div className="space-y-3">
+                  <div className="text-[13px] font-bold">Beden:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {((product.sizes && product.sizes.length > 0) ? product.sizes : (product.variations?.[0]?.options || [])).map((size: string) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={cn(
+                          "min-w-[80px] h-10 flex items-center justify-center text-[12px] font-bold transition-all",
+                          selectedSize === size ? "bg-black text-white" : "bg-white text-black border border-gray-200 hover:border-black"
+                        )}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
 
-            {/* PRODUCT INFO SECTION */}
-            <div className="flex flex-col">
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400 font-bold">
-                      {product.category || "Mağaza"}
-                    </span>
-                    {product.sku && (
-                      <>
-                        <span className="w-1 h-1 bg-gray-200 rounded-full" />
-                        <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400 font-bold">SKU: {product.sku}</span>
-                      </>
-                    )}
-                  </div>
-                  <h1 className="text-2xl md:text-3xl font-medium tracking-tight">
-                    {product.name.split('|')[0].trim()}
-                  </h1>
-                  <div className="flex items-baseline gap-4">
-                    <span className="text-xl font-medium">
-                      {formatPrice(product.price, product.currency)}
-                    </span>
-                    {(product.originalPrice || product.oldPrice) && Number(product.originalPrice || product.oldPrice) > Number(product.price) && (
-                      <span className="text-sm text-gray-300 line-through">
-                        {formatPrice((product.originalPrice || product.oldPrice) as any, product.currency)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* VARIANT SELECTION */}
-                {((product.sizes && product.sizes.length > 0) || (product.variations && product.variations.length > 0)) && (
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold">
-                      <span className="text-gray-400">Seçenekler</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {((product.sizes && product.sizes.length > 0) ? product.sizes : (product.variations?.[0]?.options || [])).map((size: string) => (
-                        <button
-                          key={size}
-                          onClick={() => setSelectedSize(size)}
-                          className={`px-4 h-11 flex items-center justify-center text-[11px] tracking-tighter border transition-all duration-200 ${
-                            selectedSize === size
-                              ? "bg-black text-white border-black"
-                              : "border-gray-100 text-gray-500 hover:border-gray-300"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* BUY BUTTONS */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={isAdded}
-                    className={cn(
-                      "flex-1 h-14 text-[11px] tracking-[0.1em] font-bold transition-all duration-300 flex items-center justify-center gap-3",
-                      isAdded ? "bg-gray-100 text-black cursor-default" : "bg-black text-white hover:bg-gray-800 active:scale-95"
-                    )}
-                  >
-                    {isAdded ? "SEPETE EKLENDİ" : "SEPETE EKLE"}
-                    <ShoppingBag size={16} />
-                  </button>
-                  <button 
-                    onClick={toggleFavorite}
-                    className="w-14 h-14 border border-gray-100 flex items-center justify-center hover:border-gray-300 transition-all active:scale-90"
-                  >
-                    <Heart size={18} className={cn("transition-colors", isFavorite ? "fill-black text-black" : "text-gray-300")} />
-                  </button>
-                </div>
-
-                {/* TRUST CARDS - MINIMAL GRID */}
-                <div className="grid grid-cols-3 gap-2 py-6 border-y border-gray-50">
-                  <div className="text-center space-y-1">
-                    <Truck size={14} className="mx-auto text-gray-400" />
-                    <p className="text-[9px] uppercase font-bold text-gray-400">Hızlı Kargo</p>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <RefreshCw size={14} className="mx-auto text-gray-400" />
-                    <p className="text-[9px] uppercase font-bold text-gray-400">Kolay İade</p>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <ShieldCheck size={14} className="mx-auto text-gray-400" />
-                    <p className="text-[9px] uppercase font-bold text-gray-400">Güvenli Ödeme</p>
-                  </div>
-                </div>
-
-                {/* DESCRIPTION AREA */}
-                <div className="space-y-4">
-                  <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-300">Ürün Detayları</h3>
-                  <div 
-                    className="text-gray-600 text-xs leading-relaxed prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: product.description || "Açıklama mevcut değil." }}
-                  />
-                </div>
+            {/* SATIN ALMA ALANI */}
+            <div className="flex gap-2">
+              <div className="flex items-center border border-gray-200 h-14 px-4 gap-6">
+                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="text-gray-400 hover:text-black"><Minus size={16} /></button>
+                <span className="text-sm font-bold w-4 text-center">{quantity}</span>
+                <button onClick={() => setQuantity(q => q + 1)} className="text-gray-400 hover:text-black"><Plus size={16} /></button>
               </div>
+              <button
+                onClick={handleAddToCart}
+                disabled={isAdded}
+                className={cn(
+                  "flex-1 h-14 flex items-center justify-center gap-3 text-[13px] font-bold transition-all",
+                  isAdded ? "bg-green-600 text-white" : "bg-black text-white hover:bg-gray-800"
+                )}
+              >
+                <ShoppingBag size={18} />
+                {isAdded ? "EKLENDİ" : "SEPETE EKLE"}
+              </button>
+              <button 
+                onClick={toggleFavorite}
+                className="w-14 h-14 bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-all"
+              >
+                <Heart size={20} className={cn(isFavorite && "fill-white")} />
+              </button>
+            </div>
+
+            {/* GÜVEN İKONLARI */}
+            <div className="flex justify-between items-center py-6 border-y border-gray-100">
+              <div className="flex items-center gap-3">
+                <Truck size={24} strokeWidth={1.5} />
+                <div className="text-[10px] font-bold leading-tight">HIZLI<br/>GÖNDERİ</div>
+              </div>
+              <div className="flex items-center gap-3">
+                <ShieldCheck size={24} strokeWidth={1.5} />
+                <div className="text-[10px] font-bold leading-tight">GÜVENLİ<br/>ALIŞVERİŞ</div>
+              </div>
+              <div className="flex items-center gap-3">
+                <RefreshCw size={24} strokeWidth={1.5} />
+                <div className="text-[10px] font-bold leading-tight">İADE VE<br/>DEĞİŞİM</div>
+              </div>
+            </div>
+
+            {/* AKORDİYONLAR */}
+            <div className="pt-4">
+              <Accordion 
+                id="ozellikler" 
+                title="ÜRÜN ÖZELLİKLERİ" 
+                content={
+                  <div dangerouslySetInnerHTML={{ __html: product.description || "Ürün açıklaması bulunmuyor." }} />
+                } 
+              />
+              <Accordion 
+                id="yorumlar" 
+                title="YORUMLAR" 
+                content="Bu ürün için henüz yorum yapılmamış." 
+              />
+              <Accordion 
+                id="teslimat" 
+                title="GARANTİ VE TESLİMAT" 
+                content="Siparişleriniz 1-3 iş günü içerisinde kargoya verilir." 
+              />
+              <Accordion 
+                id="taksit" 
+                title="TAKSİT SEÇENEKLERİ" 
+                content="Tüm kredi kartlarına 12 aya varan taksit seçenekleri." 
+              />
             </div>
 
           </div>
