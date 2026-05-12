@@ -24,8 +24,8 @@ import { motion } from 'framer-motion';
 import { getApiBase } from '../utils/apiBase';
 import { getAuthHeaders, getAuthToken } from '../utils/authStorage';
 import ProductManagement from './ProductManagement';
-import ShopierSettings from './ShopierSettings';
 import OrderList from './OrderList';
+import { Toaster, toast } from 'sonner';
 
 const API_BASE = getApiBase();
 const DASH_CACHE_KEY = 'odelink_cache_dashboard_v1';
@@ -43,6 +43,9 @@ const UserPanel = () => {
   const [capabilities, setCapabilities] = useState(null);
   const [reportError, setReportError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkLinks, setBulkLinks] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
 
   useEffect(() => {
     try {
@@ -144,6 +147,46 @@ const UserPanel = () => {
     }
   };
 
+  const handleBulkImport = async () => {
+    const links = bulkLinks.split('\n').map(l => l.trim()).filter(l => l.startsWith('http'));
+    if (links.length === 0) {
+      toast.error('Lütfen en az bir geçerli Shopier ürün linki girin.');
+      return;
+    }
+
+    setIsImporting(true);
+    try {
+      const token = getAuthToken();
+      const res = await fetch(`${API_BASE}/api/products/import-links`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ links })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        const successCount = data.results.filter(r => r.success).length;
+        const failCount = data.results.filter(r => !r.success).length;
+        
+        toast.success(`İçe aktarma tamamlandı: ${successCount} başarılı, ${failCount} başarısız.`);
+        
+        setShowBulkModal(false);
+        setBulkLinks('');
+        // Refresh stats/dashboard if needed
+        window.location.reload(); 
+      } else {
+        toast.error(data.error || 'İçe aktarma sırasında hata oluştu.');
+      }
+    } catch (e) {
+      toast.error('Bağlantı hatası oluştu.');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   if (loading) return (
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
        <div className="flex flex-col items-center gap-4">
@@ -180,7 +223,6 @@ const UserPanel = () => {
             { id: 'overview', label: 'GENEL BAKIŞ', icon: BarChart3 },
             { id: 'products', label: 'ÜRÜNLERİM', icon: ShoppingBag },
             { id: 'orders', label: 'SİPARİŞLERİM', icon: ShoppingCart },
-            { id: 'settings', label: 'SHOPIER AYARLARI', icon: Settings2 },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -235,11 +277,11 @@ const UserPanel = () => {
                   </div>
                 </div>
                 <div className="flex flex-row items-center gap-2 w-full md:w-auto">
-                  <button onClick={handleDownloadReport} disabled={isDownloading} className="flex-1 px-4 py-3 border border-[#C5A059]/30 text-[8px] font-black uppercase tracking-widest text-[#C5A059] hover:bg-[#C5A059] hover:text-black transition-all flex items-center justify-center gap-2">
-                    {isDownloading ? <Loader2 size={10} className="animate-spin" /> : <Download size={10} />} RAPOR
+                  <button onClick={() => setShowBulkModal(true)} className="flex-1 px-4 py-3 bg-[#C5A059]/10 border border-[#C5A059]/30 text-[8px] font-black uppercase tracking-widest text-[#C5A059] hover:bg-[#C5A059] hover:text-black transition-all flex items-center justify-center gap-2">
+                    <Link size={10} /> TOPLU LİNK YÜKLE
                   </button>
-                  <button onClick={() => navigate('/vip-support')} className="flex-1 px-4 py-3 bg-[#F2EBE1] text-[#0A0A0A] text-[8px] font-black uppercase tracking-widest hover:bg-[#C5A059] transition-all flex items-center justify-center gap-2">
-                    <Headphones size={10} /> DESTEK
+                  <button onClick={handleDownloadReport} disabled={isDownloading} className="flex-1 px-4 py-3 border border-white/10 text-[8px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all flex items-center justify-center gap-2">
+                    {isDownloading ? <Loader2 size={10} className="animate-spin" /> : <Download size={10} />} RAPOR
                   </button>
                 </div>
               </div>
@@ -327,11 +369,55 @@ const UserPanel = () => {
           </motion.div>
         )}
 
-        {activeTab === 'settings' && (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <ShopierSettings />
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {showBulkModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 lg:p-12">
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => !isImporting && setShowBulkModal(false)}
+                className="absolute inset-0 bg-[#0A0A0A]/95 backdrop-blur-2xl"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative w-full max-w-4xl bg-[#111] border border-white/5 shadow-2xl overflow-hidden"
+              >
+                <div className="flex items-center justify-between p-10 border-b border-white/5 bg-white/[0.01]">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center">
+                      <Link className="text-[#C5A059]" size={28} />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-serif text-[#F2EBE1]">Link Canavarı</h3>
+                      <p className="text-[10px] text-[#F2EBE1]/30 font-black uppercase tracking-[0.2em] mt-1">Shopier Linklerini Toplu İçe Aktar</p>
+                    </div>
+                  </div>
+                  {!isImporting && (
+                    <button onClick={() => setShowBulkModal(false)} className="w-12 h-12 flex items-center justify-center text-white/20 hover:text-white hover:bg-white/5 transition-all"><X size={24} /></button>
+                  )}
+                </div>
+                <div className="p-10 space-y-10">
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C5A059]">Ürün Linkleri</label>
+                    <textarea 
+                      value={bulkLinks} onChange={(e) => setBulkLinks(e.target.value)} disabled={isImporting}
+                      placeholder="https://www.shopier.com/shop/6020521/46527715..."
+                      className="w-full h-80 bg-white/[0.02] border border-white/5 p-8 text-[12px] text-white focus:border-[#C5A059]/40 focus:outline-none transition-all font-mono resize-none leading-relaxed"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between gap-10">
+                    <button 
+                      onClick={handleBulkImport} disabled={isImporting || !bulkLinks.trim()}
+                      className="flex items-center gap-6 bg-[#C5A059] text-[#0A0A0A] px-12 py-6 font-black uppercase tracking-widest text-[12px] hover:bg-[#F2EBE1] transition-all"
+                    >
+                      {isImporting ? <><Loader2 className="animate-spin" size={20} /><span>CANAVAR ÇALIŞIYOR...</span></> : <><Sparkles size={20} /><span>LİNKLERİ CANAVAR GİBİ ÇEK</span></>}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        <Toaster position="top-right" theme="dark" richColors />
       </main>
     </div>
   );
