@@ -859,15 +859,19 @@ router.get('/public/:subdomain', async (req, res) => {
       // ShopClient.tsx's mapProduct will handle the rest
       site.settings.manualProducts = [
         ...(Array.isArray(site.settings.manualProducts) ? site.settings.manualProducts : []),
-        ...manualProducts.map(p => ({
-          ...p,
-          name: p.title, // Nova expects 'name'
-          price: p.price,
-          originalPrice: p.price, // Fallback
-          oldPrice: p.discount_price || null, // Nova uses oldPrice/originalPrice
-          images: Array.isArray(p.images) ? p.images : [],
-          url: '#' // Local product
-        }))
+        ...manualProducts.map(p => {
+          const hasDiscount = p.discount_price && Number(p.discount_price) > 0;
+          return {
+            ...p,
+            name: p.title, 
+            // If discount exists, 'price' is the low one, 'originalPrice' is the high one
+            price: hasDiscount ? p.discount_price : p.price,
+            originalPrice: hasDiscount ? p.price : null,
+            oldPrice: hasDiscount ? p.price : null,
+            images: Array.isArray(p.images) ? p.images : [],
+            url: '#' 
+          };
+        })
       ];
     } catch (err) {
       console.error('❌ Error injecting manual products:', err);
