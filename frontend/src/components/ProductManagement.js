@@ -21,7 +21,8 @@ import {
   Settings2,
   Sparkles,
   Save,
-  Grid
+  Grid,
+  ExternalLink
 } from 'lucide-react';
 import { getApiBase } from '../utils/apiBase';
 import { getAuthToken } from '../utils/authStorage';
@@ -48,6 +49,7 @@ const ProductManagement = () => {
     sku: '',
     category: 'Genel',
     images: [],
+    shopierUrl: '',
     personalizationSettings: {
       accentColor: '#C5A059',
       buttonText: 'Hemen Al'
@@ -213,6 +215,7 @@ const ProductManagement = () => {
       sku: product.sku || '',
       category: product.category || 'Genel',
       images: product.images || [],
+      shopierUrl: product.shopier_url || product.url || '',
       personalizationSettings: product.personalization_settings || {
         accentColor: '#C5A059',
         buttonText: 'Hemen Al'
@@ -225,7 +228,7 @@ const ProductManagement = () => {
     setShowAddModal(false);
     setEditingProduct(null);
     setFormData({
-      title: '', price: '', discountPrice: '', description: '', stockCount: 100, sku: '', category: 'Genel', images: [],
+      title: '', price: '', discountPrice: '', description: '', stockCount: 100, sku: '', category: 'Genel', images: [], shopierUrl: '',
       personalizationSettings: { accentColor: '#C5A059', buttonText: 'Hemen Al' }
     });
   };
@@ -441,6 +444,12 @@ const ProductManagement = () => {
                     <div className="md:col-span-2 space-y-4">
                       <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black flex items-center gap-3">ÜRÜN BAŞLIĞI <Layers size={12} /></label>
                       <input required type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-transparent border-b border-white/10 py-5 text-2xl text-white focus:border-[#C5A059] focus:outline-none transition-all font-serif italic" placeholder="The Masterpiece..." />
+                    </div>
+
+                    <div className="md:col-span-2 space-y-4">
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black flex items-center gap-3">SHOPIER ÖDEME LİNKİ <ExternalLink size={12} /></label>
+                      <input required type="text" value={formData.shopierUrl} onChange={(e) => setFormData({ ...formData, shopierUrl: e.target.value })} className="w-full bg-white/[0.03] border border-[#C5A059]/20 px-6 py-5 text-sm text-white focus:border-[#C5A059] focus:outline-none transition-all font-mono" placeholder="https://www.shopier.com/..." />
+                      <p className="text-[9px] text-white/20 font-bold uppercase">BU ÜRÜNÜN PARASININ ADAMIN HESABINA GİTMESİ İÇİN BU LİNK ŞARTTIR</p>
                     </div>
 
                     <div className="space-y-4">

@@ -880,7 +880,7 @@ router.get('/public/:subdomain', async (req, res) => {
             originalPrice: hasDiscount ? p.price : null,
             oldPrice: hasDiscount ? p.price : null,
             images: Array.isArray(p.images) ? p.images : [],
-            url: '#' 
+            url: p.shopier_url || p.url || '#' 
           };
         })
       ];
