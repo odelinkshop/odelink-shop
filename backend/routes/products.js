@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 const Site = require('../models/Site');
 const cacheService = require('../services/cacheService');
 const authMiddleware = require('../middleware/auth');
+const { fetchProductDetail } = require('../services/shopierCatalogService');
 
 const clearUserSiteCaches = async (userId) => {
   try {
@@ -52,6 +53,53 @@ router.put('/:id', authMiddleware, async (req, res) => {
     if (!product) return res.status(404).json({ error: 'Ürün bulunamadı' });
     await clearUserSiteCaches(req.userId);
     res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Toplu link ile ürün çek
+router.post('/import-links', authMiddleware, async (req, res) => {
+  try {
+    const { links } = req.body;
+    if (!Array.isArray(links) || links.length === 0) {
+      return res.status(400).json({ error: 'Geçerli link listesi gerekli' });
+    }
+
+    console.log(`🚀 [${req.userId}] ${links.length} link için toplu çekim başlatıldı...`);
+    const results = [];
+
+    for (const link of links) {
+      try {
+        const detail = await fetchProductDetail(link);
+        if (detail && detail.images && detail.images.length > 0) {
+          // Shopier HTML'inden başlığı da çekmeye çalışalım (eğer service vermiyorsa)
+          // Normalde fetchProductDetail title vermiyor olabilir, kontrol edelim.
+          // Eğer vermiyorsa linkten veya meta'dan çekebiliriz.
+          
+          const product = await Product.create({
+            userId: req.userId,
+            title: detail.title || 'Yeni Ürün',
+            description: detail.description || '',
+            price: detail.price || 0,
+            discountPrice: detail.discountPrice || 0,
+            images: detail.images,
+            shopierUrl: link,
+            category: detail.category || 'Genel',
+            stockCount: 100
+          });
+          results.push({ link, success: true, id: product.id });
+        } else {
+          results.push({ link, success: false, error: 'Ürün verisi çekilemedi' });
+        }
+      } catch (err) {
+        console.error(`❌ Link çekme hatası (${link}):`, err.message);
+        results.push({ link, success: false, error: err.message });
+      }
+    }
+
+    await clearUserSiteCaches(req.userId);
+    res.json({ success: true, results });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

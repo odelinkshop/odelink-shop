@@ -14,6 +14,7 @@ class Product {
         stock_count INTEGER DEFAULT 100,
         sku VARCHAR(100),
         category VARCHAR(255),
+        shopier_url TEXT,
         tags JSONB DEFAULT '[]',
         personalization_settings JSONB DEFAULT '{}',
         is_active BOOLEAN DEFAULT TRUE,
@@ -34,6 +35,9 @@ class Product {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='category') THEN
           ALTER TABLE products ADD COLUMN category VARCHAR(255);
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='shopier_url') THEN
+          ALTER TABLE products ADD COLUMN shopier_url TEXT;
+        END IF;
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='tags') THEN
           ALTER TABLE products ADD COLUMN tags JSONB DEFAULT '[]';
         END IF;
@@ -50,12 +54,12 @@ class Product {
   }
 
   static async create(productData) {
-    const { userId, title, description, price, discountPrice, images, stockCount, sku, category, tags, personalizationSettings } = productData;
+    const { userId, title, description, price, discountPrice, images, stockCount, sku, category, shopierUrl, tags, personalizationSettings } = productData;
     await this.ensureSchema();
 
     const query = `
-      INSERT INTO products (user_id, title, description, price, discount_price, images, stock_count, sku, category, tags, personalization_settings)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      INSERT INTO products (user_id, title, description, price, discount_price, images, stock_count, sku, category, shopier_url, tags, personalization_settings)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *
     `;
 
@@ -70,6 +74,7 @@ class Product {
         stockCount || 100,
         sku,
         category,
+        shopierUrl,
         JSON.stringify(tags || []),
         JSON.stringify(personalizationSettings || {})
       ]);
@@ -91,7 +96,7 @@ class Product {
   }
 
   static async update(productId, userId, updateData) {
-    const { title, description, price, discountPrice, images, stockCount, sku, category, tags, personalizationSettings, isActive } = updateData;
+    const { title, description, price, discountPrice, images, stockCount, sku, category, shopierUrl, tags, personalizationSettings, isActive } = updateData;
     const query = `
       UPDATE products
       SET 
@@ -103,11 +108,12 @@ class Product {
         stock_count = COALESCE($6, stock_count),
         sku = COALESCE($7, sku),
         category = COALESCE($8, category),
-        tags = COALESCE($9, tags),
-        personalization_settings = COALESCE($10, personalization_settings),
-        is_active = COALESCE($11, is_active),
+        shopier_url = COALESCE($9, shopier_url),
+        tags = COALESCE($10, tags),
+        personalization_settings = COALESCE($11, personalization_settings),
+        is_active = COALESCE($12, is_active),
         updated_at = NOW()
-      WHERE id = $12 AND user_id = $13
+      WHERE id = $13 AND user_id = $14
       RETURNING *
     `;
 
@@ -121,6 +127,7 @@ class Product {
         stockCount,
         sku,
         category,
+        shopierUrl,
         tags ? JSON.stringify(tags) : null,
         personalizationSettings ? JSON.stringify(personalizationSettings) : null,
         isActive,

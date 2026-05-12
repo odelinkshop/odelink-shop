@@ -737,10 +737,38 @@ module.exports = {
           description = description.trim();
       }
       
-      return { url, images, variations, category, description };
+      // Title
+      const title = $('h1, .product-title, .product-name').first().text().trim() || 'Yeni Ürün';
+      
+      // Price
+      const priceText = $('.price-current, .product-price, .price').first().text().trim();
+      const oldPriceText = $('.price-old, .product-old-price').first().text().trim();
+      
+      const parsePrice = (txt) => {
+        if (!txt) return 0;
+        const cleaned = txt.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.');
+        return parseFloat(cleaned) || 0;
+      };
+
+      const price = parsePrice(priceText);
+      const discountPrice = oldPriceText ? price : 0;
+      const finalPrice = oldPriceText ? parsePrice(oldPriceText) : price;
+      // Note: If there's an old price, the 'price' is the discounted one, 'oldPrice' is the original.
+      // We'll return them clearly.
+      
+      return { 
+        url, 
+        title, 
+        price: oldPriceText ? parsePrice(oldPriceText) : price, 
+        discountPrice: oldPriceText ? price : 0,
+        images, 
+        variations, 
+        category, 
+        description 
+      };
     } catch (e) {
       console.error(`❌ [fetchProductDetail] Failed for ${url}:`, e.message);
-      return { url, images: [], variations: [], category: '', description: '' };
+      return { url, title: 'Yeni Ürün', price: 0, images: [], variations: [], category: '', description: '' };
     }
   },
   fetchWithPuppeteerGhostDetail: async (url) => {
@@ -752,6 +780,19 @@ module.exports = {
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
       
       const details = await page.evaluate(() => {
+        const title = document.querySelector('h1, .product-title, .product-name')?.textContent.trim() || 'Yeni Ürün';
+        const priceText = document.querySelector('.price-current, .product-price, .price')?.textContent.trim() || '0';
+        const oldPriceText = document.querySelector('.price-old, .product-old-price')?.textContent.trim() || '';
+
+        const parseP = (txt) => {
+          if (!txt) return 0;
+          const cleaned = txt.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.');
+          return parseFloat(cleaned) || 0;
+        };
+
+        const p = parseP(priceText);
+        const op = oldPriceText ? parseP(oldPriceText) : 0;
+
         const images = Array.from(document.querySelectorAll('img'))
           .map(img => img.getAttribute('data-src') || img.getAttribute('src'))
           .filter(src => src && (src.includes('cdn.shopier.app/pictures_large/') || src.includes('cdn.shopier.app/pictures/')))
@@ -771,7 +812,15 @@ module.exports = {
         
         const description = document.querySelector('.product-description, #tab-description, .description, .product-details, [class*="description"]')?.innerHTML || '';
         
-        return { images: [...new Set(images)], variations, category, description };
+        return { 
+          title, 
+          price: op ? op : p,
+          discountPrice: op ? p : 0,
+          images: [...new Set(images)], 
+          variations, 
+          category, 
+          description 
+        };
       });
       
       return { url, ...details };

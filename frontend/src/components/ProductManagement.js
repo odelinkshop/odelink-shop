@@ -22,7 +22,8 @@ import {
   Sparkles,
   Save,
   Grid,
-  ExternalLink
+  ExternalLink,
+  Link
 } from 'lucide-react';
 import { getApiBase } from '../utils/apiBase';
 import { getAuthToken } from '../utils/authStorage';
@@ -37,6 +38,9 @@ const ProductManagement = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkLinks, setBulkLinks] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef(null);
 
   // Form State
@@ -204,6 +208,49 @@ const ProductManagement = () => {
     }
   };
 
+  const handleBulkImport = async () => {
+    const links = bulkLinks.split('\n').map(l => l.trim()).filter(l => l.startsWith('http'));
+    if (links.length === 0) {
+      alert('Lütfen en az bir geçerli Shopier ürün linki girin.');
+      return;
+    }
+
+    setIsImporting(true);
+    try {
+      const token = getAuthToken();
+      const res = await fetch(`${API_BASE}/api/products/import-links`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ links })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        const successCount = data.results.filter(r => r.success).length;
+        const failCount = data.results.filter(r => !r.success).length;
+        
+        setMessage({ 
+          type: 'success', 
+          text: `İçe aktarma tamamlandı: ${successCount} başarılı, ${failCount} başarısız.` 
+        });
+        
+        setShowBulkModal(false);
+        setBulkLinks('');
+        fetchProducts(); // Listeyi yenile
+      } else {
+        setMessage({ type: 'error', text: data.error || 'İçe aktarma sırasında hata oluştu.' });
+      }
+    } catch (e) {
+      console.error('Bulk import error:', e);
+      setMessage({ type: 'error', text: 'Bağlantı hatası oluştu.' });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   const openEditModal = (product) => {
     setEditingProduct(product);
     setFormData({
@@ -274,6 +321,14 @@ const ProductManagement = () => {
             />
           </div>
           
+          <button 
+            onClick={() => setShowBulkModal(true)}
+            className="flex items-center gap-4 bg-white/[0.03] border border-white/10 text-[#F2EBE1] px-10 py-5 font-black uppercase tracking-widest text-[11px] hover:bg-white/5 transition-all"
+          >
+            <Link size={18} className="text-[#C5A059]" /> 
+            <span>TOPLU LİNK YÜKLE</span>
+          </button>
+
           <button 
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-4 bg-[#C5A059] text-[#0A0A0A] px-10 py-5 font-black uppercase tracking-widest text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-[#C5A059]/20"
@@ -503,6 +558,92 @@ const ProductManagement = () => {
                   </div>
                 </form>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      {/* BULK IMPORT MODAL */}
+      <AnimatePresence>
+        {showBulkModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 lg:p-12">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isImporting && setShowBulkModal(false)}
+              className="absolute inset-0 bg-[#0A0A0A]/95 backdrop-blur-2xl"
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl bg-[#111] border border-white/5 shadow-2xl overflow-hidden"
+            >
+              <div className="flex items-center justify-between p-10 border-b border-white/5 bg-white/[0.01]">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center">
+                    <Link className="text-[#C5A059]" size={28} />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-serif text-[#F2EBE1]">Link Canavarı</h3>
+                    <p className="text-[10px] text-[#F2EBE1]/30 font-black uppercase tracking-[0.2em] mt-1">Shopier Linklerini Toplu İçe Aktar</p>
+                  </div>
+                </div>
+                {!isImporting && (
+                  <button 
+                    onClick={() => setShowBulkModal(false)}
+                    className="w-12 h-12 flex items-center justify-center text-white/20 hover:text-white hover:bg-white/5 transition-all"
+                  >
+                    <X size={24} />
+                  </button>
+                )}
+              </div>
+
+              <div className="p-10 space-y-10">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C5A059]">Ürün Linkleri</label>
+                  <p className="text-[11px] text-[#F2EBE1]/40 leading-relaxed font-medium">
+                    Her satıra bir Shopier ürün linki gelecek şekilde yapıştırın. Link Canavarı tüm görselleri, fiyatları ve açıklamaları sizin için otomatik çekecektir.
+                  </p>
+                  <textarea 
+                    value={bulkLinks}
+                    onChange={(e) => setBulkLinks(e.target.value)}
+                    disabled={isImporting}
+                    placeholder="https://www.shopier.com/shop/6020521/46527715&#10;https://www.shopier.com/shop/6020521/46527716"
+                    className="w-full h-80 bg-white/[0.02] border border-white/5 p-8 text-[12px] text-white focus:border-[#C5A059]/40 focus:outline-none transition-all font-mono resize-none leading-relaxed"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between gap-10">
+                  <div className="flex items-center gap-4">
+                    <div className="w-2 h-2 rounded-full bg-[#C5A059] animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F2EBE1]/40">HD Görsel & Fiyat Senkronizasyonu Aktif</span>
+                  </div>
+
+                  <button 
+                    onClick={handleBulkImport}
+                    disabled={isImporting || !bulkLinks.trim()}
+                    className="flex items-center gap-6 bg-[#C5A059] text-[#0A0A0A] px-12 py-6 font-black uppercase tracking-widest text-[12px] hover:bg-[#F2EBE1] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    {isImporting ? (
+                      <>
+                        <Loader2 className="animate-spin" size={20} />
+                        <span>CANAVAR ÇALIŞIYOR...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={20} />
+                        <span>LİNKLERİ CANAVAR GİBİ ÇEK</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {isImporting && (
+                <div className="absolute bottom-0 left-0 h-1 bg-[#C5A059] animate-[loading_2s_ease-in-out_infinite]" style={{ width: '100%' }} />
+              )}
             </motion.div>
           </div>
         )}
