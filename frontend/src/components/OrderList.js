@@ -147,7 +147,7 @@ const OrderList = () => {
             </tbody>
           </table>
         </div>
-      )}}
+      )}
     </div>
   );
 };
