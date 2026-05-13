@@ -1,166 +1,184 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FileText, 
   X, 
-  ChevronRight, 
-  Download, 
   Printer, 
+  Download, 
+  ChevronRight,
+  Shield,
+  FileCheck,
   Search,
-  Library,
-  ShieldCheck,
-  Building2,
-  Lock,
-  Maximize2
+  ExternalLink,
+  ChevronDown
 } from 'lucide-react';
 
 const CertificatesPage = () => {
   const [selectedCert, setSelectedCert] = useState(null);
+  const printRef = useRef();
 
   const certificates = [
     {
-      id: 'OD-SEC-2024-001',
-      title: 'Global SSL Encryption Protocol',
-      issuer: 'Network Security Division',
-      issuedTo: 'Odelink Cloud Infrastructure',
-      date: '12 Ocak 2024',
-      validity: '31 Aralık 2025',
-      type: 'SECURITY',
-      serial: '550e8400-e29b-41d4-a716-446655440000',
-      description: 'Uçtan uca şifreleme ve kimlik doğrulama standartlarına tam uyumluluk belgesidir.',
-      stampColor: 'blue'
+      id: 'SEC-TLS-2401',
+      title: 'Transport Layer Security (TLS 1.3)',
+      subtitle: 'Data Encryption & Identity Verification',
+      issuer: 'Global Certification Authority',
+      entity: 'Odelink Cloud Platform',
+      ref: '00X-550E8400',
+      period: '2024 - 2025',
+      stamp: 'Official Security Seal',
+      desc: 'Bu döküman, platform üzerindeki tüm veri trafiğinin TLS 1.3 protokolü ve 256-bit AES şifreleme standartları ile uçtan uca korunduğunu tasdik eder.',
+      legalNote: 'Technical Specification: ISO/IEC 18033-3:2010'
     },
     {
-      id: 'OD-FIN-2024-088',
-      title: 'PCI-DSS Compliance Certificate',
-      issuer: 'Financial Security Board',
-      issuedTo: 'Odelink Payment Systems',
-      date: '05 Şubat 2024',
-      validity: '04 Şubat 2026',
-      type: 'FINANCE',
-      serial: '661f9511-f30c-52e5-b827-557766551111',
-      description: 'Uluslararası ödeme kartı veri güvenliği standartlarına (v4.0) tam uyumluluk onayıdır.',
-      stampColor: 'gold'
+      id: 'FIN-PCI-2402',
+      title: 'PCI-DSS Compliance (v4.0)',
+      subtitle: 'Financial Data Security Standards',
+      issuer: 'Payment Security Council',
+      entity: 'Odelink Transaction Services',
+      ref: '00X-661F9511',
+      period: '2024 - 2026',
+      stamp: 'Financial Integrity Seal',
+      desc: 'Ödeme kanalları ve kullanıcı finansal verilerinin, uluslararası ödeme kartı endüstrisi standartlarına tam uyumluluğunu gösteren yetki belgesidir.',
+      legalNote: 'Compliance Code: PCI-DSS-4.0-A1'
     },
     {
-      id: 'OD-ISO-27001-X',
-      title: 'ISO/IEC 27001:2022 Certification',
-      issuer: 'Quality Control Authority',
-      issuedTo: 'Odelink Tech Management',
-      date: '15 Mart 2024',
-      validity: '14 Mart 2027',
-      type: 'MANAGEMENT',
-      serial: '772g0622-g41d-63f6-c938-668877662222',
-      description: 'Bilgi güvenliği yönetim sistemi standartları denetiminden başarıyla geçilmiştir.',
-      stampColor: 'red'
+      id: 'ISO-ISMS-2403',
+      title: 'ISO/IEC 27001:2022',
+      subtitle: 'Information Security Management System',
+      issuer: 'Quality & Standards Board',
+      entity: 'Odelink Infrastructure Operations',
+      ref: '00X-772G0622',
+      period: '2024 - 2027',
+      stamp: 'Quality Assurance Seal',
+      desc: 'Kurumsal bilgi güvenliği yönetim süreçlerinin, uluslararası standartlar çerçevesinde denetlendiği ve onaylandığı resmi sertifikasyon dökümanıdır.',
+      legalNote: 'Audit ID: 27001-2024-ISMS'
     },
     {
-      id: 'OD-KVKK-2024-LGL',
-      title: 'KVKK Compliance Verification',
-      issuer: 'Legal Compliance Department',
-      issuedTo: 'Odelink Digital Services',
-      date: '20 Nisan 2024',
-      validity: 'Süresiz / Periyodik Denetim',
-      type: 'LEGAL',
-      serial: '883h1733-h52e-74g7-d049-779988773333',
-      description: '6698 sayılı Kişisel Verilerin Korunması Kanunu protokollerine tam uyumluluk beyanıdır.',
-      stampColor: 'blue'
+      id: 'LGL-KVKK-2404',
+      title: 'Data Privacy & KVKK Compliance',
+      subtitle: 'General Data Protection Regulation',
+      issuer: 'Legal Compliance Institute',
+      entity: 'Odelink Digital Ecosystem',
+      ref: '00X-883H1733',
+      period: 'Current / Ongoing',
+      stamp: 'Legal Compliance Seal',
+      desc: '6698 Sayılı KVKK ve Avrupa Birliği GDPR standartları kapsamında, kullanıcı veri gizliliği ve işleme protokollerine tam uyum belgesidir.',
+      legalNote: 'Regulatory Framework: Law No. 6698'
     }
   ];
 
-  const DocumentComponent = ({ cert, isModal = false }) => {
-    // QR code points to the real certificates page with ID
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.odelink.shop/certificates?id=${cert.id}`;
+  const handlePrint = () => {
+    const printContent = document.getElementById('printable-document');
+    const WinPrint = window.open('', '', 'width=900,height=1200');
+    WinPrint.document.write('<html><head><title>Ödelink Certificate</title>');
+    WinPrint.document.write('<style>body { margin: 0; padding: 0; }</style>');
+    WinPrint.document.write('</head><body>');
+    WinPrint.document.write(printContent.innerHTML);
+    WinPrint.document.write('</body></html>');
+    WinPrint.document.close();
+    WinPrint.focus();
+    WinPrint.print();
+    WinPrint.close();
+  };
 
+  const OfficialDocument = ({ cert, isForPrint = false }) => {
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.odelink.shop/certificates/${cert.id}`;
+    
     return (
-      <div className={`relative bg-white text-black shadow-2xl p-12 overflow-hidden ${isModal ? 'w-[800px] aspect-[1/1.414]' : 'w-full aspect-[1/1.414]'}`} style={{ fontFamily: 'serif' }}>
-        {/* PAPER TEXTURE OVERLAY */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/paper-fibers.png")' }} />
-        
-        {/* BORDER */}
-        <div className="absolute inset-4 border-[3px] border-double border-gray-300" />
-        <div className="absolute inset-8 border border-gray-200" />
+      <div id={isForPrint ? 'printable-document' : ''} className={`relative bg-white text-black shadow-[0_0_80px_rgba(0,0,0,0.5)] mx-auto overflow-hidden ${isForPrint ? 'w-[794px] h-[1123px]' : 'w-full aspect-[1/1.414]'}`} style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+        {/* REFINED BORDER */}
+        <div className="absolute inset-8 border border-gray-100" />
+        <div className="absolute inset-[34px] border-[2px] border-gray-900/10" />
 
         {/* WATERMARK */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none rotate-[-45deg]">
-          <span className="text-9xl font-black tracking-widest uppercase">ÖDELINK</span>
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none -rotate-45">
+          <span className="text-[12rem] font-serif font-black tracking-tighter">ODELINK</span>
         </div>
 
-        {/* HEADER */}
-        <div className="relative z-10 flex justify-between items-start mb-16">
-          <div className="space-y-1">
-            <h1 className="text-xl font-bold tracking-[0.2em] uppercase text-gray-800">ÖDELINK TECHNOLOGIES</h1>
-            <p className="text-[10px] text-gray-500 font-sans tracking-widest uppercase">Official Certification & Compliance Division</p>
-          </div>
-          <div className="text-right space-y-1">
-            <p className="text-[10px] font-sans font-bold text-gray-400">DOC NO: {cert.id}</p>
-            <p className="text-[10px] font-sans font-bold text-gray-400">REF: {cert.serial.substring(0, 8).toUpperCase()}</p>
-          </div>
-        </div>
-
-        {/* TITLE SECTION */}
-        <div className="relative z-10 text-center mb-16 mt-20">
-          <h2 className="text-4xl font-bold mb-4 tracking-tight border-b-2 border-gray-900 inline-block pb-2">CERTIFICATE OF COMPLIANCE</h2>
-          <p className="text-sm italic text-gray-600 mt-4">This document confirms that the stated entity has met the requirements of the specified protocol.</p>
-        </div>
-
-        {/* BODY */}
-        <div className="relative z-10 space-y-10 mt-20 text-lg leading-loose px-10">
-          <div className="flex justify-between items-end border-b border-gray-100 pb-2">
-            <span className="text-sm font-sans uppercase font-black text-gray-400 tracking-widest">Protocol</span>
-            <span className="text-2xl font-bold">{cert.title}</span>
-          </div>
-
-          <div className="flex justify-between items-end border-b border-gray-100 pb-2">
-            <span className="text-sm font-sans uppercase font-black text-gray-400 tracking-widest">Issued To</span>
-            <span className="text-2xl font-bold">{cert.issuedTo}</span>
-          </div>
-
-          <div className="flex justify-between items-end border-b border-gray-100 pb-2">
-            <span className="text-sm font-sans uppercase font-black text-gray-400 tracking-widest">Issuing Authority</span>
-            <span className="text-xl font-medium italic">{cert.issuer}</span>
-          </div>
-
-          <div className="pt-8">
-            <p className="text-base text-gray-700 text-justify first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
-              {cert.description} Bu sertifika, belirtilen tarihler arasında geçerli olup, periyodik denetimler ve standartlara tam uyumluluk çerçevesinde düzenlenmiştir. Belgenin dijital aslına yan taraftaki resmi QR kod aracılığıyla erişilebilir.
-            </p>
-          </div>
-        </div>
-
-        {/* FOOTER / SIGNATURES */}
-        <div className="absolute bottom-20 left-12 right-12 flex justify-between items-end">
-          <div className="space-y-6">
-            <img src={qrUrl} alt="QR Code" className="w-24 h-24 border border-gray-200 p-1" />
-            <div className="space-y-1">
-                <p className="text-[10px] font-sans font-bold uppercase text-gray-400">Effective Date</p>
-                <p className="text-sm font-bold">{cert.date}</p>
+        {/* CONTENT */}
+        <div className="relative z-10 px-20 py-24 flex flex-col h-full">
+          {/* HEADER */}
+          <div className="flex justify-between items-start border-b-2 border-gray-900 pb-10 mb-20">
+            <div>
+              <h1 className="text-2xl font-bold tracking-widest uppercase">ÖDELINK</h1>
+              <p className="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-sans font-black mt-2">Infrastructure & Trust Compliance</p>
+            </div>
+            <div className="text-right font-sans text-[10px] space-y-1">
+              <p className="font-bold text-gray-400">DOCUMENT ID</p>
+              <p className="font-black text-gray-900">{cert.id}</p>
+              <p className="font-bold text-gray-400 mt-4">REFERENCE</p>
+              <p className="font-black text-gray-900">{cert.ref}</p>
             </div>
           </div>
 
-          <div className="relative">
-            {/* STAMP */}
-            <div className={`absolute -top-24 -left-16 w-32 h-32 rounded-full border-4 flex items-center justify-center opacity-70 rotate-[-15deg] select-none
-              ${cert.stampColor === 'blue' ? 'border-blue-800 text-blue-800' : 
-                cert.stampColor === 'gold' ? 'border-[#C5A059] text-[#C5A059]' : 
-                'border-red-800 text-red-800'}`}>
-              <div className="text-center">
-                <p className="text-[8px] font-black uppercase">OFFICIAL SEAL</p>
-                <p className="text-[10px] font-black uppercase leading-none">VERIFIED</p>
-                <p className="text-[8px] font-black uppercase">2024</p>
-              </div>
+          {/* MAIN TITLE */}
+          <div className="text-center space-y-4 mb-24">
+            <h2 className="text-4xl font-bold tracking-tight">CERTIFICATE OF COMPLIANCE</h2>
+            <div className="w-48 h-[1px] bg-gray-300 mx-auto" />
+            <p className="text-xs italic text-gray-500 uppercase tracking-widest">Protocol Verification Statement</p>
+          </div>
+
+          {/* FIELDS */}
+          <div className="space-y-12 mb-auto">
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-sans font-black text-gray-300 uppercase tracking-[0.3em]">Certification Subject</span>
+              <span className="text-2xl font-bold border-b border-gray-100 pb-2">{cert.title}</span>
+              <span className="text-xs italic text-gray-400">{cert.subtitle}</span>
             </div>
 
-            {/* SIGNATURE */}
-            <div className="text-center space-y-0">
-               <div className="h-16 flex items-end justify-center mb-2">
-                  <span className="font-serif italic text-3xl opacity-80 select-none" style={{ fontFamily: '"Great Vibes", cursive' }}>
-                    M. Bayram
-                  </span>
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-sans font-black text-gray-300 uppercase tracking-[0.3em]">Certified Entity</span>
+              <span className="text-2xl font-bold border-b border-gray-100 pb-2">{cert.entity}</span>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-sans font-black text-gray-300 uppercase tracking-[0.3em]">Authority Body</span>
+              <span className="text-xl font-bold italic">{cert.issuer}</span>
+            </div>
+
+            <div className="mt-16 bg-gray-50/50 p-8 border-l-4 border-gray-900">
+               <p className="text-base text-gray-800 leading-relaxed text-justify first-letter:text-4xl first-letter:font-bold first-letter:mr-2">
+                 {cert.desc} Bu belge, belirtilen altyapı bileşenlerinin standartlara tam uyum sağladığını ve periyodik denetim protokollerinden başarıyla geçtiğini beyan eder.
+               </p>
+               <p className="text-[10px] font-sans font-bold text-gray-400 uppercase tracking-widest mt-6">
+                 Legal Reference: {cert.legalNote}
+               </p>
+            </div>
+          </div>
+
+          {/* FOOTER */}
+          <div className="flex justify-between items-end mt-20">
+            <div className="space-y-6">
+               <img src={qrUrl} alt="QR Verification" className="w-24 h-24 p-1 bg-white border border-gray-100 shadow-sm" />
+               <div className="space-y-1">
+                 <p className="text-[9px] font-sans font-black text-gray-300 uppercase tracking-widest">Certification Period</p>
+                 <p className="text-xs font-bold text-gray-900">{cert.period}</p>
                </div>
-               <div className="w-48 h-px bg-gray-900 mx-auto" />
-               <p className="text-[10px] font-black uppercase tracking-widest mt-2">Managing Director</p>
-               <p className="text-[8px] text-gray-400 uppercase tracking-widest">Odelink Technologies HQ</p>
+            </div>
+
+            <div className="relative text-center">
+              {/* SEAL */}
+              <div className="absolute -top-32 -left-20 w-40 h-40 opacity-15 pointer-events-none rotate-[-15deg]">
+                 <svg viewBox="0 0 100 100" className="w-full h-full fill-gray-900">
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="1" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                    <text className="text-[8px] font-bold" transform="rotate(-15, 50, 50)">
+                       <textPath href="#circlePath">OFFICIAL COMPLIANCE SEAL • ODELINK TECHNOLOGIES • </textPath>
+                    </text>
+                    <path id="circlePath" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" fill="none" />
+                 </svg>
+              </div>
+
+              <div className="space-y-2">
+                 <div className="h-12 flex items-end justify-center">
+                    <span className="font-serif italic text-3xl opacity-80" style={{ fontFamily: '"Libre Baskerville", serif' }}>
+                      M. Bayram
+                    </span>
+                 </div>
+                 <div className="w-48 h-[1px] bg-gray-900 mx-auto" />
+                 <p className="text-[10px] font-sans font-black uppercase tracking-[0.2em] text-gray-800">Board of Directors</p>
+                 <p className="text-[8px] font-sans text-gray-400 uppercase tracking-widest">Verification Division HQ</p>
+              </div>
             </div>
           </div>
         </div>
@@ -169,125 +187,133 @@ const CertificatesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] pt-32 pb-40 px-6">
+    <div className="min-h-screen bg-[#050505] text-[#F2EBE1] pt-32 pb-40 px-6 font-sans">
       <div className="max-w-7xl mx-auto">
-        {/* HEADER SECTION */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-24 border-b border-white/5 pb-16">
-          <div className="space-y-6">
-             <div className="flex items-center gap-3 text-[#C5A059]">
-               <Library size={24} />
-               <span className="text-xs font-black uppercase tracking-[0.5em]">Digital Archive</span>
-             </div>
-             <h1 className="text-6xl font-serif text-[#F2EBE1] tracking-tighter leading-none">Kurumsal Sertifika Kasası</h1>
-             <p className="text-[#F2EBE1]/40 max-w-xl text-lg font-medium">
-               Ödelink altyapısının güvenilirliğini belgeleyen tüm resmi dökümanlar dijital olarak mühürlenmiş ve bu arşivde muhafaza edilmektedir.
-             </p>
-          </div>
-          
-          <div className="flex items-center gap-6">
-             <div className="text-right">
-                <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-1">Archive Integrity</p>
-                <p className="text-sm font-bold text-green-500 uppercase tracking-widest flex items-center gap-2 justify-end">
-                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                   Verified Secure
-                </p>
-             </div>
-             <div className="w-px h-12 bg-white/10" />
-             <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                <Search size={20} className="text-[#C5A059]" />
-             </div>
+        {/* CORPORATE HEADER */}
+        <div className="mb-32 border-b border-white/10 pb-20">
+          <div className="max-w-3xl space-y-8">
+            <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2">
+              <Shield size={16} className="text-gray-400" />
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Institutional Compliance</span>
+            </div>
+            <h1 className="text-7xl font-serif tracking-tighter leading-none italic">Güvenlik ve Uyumluluk Belgeleri</h1>
+            <p className="text-xl text-[#F2EBE1]/40 font-medium leading-relaxed">
+              Ödelink, teknolojik altyapısını uluslararası veri güvenliği ve finansal işlem standartlarına göre kurgulamıştır. Aşağıdaki resmi belgeler, bu standartlara olan bağlılığımızın beyanıdır.
+            </p>
           </div>
         </div>
 
-        {/* ARCHIVE GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* MINIMALIST LIST LAYOUT */}
+        <div className="space-y-4">
           {certificates.map((cert, index) => (
             <motion.div
               key={cert.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="group relative cursor-pointer"
               onClick={() => setSelectedCert(cert)}
+              className="group relative bg-[#0C0C0C] border border-white/5 p-8 flex flex-col md:flex-row items-start md:items-center justify-between cursor-pointer hover:bg-white/[0.03] hover:border-[#F2EBE1]/20 transition-all duration-500"
             >
-              {/* DOCUMENT STACK EFFECT */}
-              <div className="absolute inset-0 bg-white/5 translate-x-2 translate-y-2 rounded-sm" />
-              <div className="absolute inset-0 bg-white/5 translate-x-1 translate-y-1 rounded-sm" />
+              <div className="flex items-center gap-10">
+                 <div className="w-16 h-16 bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-[#F2EBE1]/40 transition-colors">
+                    <FileCheck size={24} className="text-gray-400 group-hover:text-[#F2EBE1] transition-colors" />
+                 </div>
+                 <div className="space-y-1">
+                    <h3 className="text-2xl font-serif italic text-white/90">{cert.title}</h3>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/20">{cert.id} • REF: {cert.ref}</p>
+                 </div>
+              </div>
               
-              <div className="relative bg-[#111] border border-white/10 p-2 group-hover:border-[#C5A059]/50 transition-all duration-500">
-                {/* PREVIEW CONTAINER */}
-                <div className="relative bg-gray-900 aspect-[1/1.414] overflow-hidden">
-                   <div className="scale-[0.5] origin-top transform transition-transform duration-700 group-hover:scale-[0.52]">
-                     <DocumentComponent cert={cert} />
-                   </div>
-                   
-                   {/* OVERLAY ON HOVER */}
-                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-4">
-                      <div className="w-16 h-16 rounded-full bg-[#C5A059] flex items-center justify-center text-black">
-                        <Maximize2 size={24} />
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Görüntüle</span>
-                   </div>
-                </div>
-
-                {/* LABEL */}
-                <div className="p-8 flex justify-between items-center">
-                  <div>
-                    <h3 className="text-xl font-serif text-[#F2EBE1] mb-2">{cert.title}</h3>
-                    <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">{cert.id}</p>
-                  </div>
-                  <ChevronRight size={20} className="text-[#C5A059] opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+              <div className="mt-6 md:mt-0 flex items-center gap-12">
+                 <div className="text-right hidden md:block">
+                    <p className="text-[10px] font-black text-white/10 uppercase tracking-widest mb-1">Validity Period</p>
+                    <p className="text-sm font-bold text-white/60 tracking-tighter">{cert.period}</p>
+                 </div>
+                 <div className="flex items-center gap-4 bg-white/5 px-6 py-3 border border-white/10 group-hover:bg-[#F2EBE1] group-hover:text-black transition-all">
+                    <span className="text-[10px] font-black uppercase tracking-widest">Dökümanı Aç</span>
+                    <ChevronRight size={14} />
+                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* MODAL VIEW */}
+        {/* MODAL VIEWPORT */}
         <AnimatePresence>
           {selectedCert && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] flex items-center justify-center p-6 md:p-20 bg-black/95 backdrop-blur-xl"
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/98 backdrop-blur-3xl overflow-hidden p-6 md:p-10"
             >
-              <div className="absolute top-10 right-10 flex gap-4">
-                 <button className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-[#C5A059] hover:text-black transition-all">
+              {/* MODAL CONTROLS */}
+              <div className="absolute top-10 right-10 flex gap-4 z-[110]">
+                 <button 
+                  onClick={handlePrint}
+                  className="w-14 h-14 bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                  title="Yazdır"
+                 >
                     <Printer size={20} />
                  </button>
-                 <button className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-[#C5A059] hover:text-black transition-all">
+                 <button 
+                  onClick={handlePrint} // Same as print to save as PDF
+                  className="w-14 h-14 bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                  title="İndir (PDF)"
+                 >
                     <Download size={20} />
                  </button>
                  <button 
                   onClick={() => setSelectedCert(null)}
-                  className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-all"
+                  className="w-14 h-14 bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all"
                  >
                     <X size={20} />
                  </button>
               </div>
 
+              {/* DOCUMENT VIEWER */}
               <motion.div
-                initial={{ scale: 0.9, y: 50 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 50 }}
-                className="max-h-full overflow-y-auto no-scrollbar"
+                initial={{ y: 100, opacity: 0, scale: 0.9 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 100, opacity: 0, scale: 0.9 }}
+                className="relative max-h-full overflow-y-auto no-scrollbar py-10"
               >
-                <DocumentComponent cert={selectedCert} isModal={true} />
+                 <div className="bg-[#111] p-1 shadow-[0_0_100px_rgba(255,255,255,0.05)]">
+                    <OfficialDocument cert={selectedCert} />
+                 </div>
+                 
+                 {/* HIDDEN PRINTABLE VERSION */}
+                 <div className="hidden">
+                    <OfficialDocument cert={selectedCert} isForPrint={true} />
+                 </div>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-      
+
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:italic,wght@400;700&display=swap');
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }
         .no-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #printable-document, #printable-document * {
+            visibility: visible;
+          }
+          #printable-document {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
         }
       `}</style>
     </div>
