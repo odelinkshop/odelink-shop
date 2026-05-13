@@ -265,7 +265,7 @@ iframe {
 }
 
 .add-product-btn {
-  background: #C5A059;
+  background: #000000;
   color: white;
   padding: 6px 12px;
   border-radius: 6px;
@@ -349,7 +349,7 @@ iframe {
 
 .sync-info {
   font-size: 11px;
-  color: #C5A059;
+  color: #000000;
   display: flex;
   align-items: center;
   gap: 6px;

@@ -73,7 +73,7 @@ const ShopierSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 text-[#C5A059] animate-spin" />
+        <Loader2 className="w-8 h-8 text-white animate-spin" />
       </div>
     );
   }
@@ -81,12 +81,12 @@ const ShopierSettings = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
+        <div className="w-12 h-12 bg-white/10 border border-white/20 flex items-center justify-center text-white">
           <Shield size={24} />
         </div>
         <div>
           <h2 className="text-3xl font-serif text-[#F2EBE1]">Shopier Ödeme Ayarları</h2>
-          <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold opacity-60">Ödeme Altyapısı & Güvenlik Yapılandırması</p>
+          <p className="text-[10px] uppercase tracking-widest text-white font-bold opacity-60">Ödeme Altyapısı & Güvenlik Yapılandırması</p>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -99,8 +99,8 @@ const ShopierSettings = () => {
             className="bg-white/[0.02] border border-white/5 p-8 space-y-6"
           >
             <div className="space-y-4">
-              <div className="bg-[#C5A059]/10 border border-[#C5A059]/20 p-4 mb-6">
-                 <div className="flex items-center gap-3 text-[#C5A059]">
+              <div className="bg-white/10 border border-white/20 p-4 mb-6">
+                 <div className="flex items-center gap-3 text-white">
                     <Zap size={18} />
                     <span className="text-[10px] font-black uppercase tracking-widest">Modern Entegrasyon Aktif</span>
                  </div>
@@ -110,25 +110,25 @@ const ShopierSettings = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-[#C5A059] font-black mb-2">Shopier Kişisel Erişim Anahtarı (PAT)</label>
+                <label className="block text-[10px] uppercase tracking-widest text-white font-black mb-2">Shopier Kişisel Erişim Anahtarı (PAT)</label>
                 <div className="relative">
-                  <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C5A059] w-4 h-4" />
+                  <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-white w-4 h-4" />
                   <textarea 
                     rows="3"
                     value={settings.apiKey}
                     onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
-                    className="w-full bg-white/[0.03] border border-white/10 px-12 py-4 text-sm focus:border-[#C5A059]/50 focus:outline-none transition-all font-mono leading-relaxed resize-none"
+                    className="w-full bg-white/[0.03] border border-white/10 px-12 py-4 text-sm focus:border-white/50 focus:outline-none transition-all font-mono leading-relaxed resize-none"
                     placeholder="Shopier Geliştirici sayfasından aldığınız uzun erişim kodunu buraya yapıştırın..."
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-[#C5A059] font-black mb-2">Mağaza Para Birimi</label>
+                <label className="block text-[10px] uppercase tracking-widest text-white font-black mb-2">Mağaza Para Birimi</label>
                 <select 
                   value={settings.currency}
                   onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-                  className="w-full bg-white/[0.03] border border-white/10 px-4 py-4 text-sm focus:border-[#C5A059]/50 focus:outline-none transition-all"
+                  className="w-full bg-white/[0.03] border border-white/10 px-4 py-4 text-sm focus:border-white/50 focus:outline-none transition-all"
                 >
                   <option value="TRY" className="bg-[#0A0A0A]">Türk Lirası (TRY)</option>
                   <option value="USD" className="bg-[#0A0A0A]">Amerikan Doları (USD)</option>
@@ -147,7 +147,7 @@ const ShopierSettings = () => {
             <button 
               type="submit"
               disabled={saving}
-              className="w-full bg-[#C5A059] text-[#0A0A0A] py-4 font-black uppercase tracking-widest text-xs hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#C5A059]/10"
+              className="w-full bg-white text-[#0A0A0A] py-4 font-black uppercase tracking-widest text-xs hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-2 shadow-xl shadow-white/10"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save size={16} />}
               AYARLARI KAYDET & BAĞLANTIYI DOĞRULA
@@ -157,8 +157,8 @@ const ShopierSettings = () => {
 
         {/* Info Section */}
         <div className="space-y-6">
-          <div className="bg-[#C5A059]/5 border border-[#C5A059]/10 p-6">
-            <h4 className="text-[#C5A059] font-serif text-lg mb-4 flex items-center gap-2">
+          <div className="bg-white/5 border border-white/10 p-6">
+            <h4 className="text-white font-serif text-lg mb-4 flex items-center gap-2">
               <Info size={18} /> Yardımcı Bilgi
             </h4>
             <ul className="space-y-4">
@@ -176,8 +176,8 @@ const ShopierSettings = () => {
 
           <div className="bg-white/[0.02] border border-white/5 p-6">
              <div className="flex items-center gap-3 mb-4">
-                <Shield size={16} className="text-[#C5A059]" />
-                <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">Güvenlik Notu</span>
+                <Shield size={16} className="text-white" />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">Güvenlik Notu</span>
              </div>
              <p className="text-[9px] text-[#F2EBE1]/40 leading-relaxed font-bold uppercase tracking-widest">
                API Secret bilginiz sunucularımızda AES-256 standardında şifrelenmiş olarak saklanır. Ödeme akışı dışında asla kullanılmaz.

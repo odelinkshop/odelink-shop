@@ -106,7 +106,7 @@ export default function PublicSitePage() {
 
   if (loading) return (
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-      <Loader2 className="w-12 h-12 text-[#C5A059] animate-spin" />
+      <Loader2 className="w-12 h-12 text-white animate-spin" />
     </div>
   );
 
@@ -120,7 +120,7 @@ export default function PublicSitePage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#F2EBE1] font-sans selection:bg-[#C5A059]/30">
+    <div className="min-h-screen bg-[#0A0A0A] text-[#F2EBE1] font-sans selection:bg-white/30">
       {/* Dynamic Navigation */}
       <nav className="sticky top-0 z-[80] bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-white/5 py-6 px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -133,7 +133,7 @@ export default function PublicSitePage() {
               <button 
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`text-[10px] font-black uppercase tracking-[0.3em] transition-all ${activeCategory === cat ? 'text-[#C5A059]' : 'text-white/40 hover:text-white'}`}
+                className={`text-[10px] font-black uppercase tracking-[0.3em] transition-all ${activeCategory === cat ? 'text-white' : 'text-white/40 hover:text-white'}`}
               >
                 {cat}
               </button>
@@ -142,11 +142,11 @@ export default function PublicSitePage() {
 
           <button 
             onClick={() => setIsCartOpen(true)}
-            className="relative p-2 text-white/60 hover:text-[#C5A059] transition-colors"
+            className="relative p-2 text-white/60 hover:text-white transition-colors"
           >
             <ShoppingCart size={22} />
             {cart.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#C5A059] text-[#0A0A0A] text-[8px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0A0A0A]">
+              <span className="absolute -top-1 -right-1 bg-white text-[#0A0A0A] text-[8px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0A0A0A]">
                 {cart.length}
               </span>
             )}
@@ -167,11 +167,11 @@ export default function PublicSitePage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center gap-4 text-[#C5A059]"
+            className="flex items-center justify-center gap-4 text-white"
           >
-            <div className="h-px w-8 bg-[#C5A059]/30" />
+            <div className="h-px w-8 bg-white/30" />
             <span className="text-[10px] font-black uppercase tracking-[0.6em]">Premium Collection</span>
-            <div className="h-px w-8 bg-[#C5A059]/30" />
+            <div className="h-px w-8 bg-white/30" />
           </motion.div>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -200,7 +200,7 @@ export default function PublicSitePage() {
             <button 
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest border transition-all ${activeCategory === cat ? 'bg-[#C5A059] text-[#0A0A0A] border-[#C5A059]' : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white'}`}
+              className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest border transition-all ${activeCategory === cat ? 'bg-white text-[#0A0A0A] border-white' : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white'}`}
             >
               {cat}
             </button>
@@ -247,7 +247,7 @@ export default function PublicSitePage() {
                          e.stopPropagation();
                          addToCart(product);
                        }}
-                       className="bg-white text-[#0A0A0A] px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#C5A059] transition-all transform translate-y-4 group-hover:translate-y-0 duration-500"
+                       className="bg-white text-[#0A0A0A] px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-500"
                     >
                       Sepete Ekle
                     </button>
@@ -257,7 +257,7 @@ export default function PublicSitePage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-4">
                     <h3 
-                      className="text-2xl font-serif group-hover:text-[#C5A059] transition-colors cursor-pointer"
+                      className="text-2xl font-serif group-hover:text-white transition-colors cursor-pointer"
                       onClick={() => setSelectedProduct(product)}
                     >
                       {product.title}
@@ -266,7 +266,7 @@ export default function PublicSitePage() {
                        {product.discount_price ? (
                          <div className="flex flex-col">
                             <span className="text-[10px] text-white/30 line-through font-bold">{product.price} TL</span>
-                            <span className="text-lg font-black text-[#C5A059]">{product.discount_price} TL</span>
+                            <span className="text-lg font-black text-white">{product.discount_price} TL</span>
                          </div>
                        ) : (
                          <span className="text-lg font-black text-white/60">{product.price} TL</span>
@@ -290,7 +290,7 @@ export default function PublicSitePage() {
             { icon: Clock, title: 'Elit Destek', sub: 'Size Özel Müşteri Temsilcisi' }
           ].map((f, i) => (
             <div key={i} className="flex flex-col items-center text-center space-y-6 group">
-              <div className="w-16 h-16 bg-white/[0.03] border border-white/10 flex items-center justify-center text-[#C5A059] group-hover:bg-[#C5A059] group-hover:text-[#0A0A0A] transition-all duration-500">
+              <div className="w-16 h-16 bg-white/[0.03] border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-[#0A0A0A] transition-all duration-500">
                 <f.icon size={24} />
               </div>
               <div>
@@ -328,7 +328,7 @@ export default function PublicSitePage() {
               <div className="p-8 border-b border-white/5 flex items-center justify-between">
                 <div>
                   <h3 className="text-2xl font-serif">Sepetim</h3>
-                  <p className="text-[9px] uppercase tracking-widest text-[#C5A059] font-black mt-1">{cart.length} Ürün</p>
+                  <p className="text-[9px] uppercase tracking-widest text-white font-black mt-1">{cart.length} Ürün</p>
                 </div>
                 <button onClick={() => setIsCartOpen(false)} className="text-white/20 hover:text-white transition-colors">
                   <X size={24} />
@@ -364,7 +364,7 @@ export default function PublicSitePage() {
                               <span className="px-4 text-[10px] font-black">{item.quantity}</span>
                               <button onClick={() => updateQuantity(item.id, 1)} className="p-2 hover:bg-white/5 text-white/40"><Plus size={12} /></button>
                            </div>
-                           <span className="text-sm font-bold text-[#C5A059]">{parseFloat(item.discount_price || item.price) * item.quantity} TL</span>
+                           <span className="text-sm font-bold text-white">{parseFloat(item.discount_price || item.price) * item.quantity} TL</span>
                         </div>
                       </div>
                     </div>
@@ -375,11 +375,11 @@ export default function PublicSitePage() {
               <div className="p-8 bg-white/[0.02] border-t border-white/5 space-y-6">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Toplam Tutar</span>
-                  <span className="text-2xl font-serif text-[#C5A059]">{cartTotal.toFixed(2)} TL</span>
+                  <span className="text-2xl font-serif text-white">{cartTotal.toFixed(2)} TL</span>
                 </div>
                 <button 
                   disabled={cart.length === 0}
-                  className="w-full bg-[#C5A059] text-[#0A0A0A] py-5 font-black uppercase tracking-[0.3em] text-[11px] hover:bg-white transition-all disabled:opacity-20 flex items-center justify-center gap-3"
+                  className="w-full bg-white text-[#0A0A0A] py-5 font-black uppercase tracking-[0.3em] text-[11px] hover:bg-white transition-all disabled:opacity-20 flex items-center justify-center gap-3"
                 >
                   Siparişi Onayla <ArrowRight size={16} />
                 </button>
@@ -417,7 +417,7 @@ export default function PublicSitePage() {
                     <button 
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`aspect-square border-2 transition-all overflow-hidden ${activeImageIndex === idx ? 'border-[#C5A059]' : 'border-white/5 opacity-40 hover:opacity-100'}`}
+                      className={`aspect-square border-2 transition-all overflow-hidden ${activeImageIndex === idx ? 'border-white' : 'border-white/5 opacity-40 hover:opacity-100'}`}
                     >
                       <img src={img} className="w-full h-full object-cover" alt="" />
                     </button>
@@ -430,7 +430,7 @@ export default function PublicSitePage() {
                 <div className="flex justify-between items-start mb-8">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <span className="text-[8px] font-black text-[#C5A059] uppercase tracking-[0.4em]">{selectedProduct.category || 'GENEL'}</span>
+                      <span className="text-[8px] font-black text-white uppercase tracking-[0.4em]">{selectedProduct.category || 'GENEL'}</span>
                       {selectedProduct.sku && <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.4em]">SKU: {selectedProduct.sku}</span>}
                     </div>
                     <h3 className="text-4xl font-serif tracking-tight">{selectedProduct.title}</h3>
@@ -443,7 +443,7 @@ export default function PublicSitePage() {
                 <div className="mb-10">
                   {selectedProduct.discount_price ? (
                     <div className="flex items-center gap-4">
-                       <span className="text-3xl font-serif text-[#C5A059]">{selectedProduct.discount_price} TL</span>
+                       <span className="text-3xl font-serif text-white">{selectedProduct.discount_price} TL</span>
                        <span className="text-lg text-white/20 line-through font-bold">{selectedProduct.price} TL</span>
                        <span className="bg-red-600/20 text-red-500 text-[10px] font-black px-2 py-1 uppercase tracking-tighter">İndirimli Ürün</span>
                     </div>
@@ -454,7 +454,7 @@ export default function PublicSitePage() {
 
                 <div className="space-y-8 flex-grow">
                   <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C5A059]">Ürün Açıklaması</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Ürün Açıklaması</h4>
                     <p className="text-sm text-white/40 leading-relaxed font-medium">
                       {selectedProduct.description || 'Bu ürün için detaylı bir açıklama henüz eklenmemiştir.'}
                     </p>
@@ -478,7 +478,7 @@ export default function PublicSitePage() {
                       addToCart(selectedProduct);
                       setSelectedProduct(null);
                     }}
-                    className="flex-grow bg-[#C5A059] text-[#0A0A0A] py-6 font-black uppercase tracking-[0.3em] text-xs hover:bg-white transition-all flex items-center justify-center gap-3 shadow-2xl shadow-[#C5A059]/20"
+                    className="flex-grow bg-white text-[#0A0A0A] py-6 font-black uppercase tracking-[0.3em] text-xs hover:bg-white transition-all flex items-center justify-center gap-3 shadow-2xl shadow-white/20"
                   >
                     <Plus size={18} /> Sepete Ekle
                   </button>

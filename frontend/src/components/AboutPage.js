@@ -8,7 +8,7 @@ const AboutPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-[#C5A059] selection:text-black">
+    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
       {/* MINIMALIST HEADER SECTION */}
       <section className="pt-40 pb-20 px-6 sm:px-12 max-w-screen-2xl mx-auto">
         <motion.div
@@ -60,19 +60,19 @@ const AboutPage = () => {
       <section className="py-40 px-6 sm:px-12 max-w-screen-2xl mx-auto">
          <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
             <div className="space-y-6">
-               <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">01 / Performance</span>
+               <span className="text-[10px] font-black text-white uppercase tracking-widest">01 / Performance</span>
                <p className="text-white/60 leading-relaxed">
                   Kod tabanımız, en hızlı sayfa yükleme sürelerini sağlamak için gereksiz tüm kütüphanelerden arındırılmış, saf JavaScript ve CSS üzerine inşa edilmiştir.
                </p>
             </div>
             <div className="space-y-6">
-               <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">02 / Scalability</span>
+               <span className="text-[10px] font-black text-white uppercase tracking-widest">02 / Scalability</span>
                <p className="text-white/60 leading-relaxed">
                   Tek bir mağazadan, binlerce ürünlük envanterlere kadar tüm ölçeklerde aynı kararlılıkla çalışan modüler bir mimari sunuyoruz.
                </p>
             </div>
             <div className="space-y-6">
-               <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">03 / Security</span>
+               <span className="text-[10px] font-black text-white uppercase tracking-widest">03 / Security</span>
                <p className="text-white/60 leading-relaxed">
                   Veri güvenliğini bir seçenek değil, altyapının ayrılmaz bir parçası olarak görüyor ve PCI-DSS standartlarını doğrudan entegre ediyoruz.
                </p>
@@ -92,7 +92,7 @@ const AboutPage = () => {
                   <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center font-serif italic text-xl">MF</div>
                   <div>
                     <p className="font-bold text-white tracking-tight">Murat Furkan Bayram</p>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-[#C5A059]">Founder / Technical Lead</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-white">Founder / Technical Lead</p>
                   </div>
                </div>
             </div>
@@ -112,7 +112,7 @@ const AboutPage = () => {
           className="space-y-12"
          >
             <h2 className="text-5xl sm:text-7xl font-bold tracking-tighter">İNOVASYONA KATILIN.</h2>
-            <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-[#C5A059] transition-colors">
+            <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/80 transition-colors">
                Platformu Keşfedin
             </button>
          </motion.div>
@@ -123,7 +123,7 @@ const AboutPage = () => {
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: black; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
+        ::-webkit-scrollbar-thumb:hover { background: #666; }
       `}</style>
     </div>
   );

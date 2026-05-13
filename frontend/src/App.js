@@ -592,7 +592,7 @@ function App() {
 
       // Nova Security Signature (No freeze, just branding)
       console.clear();
-      console.log('%cNOVA ELITE PROTECTION', 'color: #C5A059; font-size: 40px; font-weight: bold; text-shadow: 0 0 20px rgba(197,160,89,0.5); font-family: serif;');
+      console.log('%cNOVA ELITE PROTECTION', 'color: #FFFFFF; font-size: 40px; font-weight: bold; text-shadow: 0 0 20px rgba(255,255,255,0.5); font-family: serif;');
       console.log('%cSOURCE PROTECTION ACTIVE: ORIGINAL FILES ENCRYPTED', 'color: #00F0FF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;');
       console.log('%cACCESS GRANTED - SİBER KORUMA AKTİF', 'color: #888; font-size: 10px; font-weight: bold;');
 

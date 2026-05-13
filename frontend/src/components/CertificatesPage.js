@@ -160,7 +160,7 @@ const CertificatesPage = () => {
               {/* STAMP */}
               <div className={`absolute -top-24 -left-16 w-32 h-32 rounded-full border-4 flex items-center justify-center opacity-70 rotate-[-15deg] select-none
                 ${cert.stampColor === 'blue' ? 'border-blue-800 text-blue-800' : 
-                  cert.stampColor === 'gold' ? 'border-[#C5A059] text-[#C5A059]' : 
+                  cert.stampColor === 'gold' ? 'border-gray-400 text-gray-400' : 
                   'border-red-800 text-red-800'}`}>
                 <div className="text-center">
                   <p className="text-[8px] font-black uppercase tracking-tighter">OFFICIAL SEAL</p>
@@ -192,8 +192,8 @@ const CertificatesPage = () => {
         {/* HEADER */}
         <div className="text-center mb-32 space-y-8">
            <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-2 rounded-full">
-              <Shield size={16} className="text-[#C5A059]" />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C5A059]">Security & Trust Protocol</span>
+              <Shield size={16} className="text-white" />
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Security & Trust Protocol</span>
            </div>
            <h1 className="text-6xl md:text-8xl font-serif text-[#F2EBE1] tracking-tighter leading-none italic">Resmi Belgeler</h1>
            <p className="text-[#F2EBE1]/40 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
@@ -243,7 +243,7 @@ const CertificatesPage = () => {
                  </div>
                  <div className="text-right">
                     <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Validity</p>
-                    <p className="text-sm font-bold text-[#C5A059] uppercase tracking-tighter">{cert.period}</p>
+                    <p className="text-sm font-bold text-white uppercase tracking-tighter">{cert.period}</p>
                  </div>
               </div>
             </motion.div>
