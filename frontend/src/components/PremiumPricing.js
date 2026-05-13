@@ -148,7 +148,7 @@ const PremiumPricing = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto mb-20 sm:mb-24">
           {/* Standart Plan */}
           <motion.div
-            className={`group relative bg-white/[0.02] border border-white/10 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-500 overflow-hidden ${isAnnual ? 'opacity-40 grayscale hover:grayscale-0' : ''}`}
+            className={`group relative bg-white/[0.02] border border-white/10 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-500 overflow-hidden ${isAnnual ? 'opacity-40 grayscale pointer-events-none' : ''}`}
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -196,16 +196,16 @@ const PremiumPricing = () => {
               <button 
                 onClick={() => pickPlan('STANDART')}
                 disabled={busyPlan === 'STANDART' || isAnnual}
-                className="w-full py-4 sm:py-5 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] hover:bg-white/10 transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-full py-4 sm:py-5 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] hover:bg-white/10 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {busyPlan === 'STANDART' ? 'İşleniyor…' : isAnnual ? 'Sadece Aylık Seçilebilir' : 'Hemen Başla'}
+                {isAnnual ? 'Sadece Aylık Seçilebilir' : 'STANDART PAKETİ SEÇ'}
               </button>
             </div>
           </motion.div>
 
           {/* Profesyonel Plan */}
           <motion.div
-            className="group relative bg-blue-500/5 border-2 border-blue-500/30 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 backdrop-blur-md hover:bg-blue-500/10 transition-all duration-500 overflow-hidden"
+            className={`group relative bg-blue-500/5 border-2 border-blue-500/30 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 backdrop-blur-md hover:bg-blue-500/10 transition-all duration-500 overflow-hidden ${!isAnnual ? 'opacity-40 grayscale pointer-events-none' : ''}`}
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -265,9 +265,9 @@ const PremiumPricing = () => {
               <button 
                 onClick={() => pickPlan('PROFESYONEL')}
                 disabled={busyPlan === 'PROFESYONEL' || !isAnnual}
-                className="w-full py-4 sm:py-5 bg-blue-500 text-white rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-blue-500/50 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-full py-4 sm:py-5 bg-blue-500 text-white rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-blue-500/50 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {busyPlan === 'PROFESYONEL' ? 'İşleniyor…' : !isAnnual ? 'Sadece Yıllık Seçilebilir' : 'PRO OL VE KAZANMAYA BAŞLA'}
+                {!isAnnual ? 'Sadece Yıllık Seçilebilir' : 'PRO OL VE KAZANMAYA BAŞLA'}
               </button>
             </div>
           </motion.div>
