@@ -432,6 +432,7 @@ const UserPanel = () => {
         </AnimatePresence>
         <Toaster position="top-right" theme="dark" richColors />
       </main>
+    </div>
   );
 };
 
