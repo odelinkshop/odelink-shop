@@ -52,7 +52,7 @@ const ProductManagement = () => {
     images: [],
     shopierUrl: '',
     personalizationSettings: {
-      accentColor: '#C5A059',
+      accentColor: 'white',
       buttonText: 'Hemen Al'
     }
   });
@@ -219,7 +219,7 @@ const ProductManagement = () => {
       images: product.images || [],
       shopierUrl: product.shopier_url || product.url || '',
       personalizationSettings: product.personalization_settings || {
-        accentColor: '#C5A059',
+        accentColor: 'white',
         buttonText: 'Hemen Al'
       }
     });
@@ -231,7 +231,7 @@ const ProductManagement = () => {
     setEditingProduct(null);
     setFormData({
       title: '', price: '', discountPrice: '', description: '', stockCount: 100, sku: '', category: 'Genel', images: [], shopierUrl: '',
-      personalizationSettings: { accentColor: '#C5A059', buttonText: 'Hemen Al' }
+      personalizationSettings: { accentColor: 'white', buttonText: 'Hemen Al' }
     });
   };
 
@@ -254,9 +254,9 @@ const ProductManagement = () => {
       {/* ENTERPRISE HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 border-b border-white/5 pb-12">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-3 bg-[#C5A059]/10 border border-[#C5A059]/20 px-4 py-1.5">
-            <Sparkles size={12} className="text-[#C5A059]" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#C5A059]">Elite Inventory Control</span>
+          <div className="inline-flex items-center gap-3 bg-white/10 border border-white/20 px-4 py-1.5">
+            <Sparkles size={12} className="text-white" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white">Elite Inventory Control</span>
           </div>
           <h2 className="text-6xl font-serif text-[#F2EBE1] tracking-tight">Katalog</h2>
           <p className="text-[12px] text-[#F2EBE1]/30 max-w-lg leading-relaxed font-bold uppercase tracking-widest">
@@ -266,19 +266,19 @@ const ProductManagement = () => {
         
         <div className="flex flex-wrap items-center gap-6">
           <div className="relative group min-w-[320px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 w-4 h-4 group-focus-within:text-[#C5A059] transition-all" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 w-4 h-4 group-focus-within:text-white transition-all" />
             <input 
               type="text"
               placeholder="KOLEKSİYONDA ARA..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/[0.02] border border-white/5 pl-12 pr-6 py-5 text-[10px] text-white focus:border-[#C5A059]/40 focus:outline-none transition-all font-black tracking-[0.2em] uppercase"
+              className="w-full bg-white/[0.02] border border-white/5 pl-12 pr-6 py-5 text-[10px] text-white focus:border-white/40 focus:outline-none transition-all font-black tracking-[0.2em] uppercase"
             />
           </div>
           
           <button 
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-4 bg-[#C5A059] text-[#0A0A0A] px-10 py-5 font-black uppercase tracking-widest text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-[#C5A059]/20"
+            className="flex items-center gap-4 bg-white text-[#0A0A0A] px-10 py-5 font-black uppercase tracking-widest text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-white/20"
           >
             <Plus size={18} /> 
             <span>YENİ ÜRÜN TANIMLA</span>
@@ -303,8 +303,8 @@ const ProductManagement = () => {
       {/* GRID DENEYİMİ */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-60 space-y-6">
-          <div className="w-16 h-16 border-2 border-[#C5A059]/20 border-t-[#C5A059] rounded-full animate-spin" />
-          <span className="text-[10px] font-black uppercase tracking-[0.6em] text-[#C5A059]">Sistem Yükleniyor</span>
+          <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          <span className="text-[10px] font-black uppercase tracking-[0.6em] text-white">Sistem Yükleniyor</span>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -314,7 +314,7 @@ const ProductManagement = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.03 }}
-              className="group bg-[#0D0D0D] border border-white/5 hover:border-[#C5A059]/30 transition-all duration-700 overflow-hidden"
+              className="group bg-[#0D0D0D] border border-white/5 hover:border-white/30 transition-all duration-700 overflow-hidden"
             >
               <div className="aspect-[3/4] relative overflow-hidden bg-black">
                 {product.images?.[0] ? (
@@ -332,14 +332,14 @@ const ProductManagement = () => {
                     {product.price} TL
                   </div>
                   {product.discount_price && (
-                    <div className="bg-[#C5A059] text-black px-4 py-2 text-[10px] font-black tracking-widest">
+                    <div className="bg-white text-black px-4 py-2 text-[10px] font-black tracking-widest">
                        %{-Math.round((1 - product.discount_price / product.price) * 100)} İNDİRİM
                     </div>
                   )}
                 </div>
 
                 <div className="absolute inset-0 bg-black/80 flex items-center justify-center gap-5 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-sm">
-                   <button onClick={() => openEditModal(product)} className="w-14 h-14 bg-white text-black flex items-center justify-center hover:bg-[#C5A059] transition-all"><Edit3 size={20} /></button>
+                   <button onClick={() => openEditModal(product)} className="w-14 h-14 bg-white text-black flex items-center justify-center hover:bg-white transition-all"><Edit3 size={20} /></button>
                    <button onClick={() => handleDelete(product.id)} className="w-14 h-14 bg-red-600/20 text-red-500 border border-red-500/30 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all"><Trash2 size={20} /></button>
                    <a href={getProductPreviewLink(product)} target="_blank" rel="noopener noreferrer" className="w-14 h-14 bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-all"><Eye size={20} /></a>
                 </div>
@@ -347,7 +347,7 @@ const ProductManagement = () => {
 
               <div className="p-8 space-y-4">
                 <div className="flex justify-between items-start gap-4">
-                  <h3 className="text-xl font-serif text-white group-hover:text-[#C5A059] transition-colors line-clamp-1">{product.title}</h3>
+                  <h3 className="text-xl font-serif text-white group-hover:text-white transition-colors line-clamp-1">{product.title}</h3>
                   <span className="text-[9px] font-black text-white/20 uppercase tracking-widest whitespace-nowrap">{product.category || 'GENEL'}</span>
                 </div>
                 <div className="flex items-center justify-between pt-6 border-t border-white/5">
@@ -355,7 +355,7 @@ const ProductManagement = () => {
                     <div className={`w-2 h-2 rounded-full ${product.stock_count > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
                     <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{product.stock_count} ADET STOK</span>
                   </div>
-                  <span className="text-[9px] font-black text-[#C5A059] tracking-tighter">SKU: {product.sku || 'N/A'}</span>
+                  <span className="text-[9px] font-black text-white tracking-tighter">SKU: {product.sku || 'N/A'}</span>
                 </div>
               </div>
             </motion.div>
@@ -376,12 +376,12 @@ const ProductManagement = () => {
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              className="bg-[#0D0D0D] border border-white/10 w-full max-w-7xl relative z-10 flex flex-col lg:flex-row max-h-[85vh] overflow-hidden shadow-[0_0_100px_-20px_rgba(197,160,89,0.15)]"
+              className="bg-[#0D0D0D] border border-white/10 w-full max-w-7xl relative z-10 flex flex-col lg:flex-row max-h-[85vh] overflow-hidden shadow-[0_0_100px_-20px_rgba(255,255,255,0.05)]"
             >
               {/* Sol: HD Görsel Laboratuvarı */}
               <div className="lg:w-[400px] bg-black border-r border-white/5 p-12 flex flex-col">
                 <div className="space-y-4 mb-12">
-                  <div className="flex items-center gap-2 text-[#C5A059]">
+                  <div className="flex items-center gap-2 text-white">
                     <ImageIcon size={14} />
                     <span className="text-[10px] font-black uppercase tracking-[0.4em]">Visual Studio</span>
                   </div>
@@ -396,15 +396,15 @@ const ProductManagement = () => {
                       <div key={idx} className="aspect-[3/4] bg-white/[0.02] relative group border border-white/10 overflow-hidden">
                         <img src={img} className="w-full h-full object-cover" alt="" />
                         <button onClick={() => removeImage(idx)} className="absolute top-2 right-2 w-8 h-8 bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"><X size={16} /></button>
-                        {idx === 0 && <div className="absolute bottom-0 left-0 right-0 bg-[#C5A059] text-black text-[8px] font-black uppercase py-1.5 text-center">VİTRİN GÖRSELİ</div>}
+                        {idx === 0 && <div className="absolute bottom-0 left-0 right-0 bg-white text-black text-[8px] font-black uppercase py-1.5 text-center">VİTRİN GÖRSELİ</div>}
                       </div>
                     ))}
                     <button 
                       onClick={() => fileInputRef.current.click()}
-                      className="aspect-[3/4] border-2 border-dashed border-white/5 flex flex-col items-center justify-center gap-4 hover:border-[#C5A059]/40 hover:bg-[#C5A059]/05 transition-all group"
+                      className="aspect-[3/4] border-2 border-dashed border-white/5 flex flex-col items-center justify-center gap-4 hover:border-white/40 hover:bg-white/05 transition-all group"
                     >
-                      <Plus size={24} className="text-white/10 group-hover:text-[#C5A059] transition-all" />
-                      <span className="text-[8px] font-black text-white/10 group-hover:text-[#C5A059] uppercase tracking-widest">HD YÜKLE</span>
+                      <Plus size={24} className="text-white/10 group-hover:text-white transition-all" />
+                      <span className="text-[8px] font-black text-white/10 group-hover:text-white uppercase tracking-widest">HD YÜKLE</span>
                     </button>
                   </div>
                   <input type="file" multiple hidden ref={fileInputRef} onChange={handleImageUpload} accept="image/*" />
@@ -422,7 +422,7 @@ const ProductManagement = () => {
                       </div>
                       <div className="space-y-3">
                         <label className="text-[9px] text-white/20 font-black uppercase">Button</label>
-                        <input type="text" value={formData.personalizationSettings.buttonText} onChange={(e) => setFormData({...formData, personalizationSettings: {...formData.personalizationSettings, buttonText: e.target.value }})} className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[10px] text-white focus:border-[#C5A059] outline-none transition-all uppercase font-black" />
+                        <input type="text" value={formData.personalizationSettings.buttonText} onChange={(e) => setFormData({...formData, personalizationSettings: {...formData.personalizationSettings, buttonText: e.target.value }})} className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[10px] text-white focus:border-white outline-none transition-all uppercase font-black" />
                       </div>
                    </div>
                 </div>
@@ -434,8 +434,8 @@ const ProductManagement = () => {
                   <div>
                     <h3 className="text-5xl font-serif text-white tracking-tighter">{editingProduct ? 'Düzenleme' : 'Tanımlama'}</h3>
                     <div className="flex items-center gap-3 mt-4">
-                      <div className="w-8 h-px bg-[#C5A059]" />
-                      <span className="text-[10px] uppercase tracking-[0.5em] text-[#C5A059] font-black">Matrix Studio 2026</span>
+                      <div className="w-8 h-px bg-white" />
+                      <span className="text-[10px] uppercase tracking-[0.5em] text-white font-black">Matrix Studio 2026</span>
                     </div>
                   </div>
                   <button onClick={closeModal} className="w-14 h-14 bg-white/5 text-white/20 hover:text-white flex items-center justify-center transition-all border border-white/5 hover:border-white/10"><X size={24} /></button>
@@ -444,56 +444,56 @@ const ProductManagement = () => {
                 <form onSubmit={handleSubmit} className="space-y-12">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                     <div className="md:col-span-2 space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black flex items-center gap-3">ÜRÜN BAŞLIĞI <Layers size={12} /></label>
-                      <input required type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-transparent border-b border-white/10 py-5 text-2xl text-white focus:border-[#C5A059] focus:outline-none transition-all font-serif italic" placeholder="The Masterpiece..." />
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">ÜRÜN BAŞLIĞI <Layers size={12} /></label>
+                      <input required type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-transparent border-b border-white/10 py-5 text-2xl text-white focus:border-white focus:outline-none transition-all font-serif italic" placeholder="The Masterpiece..." />
                     </div>
 
 
                     <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black flex items-center gap-3">LİSTE FİYATI <Tag size={12} /></label>
-                      <input required type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-[#C5A059]/40 focus:outline-none transition-all font-mono" placeholder="0.00" />
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">LİSTE FİYATI <Tag size={12} /></label>
+                      <input required type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-white/40 focus:outline-none transition-all font-mono" placeholder="0.00" />
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black flex items-center gap-3">İNDİRİMLİ <Percent size={12} /></label>
-                      <input type="number" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-[#C5A059]/40 focus:outline-none transition-all font-mono" placeholder="0.00" />
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">İNDİRİMLİ <Percent size={12} /></label>
+                      <input type="number" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-white/40 focus:outline-none transition-all font-mono" placeholder="0.00" />
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black flex items-center gap-3">STOK ADEDİ <Box size={12} /></label>
-                      <input required type="number" value={formData.stockCount} onChange={(e) => setFormData({ ...formData, stockCount: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-[#C5A059]/40 focus:outline-none transition-all font-mono" />
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">STOK ADEDİ <Box size={12} /></label>
+                      <input required type="number" value={formData.stockCount} onChange={(e) => setFormData({ ...formData, stockCount: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-white/40 focus:outline-none transition-all font-mono" />
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black flex items-center gap-3">SKU KODU <Package size={12} /></label>
-                      <input type="text" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-[11px] text-white focus:border-[#C5A059]/40 focus:outline-none transition-all font-black uppercase tracking-widest" placeholder="AUTOGEN-2026" />
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">SKU KODU <Package size={12} /></label>
+                      <input type="text" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-[11px] text-white focus:border-white/40 focus:outline-none transition-all font-black uppercase tracking-widest" placeholder="AUTOGEN-2026" />
                     </div>
 
                     <div className="md:col-span-2 space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black">KATEGORİ</label>
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black">KATEGORİ</label>
                       <div className="flex gap-4">
-                         <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="flex-grow bg-white/[0.03] border border-white/5 px-6 py-5 text-[11px] text-white focus:border-[#C5A059]/40 outline-none font-black uppercase tracking-widest">
+                         <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="flex-grow bg-white/[0.03] border border-white/5 px-6 py-5 text-[11px] text-white focus:border-white/40 outline-none font-black uppercase tracking-widest">
                            {categories.map(cat => <option key={cat} value={cat} className="bg-black">{cat}</option>)}
                          </select>
-                         <button type="button" onClick={() => setShowNewCatInput(!showNewCatInput)} className="px-8 bg-white/5 border border-white/5 text-[#C5A059] font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">{showNewCatInput ? 'İPTAL' : 'YENİ +'}</button>
+                         <button type="button" onClick={() => setShowNewCatInput(!showNewCatInput)} className="px-8 bg-white/5 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">{showNewCatInput ? 'İPTAL' : 'YENİ +'}</button>
                       </div>
                       {showNewCatInput && (
                         <div className="flex gap-2 mt-4">
-                           <input type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} className="flex-grow bg-white/5 border border-[#C5A059]/30 px-6 py-4 text-xs text-white outline-none" placeholder="YENİ KATEGORİ ADI..." />
-                           <button type="button" onClick={addNewCategory} className="px-8 bg-[#C5A059] text-black text-[9px] font-black uppercase">EKLE</button>
+                           <input type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} className="flex-grow bg-white/5 border border-white/30 px-6 py-4 text-xs text-white outline-none" placeholder="YENİ KATEGORİ ADI..." />
+                           <button type="button" onClick={addNewCategory} className="px-8 bg-white text-black text-[9px] font-black uppercase">EKLE</button>
                         </div>
                       )}
                     </div>
 
                     <div className="md:col-span-2 space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-black">ÜRÜN AÇIKLAMASI (KURUMSAL)</label>
-                      <textarea rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-8 py-6 text-sm text-white/60 focus:border-[#C5A059]/40 focus:outline-none transition-all resize-none leading-relaxed font-medium" placeholder="Ürünün hikayesini buraya nakşedin..." />
+                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black">ÜRÜN AÇIKLAMASI (KURUMSAL)</label>
+                      <textarea rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-8 py-6 text-sm text-white/60 focus:border-white/40 focus:outline-none transition-all resize-none leading-relaxed font-medium" placeholder="Ürünün hikayesini buraya nakşedin..." />
                     </div>
                   </div>
 
                   <div className="pt-12 flex gap-6">
                     <button type="button" onClick={closeModal} className="flex-1 bg-white/5 border border-white/5 text-white/40 py-6 font-black uppercase tracking-[0.4em] text-[10px] hover:bg-white/10 hover:text-white transition-all">İPTAL</button>
-                    <button type="submit" disabled={submitting} className="flex-[2] bg-[#C5A059] text-black py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-4">
+                    <button type="submit" disabled={submitting} className="flex-[2] bg-white text-black py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-4">
                       {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus size={20} />}
                       {editingProduct ? 'GÜNCELLEMEYİ KAYDET' : 'SİSTEME İŞLE'}
                     </button>

@@ -47,7 +47,7 @@ const OrderList = () => {
       case 'completed':
         return <span className="flex items-center gap-1.5 text-green-500 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest"><CheckCircle2 size={10} /> TAMAMLANDI</span>;
       case 'pending':
-        return <span className="flex items-center gap-1.5 text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest"><Clock size={10} /> BEKLEYEN ÖDEME</span>;
+        return <span className="flex items-center gap-1.5 text-white bg-white/10 border border-white/20 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest"><Clock size={10} /> BEKLEYEN ÖDEME</span>;
       case 'failed':
         return <span className="flex items-center gap-1.5 text-red-500 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest"><AlertCircle size={10} /> HATALI / İPTAL</span>;
       default:
@@ -65,35 +65,35 @@ const OrderList = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div>
           <h2 className="text-3xl font-serif text-[#F2EBE1]">Sipariş Yönetimi</h2>
-          <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold opacity-60">Satış Takibi & Gelir Analizi</p>
+          <p className="text-[10px] uppercase tracking-widest text-white font-bold opacity-60">Satış Takibi & Gelir Analizi</p>
         </div>
         
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-[#C5A059] transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-colors" />
           <input 
             type="text"
             placeholder="Sipariş ID veya E-posta..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white/[0.03] border border-white/10 pl-12 pr-6 py-3.5 text-xs focus:border-[#C5A059]/50 focus:outline-none transition-all min-w-[300px] font-bold uppercase tracking-widest"
+            className="bg-white/[0.03] border border-white/10 pl-12 pr-6 py-3.5 text-xs focus:border-white/50 focus:outline-none transition-all min-w-[300px] font-bold uppercase tracking-widest"
           />
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-32">
-          <Loader2 className="w-8 h-8 text-[#C5A059] animate-spin" />
+          <Loader2 className="w-8 h-8 text-white animate-spin" />
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="py-32 text-center border border-dashed border-[#C5A059]/20 bg-white/[0.01]">
-          <ShoppingBag className="w-16 h-16 text-[#C5A059]/20 mx-auto mb-6" />
+        <div className="py-32 text-center border border-dashed border-white/20 bg-white/[0.01]">
+          <ShoppingBag className="w-16 h-16 text-white/20 mx-auto mb-6" />
           <p className="text-xs text-[#F2EBE1]/40 uppercase tracking-[0.4em] font-bold">Henüz bir sipariş bulunmuyor.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/5 text-[9px] uppercase tracking-[0.2em] text-[#C5A059] font-black">
+              <tr className="border-b border-white/5 text-[9px] uppercase tracking-[0.2em] text-white font-black">
                 <th className="py-6 px-4">Sipariş / Tarih</th>
                 <th className="py-6 px-4">Müşteri</th>
                 <th className="py-6 px-4">Tutar</th>
@@ -128,7 +128,7 @@ const OrderList = () => {
                   </td>
                   <td className="py-6 px-4">
                     <div className="flex flex-col gap-1">
-                      <span className="text-sm font-serif text-[#C5A059] font-bold">{order.amount} TL</span>
+                      <span className="text-sm font-serif text-white font-bold">{order.amount} TL</span>
                       <div className="flex items-center gap-2 text-[8px] text-[#F2EBE1]/30 font-black uppercase">
                         <CreditCard size={10} /> SHOPIER
                       </div>
@@ -138,7 +138,7 @@ const OrderList = () => {
                     {getStatusBadge(order.status)}
                   </td>
                   <td className="py-6 px-4 text-right">
-                    <button className="text-[9px] font-black uppercase tracking-widest text-[#F2EBE1]/20 hover:text-[#C5A059] transition-colors">
+                    <button className="text-[9px] font-black uppercase tracking-widest text-[#F2EBE1]/20 hover:text-white transition-colors">
                       Detaylar
                     </button>
                   </td>
@@ -147,7 +147,7 @@ const OrderList = () => {
             </tbody>
           </table>
         </div>
-      )}
+      )}}
     </div>
   );
 };
