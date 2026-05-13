@@ -32,6 +32,7 @@ import ExtensionGuide from './components/ExtensionGuide';
 import ThemeEditor from './pages/ThemeEditor';
 import ThemesPage from './pages/ThemesPage';
 import DownloadPage from './components/DownloadPage';
+import CertificatesPage from './components/CertificatesPage';
 import useAuthSession from './hooks/useAuthSession';
 import useCapabilities from './hooks/useCapabilities';
 import './index.css';
@@ -439,6 +440,7 @@ function AppLayout() {
           <Route path="/panel/editor/:siteId" element={<ProtectedRoute><DesktopOnlyGate><ThemeEditor /></DesktopOnlyGate></ProtectedRoute>} />
           <Route path="/temalar" element={<ThemesPage />} />
           <Route path="/download" element={<DownloadPage />} />
+          <Route path="/certificates" element={<CertificatesPage />} />
         </Routes>
       </div>
       {!hideChrome ? <Footer /> : null}

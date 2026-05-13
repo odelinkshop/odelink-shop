@@ -22,6 +22,7 @@ const useFooterLinks = () => {
 
   const legalLinks = useMemo(() => [
     { id: 'all-policies', label: 'Yasal Politikalar', path: '/terms' },
+    { id: 'certificates', label: 'Sertifikalar', path: '/certificates' },
   ], []);
 
   const socialLinks = useMemo(() => [
