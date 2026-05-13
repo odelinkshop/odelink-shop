@@ -219,7 +219,7 @@ const UserPanel = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center justify-between gap-4 mb-12 border-b border-white/5 pb-px overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-4 mb-12 border-b border-white/5 pb-px overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-2">
             {[
               { id: 'overview', label: 'GENEL BAKIŞ', icon: BarChart3 },
@@ -241,16 +241,16 @@ const UserPanel = () => {
                 )}
               </button>
             ))}
-          </div>
 
-          {capabilities?.tier === 'profesyonel' && (
-            <button 
-              onClick={() => setShowBulkModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#C5A059]/10 border border-[#C5A059]/30 text-[9px] font-black tracking-widest text-[#C5A059] hover:bg-[#C5A059] hover:text-black transition-all rounded-sm mb-2 mr-2"
-            >
-              <Link size={12} /> TOPLU LİNK YÜKLE
-            </button>
-          )}
+            {capabilities?.tier === 'profesyonel' && (
+              <button 
+                onClick={() => setShowBulkModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-[#C5A059]/10 border border-[#C5A059]/30 text-[9px] font-black tracking-widest text-[#C5A059] hover:bg-[#C5A059] hover:text-black transition-all rounded-sm ml-4 mb-2"
+              >
+                <Link size={12} /> TOPLU LİNK YÜKLE
+              </button>
+            )}
+          </div>
         </div>
 
         {activeTab === 'overview' && (
