@@ -219,27 +219,38 @@ const UserPanel = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mb-12 border-b border-white/5 pb-px overflow-x-auto no-scrollbar">
-          {[
-            { id: 'overview', label: 'GENEL BAKIŞ', icon: BarChart3 },
-            { id: 'products', label: 'ÜRÜNLERİM', icon: ShoppingBag },
-            { id: 'orders', label: 'SİPARİŞLERİM', icon: ShoppingCart },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-4 text-[10px] font-black tracking-[0.2em] transition-all relative whitespace-nowrap ${activeTab === tab.id ? 'text-[#C5A059]' : 'text-white/40 hover:text-white'}`}
+        <div className="flex items-center justify-between gap-4 mb-12 border-b border-white/5 pb-px overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2">
+            {[
+              { id: 'overview', label: 'GENEL BAKIŞ', icon: BarChart3 },
+              { id: 'products', label: 'ÜRÜNLERİM', icon: ShoppingBag },
+              { id: 'orders', label: 'SİPARİŞLERİM', icon: ShoppingCart },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-6 py-4 text-[10px] font-black tracking-[0.2em] transition-all relative whitespace-nowrap ${activeTab === tab.id ? 'text-[#C5A059]' : 'text-white/40 hover:text-white'}`}
+              >
+                <tab.icon size={14} />
+                {tab.label}
+                {activeTab === tab.id && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C5A059]"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {capabilities?.tier === 'profesyonel' && (
+            <button 
+              onClick={() => setShowBulkModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#C5A059]/10 border border-[#C5A059]/30 text-[9px] font-black tracking-widest text-[#C5A059] hover:bg-[#C5A059] hover:text-black transition-all rounded-sm mb-2 mr-2"
             >
-              <tab.icon size={14} />
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.div 
-                  layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C5A059]"
-                />
-              )}
+              <Link size={12} /> TOPLU LİNK YÜKLE
             </button>
-          ))}
+          )}
         </div>
 
         {activeTab === 'overview' && (
