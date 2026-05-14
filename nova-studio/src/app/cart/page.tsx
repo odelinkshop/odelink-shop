@@ -37,6 +37,30 @@ export default function CartPage() {
   const formatTotal = (n: number) =>
     `${n.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`;
 
+  const handleCheckout = () => {
+    if (items.length === 0) return;
+
+    // Track checkout click in analytics
+    if (typeof window !== "undefined" && (window as any).reportAnalyticsEvent) {
+      (window as any).reportAnalyticsEvent({
+        type: 'begin_checkout',
+        page: '/cart',
+        target: 'checkout_button',
+        label: 'Proceed to Shopier',
+        amount: subtotal
+      });
+    }
+
+    // Redirect to the first item's Shopier URL
+    // If Shopier URL starts with //, prepend https:
+    let targetUrl = items[0].url;
+    if (targetUrl.startsWith('//')) {
+      targetUrl = `https:${targetUrl}`;
+    }
+    
+    window.location.href = targetUrl;
+  };
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -160,11 +184,14 @@ export default function CartPage() {
                     </span>
                   </div>
                 </div>
-                <Link href="/checkout" className="block pt-4">
-                  <Button className="w-full bg-accent text-secondary hover:brightness-110 font-bold tracking-widest uppercase py-6 h-auto text-[11px]">
-                    Ödemeye Geç →
-                  </Button>
-                </Link>
+                
+                <Button 
+                  onClick={handleCheckout}
+                  className="w-full bg-accent text-secondary hover:brightness-110 font-bold tracking-widest uppercase py-6 h-auto text-[11px] mt-4"
+                >
+                  Ödemeye Geç →
+                </Button>
+
                 <Link href="/shop" className="block text-center text-[10px] tracking-widest uppercase font-bold text-primary/40 hover:text-primary transition-colors pt-2">
                   Alışverişe Devam Et
                 </Link>

@@ -159,6 +159,7 @@ export default function ProductClient() {
       quantity: quantity,
       size: selectedSize || "OS",
       image: allImages[0],
+      url: product.url || "#",
       currency: product.currency,
     });
     setIsAdded(true);

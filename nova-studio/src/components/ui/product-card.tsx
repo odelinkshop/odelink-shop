@@ -87,6 +87,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         quantity: 1,
         size: firstSize,
         image: mainImage,
+        url: product.url || "#",
       });
       return;
     }

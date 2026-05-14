@@ -188,8 +188,9 @@ export default function SiteAnalyticsPage() {
               {[
                 { label: 'Ziyaretler', val: stats.total_visitors || 0, percent: 100, color: 'bg-white' },
                 { label: 'Tıklamalar', val: stats.total_clicks || 0, percent: stats.total_visitors > 0 ? (stats.total_clicks / stats.total_visitors * 100) : 0, color: 'bg-white/60' },
-                { label: 'Sepete Ekleme', val: stats.total_carts || 0, percent: stats.total_clicks > 0 ? (stats.total_carts / stats.total_clicks * 100) : 0, color: 'bg-white/40' },
-                { label: 'Satışlar', val: stats.total_sales || 0, percent: stats.total_carts > 0 ? (stats.total_sales / stats.total_carts * 100) : 0, color: 'bg-white/20' }
+                { label: 'Sepete Ekleme', val: stats.total_carts || 0, percent: stats.total_clicks > 0 ? (stats.total_carts / stats.total_clicks * 100) : 0, color: 'bg-white/50' },
+                { label: 'Ödeme Başlatma', val: stats.total_checkouts || 0, percent: stats.total_carts > 0 ? (stats.total_checkouts / stats.total_carts * 100) : 0, color: 'bg-white/30' },
+                { label: 'Satışlar', val: stats.total_sales || 0, percent: stats.total_checkouts > 0 ? (stats.total_sales / stats.total_checkouts * 100) : 0, color: 'bg-white/15' }
               ].map((item, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex justify-between items-end text-[10px] font-bold">

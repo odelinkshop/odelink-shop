@@ -9,6 +9,7 @@ export interface CartItem {
   image: string;
   size: string;
   quantity: number;
+  url: string;
   currency?: string;
 }
 
