@@ -41,17 +41,17 @@ const FooterSection = ({
       {...(disableMotion ? {} : { variants: containerVariants, initial: 'hidden', whileInView: 'visible', viewport: { once: true } })}
     >
       {title && (
-        <h3 className="text-sm font-bold text-white mb-6 pb-2 border-b border-white/10 uppercase tracking-wider">
+        <h3 className="text-[11px] font-black text-white mb-8 pb-3 border-b border-white/5 uppercase tracking-[0.25em]">
           {title}
         </h3>
       )}
 
       {isContactSection ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {children}
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           {links?.map((link) => (
             <MotionDiv
               key={link.id}
@@ -61,7 +61,7 @@ const FooterSection = ({
               <button
                 type="button"
                 onClick={() => onLinkClick?.(link)}
-                className="text-gray-300 hover:text-white transition-colors duration-300 text-sm font-medium"
+                className="text-gray-400 hover:text-white transition-all duration-300 text-[13px] font-bold tracking-tight text-left"
                 aria-label={link.label}
               >
                 {link.label}

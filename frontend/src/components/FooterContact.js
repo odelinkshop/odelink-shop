@@ -43,9 +43,9 @@ const FooterContact = ({ email, phone, disableMotion = false }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-4 md:space-y-6">
+    <div className="flex flex-col space-y-6 md:space-y-8">
       {/* Contact Items */}
-      <div className="space-y-3 md:space-y-4">
+      <div className="grid grid-cols-1 gap-4 md:gap-6">
         {contactItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -58,25 +58,25 @@ const FooterContact = ({ email, phone, disableMotion = false }) => {
                 href={item.href}
                 target={item.isExternal ? '_blank' : undefined}
                 rel={item.isExternal ? 'noreferrer' : undefined}
-                className="flex items-center gap-3 md:gap-4 text-gray-300 hover:text-white transition-all duration-300 group"
+                className="flex items-center gap-4 text-gray-300 hover:text-white transition-all duration-300 group"
               >
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:bg-white/10">
-                  <Icon className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-white" />
+                <div className="w-12 h-12 md:w-10 md:h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:bg-white/10 group-hover:border-white/20">
+                  <Icon className="w-5 h-5 text-gray-400 group-hover:text-white" />
                 </div>
-                <div className="flex flex-col">
-                   <span className="text-[8px] md:text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">{item.label}</span>
-                   <span className="text-[11px] md:text-sm font-semibold text-gray-200 group-hover:text-white break-all leading-tight">{item.value}</span>
+                <div className="flex flex-col min-w-0">
+                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mb-1">{item.label}</span>
+                   <span className="text-sm md:text-sm font-semibold text-gray-200 group-hover:text-white truncate md:break-all leading-tight">{item.value}</span>
                 </div>
               </a>
             </MotionDiv>
           );
         })}
       </div>
-
+ 
       {/* Social Links */}
-      <div className="pt-4 md:pt-6 border-t border-white/10">
-        <p className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-3 md:mb-4">Sosyal</p>
-        <div className="flex items-center gap-2 md:gap-3">
+      <div className="pt-6 md:pt-8 border-t border-white/5">
+        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mb-4">Sosyal Medya</p>
+        <div className="flex items-center gap-3">
           {socialLinks.map((link) => {
             const Icon = link.icon;
             return (
@@ -88,10 +88,10 @@ const FooterContact = ({ email, phone, disableMotion = false }) => {
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 hover:bg-white/10 group"
+                  className="w-12 h-12 md:w-10 md:h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/20 group"
                   aria-label={link.label}
                 >
-                  <Icon className="w-4 h-4 md:w-5 md:h-5 transition-colors" style={{ color: link.color }} />
+                  <Icon className="w-5 h-5 transition-transform duration-500 group-hover:scale-110" style={{ color: link.color }} />
                 </a>
               </MotionDiv>
             );
