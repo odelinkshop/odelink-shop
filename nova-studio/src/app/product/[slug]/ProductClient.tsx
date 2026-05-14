@@ -141,14 +141,19 @@ export default function ProductClient() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Resimleri normalize et ve tekilleştir
+  // Resimleri normalize et ve tekilleştir - BOŞLUKLARI VE HATALARI TEMİZLE
   const allImages = [...new Set((product.images || []).map(img => {
-    if (!img) return "";
-    return img.split('?')[0]
+    if (!img || typeof img !== 'string' || img.trim() === "" || img.includes('placeholder')) return "";
+    
+    // Temizleme işlemi
+    let clean = img.split('?')[0]
       .replace('/pictures_mid/', '/pictures/')
       .replace('/pictures_small/', '/pictures/')
       .replace('/pictures_large/', '/pictures/');
-  }))].filter(img => img !== "");
+    
+    if (clean.startsWith('//')) clean = `https:${clean}`;
+    return clean.trim();
+  }))].filter(img => img !== "" && img.length > 5);
 
   const handleAddToCart = () => {
     addItem({

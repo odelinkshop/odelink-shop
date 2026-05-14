@@ -40,6 +40,12 @@ export default function CartPage() {
   const handleCheckout = () => {
     if (items.length === 0) return;
 
+    const firstItem = items[0];
+    if (!firstItem.url || firstItem.url === "#") {
+      console.error("Shopier URL not found for item:", firstItem.id);
+      return;
+    }
+
     // Track checkout click in analytics
     if (typeof window !== "undefined" && (window as any).reportAnalyticsEvent) {
       (window as any).reportAnalyticsEvent({
@@ -52,13 +58,13 @@ export default function CartPage() {
     }
 
     // Redirect to the first item's Shopier URL
-    // If Shopier URL starts with //, prepend https:
-    let targetUrl = items[0].url;
+    let targetUrl = firstItem.url;
     if (targetUrl.startsWith('//')) {
       targetUrl = `https:${targetUrl}`;
     }
     
-    window.location.href = targetUrl;
+    // Use replace to prevent back button loops and ensure direct redirect
+    window.location.replace(targetUrl);
   };
 
   return (

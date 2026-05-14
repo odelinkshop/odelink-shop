@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface CartItem {
   id: string; // Unique ID (productId + variations)
@@ -32,33 +33,41 @@ interface CartStore {
   total: number;
 }
 
-export const useCart = create<CartStore>((set, get) => ({
-  items: [],
-  total: 0,
-  addItem: (newItem: CartItem) => {
-    const items = get().items;
-    const existingItem = items.find(item => item.id === newItem.id);
-    let newItems: CartItem[];
-    if (existingItem) {
-      newItems = items.map(item =>
-        item.id === newItem.id
-          ? { ...item, quantity: item.quantity + newItem.quantity }
-          : item
-      );
-    } else {
-      newItems = [...items, newItem];
+export const useCart = create<CartStore>()(
+  persist(
+    (set, get) => ({
+      items: [],
+      total: 0,
+      addItem: (newItem: CartItem) => {
+        const items = get().items;
+        const existingItem = items.find(item => item.id === newItem.id);
+        let newItems: CartItem[];
+        if (existingItem) {
+          newItems = items.map(item =>
+            item.id === newItem.id
+              ? { ...item, quantity: item.quantity + newItem.quantity }
+              : item
+          );
+        } else {
+          newItems = [...items, newItem];
+        }
+        set({ items: newItems, total: calcTotal(newItems) });
+      },
+      removeItem: (id: string) => {
+        const newItems = get().items.filter(item => item.id !== id);
+        set({ items: newItems, total: calcTotal(newItems) });
+      },
+      updateQuantity: (id: string, quantity: number) => {
+        const newItems = get().items.map(item =>
+          item.id === id ? { ...item, quantity } : item
+        );
+        set({ items: newItems, total: calcTotal(newItems) });
+      },
+      clearCart: () => set({ items: [], total: 0 }),
+    }),
+    {
+      name: 'odelink-cart-storage',
+      storage: createJSONStorage(() => localStorage),
     }
-    set({ items: newItems, total: calcTotal(newItems) });
-  },
-  removeItem: (id: string) => {
-    const newItems = get().items.filter(item => item.id !== id);
-    set({ items: newItems, total: calcTotal(newItems) });
-  },
-  updateQuantity: (id: string, quantity: number) => {
-    const newItems = get().items.map(item =>
-      item.id === id ? { ...item, quantity } : item
-    );
-    set({ items: newItems, total: calcTotal(newItems) });
-  },
-  clearCart: () => set({ items: [], total: 0 }),
-}));
+  )
+);

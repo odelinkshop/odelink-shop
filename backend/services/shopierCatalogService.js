@@ -15,12 +15,15 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, Math.max(0, N
 const getRandomItem = (arr) => arr[arr.length * Math.random() | 0];
 
 function normalizeShopierImageUrl(url) {
-  if (!url) return '';
+  if (!url || typeof url !== 'string') return '';
+  const src = url.trim();
+  if (src.includes('blank.gif') || src.includes('loader') || src.includes('600icons') || src.includes('logo_') || src.includes('shopier.svg')) return '';
+  
   // Boyut eklerini temizle ve en yüksek çözünürlüğe (pictures) odaklan
-  let normalized = url.split('?')[0] // Query parametrelerini at
-    .replace('pictures_mid', 'pictures')
-    .replace('pictures_small', 'pictures')
-    .replace('pictures_large', 'pictures');
+  let normalized = src.split('?')[0] // Query parametrelerini at
+    .replace('/pictures_mid/', '/pictures/')
+    .replace('/pictures_small/', '/pictures/')
+    .replace('/pictures_large/', '/pictures/');
   
   if (normalized.startsWith('//')) normalized = 'https:' + normalized;
   return normalized;
@@ -211,9 +214,10 @@ function parseProductsFromHtml(html, shopSlug) {
 
     const name = $el.find('h3, h4, .product-card__info-title, .title, [class*="title"]').first().text().replace(/\s+/g, ' ').trim();
     const rawPrice = $el.find('.product-card__info-price, .price, [class*="price"]').text().trim();
-    const image = $el.find('img').attr('src') || $el.find('img').attr('data-src') || $el.find('img').attr('data-original') || '';
+    const rawImg = $el.find('img').attr('src') || $el.find('img').attr('data-src') || $el.find('img').attr('data-original') || '';
+    const image = normalizeShopierImageUrl(rawImg);
 
-    if (name && id) {
+    if (name && id && image) {
       products.push({
         id, name,
         price: cleanPrice(rawPrice),
@@ -799,10 +803,11 @@ module.exports = {
       // 3. Selectors
       $('img').each((i, el) => {
         const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
-        if (src && src.includes('cdn.shopier.app')) {
-          if (src.includes('600icons') || src.includes('logo_') || src.includes('shopier.svg')) return;
+        if (src) {
           const normalized = normalizeShopierImageUrl(src);
-          if (normalized && !images.includes(normalized)) images.push(normalized);
+          if (normalized && normalized.includes('cdn.shopier.app') && !images.includes(normalized)) {
+            images.push(normalized);
+          }
         }
       });
 
@@ -831,7 +836,7 @@ module.exports = {
         title, 
         price: oldPriceVal > priceVal ? oldPriceVal : priceVal, 
         discountPrice: oldPriceVal > priceVal ? priceVal : 0,
-        images: [...new Set(images.map(img => normalizeShopierImageUrl(img)))].filter(img => img && img.startsWith('http')), 
+        images: [...new Set(images)].filter(img => img && img.startsWith('http')), 
         variations: [], 
         category: 'Genel', 
         description 

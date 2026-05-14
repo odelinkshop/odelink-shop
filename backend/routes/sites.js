@@ -909,18 +909,15 @@ router.get('/public/:subdomain', async (req, res) => {
         const refreshedAtMs = lastRefreshed ? new Date(lastRefreshed).getTime() : 0;
         const isOld = !refreshedAtMs || (Date.now() - refreshedAtMs) > (1000 * 60 * 60); // 1 hour
         
-        // TRIGGER SYNC IF: 
-        // 1. No products at all
-        // 2. No sizes/variations found yet
-        // 3. Only 1 image found (maybe gallery was missed)
-        // 4. Data is more than 1 hour old
         const hasAnyVariations = productsData.some(p => (p.variations && p.variations.length > 0) || (p.sizes && p.sizes.length > 0));
         const hasGallery = productsData.some(p => p.images && p.images.length > 1);
         const isExportImport = settings?.last_sync_method === 'export_import';
-        const shouldSync = !isExportImport && (!hasProducts || !hasAnyVariations || !hasGallery || isOld);
+        
+        // KRİTİK: Eğer HİÇ ÜRÜN YOKSA, arka planda değil BEKLEYEREK (AWAIT) çekelim ki kullanıcı boş ekran görmesin.
+        const shouldSyncWait = !isExportImport && !hasProducts;
+        const shouldSyncBackground = !isExportImport && hasProducts && (!hasAnyVariations || !hasGallery || isOld);
 
-        if (shouldSync) {
-          autoHeal.background = true;
+        if (shouldSyncWait || shouldSyncBackground) {
           const normalizedShopierUrl = normalizeShopierUrl(shopierUrl);
           const apiKey = settings?.api_key || settings?.apiKey;
 
@@ -930,20 +927,50 @@ router.get('/public/:subdomain', async (req, res) => {
                 debug: false,
                 skipDetails: true,
                 detailConcurrency: 3,
-                detailMaxProducts: 200
+                detailMaxProducts: 200,
+                bypassCache: true
               });
 
-          syncPromise
-            .then(async (result) => {
+          if (shouldSyncWait) {
+            // BEKLE (Wait mode)
+            console.log(`⏳ [AutoHeal] Boş site tespit edildi, BEKLEYEREK senkronize ediliyor: ${subdomain}`);
+            const result = await syncPromise.catch(e => {
+              console.error('❌ AutoHeal Wait Error:', e);
+              return null;
+            });
+            
+            if (result) {
+              const products = Array.isArray(result) ? result : (result?.products || []);
+              const categories = Array.isArray(result?.categories) ? result.categories : [];
+              const totalProducts = apiKey ? products.length : Number(result?.totalProducts || 0);
+              
+              if (products.length > 0) {
+                const refreshedAt = new Date().toISOString();
+                const updatedSite = await Site.update(site.id, {
+                  settings: {
+                    ...settings,
+                    products_data: products,
+                    collections: categories,
+                    catalog_total_products: totalProducts,
+                    catalog_full_sync_complete: true,
+                    catalog_refreshed_at: refreshedAt,
+                    shopier_url: normalizedShopierUrl,
+                    shopierUrl: normalizedShopierUrl
+                  }
+                });
+                if (updatedSite) site = updatedSite;
+                autoHeal.ok = true;
+                autoHeal.background = false;
+              }
+            }
+          } else {
+            // ARKA PLAN (Background mode)
+            autoHeal.background = true;
+            syncPromise.then(async (result) => {
               try {
-                // Determine if result is from API or Scraping
                 const products = Array.isArray(result) ? result : (result?.products || []);
                 const categories = Array.isArray(result?.categories) ? result.categories : [];
-                const totalProducts = apiKey ? products.length : Number(result?.totalProducts || result?.totalCount || products.length || 0);
-                
-                const refreshedAt = new Date().toISOString();
-                
-                // ATOMIC UPDATE: Merge with existing settings to prevent data loss
+                const totalProducts = apiKey ? products.length : Number(result?.totalProducts || 0);
                 const currentSite = await Site.findById(site.id);
                 const currentSettings = currentSite?.settings || {};
                 
@@ -954,19 +981,13 @@ router.get('/public/:subdomain', async (req, res) => {
                     collections: categories.length > 0 ? categories : (currentSettings.collections || []),
                     catalog_total_products: totalProducts || currentSettings.catalog_total_products || 0,
                     catalog_full_sync_complete: true,
-                    catalog_refreshed_at: refreshedAt,
-                    shopier_url: normalizedShopierUrl,
-                    shopierUrl: normalizedShopierUrl
+                    catalog_refreshed_at: new Date().toISOString()
                   }
                 });
-              } catch (e) {
-                console.error('❌ Public site auto-heal error:', e);
-              }
-            })
-            .catch((e) => {
-            console.error('❌ Public site auto-heal background error:', e);
-          });
-          autoHeal.ok = true;
+              } catch (e) { console.error('❌ AutoHeal Background Async Error:', e); }
+            }).catch(e => console.error('❌ AutoHeal Background Error:', e));
+            autoHeal.ok = true;
+          }
         } else {
           autoHeal.skipped = true;
         }
