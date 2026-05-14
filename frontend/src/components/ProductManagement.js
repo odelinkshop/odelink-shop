@@ -251,38 +251,39 @@ const ProductManagement = () => {
 
   return (
     <div className="space-y-12 pb-20 px-4 lg:px-0">
-      {/* ENTERPRISE HEADER */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 border-b border-white/5 pb-12">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-3 bg-white/10 border border-white/20 px-4 py-1.5">
-            <Sparkles size={12} className="text-white" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white">Elite Inventory Control</span>
+      {/* ENTERPRISE HEADER: Reimagined for Mobile */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 border-b border-white/5 pb-16">
+        <div className="space-y-4 text-center lg:text-left">
+          <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2 rounded-full">
+            <Sparkles size={14} className="text-white" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Elite Inventory Control</span>
           </div>
-          <h2 className="text-6xl font-serif text-[#F2EBE1] tracking-tight">Katalog</h2>
-          <p className="text-[12px] text-[#F2EBE1]/30 max-w-lg leading-relaxed font-bold uppercase tracking-widest">
+          <h2 className="text-5xl sm:text-7xl font-serif text-[#F2EBE1] tracking-tight">Katalog</h2>
+          <p className="text-[10px] sm:text-[12px] text-[#F2EBE1]/40 max-w-lg mx-auto lg:mx-0 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">
             Ürünlerinizi en yüksek çözünürlükte ve kurumsal disiplinle yönetin.
           </p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="relative group min-w-[320px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 w-4 h-4 group-focus-within:text-white transition-all" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6">
+          <div className="relative group w-full sm:min-w-[320px]">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
             <input 
               type="text"
               placeholder="KOLEKSİYONDA ARA..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/[0.02] border border-white/5 pl-12 pr-6 py-5 text-[10px] text-white focus:border-white/40 focus:outline-none transition-all font-black tracking-[0.2em] uppercase"
+              className="w-full bg-white/[0.03] border border-white/10 pl-14 pr-6 py-5 text-[11px] text-white focus:border-white focus:outline-none transition-all font-black tracking-[0.25em] uppercase rounded-sm"
             />
           </div>
           
-          <button 
+          <motion.button 
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-4 bg-white text-[#0A0A0A] px-10 py-5 font-black uppercase tracking-widest text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-white/20"
+            className="flex items-center justify-center gap-4 bg-white text-[#0A0A0A] px-10 py-5 font-black uppercase tracking-[0.2em] text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-white/10 rounded-sm"
           >
-            <Plus size={18} /> 
+            <Plus size={20} strokeWidth={3} /> 
             <span>YENİ ÜRÜN TANIMLA</span>
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -307,194 +308,198 @@ const ProductManagement = () => {
           <span className="text-[10px] font-black uppercase tracking-[0.6em] text-white">Sistem Yükleniyor</span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product, i) => (
-            <motion.div 
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              className="group bg-[#0D0D0D] border border-white/5 hover:border-white/30 transition-all duration-700 overflow-hidden"
-            >
-              <div className="aspect-[3/4] relative overflow-hidden bg-black">
-                {product.images?.[0] ? (
-                  <img src={product.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-90 group-hover:opacity-100" />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-white/5 gap-4">
-                    <ImageIcon size={48} />
-                    <span className="text-[9px] font-black uppercase tracking-widest">Görsel Yok</span>
-                  </div>
-                )}
-                
-                {/* Status Badges */}
-                <div className="absolute top-5 left-5 flex flex-col gap-2">
-                  <div className="bg-black/80 backdrop-blur-md border border-white/10 text-white px-4 py-2 text-[10px] font-black tracking-widest">
-                    {product.price} TL
-                  </div>
-                  {product.discount_price && (
-                    <div className="bg-white text-black px-4 py-2 text-[10px] font-black tracking-widest">
-                       %{-Math.round((1 - product.discount_price / product.price) * 100)} İNDİRİM
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10">
+          {filteredProducts.map((product, i) => {
+            const validImages = (product.images || []).filter(img => typeof img === 'string' && img.trim() !== '');
+            return (
+              <motion.div 
+                key={product.id}
+                initial={{ opacity: 0, scale: 0.98 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="group bg-[#0D0D0D] border border-white/5 hover:border-white/20 transition-all duration-700 overflow-hidden rounded-sm"
+              >
+                <div className="aspect-[4/5] relative overflow-hidden bg-black">
+                  {validImages[0] ? (
+                    <img src={validImages[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 opacity-90 group-hover:opacity-100" />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white/5 gap-4">
+                      <ImageIcon size={48} />
+                      <span className="text-[9px] font-black uppercase tracking-widest">Görsel Yok</span>
                     </div>
                   )}
-                </div>
-
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center gap-5 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-sm">
-                   <button onClick={() => openEditModal(product)} className="w-14 h-14 bg-white text-black flex items-center justify-center hover:bg-white transition-all"><Edit3 size={20} /></button>
-                   <button onClick={() => handleDelete(product.id)} className="w-14 h-14 bg-red-600/20 text-red-500 border border-red-500/30 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all"><Trash2 size={20} /></button>
-                   <a href={getProductPreviewLink(product)} target="_blank" rel="noopener noreferrer" className="w-14 h-14 bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-all"><Eye size={20} /></a>
-                </div>
-              </div>
-
-              <div className="p-8 space-y-4">
-                <div className="flex justify-between items-start gap-4">
-                  <h3 className="text-xl font-serif text-white group-hover:text-white transition-colors line-clamp-1">{product.title}</h3>
-                  <span className="text-[9px] font-black text-white/20 uppercase tracking-widest whitespace-nowrap">{product.category || 'GENEL'}</span>
-                </div>
-                <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${product.stock_count > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{product.stock_count} ADET STOK</span>
+                  
+                  {/* Status Badges */}
+                  <div className="absolute top-5 left-5 flex flex-col gap-2">
+                    <div className="bg-black/90 backdrop-blur-xl border border-white/10 text-white px-5 py-2.5 text-[11px] font-black tracking-widest shadow-2xl">
+                      {product.price} TL
+                    </div>
+                    {product.discount_price && (
+                      <div className="bg-white text-black px-5 py-2.5 text-[11px] font-black tracking-widest shadow-2xl">
+                         %{-Math.round((1 - product.discount_price / product.price) * 100)} İNDİRİM
+                      </div>
+                    )}
                   </div>
-                  <span className="text-[9px] font-black text-white tracking-tighter">SKU: {product.sku || 'N/A'}</span>
+
+                  <div className="absolute inset-0 bg-[#0A0A0A]/80 flex items-center justify-center gap-6 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-sm lg:opacity-0 sm:opacity-100">
+                     <button onClick={() => openEditModal(product)} className="w-16 h-16 bg-white text-black flex items-center justify-center hover:bg-[#F2EBE1] transition-all rounded-sm shadow-2xl"><Edit3 size={24} /></button>
+                     <button onClick={() => handleDelete(product.id)} className="w-16 h-16 bg-red-600/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all rounded-sm shadow-2xl"><Trash2 size={24} /></button>
+                     <a href={getProductPreviewLink(product)} target="_blank" rel="noopener noreferrer" className="w-16 h-16 bg-white/10 text-white border border-white/10 flex items-center justify-center hover:bg-white/20 transition-all rounded-sm shadow-2xl"><Eye size={24} /></a>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+
+                <div className="p-10 space-y-6">
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{product.category || 'GENEL'}</span>
+                    <h3 className="text-2xl font-serif text-white group-hover:text-white transition-colors line-clamp-1">{product.title}</h3>
+                  </div>
+                  <div className="flex items-center justify-between pt-8 border-t border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2.5 h-2.5 rounded-full ${product.stock_count > 0 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'}`} />
+                      <span className="text-[11px] font-black text-white/50 uppercase tracking-widest">{product.stock_count} ADET STOK</span>
+                    </div>
+                    <span className="text-[10px] font-black text-white/30 tracking-widest">SKU: {product.sku || 'N/A'}</span>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       )}
 
       {/* ARISTOKRATIK ÜRÜN MODALI (CAM GİBİ ŞEFFAF & HD) */}
       <AnimatePresence>
         {showAddModal && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center px-4 py-10 md:py-20">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-6 lg:p-12">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={closeModal} className="fixed inset-0 bg-[#0A0A0A]/95 backdrop-blur-2xl"
+              onClick={closeModal} className="fixed inset-0 bg-[#0A0A0A]/98 backdrop-blur-3xl"
             />
             
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              className="bg-[#0D0D0D] border border-white/10 w-full max-w-7xl relative z-10 flex flex-col lg:flex-row max-h-[85vh] overflow-hidden shadow-[0_0_100px_-20px_rgba(255,255,255,0.05)]"
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              className="bg-[#0D0D0D] sm:border border-white/10 w-full h-full sm:h-auto sm:max-w-7xl relative z-10 flex flex-col lg:flex-row sm:max-h-[85vh] overflow-hidden shadow-2xl"
             >
               {/* Sol: HD Görsel Laboratuvarı */}
-              <div className="lg:w-[400px] bg-black border-r border-white/5 p-12 flex flex-col">
+              <div className="lg:w-[450px] bg-black/50 border-b lg:border-b-0 lg:border-r border-white/5 p-10 sm:p-14 flex flex-col shrink-0 overflow-y-auto no-scrollbar">
                 <div className="space-y-4 mb-12">
-                  <div className="flex items-center gap-2 text-white">
-                    <ImageIcon size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em]">Visual Studio</span>
+                  <div className="flex items-center gap-3 text-white">
+                    <ImageIcon size={16} />
+                    <span className="text-[11px] font-black uppercase tracking-[0.4em]">Visual Studio</span>
                   </div>
                   <p className="text-[11px] text-white/30 font-bold uppercase tracking-widest leading-relaxed">
                     HD Ürün Vitrinini Tasarlayın
                   </p>
                 </div>
 
-                <div className="flex-grow space-y-6 overflow-y-auto no-scrollbar">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-8">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-5">
                     {formData.images.map((img, idx) => (
-                      <div key={idx} className="aspect-[3/4] bg-white/[0.02] relative group border border-white/10 overflow-hidden">
+                      <div key={idx} className="aspect-[3/4] bg-white/[0.02] relative group border border-white/10 overflow-hidden rounded-sm">
                         <img src={img} className="w-full h-full object-cover" alt="" />
-                        <button onClick={() => removeImage(idx)} className="absolute top-2 right-2 w-8 h-8 bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"><X size={16} /></button>
-                        {idx === 0 && <div className="absolute bottom-0 left-0 right-0 bg-white text-black text-[8px] font-black uppercase py-1.5 text-center">VİTRİN GÖRSELİ</div>}
+                        <button onClick={() => removeImage(idx)} className="absolute top-2 right-2 w-10 h-10 bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xl"><X size={18} /></button>
+                        {idx === 0 && <div className="absolute bottom-0 left-0 right-0 bg-white text-black text-[9px] font-black uppercase py-2 text-center">VİTRİN GÖRSELİ</div>}
                       </div>
                     ))}
                     <button 
                       onClick={() => fileInputRef.current.click()}
-                      className="aspect-[3/4] border-2 border-dashed border-white/5 flex flex-col items-center justify-center gap-4 hover:border-white/40 hover:bg-white/05 transition-all group"
+                      className="aspect-[3/4] border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-4 hover:border-white/40 hover:bg-white/5 transition-all group rounded-sm"
                     >
-                      <Plus size={24} className="text-white/10 group-hover:text-white transition-all" />
-                      <span className="text-[8px] font-black text-white/10 group-hover:text-white uppercase tracking-widest">HD YÜKLE</span>
+                      <Plus size={28} className="text-white/10 group-hover:text-white transition-all" strokeWidth={2.5} />
+                      <span className="text-[9px] font-black text-white/20 group-hover:text-white uppercase tracking-widest">HD YÜKLE</span>
                     </button>
                   </div>
                   <input type="file" multiple hidden ref={fileInputRef} onChange={handleImageUpload} accept="image/*" />
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-white/5 space-y-6">
-                   <div className="flex items-center gap-3 text-white/20">
-                      <Settings2 size={14} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Personalization</span>
+                <div className="mt-16 pt-10 border-t border-white/5 space-y-8">
+                   <div className="flex items-center gap-4 text-white/30">
+                      <Settings2 size={16} />
+                      <span className="text-[11px] font-black uppercase tracking-widest">Personalization</span>
                    </div>
-                   <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <label className="text-[9px] text-white/20 font-black uppercase">Accent</label>
-                        <input type="color" value={formData.personalizationSettings.accentColor} onChange={(e) => setFormData({...formData, personalizationSettings: {...formData.personalizationSettings, accentColor: e.target.value }})} className="w-full h-10 bg-transparent border-none cursor-pointer" />
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <label className="text-[10px] text-white/30 font-black uppercase tracking-widest">Accent</label>
+                        <input type="color" value={formData.personalizationSettings.accentColor} onChange={(e) => setFormData({...formData, personalizationSettings: {...formData.personalizationSettings, accentColor: e.target.value }})} className="w-full h-12 bg-transparent border-none cursor-pointer rounded-sm" />
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-[9px] text-white/20 font-black uppercase">Button</label>
-                        <input type="text" value={formData.personalizationSettings.buttonText} onChange={(e) => setFormData({...formData, personalizationSettings: {...formData.personalizationSettings, buttonText: e.target.value }})} className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[10px] text-white focus:border-white outline-none transition-all uppercase font-black" />
+                      <div className="space-y-4">
+                        <label className="text-[10px] text-white/30 font-black uppercase tracking-widest">Button</label>
+                        <input type="text" value={formData.personalizationSettings.buttonText} onChange={(e) => setFormData({...formData, personalizationSettings: {...formData.personalizationSettings, buttonText: e.target.value }})} className="w-full bg-white/[0.03] border border-white/10 px-5 py-4 text-[11px] text-white focus:border-white outline-none transition-all uppercase font-black tracking-widest rounded-sm" />
                       </div>
                    </div>
                 </div>
               </div>
 
               {/* Sağ: Bilgi Matrisi */}
-              <div className="flex-1 p-12 lg:p-20 flex flex-col overflow-y-auto no-scrollbar">
-                <div className="flex items-center justify-between mb-16">
-                  <div>
-                    <h3 className="text-5xl font-serif text-white tracking-tighter">{editingProduct ? 'Düzenleme' : 'Tanımlama'}</h3>
-                    <div className="flex items-center gap-3 mt-4">
-                      <div className="w-8 h-px bg-white" />
-                      <span className="text-[10px] uppercase tracking-[0.5em] text-white font-black">Matrix Studio 2026</span>
+              <div className="flex-1 p-10 sm:p-20 flex flex-col overflow-y-auto no-scrollbar">
+                <div className="flex items-center justify-between mb-20">
+                  <div className="space-y-4">
+                    <h3 className="text-4xl sm:text-6xl font-serif text-white tracking-tighter">{editingProduct ? 'Düzenleme' : 'Tanımlama'}</h3>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-px bg-white/20" />
+                      <span className="text-[11px] uppercase tracking-[0.5em] text-white/40 font-black">Matrix Studio 2026</span>
                     </div>
                   </div>
-                  <button onClick={closeModal} className="w-14 h-14 bg-white/5 text-white/20 hover:text-white flex items-center justify-center transition-all border border-white/5 hover:border-white/10"><X size={24} /></button>
+                  <button onClick={closeModal} className="w-14 h-14 bg-white/5 text-white/30 hover:text-white flex items-center justify-center transition-all border border-white/10 rounded-sm"><X size={28} /></button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-12">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                    <div className="md:col-span-2 space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">ÜRÜN BAŞLIĞI <Layers size={12} /></label>
-                      <input required type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-transparent border-b border-white/10 py-5 text-2xl text-white focus:border-white focus:outline-none transition-all font-serif italic" placeholder="The Masterpiece..." />
+                <form onSubmit={handleSubmit} className="space-y-16">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+                    <div className="md:col-span-2 space-y-5">
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black flex items-center gap-4">ÜRÜN BAŞLIĞI <Layers size={14} /></label>
+                      <input required type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-transparent border-b border-white/10 py-6 text-3xl sm:text-4xl text-white focus:border-white focus:outline-none transition-all font-serif italic" placeholder="The Masterpiece..." />
                     </div>
 
 
-                    <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">LİSTE FİYATI <Tag size={12} /></label>
-                      <input required type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-white/40 focus:outline-none transition-all font-mono" placeholder="0.00" />
+                    <div className="space-y-5">
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black flex items-center gap-4">LİSTE FİYATI <Tag size={14} /></label>
+                      <input required type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full bg-white/[0.03] border border-white/10 px-8 py-6 text-xl text-white focus:border-white focus:outline-none transition-all font-mono rounded-sm" placeholder="0.00" />
                     </div>
 
-                    <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">İNDİRİMLİ <Percent size={12} /></label>
-                      <input type="number" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-white/40 focus:outline-none transition-all font-mono" placeholder="0.00" />
+                    <div className="space-y-5">
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black flex items-center gap-4">İNDİRİMLİ <Percent size={14} /></label>
+                      <input type="number" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })} className="w-full bg-white/[0.03] border border-white/10 px-8 py-6 text-xl text-white focus:border-white focus:outline-none transition-all font-mono rounded-sm" placeholder="0.00" />
                     </div>
 
-                    <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">STOK ADEDİ <Box size={12} /></label>
-                      <input required type="number" value={formData.stockCount} onChange={(e) => setFormData({ ...formData, stockCount: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-lg text-white focus:border-white/40 focus:outline-none transition-all font-mono" />
+                    <div className="space-y-5">
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black flex items-center gap-4">STOK ADEDİ <Box size={14} /></label>
+                      <input required type="number" value={formData.stockCount} onChange={(e) => setFormData({ ...formData, stockCount: e.target.value })} className="w-full bg-white/[0.03] border border-white/10 px-8 py-6 text-xl text-white focus:border-white focus:outline-none transition-all font-mono rounded-sm" />
                     </div>
 
-                    <div className="space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black flex items-center gap-3">SKU KODU <Package size={12} /></label>
-                      <input type="text" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-6 py-5 text-[11px] text-white focus:border-white/40 focus:outline-none transition-all font-black uppercase tracking-widest" placeholder="AUTOGEN-2026" />
+                    <div className="space-y-5">
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black flex items-center gap-4">SKU KODU <Package size={14} /></label>
+                      <input type="text" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} className="w-full bg-white/[0.03] border border-white/10 px-8 py-6 text-[12px] text-white focus:border-white focus:outline-none transition-all font-black uppercase tracking-[0.2em] rounded-sm" placeholder="AUTOGEN-2026" />
                     </div>
 
-                    <div className="md:col-span-2 space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black">KATEGORİ</label>
-                      <div className="flex gap-4">
-                         <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="flex-grow bg-white/[0.03] border border-white/5 px-6 py-5 text-[11px] text-white focus:border-white/40 outline-none font-black uppercase tracking-widest">
+                    <div className="md:col-span-2 space-y-5">
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black">KATEGORİ</label>
+                      <div className="flex flex-col sm:flex-row gap-5">
+                         <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="flex-grow bg-white/[0.03] border border-white/10 px-8 py-6 text-[12px] text-white focus:border-white outline-none font-black uppercase tracking-[0.2em] rounded-sm appearance-none">
                            {categories.map(cat => <option key={cat} value={cat} className="bg-black">{cat}</option>)}
                          </select>
-                         <button type="button" onClick={() => setShowNewCatInput(!showNewCatInput)} className="px-8 bg-white/5 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">{showNewCatInput ? 'İPTAL' : 'YENİ +'}</button>
+                         <button type="button" onClick={() => setShowNewCatInput(!showNewCatInput)} className="px-10 py-5 bg-white/5 border border-white/10 text-white font-black text-[11px] uppercase tracking-widest hover:bg-white/10 transition-all rounded-sm">{showNewCatInput ? 'İPTAL' : 'YENİ +'}</button>
                       </div>
                       {showNewCatInput && (
-                        <div className="flex gap-2 mt-4">
-                           <input type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} className="flex-grow bg-white/5 border border-white/30 px-6 py-4 text-xs text-white outline-none" placeholder="YENİ KATEGORİ ADI..." />
-                           <button type="button" onClick={addNewCategory} className="px-8 bg-white text-black text-[9px] font-black uppercase">EKLE</button>
+                        <div className="flex gap-4 mt-6">
+                           <input type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} className="flex-grow bg-white/5 border border-white/20 px-8 py-5 text-[12px] text-white outline-none rounded-sm uppercase tracking-widest" placeholder="YENİ KATEGORİ ADI..." />
+                           <button type="button" onClick={addNewCategory} className="px-10 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-sm">EKLE</button>
                         </div>
                       )}
                     </div>
 
-                    <div className="md:col-span-2 space-y-4">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-white font-black">ÜRÜN AÇIKLAMASI (KURUMSAL)</label>
-                      <textarea rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 px-8 py-6 text-sm text-white/60 focus:border-white/40 focus:outline-none transition-all resize-none leading-relaxed font-medium" placeholder="Ürünün hikayesini buraya nakşedin..." />
+                    <div className="md:col-span-2 space-y-5">
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black">ÜRÜN AÇIKLAMASI (KURUMSAL)</label>
+                      <textarea rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-white/[0.03] border border-white/10 px-10 py-8 text-[14px] text-white/70 focus:border-white focus:outline-none transition-all resize-none leading-relaxed font-medium rounded-sm" placeholder="Ürünün hikayesini buraya nakşedin..." />
                     </div>
                   </div>
 
-                  <div className="pt-12 flex gap-6">
-                    <button type="button" onClick={closeModal} className="flex-1 bg-white/5 border border-white/5 text-white/40 py-6 font-black uppercase tracking-[0.4em] text-[10px] hover:bg-white/10 hover:text-white transition-all">İPTAL</button>
-                    <button type="submit" disabled={submitting} className="flex-[2] bg-white text-black py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-4">
-                      {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus size={20} />}
+                  <div className="pt-16 flex flex-col sm:flex-row gap-6">
+                    <button type="button" onClick={closeModal} className="flex-1 bg-white/5 border border-white/10 text-white/40 py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:bg-white/10 hover:text-white transition-all rounded-sm">İPTAL</button>
+                    <button type="submit" disabled={submitting} className="flex-[2] bg-white text-black py-6 font-black uppercase tracking-[0.4em] text-[12px] hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-5 rounded-sm shadow-2xl">
+                      {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save size={22} strokeWidth={2.5} />}
                       {editingProduct ? 'GÜNCELLEMEYİ KAYDET' : 'SİSTEME İŞLE'}
                     </button>
                   </div>

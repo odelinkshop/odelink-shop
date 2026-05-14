@@ -61,92 +61,145 @@ const OrderList = () => {
   );
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <div>
-          <h2 className="text-3xl font-serif text-[#F2EBE1]">Sipariş Yönetimi</h2>
-          <p className="text-[10px] uppercase tracking-widest text-white font-bold opacity-60">Satış Takibi & Gelir Analizi</p>
+    <div className="space-y-12 pb-20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 border-b border-white/5 pb-16">
+        <div className="space-y-4 text-center lg:text-left">
+          <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2 rounded-full">
+            <ShoppingBag size={14} className="text-white" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Revenue & Operations</span>
+          </div>
+          <h2 className="text-5xl sm:text-7xl font-serif text-[#F2EBE1] tracking-tight">Siparişler</h2>
+          <p className="text-[10px] sm:text-[12px] text-[#F2EBE1]/40 max-w-lg mx-auto lg:mx-0 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">
+            Satışlarınızı ve operasyonel verilerinizi gerçek zamanlı takip edin.
+          </p>
         </div>
         
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-colors" />
+        <div className="relative group w-full lg:w-auto">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
           <input 
             type="text"
-            placeholder="Sipariş ID veya E-posta..."
+            placeholder="SİPARİŞ ID VEYA E-POSTA..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white/[0.03] border border-white/10 pl-12 pr-6 py-3.5 text-xs focus:border-white/50 focus:outline-none transition-all min-w-[300px] font-bold uppercase tracking-widest"
+            className="w-full bg-white/[0.03] border border-white/10 pl-14 pr-6 py-5 text-[11px] focus:border-white focus:outline-none transition-all lg:min-w-[400px] font-black uppercase tracking-[0.25em] text-white rounded-sm"
           />
         </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-32">
-          <Loader2 className="w-8 h-8 text-white animate-spin" />
+        <div className="flex flex-col items-center justify-center py-60 space-y-6">
+          <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          <span className="text-[10px] font-black uppercase tracking-[0.6em] text-white">Veri Alınıyor</span>
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="py-32 text-center border border-dashed border-white/20 bg-white/[0.01]">
-          <ShoppingBag className="w-16 h-16 text-white/20 mx-auto mb-6" />
-          <p className="text-xs text-[#F2EBE1]/40 uppercase tracking-[0.4em] font-bold">Henüz bir sipariş bulunmuyor.</p>
+        <div className="py-40 text-center border border-dashed border-white/5 bg-white/[0.01] rounded-sm group">
+          <div className="w-20 h-20 border border-white/5 bg-white/[0.02] flex items-center justify-center mx-auto mb-8 transition-all group-hover:border-white/20">
+            <ShoppingBag className="w-10 h-10 text-white/10 group-hover:text-white/30 transition-all" />
+          </div>
+          <p className="text-[11px] text-white/30 uppercase tracking-[0.4em] font-black">Henüz bir sipariş bulunmuyor.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-white/5 text-[9px] uppercase tracking-[0.2em] text-white font-black">
-                <th className="py-6 px-4">Sipariş / Tarih</th>
-                <th className="py-6 px-4">Müşteri</th>
-                <th className="py-6 px-4">Tutar</th>
-                <th className="py-6 px-4">Durum</th>
-                <th className="py-6 px-4 text-right">İşlem</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {filteredOrders.map((order, i) => (
-                <motion.tr 
-                  key={order.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group hover:bg-white/[0.02] transition-colors"
-                >
-                  <td className="py-6 px-4">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-bold text-[#F2EBE1] font-mono">{order.id}</span>
-                      <div className="flex items-center gap-2 text-[8px] text-[#F2EBE1]/40 font-black tracking-widest">
-                        <Calendar size={10} /> {new Date(order.created_at).toLocaleDateString('tr-TR')}
+        <>
+          {/* DESKTOP TABLE: Visible only on LG screens */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-white/10 text-[10px] uppercase tracking-[0.3em] text-white/40 font-black">
+                  <th className="py-10 px-8">Sipariş Detayı</th>
+                  <th className="py-10 px-8">Müşteri Matrisi</th>
+                  <th className="py-10 px-8">Finansal Veri</th>
+                  <th className="py-10 px-8">Operasyonel Durum</th>
+                  <th className="py-10 px-8 text-right">Aksiyon</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filteredOrders.map((order, i) => (
+                  <motion.tr 
+                    key={order.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    className="group hover:bg-white/[0.02] transition-colors"
+                  >
+                    <td className="py-10 px-8">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-sm font-bold text-[#F2EBE1] font-mono tracking-tighter uppercase">{order.id}</span>
+                        <div className="flex items-center gap-3 text-[9px] text-[#F2EBE1]/30 font-black tracking-widest uppercase">
+                          <Calendar size={12} className="text-white/10" /> {new Date(order.created_at).toLocaleDateString('tr-TR')}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-6 px-4">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 text-[10px] text-[#F2EBE1]/80 font-bold uppercase tracking-wider">
-                        <UserIcon size={10} /> {order.buyer_email?.split('@')[0]}
+                    </td>
+                    <td className="py-10 px-8">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-3 text-[11px] text-white font-bold uppercase tracking-widest">
+                          <UserIcon size={12} className="text-white/20" /> {order.buyer_email?.split('@')[0]}
+                        </div>
+                        <span className="text-[10px] text-white/20 font-bold lowercase tracking-normal">{order.buyer_email}</span>
                       </div>
-                      <span className="text-[9px] text-[#F2EBE1]/30 font-bold">{order.buyer_email}</span>
-                    </div>
-                  </td>
-                  <td className="py-6 px-4">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-sm font-serif text-white font-bold">{order.amount} TL</span>
-                      <div className="flex items-center gap-2 text-[8px] text-[#F2EBE1]/30 font-black uppercase">
-                        <CreditCard size={10} /> SHOPIER
+                    </td>
+                    <td className="py-10 px-8">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-lg font-serif text-white font-bold">{order.amount} TL</span>
+                        <div className="flex items-center gap-3 text-[9px] text-white/20 font-black uppercase tracking-widest">
+                          <CreditCard size={12} /> SHOPIER Altyapısı
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-6 px-4">
-                    {getStatusBadge(order.status)}
-                  </td>
-                  <td className="py-6 px-4 text-right">
-                    <button className="text-[9px] font-black uppercase tracking-widest text-[#F2EBE1]/20 hover:text-white transition-colors">
-                      Detaylar
-                    </button>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                    <td className="py-10 px-8">
+                      {getStatusBadge(order.status)}
+                    </td>
+                    <td className="py-10 px-8 text-right">
+                      <button className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 hover:text-white transition-all border border-white/5 hover:border-white/20 px-6 py-3 rounded-sm">
+                        İncele
+                      </button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* MOBILE CARDS: Visible on smaller screens */}
+          <div className="lg:hidden grid grid-cols-1 gap-8">
+            {filteredOrders.map((order, i) => (
+              <motion.div 
+                key={order.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="bg-[#0D0D0D] border border-white/5 p-8 space-y-8 rounded-sm"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Sipariş ID</span>
+                    <span className="text-sm font-bold text-white font-mono tracking-tighter uppercase">{order.id}</span>
+                  </div>
+                  {getStatusBadge(order.status)}
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Müşteri</span>
+                    <span className="text-[11px] text-white font-bold uppercase tracking-widest truncate block">{order.buyer_email?.split('@')[0]}</span>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Tutar</span>
+                    <span className="text-lg font-serif text-white font-bold block">{order.amount} TL</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 text-[10px] text-white/30 font-black tracking-widest uppercase">
+                    <Calendar size={14} className="text-white/10" /> {new Date(order.created_at).toLocaleDateString('tr-TR')}
+                  </div>
+                  <button className="text-[10px] font-black uppercase tracking-[0.2em] text-white bg-white/5 border border-white/10 px-6 py-3 rounded-sm">
+                    DETAY
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

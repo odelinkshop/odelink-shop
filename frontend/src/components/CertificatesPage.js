@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Printer, 
-  Download, 
-  Shield, 
+  ShieldCheck, 
   Building2,
   Lock,
   Globe,
   QrCode,
   FileText,
   ExternalLink,
-  ChevronRight,
-  Maximize2
+  Maximize2,
+  Download,
+  X,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 
 const CertificatesPage = () => {
@@ -19,7 +21,7 @@ const CertificatesPage = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -27,64 +29,52 @@ const CertificatesPage = () => {
 
   const certificates = [
     {
-      id: 'OD-TLS-SEC-24',
-      title: 'Veri Şifreleme ve SSL Protokol Onayı',
-      subtitle: '256-Bit End-to-End Encryption Statement',
-      issuer: 'Global Security & Encryption Division',
-      entity: 'Odelink Digital Ecosystem',
-      ref: 'REF-SSL-9920',
-      period: '2024 - 2025',
-      stamp: 'Security Validated',
-      desc: 'Odelink platformu üzerindeki tüm veri trafiğinin TLS 1.3 protokolü ve AES-256 bit şifreleme standartları ile uçtan uca korunduğunu, kullanıcı verilerinin transfer sırasında üçüncü taraflarca erişilemez olduğunu tasdik eder.',
-      legalNote: 'Compliance: Transport Layer Security v1.3 Standards',
-      stampColor: '#1a365d'
+      id: 'NOVA-SEC-2026',
+      title: 'Global Veri Şifreleme Protokolü',
+      subtitle: '256-Bit Military Grade Encryption Standard',
+      issuer: 'Nova Security & Cryptography Division',
+      entity: 'Nova SaaS Infrastructure',
+      ref: 'NV-ENC-1029',
+      period: '2026 - 2027',
+      stamp: 'Nova Validated',
+      desc: 'Nova platformu, siber güvenlik mimarisinde TLS 1.3 ve AES-256 bit askeri düzey şifreleme protokollerini temel alır. Tüm veri transferleri, Quantum-Resistant algoritmalarla korunan güvenli tüneller üzerinden gerçekleştirilmektedir.',
+      legalNote: 'Standard Compliance: ISO/IEC 27001 & NIST Cybersecurity Framework',
+      qrTarget: 'https://files.nova.shop/certs/security-a4.pdf'
     },
     {
-      id: 'OD-PAY-PCI-24',
-      title: 'Güvenli Ödeme ve PCI-DSS Entegrasyonu',
-      subtitle: 'Shopier Infrastructure Security Statement',
-      issuer: 'Financial Compliance Board',
-      entity: 'Odelink Transaction Infrastructure',
-      ref: 'REF-PAY-4412',
-      period: 'Continuous Integration',
-      stamp: 'Payment Verified',
-      desc: 'Ödeme işlemleri PCI-DSS v4.0 uyumlu Shopier altyapısı üzerinden gerçekleştirilmektedir. Kart verilerinin hiçbir şekilde Odelink sunucularında tutulmadığını ve Shopier güvencesiyle işlendiğini beyan eder.',
-      legalNote: 'Integration Framework: Shopier Secure API v2.0',
-      stampColor: '#b45309'
+      id: 'NOVA-PAY-PCI-26',
+      title: 'Ödeme Sistemleri Güvenlik Onayı',
+      subtitle: 'PCI-DSS v4.0 Financial Compliance',
+      issuer: 'Nova Global Financial Board',
+      entity: 'Nova Transaction Network',
+      ref: 'NV-PAY-8821',
+      period: 'Continuous Validation',
+      stamp: 'Financial Secure',
+      desc: 'Ödeme altyapımız, küresel PCI-DSS veri güvenliği standartlarının en güncel sürümü (v4.0) ile tam uyumludur. Kullanıcıların finansal verileri Nova sunucularına asla dokunmadan, tamamen şifrelenmiş jetonlar (tokens) ile işlenmektedir.',
+      legalNote: 'Infrastructure Authority: Nova Payment Systems API v3',
+      qrTarget: 'https://files.nova.shop/certs/payment-a4.pdf'
     },
     {
-      id: 'OD-LGL-KVKK-24',
-      title: 'KVKK ve Veri Gizliliği Taahhütnamesi',
-      subtitle: 'Data Protection & Privacy Compliance',
-      issuer: 'Legal Affairs Department',
-      entity: 'Odelink Platform Operations',
-      ref: 'REF-LAW-8831',
-      period: 'Permanent Compliance',
-      stamp: 'Legal Verified',
-      desc: '6698 Sayılı Kişisel Verilerin Korunması Kanunu kapsamında, kullanıcı verilerinin işlenmesi, saklanması ve imha edilmesi süreçlerinin yasal mevzuata tam uyumlu olduğunu bildiren resmi beyandır.',
-      legalNote: 'Regulatory Act: Republic of Turkey Law No. 6698',
-      stampColor: '#1e40af'
-    },
-    {
-      id: 'OD-INF-UPS-24',
-      title: 'Yüksek Erişilebilirlik ve Altyapı Onayı',
-      subtitle: 'Server Infrastructure & Uptime Certification',
-      issuer: 'Infrastructure Quality Board',
-      entity: 'Odelink Server Networks',
-      ref: 'REF-INF-7712',
-      period: '2024 Service Level',
-      stamp: 'Systems Active',
-      desc: 'Dijital vitrin sistemlerinin barındırıldığı sunucu altyapısının %99.9 uptime garantisine sahip olduğu ve çok katmanlı güvenlik duvarları (WAF) ile korunduğunu tasdik eder.',
-      legalNote: 'Infrastructure Standard: Tier III Data Center Standards',
-      stampColor: '#991b1b'
+      id: 'NOVA-LGL-KVKK-26',
+      title: 'Veri Gizliliği ve KVKK Sertifikası',
+      subtitle: 'GDPR & KVKK Regulatory Compliance',
+      issuer: 'Nova Legal Affairs Bureau',
+      entity: 'Nova Cloud Ecosystem',
+      ref: 'NV-LAW-7712',
+      period: 'Annual Audit 2026',
+      stamp: 'Legal Compliance',
+      desc: '6698 Sayılı Kişisel Verilerin Korunması Kanunu ve Avrupa Birliği GDPR standartları kapsamında, veri saklama, işleme ve anonimleştirme süreçlerimizin tam uyumluluk içerisinde olduğu resmi olarak tasdik edilmiştir.',
+      legalNote: 'Statutory Body: Law No. 6698 / EU Regulation 2016/679',
+      qrTarget: 'https://files.nova.shop/certs/privacy-a4.pdf'
     }
   ];
 
   const handlePrint = (id) => {
     const printContent = document.getElementById(`doc-${id}`);
-    const WinPrint = window.open('', '', 'width=900,height=1200');
-    WinPrint.document.write('<html><head><title>Ödelink Official Document</title>');
-    WinPrint.document.write('<style>body { margin: 0; padding: 20px; font-family: "Times New Roman", serif; }</style>');
+    const WinPrint = window.open('', '', 'width=1000,height=1400');
+    WinPrint.document.write('<html><head><title>Nova Official Certificate</title>');
+    WinPrint.document.write('<style>body { margin: 0; padding: 40px; font-family: "Playfair Display", serif; background: #fff; }</style>');
+    WinPrint.document.write('<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">');
     WinPrint.document.write('</head><body>');
     WinPrint.document.write(printContent.innerHTML);
     WinPrint.document.write('</body></html>');
@@ -93,16 +83,16 @@ const CertificatesPage = () => {
     setTimeout(() => {
       WinPrint.print();
       WinPrint.close();
-    }, 500);
+    }, 1000);
   };
 
-  const A4Document = ({ cert, scale = 1 }) => {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://www.odelink.shop/verify/${cert.id}`;
+  const A4Certificate = ({ cert, scale = 1 }) => {
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${cert.qrTarget}`;
     
     return (
       <div 
         id={`doc-${cert.id}`} 
-        className="bg-white text-black shadow-2xl mx-auto overflow-hidden relative"
+        className="bg-[#FAFAFA] text-[#0A0A0A] shadow-[0_0_100px_rgba(0,0,0,0.1)] mx-auto overflow-hidden relative border border-black/5"
         style={{ 
           width: scale === 1 ? '100%' : '210mm', 
           aspectRatio: '1/1.414',
@@ -110,91 +100,90 @@ const CertificatesPage = () => {
           transformOrigin: 'top center'
         }}
       >
-        {/* Decorative Frame */}
+        {/* Aristocratic Border Pattern */}
         <div className="absolute inset-4 border-[0.5px] border-black/10" />
-        <div className="absolute inset-6 border-[2px] border-black/5" />
+        <div className="absolute inset-6 border-[1px] border-black/5" />
+        <div className="absolute inset-8 border-[3px] border-double border-black/10" />
 
-        {/* Content */}
-        <div className="relative z-10 p-12 md:p-16 flex flex-col h-full font-serif">
+        {/* Content Section */}
+        <div className="relative z-10 p-16 md:p-24 flex flex-col h-full font-serif text-left">
           {/* Header */}
-          <div className="flex justify-between items-start border-b-[3px] border-black pb-8 mb-12">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-black tracking-tighter">ÖDELINK</h1>
-              <p className="text-[10px] font-sans font-black uppercase tracking-[0.4em] text-gray-400">Strategic Infrastructure Division</p>
+          <div className="flex justify-between items-start border-b-[4px] border-black pb-12 mb-16">
+            <div className="space-y-3">
+              <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">Nova</h1>
+              <p className="text-[10px] font-sans font-black uppercase tracking-[0.5em] text-black/40">Strategic Infrastructure Division</p>
             </div>
-            <div className="text-right font-sans text-[9px] space-y-1 leading-tight">
-              <div className="bg-black text-white px-3 py-1 font-black mb-2 inline-block">OFFICIAL DOCUMENT</div>
-              <p className="font-bold text-gray-400 uppercase">Document ID: <span className="text-black font-black">{cert.id}</span></p>
-              <p className="font-bold text-gray-400 uppercase">Ref No: <span className="text-black font-black">{cert.ref}</span></p>
+            <div className="text-right font-sans text-[10px] space-y-2 leading-tight">
+              <div className="bg-black text-white px-5 py-2 font-black mb-3 inline-block tracking-widest">OFFICIAL CERTIFICATE</div>
+              <p className="font-bold text-black/40 uppercase tracking-widest text-[9px]">CERT ID: <span className="text-black font-black">{cert.id}</span></p>
+              <p className="font-bold text-black/40 uppercase tracking-widest text-[9px]">REF: <span className="text-black font-black">{cert.ref}</span></p>
             </div>
           </div>
 
-          {/* Title */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold tracking-tight uppercase mb-4">Certificate of Compliance</h2>
-            <div className="w-48 h-[1px] bg-black/20 mx-auto" />
-            <p className="text-[11px] font-sans font-bold text-gray-400 mt-4 tracking-widest uppercase">Verification Status: Verified & Encrypted</p>
+          {/* Title Area */}
+          <div className="text-center mb-20 space-y-6">
+            <h2 className="text-5xl font-bold tracking-tight uppercase italic mb-6">Certificate of Compliance</h2>
+            <div className="w-64 h-[1px] bg-black/10 mx-auto" />
+            <p className="text-[12px] font-sans font-black text-black/30 tracking-[0.4em] uppercase">Security Validated & Authenticated by Nova Labs</p>
           </div>
 
-          {/* Body */}
-          <div className="space-y-10 flex-1">
-            <div className="space-y-2">
-              <label className="text-[9px] font-sans font-black text-gray-300 uppercase tracking-widest">Certification Subject</label>
-              <h3 className="text-2xl font-bold border-b border-black/5 pb-2 leading-tight">{cert.title}</h3>
-              <p className="text-[12px] italic text-gray-500">{cert.subtitle}</p>
+          {/* Core Body */}
+          <div className="space-y-12 flex-1">
+            <div className="space-y-3">
+              <label className="text-[10px] font-sans font-black text-black/20 uppercase tracking-[0.4em]">Certification Protocol</label>
+              <h3 className="text-3xl font-bold border-b border-black/10 pb-4 leading-tight uppercase tracking-tight">{cert.title}</h3>
+              <p className="text-[13px] italic text-black/50 font-medium">{cert.subtitle}</p>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[9px] font-sans font-black text-gray-300 uppercase tracking-widest">Authorized Entity</label>
-              <h3 className="text-2xl font-bold border-b border-black/5 pb-2">{cert.entity}</h3>
+            <div className="space-y-3">
+              <label className="text-[10px] font-sans font-black text-black/20 uppercase tracking-[0.4em]">Authorized Authority</label>
+              <h3 className="text-3xl font-bold border-b border-black/10 pb-4 uppercase tracking-tight">{cert.issuer}</h3>
             </div>
 
-            <div className="bg-gray-50 p-8 border-l-[6px] border-black relative">
-              <p className="text-[15px] leading-relaxed text-justify first-letter:text-4xl first-letter:font-bold first-letter:mr-2">
+            <div className="bg-black/5 p-10 border-l-[8px] border-black relative">
+              <p className="text-[17px] leading-relaxed text-justify first-letter:text-5xl first-letter:font-bold first-letter:mr-3 font-serif">
                 {cert.desc}
               </p>
-              <div className="mt-8 pt-6 border-t border-black/5">
-                <p className="text-[10px] font-sans font-black text-gray-400 uppercase tracking-widest">
-                  Legal Reference: {cert.legalNote}
+              <div className="mt-10 pt-8 border-t border-black/10">
+                <p className="text-[11px] font-sans font-black text-black/40 uppercase tracking-[0.3em]">
+                  Regulatory Reference: {cert.legalNote}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="mt-auto pt-12 flex justify-between items-end">
-            <div className="flex gap-8 items-end">
-              <div className="relative">
-                <img src={qrUrl} alt="QR" className="w-24 h-24 p-1 bg-white border border-black/10" />
-                <p className="text-[8px] font-sans font-black text-center mt-2 text-gray-400">SCAN TO VERIFY</p>
+          {/* Footer & Signature Section */}
+          <div className="mt-auto pt-16 flex justify-between items-end">
+            <div className="flex gap-10 items-end">
+              <div className="relative group cursor-help">
+                <img src={qrUrl} alt="QR Verification" className="w-28 h-28 p-2 bg-white border border-black/10" />
+                <p className="text-[9px] font-sans font-black text-center mt-3 text-black/40 tracking-widest">SCAN TO AUTHENTICATE</p>
               </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-sans font-black text-gray-300 uppercase tracking-widest">Validity Period</p>
-                <p className="text-[13px] font-bold uppercase">{cert.period}</p>
+              <div className="space-y-2 pb-2">
+                <p className="text-[10px] font-sans font-black text-black/20 uppercase tracking-[0.3em]">Validity Term</p>
+                <p className="text-[15px] font-black uppercase tracking-widest">{cert.period}</p>
               </div>
             </div>
 
-            <div className="text-center space-y-4">
-              <div className="relative inline-block">
-                {/* Official Seal */}
+            <div className="text-center">
+              <div className="relative inline-block pb-4">
                 <div 
-                  className="absolute -top-16 -left-12 w-32 h-32 rounded-full border-[3px] border-double flex items-center justify-center rotate-[-12deg] select-none opacity-60"
-                  style={{ borderColor: cert.stampColor, color: cert.stampColor }}
+                  className="absolute -top-24 -left-16 w-40 h-40 rounded-full border-[2px] border-double flex items-center justify-center rotate-[-15deg] select-none opacity-40 border-black text-black"
                 >
                   <div className="text-center font-sans">
-                    <p className="text-[7px] font-black uppercase tracking-tighter">OFFICIAL SEAL</p>
-                    <p className="text-[10px] font-black uppercase my-1 tracking-widest border-y border-current">VERIFIED</p>
-                    <p className="text-[7px] font-black uppercase tracking-tighter">SYSTEMS 2024</p>
+                    <p className="text-[8px] font-black uppercase tracking-tighter">NOVA TRUST</p>
+                    <p className="text-[12px] font-black uppercase my-2 tracking-[0.3em] border-y border-black">CERTIFIED</p>
+                    <p className="text-[8px] font-black uppercase tracking-tighter">GLOBAL OPS 2026</p>
                   </div>
                 </div>
                 
-                <div className="pt-8">
-                  <p className="font-serif italic text-4xl opacity-90 mb-1" style={{ fontFamily: '"Great Vibes", cursive' }}>
-                    M. Bayram
-                  </p>
-                  <div className="w-48 h-[1.5px] bg-black mb-2" />
-                  <p className="text-[10px] font-sans font-black uppercase tracking-[0.2em]">Board Director</p>
-                  <p className="text-[8px] font-sans text-gray-400 uppercase">Verification Division</p>
+                <div className="pt-12 text-center">
+                   <div className="font-serif italic text-5xl mb-3 opacity-90" style={{ fontFamily: '"Playfair Display", serif' }}>
+                     M. Bayram
+                   </div>
+                  <div className="w-64 h-[2px] bg-black mb-3" />
+                  <p className="text-[11px] font-sans font-black uppercase tracking-[0.4em]">Chief Infrastructure Officer</p>
+                  <p className="text-[9px] font-sans text-black/30 uppercase tracking-[0.2em] mt-1">Verification Division / Nova SaaS</p>
                 </div>
               </div>
             </div>
@@ -205,131 +194,132 @@ const CertificatesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#F2EBE1] font-sans selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#0A0A0A] text-[#F2EBE1] font-sans selection:bg-white selection:text-black overflow-x-hidden">
       
-      {/* Background Ambience */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-white/[0.02] blur-[150px] rounded-full" />
-        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-white/[0.03] blur-[180px] rounded-full" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,#1A1A1A_0%,#0A0A0A_70%)] opacity-50" />
+        <div className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-white/[0.01] blur-[180px] rounded-full animate-pulse" />
+        <div className="absolute bottom-1/4 -right-1/4 w-[900px] h-[900px] bg-white/[0.02] blur-[220px] rounded-full" />
       </div>
 
-      <div className="relative pt-40 pb-60 px-6 max-w-[1400px] mx-auto">
+      <div className="relative pt-48 pb-64 px-6 sm:px-12 max-w-[1600px] mx-auto">
         
-        {/* Title Section */}
-        <div className="text-center mb-40">
+        <div className="text-center mb-48">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-4 px-8 py-3 rounded-full bg-white/5 border border-white/10 mb-12"
           >
-            <Shield size={16} className="text-white" />
-            <span className="text-[11px] font-black uppercase tracking-[0.4em]">Strategic Trust & Security Protocol</span>
+            <ShieldCheck size={20} className="text-white" />
+            <span className="text-[12px] font-black uppercase tracking-[0.5em] text-white/80">Nova Official Compliance Archive</span>
           </motion.div>
           
           <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-7xl md:text-9xl font-serif tracking-tighter leading-[0.8] mb-12 italic"
+            initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            className="text-7xl sm:text-9xl md:text-[11rem] font-serif tracking-tighter leading-[0.85] mb-16 italic"
           >
-            Resmi Belgeler
+            Nova Belgeleri
           </motion.h1>
 
           <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-xl md:text-2xl text-white/40 max-w-3xl mx-auto leading-relaxed font-light"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+            className="text-xl sm:text-2xl text-white/30 max-w-4xl mx-auto leading-relaxed font-light tracking-wide italic"
           >
-            Ödelink altyapısının kurumsal güvenilirliğini, veri şifreleme standartlarını ve yasal uyumluluğunu tasdik eden resmi dijital arşiv.
+            Nova SaaS altyapısının kurumsal güvenilirliğini, siber güvenlik mimarisini ve küresel veri uyumluluğunu tasdik eden aristokratik dijital arşiv.
           </motion.p>
         </div>
 
-        {/* Certificate Display Strategy */}
         {isMobile ? (
-          // MOBILE VIEW: Modern Card Stack
-          <div className="space-y-8">
+          <div className="space-y-12">
             {certificates.map((cert, i) => (
               <motion.div 
                 key={cert.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="bg-white/5 border border-white/10 p-8 rounded-[32px] group"
+                className="bg-[#111] border border-white/5 p-10 rounded-sm relative group overflow-hidden"
               >
-                <div className="flex justify-between items-start mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
-                    <FileText size={24} className="text-white" />
-                  </div>
-                  <span className="text-[10px] font-black opacity-20 uppercase tracking-widest">{cert.id}</span>
+                <div className="absolute top-0 right-0 p-6 opacity-5">
+                   <FileText size={120} />
                 </div>
-                <h3 className="text-2xl font-serif italic mb-4 leading-tight">{cert.title}</h3>
-                <p className="text-sm text-white/40 mb-8 leading-relaxed line-clamp-3">{cert.desc}</p>
-                <div className="flex items-center gap-4">
-                  <button 
-                    onClick={() => setSelectedCert(cert)}
-                    className="flex-1 bg-white text-black h-14 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2"
-                  >
-                    <Maximize2 size={16} /> GÖRÜNTÜLE
-                  </button>
-                  <button 
-                    className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center"
-                    onClick={() => handlePrint(cert.id)}
-                  >
-                    <Download size={20} />
-                  </button>
+                <div className="relative z-10 space-y-8">
+                  <div className="flex items-center gap-4">
+                     <div className="w-16 h-16 bg-white text-black flex items-center justify-center rounded-sm shadow-xl">
+                        <QrCode size={28} strokeWidth={2.5} />
+                     </div>
+                     <div>
+                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{cert.id}</span>
+                        <h3 className="text-2xl font-serif italic text-white">{cert.title}</h3>
+                     </div>
+                  </div>
+                  <p className="text-sm text-white/40 leading-relaxed font-medium">{cert.desc}</p>
+                  <div className="flex flex-col gap-4 pt-4">
+                    <button 
+                      onClick={() => setSelectedCert(cert)}
+                      className="w-full bg-white text-black h-16 text-[12px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 rounded-sm shadow-2xl active:scale-95 transition-all"
+                    >
+                      <Maximize2 size={20} /> BELGEYİ ODAKLA
+                    </button>
+                    <button 
+                      onClick={() => window.open(cert.qrTarget, '_blank')}
+                      className="w-full bg-white/5 border border-white/10 text-white/60 h-16 text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 rounded-sm hover:bg-white hover:text-black transition-all"
+                    >
+                      <Download size={20} /> DİJİTAL ASLI (A4)
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
         ) : (
-          // DESKTOP VIEW: Premium Document Grid
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-2 gap-32">
             {certificates.map((cert, i) => (
               <motion.div 
                 key={cert.id}
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 60 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: i * 0.1 }}
+                transition={{ duration: 1, delay: i * 0.1 }}
                 className="group relative"
               >
-                {/* Actions */}
-                <div className="absolute -top-16 right-0 flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                <div className="absolute -top-20 right-0 flex gap-6 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-6 group-hover:translate-y-0 z-50">
                   <button 
                     onClick={() => handlePrint(cert.id)}
-                    className="bg-white text-black px-6 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-2xl"
+                    className="bg-white text-black px-8 py-4 text-[11px] font-black uppercase tracking-widest flex items-center gap-4 hover:scale-105 transition-all shadow-[0_20px_50px_rgba(255,255,255,0.1)] rounded-sm"
                   >
-                    <Printer size={16} /> YAZDIR / PDF
+                    <Printer size={18} strokeWidth={2.5} /> YAZDIR / PDF
                   </button>
                   <button 
                     onClick={() => setSelectedCert(cert)}
-                    className="bg-white/10 border border-white/20 backdrop-blur-md text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-white hover:text-black transition-all"
+                    className="bg-white/10 border border-white/20 backdrop-blur-xl text-white px-8 py-4 text-[11px] font-black uppercase tracking-widest flex items-center gap-4 hover:bg-white hover:text-black transition-all rounded-sm"
                   >
-                    <Maximize2 size={16} /> ODAKLAN
+                    <Maximize2 size={18} strokeWidth={2.5} /> TAM EKRAN
                   </button>
                 </div>
 
-                {/* Document Container */}
-                <div className="relative perspective-1000 group-hover:z-50">
-                  <div className="absolute inset-0 bg-white shadow-[0_0_100px_rgba(255,255,255,0.05)] translate-x-4 translate-y-4 -z-10 transition-transform duration-700 group-hover:translate-x-8 group-hover:translate-y-8" />
-                  <div className="border border-white/10 p-1 bg-[#111] overflow-hidden group-hover:scale-[1.02] transition-transform duration-700 shadow-2xl">
-                    <A4Document cert={cert} />
+                <div className="relative perspective-2000 group-hover:z-40">
+                  <div className="absolute inset-0 bg-white/5 translate-x-6 translate-y-6 -z-10 transition-all duration-1000 group-hover:translate-x-12 group-hover:translate-y-12 group-hover:bg-white/10 rounded-sm" />
+                  <div className="border border-white/10 p-1.5 bg-[#111] overflow-hidden group-hover:scale-[1.02] transition-all duration-1000 shadow-[0_0_100px_rgba(0,0,0,0.5)] cursor-zoom-in" onClick={() => setSelectedCert(cert)}>
+                    <A4Certificate cert={cert} />
                   </div>
                 </div>
 
-                {/* Info Overlay */}
-                <div className="mt-12 space-y-4">
-                  <div className="flex justify-between items-end border-b border-white/10 pb-6">
-                    <h3 className="text-3xl font-serif italic text-white/90 group-hover:text-white transition-colors">{cert.title}</h3>
+                <div className="mt-16 space-y-6">
+                  <div className="flex justify-between items-end border-b border-white/10 pb-8">
+                    <div className="space-y-2">
+                       <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">{cert.id}</span>
+                       <h3 className="text-4xl font-serif italic text-white/80 group-hover:text-white transition-colors">{cert.title}</h3>
+                    </div>
                     <div className="text-right">
-                      <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-1 leading-none">Validity</p>
-                      <p className="text-sm font-bold tracking-tighter uppercase">{cert.period}</p>
+                      <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-2 leading-none">Status</p>
+                      <div className="flex items-center gap-3 text-emerald-500 font-black text-sm tracking-tighter uppercase">
+                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_100px_rgba(16,185,129,0.3)]" />
+                         VERIFIED 2026
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-8 items-center text-[10px] font-black text-white/20 uppercase tracking-widest">
-                    <span>ID: {cert.id}</span>
-                    <span>REF: {cert.ref}</span>
+                  <div className="flex gap-12 items-center text-[11px] font-black text-white/10 uppercase tracking-[0.3em]">
+                    <div className="flex items-center gap-3"><FileText size={14} /> REF: {cert.ref}</div>
+                    <div className="flex items-center gap-3"><Building2 size={14} /> ISSUED BY NOVA SYSTEMS</div>
                   </div>
                 </div>
               </motion.div>
@@ -337,34 +327,38 @@ const CertificatesPage = () => {
           </div>
         )}
 
-        {/* Modal for Focus Mode */}
         <AnimatePresence>
           {selectedCert && (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 overflow-y-auto"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[2000] bg-black/98 backdrop-blur-3xl flex items-center justify-center p-0 sm:p-12 overflow-y-auto"
             >
               <button 
                 onClick={() => setSelectedCert(null)}
-                className="fixed top-8 right-8 w-16 h-16 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 transition-all z-[110]"
+                className="fixed top-10 right-10 w-20 h-20 bg-white text-black flex items-center justify-center hover:scale-110 transition-all z-[2100] rounded-sm shadow-2xl active:scale-95"
               >
-                <Maximize2 className="rotate-45" size={32} />
+                <X size={40} strokeWidth={2.5} />
               </button>
               
               <motion.div 
-                initial={{ scale: 0.9, opacity: 0, y: 50 }}
+                initial={{ scale: 0.9, opacity: 0, y: 100 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                className="w-full max-w-4xl shadow-[0_0_150px_rgba(255,255,255,0.1)] my-20"
+                exit={{ scale: 0.9, opacity: 0, y: 100 }}
+                className="w-full max-w-5xl shadow-[0_0_200px_rgba(255,255,255,0.05)] my-20"
               >
-                <A4Document cert={selectedCert} />
-                <div className="mt-12 flex justify-center gap-6">
+                <A4Certificate cert={selectedCert} />
+                <div className="mt-16 flex flex-col sm:flex-row justify-center gap-8">
                   <button 
                     onClick={() => handlePrint(selectedCert.id)}
-                    className="h-16 px-12 bg-white text-black text-[13px] font-black uppercase tracking-[0.3em] flex items-center gap-4 hover:brightness-90 transition-all"
+                    className="h-20 px-16 bg-white text-black text-[14px] font-black uppercase tracking-[0.4em] flex items-center gap-6 hover:bg-[#F2EBE1] transition-all rounded-sm shadow-2xl"
                   >
-                    <Printer size={20} /> BU BELGEYİ YAZDIR
+                    <Printer size={24} strokeWidth={2.5} /> RESMİ DÖKÜMANI YAZDIR
+                  </button>
+                  <button 
+                    onClick={() => window.open(selectedCert.qrTarget, '_blank')}
+                    className="h-20 px-16 bg-white/5 border border-white/10 text-white text-[14px] font-black uppercase tracking-[0.4em] flex items-center gap-6 hover:bg-white/10 transition-all rounded-sm"
+                  >
+                    <Download size={24} strokeWidth={2.5} /> DİJİTAL DOSYAYI İNDİR (A4)
                   </button>
                 </div>
               </motion.div>
@@ -372,59 +366,58 @@ const CertificatesPage = () => {
           )}
         </AnimatePresence>
 
-        {/* Corporate Trust Badges */}
-        <div className="mt-60 pt-40 border-t border-white/5 text-center">
-          <div className="flex flex-wrap justify-center gap-16 md:gap-32 mb-20 opacity-20 grayscale hover:grayscale-0 transition-all duration-1000">
-            <div className="flex flex-col items-center gap-4">
-              <Building2 size={48} strokeWidth={1} />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em]">Enterprise</span>
+        <div className="mt-80 pt-60 border-t border-white/5 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-16 md:gap-32 mb-32 opacity-20 grayscale hover:grayscale-0 transition-all duration-1000">
+            <div className="flex flex-col items-center gap-6 group cursor-default">
+              <Building2 size={56} strokeWidth={1} className="group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-black uppercase tracking-[0.5em] group-hover:text-white transition-colors">Nova Enterprise</span>
             </div>
-            <div className="flex flex-col items-center gap-4">
-              <Lock size={48} strokeWidth={1} />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em]">Security</span>
+            <div className="flex flex-col items-center gap-6 group cursor-default">
+              <Lock size={56} strokeWidth={1} className="group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-black uppercase tracking-[0.5em] group-hover:text-white transition-colors">Nova Security</span>
             </div>
-            <div className="flex flex-col items-center gap-4">
-              <Globe size={48} strokeWidth={1} />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em]">Compliance</span>
+            <div className="flex flex-col items-center gap-6 group cursor-default">
+              <Globe size={56} strokeWidth={1} className="group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-black uppercase tracking-[0.5em] group-hover:text-white transition-colors">Global Compliance</span>
             </div>
-            <div className="flex flex-col items-center gap-4">
-              <QrCode size={48} strokeWidth={1} />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em]">Verified</span>
+            <div className="flex flex-col items-center gap-6 group cursor-default">
+              <QrCode size={56} strokeWidth={1} className="group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-black uppercase tracking-[0.5em] group-hover:text-white transition-colors">Digital Trust</span>
             </div>
           </div>
-          <p className="text-sm text-white/20 font-medium max-w-3xl mx-auto leading-relaxed tracking-wide">
-            Ödelink resmi dökümanları dijital kriptografik imzalarla korunmaktadır. Her belge üzerindeki QR kod, ilgili sertifikanın orijinalliğini Strategic Intelligence Division sunucuları üzerinden doğrular.
+          <p className="text-base sm:text-lg text-white/20 font-medium max-w-4xl mx-auto leading-relaxed tracking-wider italic">
+            Nova resmi dökümanları dijital kriptografik imzalarla mühürlenmiştir. Her belge üzerindeki QR kod, ilgili sertifikanın orijinalliğini Nova Strategic Infrastructure Division ana sunucuları üzerinden, dijital A4 dosyası formatında doğrular.
           </p>
         </div>
 
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
-        .perspective-1000 {
-          perspective: 2000px;
+        .perspective-2000 {
+          perspective: 3000px;
         }
 
         @media print {
           body * { visibility: hidden; }
-          #printable-document, #printable-document * { visibility: visible; }
-          #printable-document { position: absolute; left: 0; top: 0; width: 100%; }
+          [id^="doc-"], [id^="doc-"] * { visibility: visible; }
+          [id^="doc-"] { position: absolute; left: 0; top: 0; width: 100%; border: none; shadow: none; }
         }
 
         ::-webkit-scrollbar {
-          width: 6px;
+          width: 8px;
         }
         ::-webkit-scrollbar-track {
-          background: #050505;
+          background: #0A0A0A;
         }
         ::-webkit-scrollbar-thumb {
-          background: #333;
-          border-radius: 10px;
+          background: #222;
+          border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-          background: #444;
+          background: #333;
         }
       `}</style>
     </div>
