@@ -92,6 +92,7 @@ function StoreSchema({ name, description, url, logo }: { name: string; descripti
 }
 
 import StoreInitializer from "@/components/providers/store-initializer";
+import AnalyticsTracker from "@/components/providers/analytics-tracker";
 import CustomCursor from "@/components/ui/custom-cursor";
 
 export default async function RootLayout({

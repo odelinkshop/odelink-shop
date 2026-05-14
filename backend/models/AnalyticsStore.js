@@ -145,7 +145,8 @@ class AnalyticsStore {
           click_x INT,
           click_y INT,
           screen_width INT,
-          screen_height INT
+          screen_height INT,
+          amount DECIMAL(12, 2)
         )
       `);
 
@@ -155,6 +156,9 @@ class AnalyticsStore {
         BEGIN 
           IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='analytics_events' AND COLUMN_NAME='browser') THEN
             ALTER TABLE analytics_events ADD COLUMN browser VARCHAR(32);
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='analytics_events' AND COLUMN_NAME='amount') THEN
+            ALTER TABLE analytics_events ADD COLUMN amount DECIMAL(12, 2);
           END IF;
         END $$;
       `);
@@ -373,6 +377,7 @@ class AnalyticsStore {
     const deviceType = deriveDeviceType(safeUa);
     const browserType = deriveBrowserType(safeUa);
     const safeProductKey = normalizeProductKey(productKey);
+    const safeAmount = parseFloat(req?.body?.amount || 0) || null;
     const safeCity = (req?.get('cf-ipcity') || req?.get('x-city') || '').toString().slice(0, 128);
     const safeLat = parseFloat(req?.get('cf-iplatitude') || req?.get('x-lat') || 0) || null;
     const safeLon = parseFloat(req?.get('cf-iplongitude') || req?.get('x-lon') || 0) || null;
@@ -390,9 +395,9 @@ class AnalyticsStore {
       `
       INSERT INTO analytics_events (
         id, site_id, ts, type, path, referrer, referrer_host, ua, device_type, browser, 
-        country, city, lat, lon, product_key, click_x, click_y, screen_width, screen_height
+        country, city, lat, lon, product_key, click_x, click_y, screen_width, screen_height, amount
       )
-      VALUES ($1, $2, NOW(), $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+      VALUES ($1, $2, NOW(), $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
       `,
       [
         id,
@@ -412,7 +417,8 @@ class AnalyticsStore {
         clickX || null,
         clickY || null,
         screenWidth || null,
-        screenHeight || null
+        screenHeight || null,
+        safeAmount
       ]
     );
 
@@ -492,20 +498,91 @@ class AnalyticsStore {
 
     const res = await pool.query(
       `
-      SELECT COALESCE(product_key, '') AS k, COUNT(*)::int AS c
+      SELECT 
+        COALESCE(product_key, '') AS k, 
+        COUNT(CASE WHEN type = 'click' THEN 1 END)::int AS clicks,
+        COUNT(CASE WHEN type = 'add_to_cart' THEN 1 END)::int AS carts,
+        COUNT(CASE WHEN type = 'purchase' THEN 1 END)::int AS sales,
+        SUM(CASE WHEN type = 'purchase' THEN amount ELSE 0 END)::decimal AS revenue
       FROM analytics_events
       WHERE site_id = $1
-        AND type = 'click'
         AND ts >= NOW() - (($2::text || ' days')::interval)
         AND COALESCE(product_key, '') <> ''
       GROUP BY COALESCE(product_key, '')
-      ORDER BY c DESC
+      ORDER BY revenue DESC, sales DESC, clicks DESC
       LIMIT 20
       `,
       [siteId, safeDays]
     );
 
-    return (Array.isArray(res.rows) ? res.rows : []).map((x) => ({ productKey: x.k, clicks: Number(x.c || 0) }));
+    return (Array.isArray(res.rows) ? res.rows : []).map((x) => ({ 
+      productKey: x.k, 
+      clicks: Number(x.clicks || 0),
+      carts: Number(x.carts || 0),
+      sales: Number(x.sales || 0),
+      revenue: Number(x.revenue || 0)
+    }));
+  }
+
+  static async getDetailedSiteAnalytics({ siteId, days = 30 }) {
+    await this.ensureSchema();
+    const safeDays = Math.max(1, Math.min(365, Number(days || 30) || 30));
+
+    // 1. Ana Metrikler
+    const summaryRes = await pool.query(
+      `
+      SELECT 
+        COALESCE(SUM(page_views), 0)::int as total_views,
+        COALESCE(SUM(unique_visitors), 0)::int as total_visitors,
+        COALESCE(SUM(clicks), 0)::int as total_clicks
+      FROM site_analytics
+      WHERE site_id = $1 AND date >= CURRENT_DATE - (($2::text || ' days')::interval)
+      `,
+      [siteId, safeDays]
+    );
+
+    // 2. E-Ticaret Metrikleri
+    const commerceRes = await pool.query(
+      `
+      SELECT 
+        COUNT(CASE WHEN type = 'add_to_cart' THEN 1 END)::int as total_carts,
+        COUNT(CASE WHEN type = 'begin_checkout' THEN 1 END)::int as total_checkouts,
+        COUNT(CASE WHEN type = 'purchase' THEN 1 END)::int as total_sales,
+        COALESCE(SUM(CASE WHEN type = 'purchase' THEN amount ELSE 0 END), 0)::decimal as total_revenue
+      FROM analytics_events
+      WHERE site_id = $1 AND ts >= NOW() - (($2::text || ' days')::interval)
+      `,
+      [siteId, safeDays]
+    );
+
+    // 3. Günlük Grafik Verisi
+    const chartRes = await pool.query(
+      `
+      SELECT 
+        date::text as d,
+        page_views as v,
+        unique_visitors as u,
+        clicks as c
+      FROM site_analytics
+      WHERE site_id = $1 AND date >= CURRENT_DATE - (($2::text || ' days')::interval)
+      ORDER BY date ASC
+      `,
+      [siteId, safeDays]
+    );
+
+    const summary = summaryRes.rows[0];
+    const commerce = commerceRes.rows[0];
+
+    return {
+      summary: {
+        ...summary,
+        ...commerce,
+        conversion_rate: summary.total_visitors > 0 ? ((commerce.total_sales / summary.total_visitors) * 100).toFixed(2) : "0.00"
+      },
+      charts: chartRes.rows,
+      topProducts: await this.getTopProducts({ siteId, days: safeDays }),
+      breakdowns: await this.getBreakdowns({ siteId, days: safeDays })
+    };
   }
 
   static async getRealtimeWindow({ siteId, windowSeconds = 600 }) {

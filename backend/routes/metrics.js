@@ -121,4 +121,83 @@ router.post('/click', async (req, res) => {
   }
 });
 
+// --- YENİ E-TİCARET ANALİTİK ENDPOINT'LERİ ---
+
+router.post('/add-to-cart', async (req, res) => {
+  try {
+    const { subdomain, path, productKey, amount } = req.body;
+    const site = await Site.findBySubdomain(subdomain);
+    if (!site) return res.status(404).json({ error: 'Site bulunamadı' });
+
+    await AnalyticsStore.recordEvent({
+      siteId: site.id,
+      type: 'add_to_cart',
+      path,
+      productKey,
+      amount,
+      req
+    });
+    return res.json({ ok: true });
+  } catch (e) { return res.json({ ok: true }); }
+});
+
+router.post('/begin-checkout', async (req, res) => {
+  try {
+    const { subdomain, path, amount } = req.body;
+    const site = await Site.findBySubdomain(subdomain);
+    if (!site) return res.status(404).json({ error: 'Site bulunamadı' });
+
+    await AnalyticsStore.recordEvent({
+      siteId: site.id,
+      type: 'begin_checkout',
+      path,
+      amount,
+      req
+    });
+    return res.json({ ok: true });
+  } catch (e) { return res.json({ ok: true }); }
+});
+
+router.post('/purchase', async (req, res) => {
+  try {
+    const { subdomain, path, amount, productKey } = req.body;
+    const site = await Site.findBySubdomain(subdomain);
+    if (!site) return res.status(404).json({ error: 'Site bulunamadı' });
+
+    await AnalyticsStore.recordEvent({
+      siteId: site.id,
+      type: 'purchase',
+      path,
+      amount,
+      productKey,
+      req
+    });
+    return res.json({ ok: true });
+  } catch (e) { return res.json({ ok: true }); }
+});
+
+router.get('/detailed-stats/:siteId', authMiddleware, async (req, res) => {
+  try {
+    const { siteId } = req.params;
+    const { days } = req.query;
+
+    // Sitenin kullanıcıya ait olduğundan emin ol
+    const site = await Site.findById(siteId);
+    if (!site || site.user_id !== req.userId) {
+      return res.status(403).json({ error: 'Bu siteye erişim yetkiniz yok' });
+    }
+
+    const stats = await AnalyticsStore.getDetailedSiteAnalytics({ siteId, days });
+    const liveCount = await AnalyticsStore.getActiveVisitorCountByPrefix(siteId);
+
+    return res.json({
+      ...stats,
+      liveCount
+    });
+  } catch (e) {
+    console.error('Detailed stats error:', e);
+    return res.status(500).json({ error: 'İstatistikler alınamadı' });
+  }
+});
+
 module.exports = router;
