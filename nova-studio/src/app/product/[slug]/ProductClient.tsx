@@ -141,7 +141,14 @@ export default function ProductClient() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const allImages = product.images && product.images.length > 0 ? product.images : [];
+  // Resimleri normalize et ve tekilleştir
+  const allImages = [...new Set((product.images || []).map(img => {
+    if (!img) return "";
+    return img.split('?')[0]
+      .replace('/pictures_mid/', '/pictures/')
+      .replace('/pictures_small/', '/pictures/')
+      .replace('/pictures_large/', '/pictures/');
+  }))].filter(img => img !== "");
 
   const handleAddToCart = () => {
     addItem({

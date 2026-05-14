@@ -14,6 +14,18 @@ puppeteer.use(StealthPlugin());
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
 const getRandomItem = (arr) => arr[arr.length * Math.random() | 0];
 
+function normalizeShopierImageUrl(url) {
+  if (!url) return '';
+  // Boyut eklerini temizle ve en yüksek çözünürlüğe (pictures) odaklan
+  let normalized = url.split('?')[0] // Query parametrelerini at
+    .replace('pictures_mid', 'pictures')
+    .replace('pictures_small', 'pictures')
+    .replace('pictures_large', 'pictures');
+  
+  if (normalized.startsWith('//')) normalized = 'https:' + normalized;
+  return normalized;
+}
+
 const FLARESOLVERR_URL = process.env.FLARESOLVERR_URL || 'http://flaresolverr:8191/v1';
 
 const USER_AGENTS = [
@@ -789,8 +801,8 @@ module.exports = {
         const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
         if (src && src.includes('cdn.shopier.app')) {
           if (src.includes('600icons') || src.includes('logo_') || src.includes('shopier.svg')) return;
-          const cleaned = src.split('?')[0];
-          if (!images.includes(cleaned)) images.push(cleaned);
+          const normalized = normalizeShopierImageUrl(src);
+          if (normalized && !images.includes(normalized)) images.push(normalized);
         }
       });
 
@@ -819,7 +831,7 @@ module.exports = {
         title, 
         price: oldPriceVal > priceVal ? oldPriceVal : priceVal, 
         discountPrice: oldPriceVal > priceVal ? priceVal : 0,
-        images: [...new Set(images)].filter(img => img && img.startsWith('http')), 
+        images: [...new Set(images.map(img => normalizeShopierImageUrl(img)))].filter(img => img && img.startsWith('http')), 
         variations: [], 
         category: 'Genel', 
         description 
@@ -854,7 +866,13 @@ module.exports = {
         const images = Array.from(document.querySelectorAll('img'))
           .map(img => img.getAttribute('data-src') || img.getAttribute('src'))
           .filter(src => src && src.includes('cdn.shopier.app') && !src.includes('600icons') && !src.includes('logo_'))
-          .map(src => src.split('?')[0]);
+          .map(src => {
+            // Helper function is not available inside evaluate, use inline normalization
+            return src.split('?')[0]
+              .replace('pictures_mid', 'pictures')
+              .replace('pictures_small', 'pictures')
+              .replace('pictures_large', 'pictures');
+          });
           
         const variations = [];
         document.querySelectorAll('select').forEach(select => {

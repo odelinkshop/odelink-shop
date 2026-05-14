@@ -112,7 +112,12 @@ async function scrapeShopier(storeName) {
                     .map(src => src.replace('pictures_mid', 'pictures').replace('pictures_small', 'pictures')); // En net haline çevir
                 
                 // Duplicate resimleri temizle
-                const uniqueImages = [...new Set(imgUrls)];
+                const uniqueImages = [...new Set(imgUrls.map(src => 
+                    src.split('?')[0]
+                       .replace('pictures_mid', 'pictures')
+                       .replace('pictures_small', 'pictures')
+                       .replace('pictures_large', 'pictures')
+                ))];
 
                 // 2. Kategoriyi bulmaya çalış
                 let cat = "Genel";
