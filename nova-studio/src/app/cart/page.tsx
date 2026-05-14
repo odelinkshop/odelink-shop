@@ -58,13 +58,18 @@ export default function CartPage() {
     }
 
     // Redirect to the first item's Shopier URL
-    let targetUrl = firstItem.url;
+    let targetUrl = firstItem.url || "";
     if (targetUrl.startsWith('//')) {
       targetUrl = `https:${targetUrl}`;
+    } else if (targetUrl && !targetUrl.startsWith('http')) {
+      targetUrl = `https://www.shopier.com/${targetUrl}`;
     }
     
-    // Use replace to prevent back button loops and ensure direct redirect
-    window.location.replace(targetUrl);
+    // Use href for standard redirection
+    console.log("🚀 Redirecting to Shopier:", targetUrl);
+    if (targetUrl) {
+      window.location.href = targetUrl;
+    }
   };
 
   return (
@@ -191,12 +196,12 @@ export default function CartPage() {
                   </div>
                 </div>
                 
-                <Button 
+                <button 
                   onClick={handleCheckout}
-                  className="w-full bg-accent text-secondary hover:brightness-110 font-bold tracking-widest uppercase py-6 h-auto text-[11px] mt-4"
+                  className="w-full bg-[#C5A059] text-black hover:brightness-110 font-bold tracking-[0.2em] uppercase py-6 h-auto text-[11px] mt-4 flex items-center justify-center transition-all"
                 >
-                  Ödemeye Geç →
-                </Button>
+                  ÖDEMEYE GEÇ →
+                </button>
 
                 <Link href="/shop" className="block text-center text-[10px] tracking-widest uppercase font-bold text-primary/40 hover:text-primary transition-colors pt-2">
                   Alışverişe Devam Et

@@ -791,25 +791,37 @@ module.exports = {
       oldPriceVal = parseP(opAttr || $('.price-old, .product-old-price, .product-price-old').first().text());
 
       // --- Image Extraction ---
-      const images = [];
+      let rawImages = [];
       // 1. JSON
       if (jsonData?.product?.primary_variant_image) {
-          images.push(jsonData.product.primary_variant_image);
+          rawImages.push(jsonData.product.primary_variant_image);
       }
       // 2. Meta
       const ogImg = $('meta[property="og:image"]').attr('content');
-      if (ogImg && !images.includes(ogImg)) images.push(ogImg);
+      if (ogImg) rawImages.push(ogImg);
 
       // 3. Selectors
       $('img').each((i, el) => {
         const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
-        if (src) {
-          const normalized = normalizeShopierImageUrl(src);
-          if (normalized && normalized.includes('cdn.shopier.app') && !images.includes(normalized)) {
-            images.push(normalized);
+        if (src) rawImages.push(src);
+      });
+
+      // Normalize and Deduplicate with a very strict filter
+      const images = [];
+      const seen = new Set();
+      
+      for (const raw of rawImages) {
+        const norm = normalizeShopierImageUrl(raw);
+        if (norm && norm.includes('cdn.shopier.app') && !seen.has(norm)) {
+          // Extra check: Shopier product images usually have a long numeric/hash ID
+          // We filter out very short filenames or obvious icons that slipped through
+          const filename = norm.split('/').pop() || "";
+          if (filename.length > 10) {
+            images.push(norm);
+            seen.add(norm);
           }
         }
-      });
+      }
 
       // --- Description ---
       let description = jsonData?.product?.description || 
@@ -836,7 +848,7 @@ module.exports = {
         title, 
         price: oldPriceVal > priceVal ? oldPriceVal : priceVal, 
         discountPrice: oldPriceVal > priceVal ? priceVal : 0,
-        images: [...new Set(images)].filter(img => img && img.startsWith('http')), 
+        images: images.filter(img => img.startsWith('http')), 
         variations: [], 
         category: 'Genel', 
         description 
