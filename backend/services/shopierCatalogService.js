@@ -790,38 +790,34 @@ module.exports = {
       }
       oldPriceVal = parseP(opAttr || $('.price-old, .product-old-price, .product-price-old').first().text());
 
-      // --- Image Extraction ---
-      let rawImages = [];
-      // 1. JSON
-      if (jsonData?.product?.primary_variant_image) {
-          rawImages.push(jsonData.product.primary_variant_image);
-      }
-      // 2. Meta
-      const ogImg = $('meta[property="og:image"]').attr('content');
-      if (ogImg) rawImages.push(ogImg);
-
-      // 3. Selectors
-      $('img').each((i, el) => {
-        const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
-        if (src) rawImages.push(src);
-      });
-
       // Normalize and Deduplicate with a very strict filter
       const images = [];
       const seen = new Set();
       
-      for (const raw of rawImages) {
-        const norm = normalizeShopierImageUrl(raw);
+      const processImg = (src) => {
+        if (!src) return;
+        const norm = normalizeShopierImageUrl(src);
         if (norm && norm.includes('cdn.shopier.app') && !seen.has(norm)) {
-          // Extra check: Shopier product images usually have a long numeric/hash ID
-          // We filter out very short filenames or obvious icons that slipped through
           const filename = norm.split('/').pop() || "";
           if (filename.length > 10) {
             images.push(norm);
             seen.add(norm);
           }
         }
+      };
+
+      // 1. JSON
+      if (jsonData?.product?.primary_variant_image) {
+          processImg(jsonData.product.primary_variant_image);
       }
+      // 2. Meta
+      processImg($('meta[property="og:image"]').attr('content'));
+
+      // 3. Selectors
+      $('img').each((i, el) => {
+        const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
+        processImg(src);
+      });
 
       // --- Description ---
       let description = jsonData?.product?.description || 

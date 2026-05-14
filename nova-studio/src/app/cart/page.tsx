@@ -59,16 +59,32 @@ export default function CartPage() {
 
     // Redirect to the first item's Shopier URL
     let targetUrl = firstItem.url || "";
+    
+    // Fallback: If URL is missing or internal, try to construct it
+    if (!targetUrl || targetUrl === "#" || targetUrl.startsWith('/')) {
+      console.warn("⚠️ Shopier URL missing, attempting reconstruction...");
+      // Try to get shop slug from window or store
+      const storeSlug = (window as any).STORE_DATA?.settings?.shopier_user || "";
+      if (storeSlug && firstItem.productId) {
+        targetUrl = `https://www.shopier.com/${storeSlug}/${firstItem.productId}`;
+      }
+    }
+
     if (targetUrl.startsWith('//')) {
       targetUrl = `https:${targetUrl}`;
     } else if (targetUrl && !targetUrl.startsWith('http')) {
-      targetUrl = `https://www.shopier.com/${targetUrl}`;
+      // If it looks like a relative path or just a slug
+      if (targetUrl.includes('/')) {
+        targetUrl = `https://www.shopier.com/${targetUrl}`;
+      }
     }
     
-    // Use href for standard redirection
-    console.log("🚀 Redirecting to Shopier:", targetUrl);
-    if (targetUrl) {
-      window.location.href = targetUrl;
+    // Use assign for direct redirection
+    console.log("🚀 Final Redirect to Shopier:", targetUrl);
+    if (targetUrl && targetUrl !== "#") {
+      window.location.assign(targetUrl);
+    } else {
+      alert("Ödeme sayfasına yönlendirilemedi. Lütfen mağaza sahibiyle iletişime geçin.");
     }
   };
 

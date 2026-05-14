@@ -158,9 +158,12 @@ export default function ProductClient() {
     
     if (clean.startsWith('//')) clean = `https:${clean}`;
     return clean.trim();
-  }))].filter(img => img !== "" && img.length > 20); // Ürün resimleri genelde uzundur
+  }))].filter(img => img !== "" && img.length > 20);
 
   const handleAddToCart = () => {
+    // URL önceliği: shopier_url > url > link > #
+    const finalUrl = product.shopier_url || product.url || (product as any).link || "#";
+
     addItem({
       id: `${product.id}-${selectedSize || 'OS'}`,
       productId: product.id,
@@ -169,7 +172,7 @@ export default function ProductClient() {
       quantity: quantity,
       size: selectedSize || "OS",
       image: allImages[0],
-      url: product.url || "#",
+      url: finalUrl,
       currency: product.currency,
     });
     setIsAdded(true);
