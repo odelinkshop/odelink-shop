@@ -577,30 +577,11 @@ function App() {
       void e;
     }
 
-    // ELITE SECURITY ARMOR PROTOCOL (v3.1) - Developer Mode Enabled
-    if (process.env.NODE_ENV === 'production' || true) {
-      const handleContextMenu = (e) => e.preventDefault();
-      const handleKeyDown = (e) => {
-        // Only block Ctrl+U (View Source) to maintain elite secrecy
-        if (e.ctrlKey && e.keyCode === 85) {
-          e.preventDefault();
-        }
-      };
-
-      document.addEventListener('contextmenu', handleContextMenu);
-      document.addEventListener('keydown', handleKeyDown);
-
-      // Nova Security Signature (No freeze, just branding)
-      console.clear();
-      console.log('%cNOVA ELITE PROTECTION', 'color: #FFFFFF; font-size: 40px; font-weight: bold; text-shadow: 0 0 20px rgba(255,255,255,0.5); font-family: serif;');
-      console.log('%cSOURCE PROTECTION ACTIVE: ORIGINAL FILES ENCRYPTED', 'color: #00F0FF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;');
-      console.log('%cACCESS GRANTED - SİBER KORUMA AKTİF', 'color: #888; font-size: 10px; font-weight: bold;');
-
-      return () => {
-        document.removeEventListener('contextmenu', handleContextMenu);
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    }
+    // Nova Security Signature (No freeze, just branding)
+    console.clear();
+    console.log('%cNOVA ELITE PROTECTION', 'color: #FFFFFF; font-size: 40px; font-weight: bold; text-shadow: 0 0 20px rgba(255,255,255,0.5); font-family: serif;');
+    console.log('%cSOURCE PROTECTION ACTIVE: ORIGINAL FILES ENCRYPTED', 'color: #00F0FF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;');
+    console.log('%cACCESS GRANTED - SİBER KORUMA AKTİF', 'color: #888; font-size: 10px; font-weight: bold;');
   }, []);
 
   return (
