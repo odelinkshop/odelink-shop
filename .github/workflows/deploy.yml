@@ -67,6 +67,7 @@ jobs:
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}
             CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}
+            CLOUDFLARE_EMAIL=${{ secrets.CLOUDFLARE_EMAIL }}
             BACKEND_URL=https://api.odelink.shop
             GIT_COMMIT=${CURRENT_COMMIT}
             CORS_ORIGINS=https://www.odelink.shop,https://odelink.shop,https://demo.odelink.shop
