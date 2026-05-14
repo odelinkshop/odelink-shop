@@ -12,16 +12,23 @@ const VPS_IP = '89.144.10.94';
  * Cloudflare API isteği
  */
 async function cloudflareRequest(endpoint, options = {}) {
+  const CLOUDFLARE_EMAIL = process.env.CLOUDFLARE_EMAIL || '';
+  
   if (!CLOUDFLARE_API_TOKEN || !CLOUDFLARE_ZONE_ID) {
     throw new Error('Cloudflare API yapılandırması eksik (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ZONE_ID)');
   }
 
   const url = `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}${endpoint}`;
   
+  // Kimlik doğrulama yöntemini belirle
+  const authHeaders = CLOUDFLARE_EMAIL 
+    ? { 'X-Auth-Email': CLOUDFLARE_EMAIL, 'X-Auth-Key': CLOUDFLARE_API_TOKEN }
+    : { 'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}` };
+
   const response = await fetch(url, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
+      ...authHeaders,
       'Content-Type': 'application/json',
       ...options.headers
     }

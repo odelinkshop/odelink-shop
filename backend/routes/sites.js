@@ -1534,6 +1534,22 @@ router.put('/:id', authMiddleware, requireAccess, async (req, res) => {
       });
     }
 
+    // --- ÖZEL ALAN ADI (CUSTOM DOMAIN) PROTOKOLÜ ---
+    if (customDomain && customDomain !== existingSite.custom_domain) {
+      console.log(`🌐 Yeni alan adı protokolü başlatıldı: ${customDomain}`);
+      
+      // Cloudflare tarafında Hostname ve SSL oluştur
+      setImmediate(async () => {
+        try {
+          const { addCustomHostname } = require('../services/cloudflareService');
+          await addCustomHostname(customDomain);
+          console.log(`✅ Cloudflare Custom Hostname kurulumu tetiklendi: ${customDomain}`);
+        } catch (e) {
+          console.error(`❌ Cloudflare Custom Hostname hatası: ${customDomain}`, e.message);
+        }
+      });
+    }
+
     // --- SİTEYİ GÜNCELLE ---
     const site = await Site.update(siteId, updateData);
     

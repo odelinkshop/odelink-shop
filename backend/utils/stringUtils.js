@@ -39,7 +39,7 @@ const clampSubdomain = (raw, maxLen = 20) => {
 const SUBDOMAIN_BLACKLIST = [
   'admin', 'api', 'pay', 'auth', 'login', 'www', 'mail', 'smtp', 'pop3', 
   'dev', 'test', 'stage', 'prod', 'root', 'super', 'odelink', 'nova',
-  'billing', 'support', 'help', 'status', 'assets', 'static', 'cdn'
+  'billing', 'support', 'help', 'status', 'assets', 'static', 'cdn', 'custom'
 ];
 
 const isSubdomainReserved = (subdomain) => {
