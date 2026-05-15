@@ -274,23 +274,6 @@ export default function SiteSettingsPage() {
                     </div>
                     <div className="h-px bg-white/5" />
                     
-                    {/* Modern Shopier PAT Integration */}
-                    <div className="space-y-4 bg-emerald-500/5 border border-emerald-500/20 p-5 rounded-3xl">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Lock size={14} className="text-emerald-500" />
-                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Shopier API Bağlantısı (PAT)</span>
-                      </div>
-                      <textarea
-                        rows={5}
-                        className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-white placeholder-white/20 focus:border-emerald-500/50 outline-none transition-all font-mono text-[10px]"
-                        placeholder="Shopier'den kopyaladığın o çok uzun kodu buraya yapıştır..."
-                        value={formData.shopier_pat || ''}
-                        onChange={(e) => setFormData({ ...formData, shopier_pat: e.target.value })}
-                      />
-                      <p className="text-[8px] text-emerald-500/60 font-bold leading-relaxed uppercase tracking-tighter">
-                        Shopier panelinde oluşturduğunuz "Kişisel Erişim Anahtarı" (PAT) kodunu buraya girmelisiniz.
-                      </p>
-                    </div>
 
                     <div className="flex items-center justify-between p-5 bg-white/[0.02] border border-white/5 rounded-3xl">
                       <div className="flex items-center gap-4">

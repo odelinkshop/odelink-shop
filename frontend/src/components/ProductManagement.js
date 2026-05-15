@@ -30,7 +30,7 @@ import { getAuthToken } from '../utils/authStorage';
 
 const API_BASE = getApiBase();
 
-const ProductManagement = () => {
+const ProductManagement = ({ onOpenBulk }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -252,37 +252,47 @@ const ProductManagement = () => {
   return (
     <div className="space-y-12 pb-20 px-4 lg:px-0">
       {/* ENTERPRISE HEADER: Reimagined for Mobile */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 border-b border-white/5 pb-16">
-        <div className="space-y-4 text-center lg:text-left">
-          <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2 rounded-full">
-            <Sparkles size={14} className="text-white" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Elite Inventory Control</span>
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-20">
+        <div className="space-y-6 text-center lg:text-left">
+          <div className="inline-flex items-center gap-4 bg-white/5 border border-white/10 px-6 py-2.5 rounded-full">
+            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/60">Elite Inventory Control v2.0</span>
           </div>
-          <h2 className="text-5xl sm:text-7xl font-serif text-[#F2EBE1] tracking-tight">Katalog</h2>
-          <p className="text-[10px] sm:text-[12px] text-[#F2EBE1]/40 max-w-lg mx-auto lg:mx-0 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">
-            Ürünlerinizi en yüksek çözünürlükte ve kurumsal disiplinle yönetin.
+          <div className="space-y-2">
+            <h2 className="text-6xl sm:text-8xl font-serif text-[#F2EBE1] tracking-tighter leading-none">Katalog</h2>
+            <div className="flex items-center justify-center lg:justify-start gap-4">
+              <div className="h-px w-12 bg-white/20" />
+              <p className="text-[10px] sm:text-[11px] text-white/30 uppercase tracking-[0.5em] font-black">
+                Kurumsal Ürün Arşivi
+              </p>
+            </div>
+          </div>
+          <p className="text-[11px] sm:text-[13px] text-white/40 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+            Mağazanızdaki ürünleri Shopier altyapısı ile senkronize edin. 
+            Yüksek çözünürlüklü görseller ve otomatik veri çekme sistemi aktiftir.
           </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6">
-          <div className="relative group w-full sm:min-w-[320px]">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-6">
+          <div className="relative group w-full sm:min-w-[360px]">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
             <input 
               type="text"
-              placeholder="KOLEKSİYONDA ARA..."
+              placeholder="ARŞİVDE ARA..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/[0.03] border border-white/10 pl-14 pr-6 py-5 text-[11px] text-white focus:border-white focus:outline-none transition-all font-black tracking-[0.25em] uppercase rounded-sm"
+              className="w-full bg-white/[0.02] border border-white/5 pl-16 pr-8 py-6 text-[12px] text-white focus:border-white/40 focus:bg-white/[0.05] focus:outline-none transition-all font-black tracking-[0.2em] uppercase rounded-sm"
             />
           </div>
           
           <motion.button 
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-4 bg-white text-[#0A0A0A] px-10 py-5 font-black uppercase tracking-[0.2em] text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-white/10 rounded-sm"
+            onClick={onOpenBulk}
+            className="flex items-center justify-center gap-5 bg-white text-[#0A0A0A] px-12 py-6 font-black uppercase tracking-[0.3em] text-[11px] hover:bg-[#F2EBE1] transition-all shadow-[0_20px_50px_rgba(255,255,255,0.1)] rounded-sm group"
           >
-            <Plus size={20} strokeWidth={3} /> 
-            <span>YENİ ÜRÜN TANIMLA</span>
+            <Link size={18} strokeWidth={3} className="group-hover:rotate-45 transition-transform" /> 
+            <span>TOPLU LİNK YÜKLE</span>
           </motion.button>
         </div>
       </div>
@@ -308,58 +318,84 @@ const ProductManagement = () => {
           <span className="text-[10px] font-black uppercase tracking-[0.6em] text-white">Sistem Yükleniyor</span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-12">
           {filteredProducts.map((product, i) => {
             const validImages = (product.images || []).filter(img => typeof img === 'string' && img.trim() !== '');
             return (
               <motion.div 
                 key={product.id}
-                initial={{ opacity: 0, scale: 0.98 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="group bg-[#0D0D0D] border border-white/5 hover:border-white/20 transition-all duration-700 overflow-hidden rounded-sm"
+                transition={{ delay: i * 0.05, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="group relative"
               >
-                <div className="aspect-[4/5] relative overflow-hidden bg-black">
+                {/* Image Laboratory */}
+                <div className="aspect-[3/4] relative overflow-hidden bg-white/[0.02] border border-white/5 rounded-sm">
                   {validImages[0] ? (
-                    <img src={validImages[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 opacity-90 group-hover:opacity-100" />
+                    <img 
+                      src={validImages[0]} 
+                      alt={product.title} 
+                      className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110 opacity-80 group-hover:opacity-100" 
+                    />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-white/5 gap-4">
-                      <ImageIcon size={48} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Görsel Yok</span>
+                      <ImageIcon size={60} strokeWidth={1} />
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em]">No Visual</span>
                     </div>
                   )}
                   
-                  {/* Status Badges */}
-                  <div className="absolute top-5 left-5 flex flex-col gap-2">
-                    <div className="bg-black/90 backdrop-blur-xl border border-white/10 text-white px-5 py-2.5 text-[11px] font-black tracking-widest shadow-2xl">
-                      {product.price} TL
-                    </div>
-                    {product.discount_price && (
-                      <div className="bg-white text-black px-5 py-2.5 text-[11px] font-black tracking-widest shadow-2xl">
-                         %{-Math.round((1 - product.discount_price / product.price) * 100)} İNDİRİM
+                  {/* Status & Price Overlay */}
+                  <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
+                    <div className="flex items-end justify-between gap-4">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{product.category || 'General'}</span>
+                        <div className="flex items-center gap-4">
+                          <span className="text-2xl font-serif text-white tracking-tighter">{product.price} TL</span>
+                          {product.discount_price && (
+                            <span className="text-[11px] text-white/30 line-through font-bold tracking-tighter">{product.discount_price} TL</span>
+                          )}
+                        </div>
                       </div>
-                    )}
+                      <div className={`w-3 h-3 rounded-full ${product.stock_count > 0 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`} />
+                    </div>
                   </div>
 
-                  <div className="absolute inset-0 bg-[#0A0A0A]/80 flex items-center justify-center gap-6 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-sm lg:opacity-0 sm:opacity-100">
-                     <button onClick={() => openEditModal(product)} className="w-16 h-16 bg-white text-black flex items-center justify-center hover:bg-[#F2EBE1] transition-all rounded-sm shadow-2xl"><Edit3 size={24} /></button>
-                     <button onClick={() => handleDelete(product.id)} className="w-16 h-16 bg-red-600/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all rounded-sm shadow-2xl"><Trash2 size={24} /></button>
-                     <a href={getProductPreviewLink(product)} target="_blank" rel="noopener noreferrer" className="w-16 h-16 bg-white/10 text-white border border-white/10 flex items-center justify-center hover:bg-white/20 transition-all rounded-sm shadow-2xl"><Eye size={24} /></a>
+                  {/* Elite Actions Overlay */}
+                  <div className="absolute inset-0 bg-[#0A0A0A]/95 opacity-0 group-hover:opacity-100 transition-all duration-700 backdrop-blur-md flex flex-col items-center justify-center gap-5">
+                     <button 
+                       onClick={() => openEditModal(product)} 
+                       className="w-64 py-5 bg-white text-black text-[11px] font-black uppercase tracking-[0.4em] hover:bg-[#F2EBE1] transition-all transform translate-y-8 group-hover:translate-y-0 duration-700"
+                     >
+                       Detayları Düzenle
+                     </button>
+                     <div className="flex gap-4 transform translate-y-8 group-hover:translate-y-0 duration-700 delay-75 w-64">
+                       <a 
+                         href={getProductPreviewLink(product)} 
+                         target="_blank" 
+                         rel="noopener noreferrer" 
+                         className="flex-1 py-5 bg-white/5 border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all flex items-center justify-center"
+                       >
+                         <Eye size={18} />
+                       </a>
+                       <button 
+                         onClick={() => handleDelete(product.id)} 
+                         className="flex-1 py-5 bg-red-600/10 border border-red-500/20 text-red-500 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-red-600 hover:text-white transition-all flex items-center justify-center"
+                       >
+                         <Trash2 size={18} />
+                       </button>
+                     </div>
                   </div>
                 </div>
 
-                <div className="p-10 space-y-6">
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{product.category || 'GENEL'}</span>
-                    <h3 className="text-2xl font-serif text-white group-hover:text-white transition-colors line-clamp-1">{product.title}</h3>
-                  </div>
-                  <div className="flex items-center justify-between pt-8 border-t border-white/5">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2.5 h-2.5 rounded-full ${product.stock_count > 0 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'}`} />
-                      <span className="text-[11px] font-black text-white/50 uppercase tracking-widest">{product.stock_count} ADET STOK</span>
-                    </div>
-                    <span className="text-[10px] font-black text-white/30 tracking-widest">SKU: {product.sku || 'N/A'}</span>
+                {/* Title & Info */}
+                <div className="mt-8 space-y-3 px-2">
+                  <h3 className="text-2xl font-serif text-[#F2EBE1] group-hover:text-white transition-colors line-clamp-1 tracking-tight">
+                    {product.title}
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">{product.stock_count} Ünite Stok</span>
+                    <span className="text-[9px] font-black text-white/10 tracking-widest italic">{product.sku || 'REF-PENDING'}</span>
                   </div>
                 </div>
               </motion.div>
@@ -437,10 +473,10 @@ const ProductManagement = () => {
               <div className="flex-1 p-10 sm:p-20 flex flex-col overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between mb-20">
                   <div className="space-y-4">
-                    <h3 className="text-4xl sm:text-6xl font-serif text-white tracking-tighter">{editingProduct ? 'Düzenleme' : 'Tanımlama'}</h3>
+                    <h3 className="text-4xl sm:text-6xl font-serif text-white tracking-tighter">Ürün Arşivi</h3>
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-px bg-white/20" />
-                      <span className="text-[11px] uppercase tracking-[0.5em] text-white/40 font-black">Matrix Studio 2026</span>
+                      <span className="text-[11px] uppercase tracking-[0.5em] text-white/40 font-black">Matrix Studio Edit Mode</span>
                     </div>
                   </div>
                   <button onClick={closeModal} className="w-14 h-14 bg-white/5 text-white/30 hover:text-white flex items-center justify-center transition-all border border-white/10 rounded-sm"><X size={28} /></button>

@@ -407,7 +407,7 @@ const UserPanel = () => {
 
         {activeTab === 'products' && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <ProductManagement />
+            <ProductManagement onOpenBulk={() => setShowBulkModal(true)} />
           </motion.div>
         )}
 
@@ -419,51 +419,114 @@ const UserPanel = () => {
 
         <AnimatePresence>
           {showBulkModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-12">
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-12 lg:p-24">
               <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 onClick={() => !isImporting && setShowBulkModal(false)}
                 className="absolute inset-0 bg-[#0A0A0A]/98 backdrop-blur-3xl"
               />
               <motion.div 
-                initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 100 }}
-                className="relative w-full h-full sm:h-auto sm:max-w-4xl bg-[#0F0F0F] border-t sm:border border-white/10 shadow-2xl overflow-hidden flex flex-col"
+                initial={{ opacity: 0, scale: 0.95, y: 40 }} 
+                animate={{ opacity: 1, scale: 1, y: 0 }} 
+                exit={{ opacity: 0, scale: 0.95, y: 40 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="relative w-full h-full sm:h-auto sm:max-w-5xl bg-[#0D0D0D] border-t sm:border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col"
               >
-                <div className="flex items-center justify-between p-8 sm:p-12 border-b border-white/5 bg-white/[0.01]">
-                  <div className="flex items-center gap-6">
-                    <div className="w-14 h-14 sm:w-20 sm:h-20 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/5 rounded-sm">
-                      <Link size={28} strokeWidth={2.5} />
+                {/* Elite Modal Header */}
+                <div className="flex items-center justify-between p-10 sm:p-16 border-b border-white/5 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.02] pointer-events-none">
+                    <Sparkles size={200} />
+                  </div>
+                  
+                  <div className="flex items-center gap-10 relative z-10">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/10 rounded-sm shrink-0">
+                      <Link size={32} strokeWidth={2.5} />
                     </div>
-                    <div>
-                      <h3 className="text-2xl sm:text-4xl font-serif text-[#F2EBE1]">Link Canavarı</h3>
-                      <p className="text-[9px] sm:text-[11px] text-white/30 font-black uppercase tracking-[0.3em] mt-2">Shopier Linklerini Toplu İçe Aktar</p>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Nexus Auto-Sync Engine</span>
+                      </div>
+                      <h3 className="text-4xl sm:text-6xl font-serif text-[#F2EBE1] tracking-tighter">Link Canavarı</h3>
+                      <p className="text-[10px] sm:text-[12px] text-white/20 font-bold uppercase tracking-[0.3em] max-w-md leading-relaxed">
+                        Shopier portföyünüzü saniyeler içinde kurumsal arşive senkronize edin.
+                      </p>
                     </div>
                   </div>
+                  
                   {!isImporting && (
-                    <button onClick={() => setShowBulkModal(false)} className="w-12 h-12 flex items-center justify-center text-white/30 hover:text-white transition-all"><X size={28} /></button>
+                    <button 
+                      onClick={() => setShowBulkModal(false)} 
+                      className="w-16 h-16 flex items-center justify-center text-white/20 hover:text-white transition-all bg-white/5 border border-white/5 hover:border-white/20 rounded-sm"
+                    >
+                      <X size={32} strokeWidth={1.5} />
+                    </button>
                   )}
                 </div>
-                <div className="p-8 sm:p-12 space-y-10 flex-1 overflow-y-auto">
-                  <div className="space-y-5">
-                    <div className="flex justify-between items-center">
-                       <label className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50">Ürün Linkleri (Her satıra bir link)</label>
-                       <span className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Shopier Altyapısı</span>
+
+                {/* Processing Core */}
+                <div className="p-10 sm:p-16 space-y-12 flex-1 overflow-y-auto no-scrollbar">
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-end px-2">
+                       <div className="space-y-2">
+                         <label className="text-[11px] font-black uppercase tracking-[0.4em] text-white/60">Veri Giriş Matrisi</label>
+                         <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Her satıra bir Shopier ürün linki ekleyin</p>
+                       </div>
+                       <div className="flex items-center gap-3">
+                         <span className="text-[10px] font-black text-white/30 tracking-widest">{bulkLinks.split('\n').filter(l => l.trim()).length} LİNK TESPİT EDİLDİ</span>
+                       </div>
                     </div>
-                    <textarea 
-                      value={bulkLinks} onChange={(e) => setBulkLinks(e.target.value)} disabled={isImporting}
-                      placeholder="https://www.shopier.com/shop/..."
-                      className="w-full h-64 sm:h-96 bg-white/[0.03] border border-white/10 p-6 sm:p-10 text-[13px] text-white focus:border-white focus:outline-none transition-all font-mono resize-none leading-relaxed rounded-sm"
-                    />
+                    
+                    <div className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity rounded-sm pointer-events-none" />
+                      <textarea 
+                        value={bulkLinks} 
+                        onChange={(e) => setBulkLinks(e.target.value)} 
+                        disabled={isImporting}
+                        placeholder="https://www.shopier.com/shop/..."
+                        className="w-full h-72 sm:h-[400px] bg-[#0A0A0A] border border-white/5 p-10 text-[14px] text-white/80 focus:border-white/20 focus:outline-none transition-all font-mono resize-none leading-relaxed rounded-sm shadow-inner"
+                      />
+                    </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-8 pt-4">
-                    <button 
-                      onClick={handleBulkImport} disabled={isImporting || !bulkLinks.trim()}
-                      className="w-full sm:w-auto flex items-center justify-center gap-6 bg-white text-[#0A0A0A] px-12 py-6 font-black uppercase tracking-[0.2em] text-[12px] hover:bg-[#F2EBE1] transition-all shadow-xl shadow-white/5 rounded-sm"
+
+                  {/* Elite Action Bar */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-10 pt-6">
+                    <div className="flex items-center gap-6 text-white/20">
+                      <div className="w-12 h-12 border border-white/5 flex items-center justify-center">
+                        <Zap size={18} />
+                      </div>
+                      <p className="text-[10px] font-medium uppercase tracking-[0.3em] leading-relaxed max-w-[280px]">
+                        Yapay zeka destekli crawler ürün bilgilerini ve HD görselleri otomatik olarak işler.
+                      </p>
+                    </div>
+                    
+                    <motion.button 
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleBulkImport} 
+                      disabled={isImporting || !bulkLinks.trim()}
+                      className="w-full sm:w-auto flex items-center justify-center gap-8 bg-white text-[#0A0A0A] px-16 py-7 font-black uppercase tracking-[0.3em] text-[13px] hover:bg-[#F2EBE1] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.1)] rounded-sm group overflow-hidden relative"
                     >
-                      {isImporting ? <><Loader2 className="animate-spin" size={20} /><span>CANAVAR ÇALIŞIYOR...</span></> : <><Sparkles size={20} /><span>LİNKLERİ ÇEK</span></>}
-                    </button>
-                    <p className="text-[9px] text-white/20 font-medium uppercase tracking-[0.3em] text-center sm:text-right leading-relaxed">Toplu link yükleme işlemi arka planda<br/>saniyeler içinde tamamlanır.</p>
+                      {isImporting && (
+                        <motion.div 
+                          initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                          className="absolute inset-0 bg-black/5"
+                        />
+                      )}
+                      <span className="relative z-10 flex items-center gap-6">
+                        {isImporting ? (
+                          <><Loader2 className="animate-spin" size={22} /> <span>PROTOKOL ÇALIŞIYOR...</span></>
+                        ) : (
+                          <><Sparkles size={22} className="group-hover:rotate-12 transition-transform" /> <span>LİNKLERİ SİSTEME İŞLE</span></>
+                        )}
+                      </span>
+                    </motion.button>
                   </div>
+                </div>
+
+                {/* Security Footer */}
+                <div className="px-10 py-8 bg-white/[0.02] border-t border-white/5 flex justify-center">
+                  <p className="text-[8px] sm:text-[9px] text-white/10 font-black uppercase tracking-[0.5em]">Nova SaaS End-to-End Encryption & Security Verified</p>
                 </div>
               </motion.div>
             </div>
