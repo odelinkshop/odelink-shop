@@ -209,131 +209,133 @@ export default function SiteSettingsPage() {
         <AnimatePresence mode="wait">
           {!isSidebarCollapsed && (
             <motion.aside 
-              initial={{ x: -450, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -450, opacity: 0 }}
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: "auto", opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
               transition={{ type: "spring", damping: 30, stiffness: 200 }}
-              className="w-[380px] sm:w-[420px] bg-[#0A0A0A] border-r border-white/5 flex flex-col overflow-y-auto custom-scrollbar z-[100] absolute inset-y-0 left-0 shadow-[20px_0_100px_rgba(0,0,0,0.8)]"
+              className="bg-[#0A0A0A] border-r border-white/5 z-[100] relative shadow-[20px_0_100px_rgba(0,0,0,0.8)] flex-shrink-0"
             >
-              <div className="p-8 space-y-10">
-                
-                {/* Header with Close */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Studio Config</span>
+              <div className="w-[380px] sm:w-[420px] h-full flex flex-col overflow-y-auto custom-scrollbar">
+                <div className="p-8 space-y-10">
+                  
+                  {/* Header with Close */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Studio Config</span>
+                    </div>
+                    <button onClick={() => setIsSidebarCollapsed(true)} className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all"><X size={18} /></button>
                   </div>
-                  <button onClick={() => setIsSidebarCollapsed(true)} className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all"><X size={18} /></button>
-                </div>
 
-                {/* Subdomain - Compact & Sexy */}
-                <div className="bg-gradient-to-br from-blue-600/10 to-transparent border border-blue-500/20 p-6 rounded-[2.5rem] relative overflow-hidden group">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Store Address</span>
-                    <div className="px-2 py-1 bg-blue-600 rounded-lg text-[8px] font-black text-white">{3 - (site?.subdomain_change_count || 0)} LEFT</div>
+                  {/* Subdomain - Compact & Sexy */}
+                  <div className="bg-gradient-to-br from-blue-600/10 to-transparent border border-blue-500/20 p-6 rounded-[2.5rem] relative overflow-hidden group">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Store Address</span>
+                      <div className="px-2 py-1 bg-blue-600 rounded-lg text-[8px] font-black text-white">{3 - (site?.subdomain_change_count || 0)} LEFT</div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-black/60 rounded-2xl p-4 border border-white/5 focus-within:border-blue-500/50 transition-all">
+                      <input 
+                        defaultValue={site?.subdomain} 
+                        onBlur={(e) => handleSubdomainUpdate(e.target.value)}
+                        disabled={(3 - (site?.subdomain_change_count || 0)) <= 0}
+                        className="bg-transparent border-none outline-none text-[12px] font-bold text-white w-full uppercase tracking-widest"
+                      />
+                      <span className="text-[10px] font-black text-white/20">.odelink</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 bg-black/60 rounded-2xl p-4 border border-white/5 focus-within:border-blue-500/50 transition-all">
-                    <input 
-                      defaultValue={site?.subdomain} 
-                      onBlur={(e) => handleSubdomainUpdate(e.target.value)}
-                      disabled={(3 - (site?.subdomain_change_count || 0)) <= 0}
-                      className="bg-transparent border-none outline-none text-[12px] font-bold text-white w-full uppercase tracking-widest"
-                    />
-                    <span className="text-[10px] font-black text-white/20">.odelink</span>
+
+                  {/* Navigation - Ultra Minimal */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { id: 'brand', icon: Palette },
+                      { id: 'social', icon: Instagram },
+                      { id: 'contact', icon: Phone },
+                      { id: 'pages', icon: BookOpen }
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`h-16 rounded-2xl border transition-all flex items-center justify-center ${activeTab === tab.id ? 'bg-white text-black border-transparent shadow-xl' : 'bg-white/[0.02] border-white/5 text-gray-500 hover:bg-white/5'}`}
+                      >
+                        <tab.icon size={20} strokeWidth={2} />
+                      </button>
+                    ))}
                   </div>
-                </div>
 
-                {/* Navigation - Ultra Minimal */}
-                <div className="grid grid-cols-4 gap-2">
-                  {[
-                    { id: 'brand', icon: Palette },
-                    { id: 'social', icon: Instagram },
-                    { id: 'contact', icon: Phone },
-                    { id: 'pages', icon: BookOpen }
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`h-16 rounded-2xl border transition-all flex items-center justify-center ${activeTab === tab.id ? 'bg-white text-black border-transparent shadow-xl' : 'bg-white/[0.02] border-white/5 text-gray-500 hover:bg-white/5'}`}
-                    >
-                      <tab.icon size={20} strokeWidth={2} />
-                    </button>
-                  ))}
-                </div>
-
-                {/* Editor Content Area */}
-                <div className="space-y-8 pb-12">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeTab}
-                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                      className="space-y-8"
-                    >
-                      {activeTab === 'brand' && (
-                        <>
-                          <EditorInput label="Mağaza İsmi" value={formData.name} onChange={v => setFormData({...formData, name: v})} />
-                          <EditorInput label="Mağaza Açıklaması" type="textarea" value={formData.description} onChange={v => setFormData({...formData, description: v})} />
-                          <EditorInput label="Logo Link" value={formData.branding.logo_url} onChange={v => setFormData({...formData, branding: {...formData.branding, logo_url: v}})} icon={ImageIcon} />
-                          
-                          <div className="space-y-3">
-                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Tipografi</p>
-                            <select 
-                              value={formData.branding.font_family} 
-                              onChange={e => setFormData({...formData, branding: {...formData.branding, font_family: e.target.value}})}
-                              className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-[11px] font-bold uppercase tracking-widest outline-none appearance-none cursor-pointer"
-                            >
-                              <option value="Playfair Display">Playfair Display (Lüks)</option>
-                              <option value="Inter">Inter (Modern)</option>
-                              <option value="Montserrat">Montserrat (Keskin)</option>
-                              <option value="Outfit">Outfit (Premium)</option>
-                            </select>
-                          </div>
-
-                          <div className="flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
-                            <div>
-                               <p className="text-[10px] font-black text-white uppercase tracking-widest">Odelink Logosu</p>
-                               <p className="text-[8px] text-gray-500 font-bold uppercase mt-1">Footer kısmında gizle</p>
+                  {/* Editor Content Area */}
+                  <div className="space-y-8 pb-12">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                        className="space-y-8"
+                      >
+                        {activeTab === 'brand' && (
+                          <>
+                            <EditorInput label="Mağaza İsmi" value={formData.name} onChange={v => setFormData({...formData, name: v})} />
+                            <EditorInput label="Mağaza Açıklaması" type="textarea" value={formData.description} onChange={v => setFormData({...formData, description: v})} />
+                            <EditorInput label="Logo Link" value={formData.branding.logo_url} onChange={v => setFormData({...formData, branding: {...formData.branding, logo_url: v}})} icon={ImageIcon} />
+                            
+                            <div className="space-y-3">
+                              <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Tipografi</p>
+                              <select 
+                                value={formData.branding.font_family} 
+                                onChange={e => setFormData({...formData, branding: {...formData.branding, font_family: e.target.value}})}
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-[11px] font-bold uppercase tracking-widest outline-none appearance-none cursor-pointer"
+                              >
+                                <option value="Playfair Display">Playfair Display (Lüks)</option>
+                                <option value="Inter">Inter (Modern)</option>
+                                <option value="Montserrat">Montserrat (Keskin)</option>
+                                <option value="Outfit">Outfit (Premium)</option>
+                              </select>
                             </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input type="checkbox" checked={formData.branding.hide_odelink_credit} onChange={e => setFormData({...formData, branding: {...formData.branding, hide_odelink_credit: e.target.checked}})} className="sr-only peer" />
-                              <div className="w-12 h-7 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                            </label>
-                          </div>
-                        </>
-                      )}
 
-                      {activeTab === 'social' && (
-                        <div className="space-y-6">
-                          <EditorInput label="Instagram" value={formData.social_links.instagram} onChange={v => setFormData({...formData, social_links: {...formData.social_links, instagram: v}})} icon={Instagram} placeholder="@user" />
-                          <EditorInput label="X / Twitter" value={formData.social_links.x} onChange={v => setFormData({...formData, social_links: {...formData.social_links, x: v}})} icon={Twitter} placeholder="@user" />
-                          <EditorInput label="Facebook" value={formData.social_links.facebook} onChange={v => setFormData({...formData, social_links: {...formData.social_links, facebook: v}})} icon={Facebook} placeholder="user" />
-                        </div>
-                      )}
-
-                      {activeTab === 'contact' && (
-                        <div className="space-y-6">
-                          <EditorInput label="Müşteri Hattı" value={formData.contact_info.phone} onChange={v => setFormData({...formData, contact_info: {...formData.contact_info, phone: v}})} icon={Phone} placeholder="+90" />
-                          <EditorInput label="Kurumsal E-posta" value={formData.contact_info.email} onChange={v => setFormData({...formData, contact_info: {...formData.contact_info, email: v}})} icon={Mail} />
-                          <EditorInput label="Adres" type="textarea" value={formData.contact_info.address} onChange={v => setFormData({...formData, contact_info: {...formData.contact_info, address: v}})} icon={MapPin} />
-                        </div>
-                      )}
-
-                      {activeTab === 'pages' && (
-                        <div className="space-y-8">
-                          {['about', 'privacy', 'returns', 'shipping', 'faq'].map(page => (
-                            <div key={page} className="space-y-3">
-                              <span className="text-[9px] font-black uppercase tracking-widest text-blue-500">{page.toUpperCase()}</span>
-                              <textarea 
-                                value={formData.pages[page]} 
-                                onChange={e => setFormData({...formData, pages: {...formData.pages, [page]: e.target.value}})}
-                                className="w-full bg-white/[0.02] border border-white/5 rounded-2xl p-6 text-[12px] font-medium min-h-[150px] focus:border-blue-500/50 outline-none transition-all resize-none"
-                              />
+                            <div className="flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
+                              <div>
+                                 <p className="text-[10px] font-black text-white uppercase tracking-widest">Odelink Logosu</p>
+                                 <p className="text-[8px] text-gray-500 font-bold uppercase mt-1">Footer kısmında gizle</p>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked={formData.branding.hide_odelink_credit} onChange={e => setFormData({...formData, branding: {...formData.branding, hide_odelink_credit: e.target.checked}})} className="sr-only peer" />
+                                <div className="w-12 h-7 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                              </label>
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
+                          </>
+                        )}
+
+                        {activeTab === 'social' && (
+                          <div className="space-y-6">
+                            <EditorInput label="Instagram" value={formData.social_links.instagram} onChange={v => setFormData({...formData, social_links: {...formData.social_links, instagram: v}})} icon={Instagram} placeholder="@user" />
+                            <EditorInput label="X / Twitter" value={formData.social_links.x} onChange={v => setFormData({...formData, social_links: {...formData.social_links, x: v}})} icon={Twitter} placeholder="@user" />
+                            <EditorInput label="Facebook" value={formData.social_links.facebook} onChange={v => setFormData({...formData, social_links: {...formData.social_links, facebook: v}})} icon={Facebook} placeholder="user" />
+                          </div>
+                        )}
+
+                        {activeTab === 'contact' && (
+                          <div className="space-y-6">
+                            <EditorInput label="Müşteri Hattı" value={formData.contact_info.phone} onChange={v => setFormData({...formData, contact_info: {...formData.contact_info, phone: v}})} icon={Phone} placeholder="+90" />
+                            <EditorInput label="Kurumsal E-posta" value={formData.contact_info.email} onChange={v => setFormData({...formData, contact_info: {...formData.contact_info, email: v}})} icon={Mail} />
+                            <EditorInput label="Adres" type="textarea" value={formData.contact_info.address} onChange={v => setFormData({...formData, contact_info: {...formData.contact_info, address: v}})} icon={MapPin} />
+                          </div>
+                        )}
+
+                        {activeTab === 'pages' && (
+                          <div className="space-y-8">
+                            {['about', 'privacy', 'returns', 'shipping', 'faq'].map(page => (
+                              <div key={page} className="space-y-3">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-blue-500">{page.toUpperCase()}</span>
+                                <textarea 
+                                  value={formData.pages[page]} 
+                                  onChange={e => setFormData({...formData, pages: {...formData.pages, [page]: e.target.value}})}
+                                  className="w-full bg-white/[0.02] border border-white/5 rounded-2xl p-6 text-[12px] font-medium min-h-[150px] focus:border-blue-500/50 outline-none transition-all resize-none"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
             </motion.aside>
@@ -341,7 +343,7 @@ export default function SiteSettingsPage() {
         </AnimatePresence>
 
         {/* --- MAIN PREVIEW: Perfect Scaling & Realistic Mockups --- */}
-        <main className="flex-1 flex flex-col items-center justify-center p-8 lg:p-12 relative overflow-hidden bg-dot-white/[0.05]">
+        <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden bg-dot-white/[0.05]">
           
           {/* Hamburger Trigger - Compact & Elegant */}
           {isSidebarCollapsed && (
@@ -361,11 +363,11 @@ export default function SiteSettingsPage() {
           <motion.div 
             layout
             transition={{ type: "spring", damping: 30, stiffness: 200 }}
-            className="w-full h-full flex items-center justify-center perspective-[2000px]"
+            className="w-full h-full flex items-center justify-center perspective-[2000px] px-4"
           >
             {/* REALISTIC STUDIO MONITOR (Apple Studio Display Style) */}
             {previewMode === 'desktop' && (
-              <div className="relative w-full max-w-[800px] scale-[0.7] lg:scale-90 flex flex-col items-center transition-all duration-700">
+              <div className="relative w-full max-w-[800px] flex flex-col items-center transition-all duration-700">
                 {/* Monitor Frame */}
                 <div className="relative w-full aspect-video border-[12px] border-[#1C1D1F] rounded-[2rem] shadow-[0_60px_120px_rgba(0,0,0,0.8)] bg-black overflow-hidden ring-1 ring-white/10 group-hover:rotate-x-1 transition-transform">
                    <PreviewFrame site={site} />
@@ -379,46 +381,46 @@ export default function SiteSettingsPage() {
 
             {/* REALISTIC IPAD PRO Mockup */}
             {previewMode === 'tablet' && (
-              <div className="relative transition-all duration-700" style={{ width: '520px', height: '693px' }}>
+              <div className="relative transition-all duration-700 h-[80vh] max-h-[800px] aspect-[3/4] flex-shrink-0">
                 {/* iPad outer shell */}
-                <div className="w-full h-full bg-[#1C1D1F] rounded-[40px] p-[14px] shadow-[0_50px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10">
+                <div className="w-full h-full bg-[#1C1D1F] rounded-[2.5rem] p-3.5 shadow-[0_50px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10 relative">
                   {/* Screen */}
-                  <div className="w-full h-full bg-black rounded-[28px] overflow-hidden relative">
+                  <div className="w-full h-full bg-black rounded-[2rem] overflow-hidden relative">
                     {/* Front camera dot */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1a1a1a] rounded-full z-50 ring-1 ring-white/5" />
+                    <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1a1a1a] rounded-full z-50 ring-1 ring-white/5" />
                     <PreviewFrame site={site} />
                   </div>
                 </div>
                 {/* Volume buttons */}
-                <div className="absolute right-[-3px] top-[120px] w-[3px] h-[30px] bg-[#2a2a2a] rounded-r-sm" />
-                <div className="absolute right-[-3px] top-[165px] w-[3px] h-[30px] bg-[#2a2a2a] rounded-r-sm" />
+                <div className="absolute right-[-4px] top-[15%] w-[4px] h-[5%] bg-[#2a2a2a] rounded-r-sm" />
+                <div className="absolute right-[-4px] top-[22%] w-[4px] h-[5%] bg-[#2a2a2a] rounded-r-sm" />
                 {/* Power button */}
-                <div className="absolute top-[-3px] right-[80px] h-[3px] w-[40px] bg-[#2a2a2a] rounded-t-sm" />
+                <div className="absolute top-[-4px] right-[15%] h-[4px] w-[8%] bg-[#2a2a2a] rounded-t-sm" />
               </div>
             )}
 
             {/* REALISTIC IPHONE 17 PRO Mockup */}
             {previewMode === 'mobile' && (
-              <div className="relative transition-all duration-700" style={{ width: '300px', height: '650px' }}>
+              <div className="relative transition-all duration-700 h-[80vh] max-h-[750px] aspect-[9/19.5] flex-shrink-0">
                 {/* iPhone outer shell */}
-                <div className="w-full h-full bg-[#1C1D1F] rounded-[55px] p-[10px] shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20">
+                <div className="w-full h-full bg-[#1C1D1F] rounded-[3.5rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
                   {/* Screen */}
-                  <div className="w-full h-full bg-black rounded-[46px] overflow-hidden relative">
+                  <div className="w-full h-full bg-black rounded-[2.5rem] overflow-hidden relative">
                     {/* Dynamic Island */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[90px] h-[28px] bg-black rounded-full z-50 flex items-center justify-end pr-2 ring-1 ring-[#1C1D1F]">
-                      <div className="w-[10px] h-[10px] bg-[#0a0a0a] rounded-full ring-1 ring-[#222]" />
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-50 flex items-center justify-end pr-2 ring-1 ring-[#1C1D1F]">
+                      <div className="w-2 h-2 bg-[#0a0a0a] rounded-full ring-1 ring-[#222]" />
                     </div>
                     <PreviewFrame site={site} />
                     {/* Home Indicator */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[120px] h-[4px] bg-white/20 rounded-full z-50" />
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50" />
                   </div>
                 </div>
                 {/* Side buttons */}
-                <div className="absolute left-[-3px] top-[130px] w-[3px] h-[28px] bg-[#2a2a2a] rounded-l-sm" />
-                <div className="absolute left-[-3px] top-[175px] w-[3px] h-[55px] bg-[#2a2a2a] rounded-l-sm" />
-                <div className="absolute left-[-3px] top-[240px] w-[3px] h-[55px] bg-[#2a2a2a] rounded-l-sm" />
+                <div className="absolute left-[-4px] top-[20%] w-[4px] h-[4%] bg-[#2a2a2a] rounded-l-sm" />
+                <div className="absolute left-[-4px] top-[28%] w-[4px] h-[8%] bg-[#2a2a2a] rounded-l-sm" />
+                <div className="absolute left-[-4px] top-[38%] w-[4px] h-[8%] bg-[#2a2a2a] rounded-l-sm" />
                 {/* Power button */}
-                <div className="absolute right-[-3px] top-[190px] w-[3px] h-[75px] bg-[#2a2a2a] rounded-r-sm" />
+                <div className="absolute right-[-4px] top-[30%] w-[4px] h-[12%] bg-[#2a2a2a] rounded-r-sm" />
               </div>
             )}
           </motion.div>
