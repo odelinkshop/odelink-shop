@@ -379,25 +379,46 @@ export default function SiteSettingsPage() {
 
             {/* REALISTIC IPAD PRO Mockup */}
             {previewMode === 'tablet' && (
-              <div className="relative h-[75%] max-h-[600px] aspect-[3/4] scale-[0.8] lg:scale-95 transition-all duration-700">
-                <div className="relative w-full h-full border-[15px] border-[#1C1D1F] rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] bg-black overflow-hidden ring-1 ring-white/10">
-                   <PreviewFrame site={site} />
+              <div className="relative transition-all duration-700" style={{ width: '520px', height: '693px' }}>
+                {/* iPad outer shell */}
+                <div className="w-full h-full bg-[#1C1D1F] rounded-[40px] p-[14px] shadow-[0_50px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10">
+                  {/* Screen */}
+                  <div className="w-full h-full bg-black rounded-[28px] overflow-hidden relative">
+                    {/* Front camera dot */}
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1a1a1a] rounded-full z-50 ring-1 ring-white/5" />
+                    <PreviewFrame site={site} />
+                  </div>
                 </div>
+                {/* Volume buttons */}
+                <div className="absolute right-[-3px] top-[120px] w-[3px] h-[30px] bg-[#2a2a2a] rounded-r-sm" />
+                <div className="absolute right-[-3px] top-[165px] w-[3px] h-[30px] bg-[#2a2a2a] rounded-r-sm" />
+                {/* Power button */}
+                <div className="absolute top-[-3px] right-[80px] h-[3px] w-[40px] bg-[#2a2a2a] rounded-t-sm" />
               </div>
             )}
 
             {/* REALISTIC IPHONE 17 PRO Mockup */}
             {previewMode === 'mobile' && (
-              <div className="relative h-[75%] max-h-[580px] aspect-[9/19.5] scale-[0.75] lg:scale-90 transition-all duration-700">
-                <div className="relative w-full h-full border-[10px] border-[#1C1D1F] rounded-[3.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.8)] bg-black overflow-hidden ring-1 ring-white/20">
-                   {/* Dynamic Island 17 Pro Style */}
-                   <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-6 bg-[#1C1D1F] rounded-full z-50 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 bg-black/80 rounded-full ml-10" />
-                   </div>
-                   <PreviewFrame site={site} />
-                   {/* Home Bar */}
-                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-white/20 rounded-full z-50" />
+              <div className="relative transition-all duration-700" style={{ width: '300px', height: '650px' }}>
+                {/* iPhone outer shell */}
+                <div className="w-full h-full bg-[#1C1D1F] rounded-[55px] p-[10px] shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20">
+                  {/* Screen */}
+                  <div className="w-full h-full bg-black rounded-[46px] overflow-hidden relative">
+                    {/* Dynamic Island */}
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[90px] h-[28px] bg-black rounded-full z-50 flex items-center justify-end pr-2 ring-1 ring-[#1C1D1F]">
+                      <div className="w-[10px] h-[10px] bg-[#0a0a0a] rounded-full ring-1 ring-[#222]" />
+                    </div>
+                    <PreviewFrame site={site} />
+                    {/* Home Indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[120px] h-[4px] bg-white/20 rounded-full z-50" />
+                  </div>
                 </div>
+                {/* Side buttons */}
+                <div className="absolute left-[-3px] top-[130px] w-[3px] h-[28px] bg-[#2a2a2a] rounded-l-sm" />
+                <div className="absolute left-[-3px] top-[175px] w-[3px] h-[55px] bg-[#2a2a2a] rounded-l-sm" />
+                <div className="absolute left-[-3px] top-[240px] w-[3px] h-[55px] bg-[#2a2a2a] rounded-l-sm" />
+                {/* Power button */}
+                <div className="absolute right-[-3px] top-[190px] w-[3px] h-[75px] bg-[#2a2a2a] rounded-r-sm" />
               </div>
             )}
           </motion.div>
