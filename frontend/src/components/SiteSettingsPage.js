@@ -16,7 +16,14 @@ const DEFAULT_SETTINGS = {
   name: '',
   description: '',
   social_links: { instagram: '', x: '', facebook: '' },
-  contact_info: { phone: '', email: '', address: 'İSTANBUL / TÜRKİYE' },
+  contact_info: { 
+    phone: '', 
+    email: '', 
+    address: 'İSTANBUL / TÜRKİYE',
+    working_hours: 'Pazartesi - Cuma: 09:00 - 18:00\nCumartesi: 10:00 - 14:00',
+    app_store: '',
+    google_play: ''
+  },
   pages: {
     about: '',
     privacy: '',
@@ -273,6 +280,34 @@ export default function SiteSettingsPage() {
                             <EditorInput label="Mağaza Açıklaması" type="textarea" value={formData.description} onChange={v => setFormData({...formData, description: v})} />
                             <EditorInput label="Logo Link" value={formData.branding.logo_url} onChange={v => setFormData({...formData, branding: {...formData.branding, logo_url: v}})} icon={ImageIcon} />
                             
+                            <div className="space-y-4">
+                               <p className="text-[10px] font-black text-white uppercase tracking-widest">App Store Linki</p>
+                               <div className="relative">
+                                  <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"><Monitor size={16} /></div>
+                                  <input 
+                                    type="text" 
+                                    className="w-full bg-white/[0.02] border border-white/5 rounded-3xl px-16 py-6 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all"
+                                    placeholder="https://apps.apple.com/..."
+                                    value={formData.contact_info.app_store}
+                                    onChange={e => setFormData({...formData, contact_info: {...formData.contact_info, app_store: e.target.value}})}
+                                  />
+                               </div>
+                            </div>
+
+                            <div className="space-y-4">
+                               <p className="text-[10px] font-black text-white uppercase tracking-widest">Google Play Linki</p>
+                               <div className="relative">
+                                  <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"><Smartphone size={16} /></div>
+                                  <input 
+                                    type="text" 
+                                    className="w-full bg-white/[0.02] border border-white/5 rounded-3xl px-16 py-6 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all"
+                                    placeholder="https://play.google.com/..."
+                                    value={formData.contact_info.google_play}
+                                    onChange={e => setFormData({...formData, contact_info: {...formData.contact_info, google_play: e.target.value}})}
+                                  />
+                               </div>
+                            </div>
+
                             <div className="space-y-3">
                               <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Tipografi</p>
                               <select 

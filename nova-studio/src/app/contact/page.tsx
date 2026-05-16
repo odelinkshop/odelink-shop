@@ -1,9 +1,21 @@
 "use client";
 
+import React from 'react';
 import InfoPage from '@/components/layout/info-page-template';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { useStoreData } from '@/store/useStoreData';
 
 export default function ContactPage() {
+  const { settings } = useStoreData();
+  const contact = settings?.contact_info || {};
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <InfoPage 
       title="İletişim" 
@@ -24,7 +36,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-[10px] text-white/40 tracking-widest uppercase">E-POSTA</p>
-                    <p className="text-lg">info@gmail.com</p>
+                    <p className="text-lg">{contact.email || "info@gmail.com"}</p>
                   </div>
                 </div>
 
@@ -34,7 +46,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-[10px] text-white/40 tracking-widest uppercase">TELEFON</p>
-                    <p className="text-lg">+90 000 000 00 00</p>
+                    <p className="text-lg">{contact.phone || "+90 000 000 00 00"}</p>
                   </div>
                 </div>
               </div>
@@ -44,10 +56,9 @@ export default function ContactPage() {
               <div className="flex items-start space-x-4">
                 <MapPin className="w-5 h-5 text-accent mt-1" strokeWidth={1} />
                 <div>
-                  <h4 className="text-white font-serif mb-2">Merkez Ofis</h4>
-                  <p className="text-sm text-white/50 leading-relaxed">
-                    Nişantaşı, Teşvikiye Cd. No:12<br />
-                    Şişli / İstanbul
+                  <h4 className="text-white font-serif mb-2">Adres</h4>
+                  <p className="text-sm text-white/50 leading-relaxed uppercase">
+                    {contact.address || "İSTANBUL / TÜRKİYE"}
                   </p>
                 </div>
               </div>
@@ -56,10 +67,9 @@ export default function ContactPage() {
                 <Clock className="w-5 h-5 text-accent mt-1" strokeWidth={1} />
                 <div>
                   <h4 className="text-white font-serif mb-2">Çalışma Saatleri</h4>
-                  <p className="text-sm text-white/50 leading-relaxed">
-                    Pazartesi - Cuma: 09:00 - 18:00<br />
-                    Cumartesi: 10:00 - 14:00
-                  </p>
+                  <div className="text-sm text-white/50 leading-relaxed whitespace-pre-line">
+                    {contact.working_hours || "Pazartesi - Cuma: 09:00 - 18:00\nCumartesi: 10:00 - 14:00"}
+                  </div>
                 </div>
               </div>
             </div>

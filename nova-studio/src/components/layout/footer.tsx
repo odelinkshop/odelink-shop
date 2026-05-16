@@ -87,8 +87,8 @@ const Footer = () => {
             <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">İLETİŞİM</h4>
             <div className="flex flex-col space-y-2 text-[11px] font-light tracking-wide">
               <a href={`tel:${contact.phone || "+90 000 000 00 00"}`} className="hover:opacity-50 transition-opacity">{mounted ? (contact.phone || "+90 000 000 00 00") : "..."}</a>
-              <a href="mailto:info@gmail.com" className="hover:opacity-50 transition-opacity">info@gmail.com</a>
-              <p className="opacity-60 text-[10px]">İSTANBUL / TÜRKİYE</p>
+              <a href={`mailto:${contact.email || "info@gmail.com"}`} className="hover:opacity-50 transition-opacity">{mounted ? (contact.email || "info@gmail.com") : "..."}</a>
+              <p className="opacity-60 text-[10px] uppercase">{mounted ? (contact.address || "İSTANBUL / TÜRKİYE") : "..."}</p>
             </div>
           </div>
 
@@ -115,9 +115,15 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">SOSYAL</h4>
             <div className="flex space-x-4">
-               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><InstagramIcon /></a>
-               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><FacebookIcon /></a>
-               <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><TwitterIcon /></a>
+               {settings.social_links?.instagram && (
+                 <a href={settings.social_links.instagram} target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><InstagramIcon /></a>
+               )}
+               {settings.social_links?.facebook && (
+                 <a href={settings.social_links.facebook} target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><FacebookIcon /></a>
+               )}
+               {settings.social_links?.x && (
+                 <a href={settings.social_links.x} target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity"><TwitterIcon /></a>
+               )}
             </div>
           </div>
 
@@ -128,11 +134,21 @@ const Footer = () => {
       <div className="border-t border-white/5 py-8 px-6 lg:px-24">
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center space-x-4">
-             <a href="#" className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all">
+             <a 
+               href={contact.app_store || "#"} 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all"
+             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.1 2.48-1.34.03-1.77-.79-3.29-.79-1.53 0-2.01.76-3.27.82-1.31.05-2.31-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.65.06 2.87.6 3.72 1.84a6.49 6.49 0 0 0-3.32 5.56c.03 2.15 1.1 3.51 2.39 4.26zM15.48 5.44c.75-.91 1.25-2.18 1.11-3.44-1.09.04-2.41.72-3.19 1.63-.7.81-1.31 2.11-1.15 3.34 1.22.09 2.48-.62 3.23-1.53z"/></svg>
                 <div className="text-[10px] font-black tracking-tight leading-none">App Store</div>
              </a>
-             <a href="#" className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all">
+             <a 
+               href={contact.google_play || "#"} 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all"
+             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3.25 3.125c-.121.121-.191.29-.191.472v16.811c0 .181.07.351.191.472l9.047-9.047-9.047-9.047zm.944-.944l9.22 5.32 2.99-2.99-12.21-7.05c-.171-.1-.384-.1-.555 0-.171.1-.285.281-.285.477v4.243zm12.21 6.264l-2.99 2.99 9.22 5.32c.171.1.384.1.555 0 .171-.1.285-.281.285-.477v-12.21c0-.196-.114-.377-.285-.477-.171-.1-.384-.1-.555 0l-6.23 3.593zM13.438 12.375l-9.22 5.32 12.21 7.05c.171.1.384.1.555 0 .171-.1.285-.281.285-.477v-4.243l-3.83-3.65z"/></svg>
                 <div className="text-[10px] font-black tracking-tight leading-none">Google Play</div>
              </a>

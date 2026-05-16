@@ -32,11 +32,17 @@ interface StoreSettings {
     phone?: string;
     address?: string;
     instagram?: string;
+    working_hours?: string;
+    app_store?: string;
+    google_play?: string;
   };
   contact_info?: {
     phone?: string;
     email?: string;
     address?: string;
+    working_hours?: string;
+    app_store?: string;
+    google_play?: string;
   };
   social_links?: {
     instagram?: string;
