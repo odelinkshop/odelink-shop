@@ -135,7 +135,7 @@ const Footer = () => {
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center space-x-4">
              <a 
-               href={contact.app_store || "#"} 
+               href="https://www.apple.com/" 
                target="_blank" 
                rel="noopener noreferrer" 
                className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all"
@@ -144,7 +144,7 @@ const Footer = () => {
                 <div className="text-[10px] font-black tracking-tight leading-none">App Store</div>
              </a>
              <a 
-               href={contact.google_play || "#"} 
+               href="https://play.google.com/" 
                target="_blank" 
                rel="noopener noreferrer" 
                className="flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all"
