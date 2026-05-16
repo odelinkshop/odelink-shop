@@ -113,7 +113,7 @@ const LinksPage = () => {
               transition={{ delay: 0.05 * idx }}
               className="space-y-4 md:space-y-5"
             >
-              <h3 className="text-[10px] md:text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{section.title}</h3>
+              <h3 className="font-bold text-gray-500 uppercase ml-1" style={{ fontSize: '11px', letterSpacing: '0.15em' }}>{section.title}</h3>
               <div className="space-y-3">
                 {section.links.filter(l => !l.hidden).map((link, lIdx) => (
                   <button
@@ -131,7 +131,7 @@ const LinksPage = () => {
                       <div className={`flex items-center justify-center w-8 h-8 rounded-full ${link.primary ? 'bg-white/20' : 'bg-white/5 group-hover:bg-white/10'} transition-colors`}>
                          <link.icon size={16} className={link.primary ? 'text-white' : 'text-gray-400 group-hover:text-white'} />
                       </div>
-                      <span className={`text-xs sm:text-sm font-bold tracking-wide ${link.primary ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                      <span className={`font-bold ${link.primary ? 'text-white' : 'text-gray-300 group-hover:text-white'}`} style={{ fontSize: '13px', letterSpacing: '0.025em' }}>
                         {link.label}
                       </span>
                     </div>
@@ -154,8 +154,8 @@ const LinksPage = () => {
             <Shield className="text-red-600" size={20} />
           </div>
           <div>
-            <h4 className="text-[10px] md:text-xs font-black text-white mb-2 uppercase tracking-widest">YASAL BİLGİLENDİRME</h4>
-            <p className="text-[10px] md:text-xs text-gray-500 font-medium leading-relaxed">
+            <h4 className="font-bold text-white mb-2 uppercase" style={{ fontSize: '11px', letterSpacing: '0.15em' }}>YASAL BİLGİLENDİRME</h4>
+            <p className="text-gray-500 font-medium leading-relaxed" style={{ fontSize: '11px' }}>
               Ödelink, Shopier ile resmi bir ortaklık veya temsil ilişkisi içinde değildir. Tüm bağlantılar sizi güvenli bir şekilde ilgili platformlara yönlendirmek amacıyla dizinlenmiştir.
             </p>
           </div>
