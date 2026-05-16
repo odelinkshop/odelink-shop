@@ -59,7 +59,7 @@ const safeImage = (src: string | undefined): string => {
   
   // Shopier CDN'inden en büyük boyutu (pictures_large) zorluyoruz ve kaliteyi %100 yapıyoruz
   if (formattedSrc.includes('cdn.shopier.app')) {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
+    const apiBase = '/api';
     let hdSrc = formattedSrc
       .replace('/pictures_mid/', '/pictures_large/')
       .replace('/pictures_small/', '/pictures_large/');
@@ -139,7 +139,13 @@ export default function ProductClient() {
   if (!product) return <div className="min-h-screen bg-white" />;
 
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    // Sayfa yenilendiğinde meta verileri tekrar zorla güncelle
+    if (product) {
+      document.title = `${product.name} | ${store?.name || "Mağaza"}`;
+    }
+  }, [product, store]);
 
   // Resimleri normalize et ve tekilleştir
   const allImages = [...new Set((product.images || []).map(img => {

@@ -41,7 +41,7 @@ const safeImage = (src: string | undefined): string => {
     formattedSrc = `https:${formattedSrc}`;
   }
   if (formattedSrc.includes('cdn.shopier.app')) {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
+    const apiBase = '/api';
     return `${apiBase}/sites/proxy-image?url=${encodeURIComponent(formattedSrc)}`;
   }
   return formattedSrc;
