@@ -61,15 +61,15 @@ const OrderList = () => {
   );
 
   return (
-    <div className="space-y-12 pb-20">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 border-b border-white/5 pb-16">
-        <div className="space-y-4 text-center lg:text-left">
-          <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2 rounded-full">
-            <ShoppingBag size={14} className="text-white" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Revenue & Operations</span>
+    <div className="space-y-8 sm:space-y-12 pb-20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-10 border-b border-white/5 pb-8 sm:pb-16">
+        <div className="space-y-3 sm:space-y-4 text-center lg:text-left">
+          <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/5 border border-white/10 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full">
+            <ShoppingBag size={12} className="sm:w-[14px] sm:h-[14px] text-white" />
+            <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Revenue & Operations</span>
           </div>
-          <h2 className="text-5xl sm:text-7xl font-serif text-[#F2EBE1] tracking-tight">Siparişler</h2>
-          <p className="text-[10px] sm:text-[12px] text-[#F2EBE1]/40 max-w-lg mx-auto lg:mx-0 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">
+          <h2 className="text-3xl sm:text-7xl font-serif text-[#F2EBE1] tracking-tight">Siparişler</h2>
+          <p className="text-[8px] sm:text-[12px] text-[#F2EBE1]/40 max-w-lg mx-auto lg:mx-0 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">
             Satışlarınızı ve operasyonel verilerinizi gerçek zamanlı takip edin.
           </p>
         </div>
@@ -81,22 +81,22 @@ const OrderList = () => {
             placeholder="SİPARİŞ ID VEYA E-POSTA..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white/[0.03] border border-white/10 pl-14 pr-6 py-5 text-[11px] focus:border-white focus:outline-none transition-all lg:min-w-[400px] font-black uppercase tracking-[0.25em] text-white rounded-sm"
+            className="w-full bg-white/[0.03] border border-white/10 pl-12 pr-4 py-3 sm:pl-14 sm:pr-6 sm:py-5 text-[9px] sm:text-[11px] focus:border-white focus:outline-none transition-all lg:min-w-[400px] font-black uppercase tracking-[0.25em] text-white rounded-sm"
           />
         </div>
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-60 space-y-6">
-          <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-          <span className="text-[10px] font-black uppercase tracking-[0.6em] text-white">Veri Alınıyor</span>
+        <div className="flex flex-col items-center justify-center py-32 sm:py-60 space-y-4 sm:space-y-6">
+          <div className="w-10 h-10 sm:w-16 sm:h-16 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.6em] text-white">Veri Alınıyor</span>
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="py-40 text-center border border-dashed border-white/5 bg-white/[0.01] rounded-sm group">
-          <div className="w-20 h-20 border border-white/5 bg-white/[0.02] flex items-center justify-center mx-auto mb-8 transition-all group-hover:border-white/20">
-            <ShoppingBag className="w-10 h-10 text-white/10 group-hover:text-white/30 transition-all" />
+        <div className="py-20 sm:py-40 text-center border border-dashed border-white/5 bg-white/[0.01] rounded-sm group mx-2 sm:mx-0">
+          <div className="w-14 h-14 sm:w-20 sm:h-20 border border-white/5 bg-white/[0.02] flex items-center justify-center mx-auto mb-6 sm:mb-8 transition-all group-hover:border-white/20 rounded-sm">
+            <ShoppingBag className="w-6 h-6 sm:w-10 sm:h-10 text-white/10 group-hover:text-white/30 transition-all" />
           </div>
-          <p className="text-[11px] text-white/30 uppercase tracking-[0.4em] font-black">Henüz bir sipariş bulunmuyor.</p>
+          <p className="text-[9px] sm:text-[11px] text-white/30 uppercase tracking-[0.4em] font-black">Henüz bir sipariş bulunmuyor.</p>
         </div>
       ) : (
         <>
@@ -160,39 +160,39 @@ const OrderList = () => {
           </div>
 
           {/* MOBILE CARDS: Visible on smaller screens */}
-          <div className="lg:hidden grid grid-cols-1 gap-8">
+          <div className="lg:hidden grid grid-cols-1 gap-4 sm:gap-8 px-2 sm:px-0">
             {filteredOrders.map((order, i) => (
               <motion.div 
                 key={order.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-[#0D0D0D] border border-white/5 p-8 space-y-8 rounded-sm"
+                className="bg-[#0D0D0D] border border-white/5 p-5 sm:p-8 space-y-5 sm:space-y-8 rounded-sm"
               >
                 <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Sipariş ID</span>
-                    <span className="text-sm font-bold text-white font-mono tracking-tighter uppercase">{order.id}</span>
+                  <div className="space-y-1 sm:space-y-2">
+                    <span className="text-[8px] sm:text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Sipariş ID</span>
+                    <span className="text-xs sm:text-sm font-bold text-white font-mono tracking-tighter uppercase">{order.id}</span>
                   </div>
                   {getStatusBadge(order.status)}
                 </div>
 
-                <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Müşteri</span>
-                    <span className="text-[11px] text-white font-bold uppercase tracking-widest truncate block">{order.buyer_email?.split('@')[0]}</span>
+                <div className="grid grid-cols-2 gap-4 sm:gap-8 py-5 sm:py-8 border-y border-white/5">
+                  <div className="space-y-1 sm:space-y-2">
+                    <span className="text-[8px] sm:text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Müşteri</span>
+                    <span className="text-[9px] sm:text-[11px] text-white font-bold uppercase tracking-widest truncate block">{order.buyer_email?.split('@')[0]}</span>
                   </div>
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Tutar</span>
-                    <span className="text-lg font-serif text-white font-bold block">{order.amount} TL</span>
+                  <div className="space-y-1 sm:space-y-2">
+                    <span className="text-[8px] sm:text-[10px] font-black text-white/20 uppercase tracking-[0.3em] block">Tutar</span>
+                    <span className="text-base sm:text-lg font-serif text-white font-bold block">{order.amount} TL</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-[10px] text-white/30 font-black tracking-widest uppercase">
-                    <Calendar size={14} className="text-white/10" /> {new Date(order.created_at).toLocaleDateString('tr-TR')}
+                  <div className="flex items-center gap-2 sm:gap-3 text-[8px] sm:text-[10px] text-white/30 font-black tracking-widest uppercase">
+                    <Calendar size={12} className="sm:w-[14px] sm:h-[14px] text-white/10" /> {new Date(order.created_at).toLocaleDateString('tr-TR')}
                   </div>
-                  <button className="text-[10px] font-black uppercase tracking-[0.2em] text-white bg-white/5 border border-white/10 px-6 py-3 rounded-sm">
+                  <button className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white bg-white/5 border border-white/10 px-4 py-2 sm:px-6 sm:py-3 rounded-sm">
                     DETAY
                   </button>
                 </div>
