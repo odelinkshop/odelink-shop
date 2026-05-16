@@ -222,43 +222,48 @@ const CertificatesPage = () => {
       </div>
 
       <div className="relative pt-32 pb-48 px-4 sm:px-12 max-w-[1400px] mx-auto z-10">
-        <div className="mb-32 text-center lg:text-left">
+        <div className="mb-20 lg:mb-32 text-center lg:text-left">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-            <Award size={16} className="text-blue-500" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Ödelink International Official Archive</span>
+            <Award size={14} className="text-blue-500" />
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Ödelink International Official Archive</span>
           </motion.div>
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
             <div className="max-w-3xl">
-              <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter mb-8 italic uppercase leading-[0.9]">
-                Sertifika <br/> <span className="text-blue-600">Arşivimiz</span>
+              <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-4xl sm:text-7xl md:text-8xl font-black tracking-tighter mb-6 italic uppercase leading-[1.1] lg:leading-[0.9]">
+                Sertifika <br className="hidden sm:block"/> <span className="text-blue-600">Arşivimiz</span>
               </motion.h1>
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-sm sm:text-xl text-gray-500 max-w-2xl leading-relaxed font-medium tracking-wide italic px-4 sm:px-0">
+                Ödelink International platformunun küresel güvenilirliğini, veri güvenliği mimarisini ve yasal uyumluluğunu belgeleyen resmi dijital sertifikalar.
+              </motion.p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-16">
           {certificates.map((cert, i) => (
             <motion.div key={cert.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="group">
-              <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-6 lg:p-10 transition-all duration-500 hover:bg-white/[0.04] hover:border-white/10 relative overflow-hidden h-full flex flex-col">
+              <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] lg:rounded-[2.5rem] p-6 lg:p-10 transition-all duration-500 hover:bg-white/[0.04] hover:border-white/10 relative overflow-hidden h-full flex flex-col">
                 <div className="relative z-10 flex flex-col h-full">
-                  <div className="flex items-start justify-between mb-12">
-                    <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 bg-white text-black rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500">
-                        <QrCode size={24} />
+                  <div className="flex items-start justify-between mb-8 lg:mb-12">
+                    <div className="flex items-center gap-4 lg:gap-5">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 bg-white text-black rounded-xl lg:rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                        <QrCode size={20} />
                       </div>
-                      <div>
-                        <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest block mb-1">{cert.id}</span>
-                        <h3 className="text-xl lg:text-2xl font-black text-white leading-tight uppercase italic">{cert.title}</h3>
+                      <div className="min-w-0">
+                        <span className="text-[8px] lg:text-[9px] font-black text-gray-600 uppercase tracking-widest block mb-1 truncate">{cert.id}</span>
+                        <h3 className="text-lg lg:text-2xl font-black text-white leading-tight uppercase italic">{cert.title}</h3>
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 leading-relaxed mb-12 font-medium">{cert.desc}</p>
-                  <div className="mt-auto grid grid-cols-2 gap-4">
-                    <button onClick={() => setSelectedCert(cert)} className="h-14 bg-white text-black text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 rounded-xl hover:bg-gray-200 transition-all active:scale-95">
-                      <Maximize2 size={16} /> GÖRÜNTÜLE
+                  <p className="text-xs lg:text-sm text-gray-500 leading-relaxed mb-8 lg:mb-12 font-medium">
+                    {cert.desc}
+                  </p>
+                  <div className="mt-auto grid grid-cols-2 gap-3 lg:gap-4">
+                    <button onClick={() => setSelectedCert(cert)} className="h-12 lg:h-14 bg-white text-black text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 lg:gap-3 rounded-xl hover:bg-gray-200 transition-all active:scale-95">
+                      <Maximize2 size={14} /> <span className="hidden sm:inline">GÖRÜNTÜLE</span><span className="sm:hidden">BAK</span>
                     </button>
-                    <button onClick={() => handleDownload(cert)} className="h-14 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 rounded-xl hover:bg-white/10 transition-all">
-                      <Download size={16} /> İNDİR (PDF)
+                    <button onClick={() => handleDownload(cert)} className="h-12 lg:h-14 bg-white/5 border border-white/10 text-white text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 lg:gap-3 rounded-xl hover:bg-white/10 transition-all">
+                      <Download size={14} /> <span className="hidden sm:inline">İNDİR (PDF)</span><span className="sm:hidden">İNDİR</span>
                     </button>
                   </div>
                 </div>
