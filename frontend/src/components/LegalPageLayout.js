@@ -277,7 +277,7 @@ const LegalPageLayout = ({ title, children, lastUpdated = '21.04.2026' }) => {
                   </div>
                 </div>
                 <div className="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em] italic">
-                  NOVA SAAS PLATFORM 2026
+                  ÖDELINK INTERNATIONAL 2026
                 </div>
               </div>
             </motion.div>
