@@ -955,105 +955,104 @@ module.exports = {
       }
 
       // Scroll down to trigger lazy-loaded images
-      await page.evaluate(() => window.scrollBy(0, 1000));
-      await sleep(1000);
+      await page.evaluate(() => window.scrollBy(0, 800));
+      await sleep(1500);
       
       const details = await page.evaluate(() => {
+        // --- Helper for Cleaning Text ---
+        const cleanT = (t) => t?.replace(/\s+/g, ' ').trim() || '';
+
         // --- Title ---
         const titleEl = document.querySelector('.product-title-text, h1, .product-title, .product-name, [class*="product-detail"] h1, [class*="product-detail"] h2');
-        let title = titleEl?.textContent?.trim() || '';
+        let title = cleanT(titleEl?.textContent);
         if (!title) {
           const ogTitle = document.querySelector('meta[property="og:title"]');
           title = ogTitle?.content || 'Yeni Ürün';
         }
         title = title.split(' | ')[0].split(' - Shopier')[0].trim();
 
-        // --- Prices (regex from full page text) ---
+        // --- Prices ---
         const parsePrice = (txt) => {
           if (!txt) return 0;
           let s = txt.replace(/[^\d.,]/g, '').replace(/\s/g, '');
-          if (s.includes('.') && s.includes(',')) {
-            s = s.replace(/\./g, '').replace(',', '.');
-          } else if (s.includes(',')) {
-            s = s.replace(',', '.');
-          }
+          if (s.includes('.') && s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+          else if (s.includes(',')) s = s.replace(',', '.');
           return parseFloat(s) || 0;
         };
 
         const bodyText = document.body.innerText || '';
+        // Look for prices specifically near TL/₺
         const priceMatches = [...bodyText.matchAll(/([\d.,]{2,12})\s*(?:TL|₺|TRY)/gi)];
         const foundPrices = [];
         for (const m of priceMatches) {
           const v = parsePrice(m[1]);
           if (v > 20) foundPrices.push(v);
         }
-        // Deduplicate
         const uniquePrices = [...new Set(foundPrices)].sort((a, b) => b - a);
         
         let price = 0, discountPrice = 0;
         if (uniquePrices.length >= 2) {
-          price = uniquePrices[0]; // original (higher)
-          discountPrice = uniquePrices[1]; // discounted (lower)
-          // Swap: price should be the higher one (original), discountPrice the lower
+          price = uniquePrices[0]; 
+          discountPrice = uniquePrices[1];
         } else if (uniquePrices.length === 1) {
           price = uniquePrices[0];
         }
 
-        // --- Images (aggressive collection) ---
+        // --- Images (Strict Filtering) ---
         const imgSet = new Set();
-        // All img tags
-        document.querySelectorAll('img').forEach(img => {
-          const src = img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original') || img.getAttribute('data-lazy-src');
-          if (src && src.includes('cdn.shopier.app') && !src.includes('600icons') && !src.includes('logo_') && !src.includes('shopier.svg') && !src.includes('blank.gif')) {
-            imgSet.add(src.split('?')[0]
-              .replace('/pictures_mid/', '/pictures/')
-              .replace('/pictures_small/', '/pictures/')
-              .replace('/pictures_large/', '/pictures/')
-            );
-          }
-        });
-        
-        // Also check background images
-        document.querySelectorAll('[style*="cdn.shopier.app"]').forEach(el => {
-          const style = el.getAttribute('style');
-          const match = style?.match(/url\(['"]?(https?:\/\/cdn\.shopier\.app[^'")\s]+)/i);
-          if (match) imgSet.add(match[1].split('?')[0]);
+        const addIfValid = (src) => {
+          if (!src) return;
+          const s = src.toLowerCase();
+          // Filter out obvious non-product images
+          if (s.includes('blank.gif') || s.includes('loader') || s.includes('600icons') || 
+              s.includes('logo') || s.includes('icon') || s.includes('shopier.svg') ||
+              s.includes('pixel') || s.includes('tracking')) return;
+          
+          imgSet.add(src.split('?')[0]
+            .replace('/pictures_mid/', '/pictures/')
+            .replace('/pictures_small/', '/pictures/')
+            .replace('/pictures_large/', '/pictures/')
+          );
+        };
+
+        // Prioritize gallery/slider images
+        document.querySelectorAll('.swiper-slide img, .product-images img, .gallery img, #product-gallery img').forEach(img => {
+          addIfValid(img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original'));
         });
 
-        // Also scan scripts for image URLs
-        document.querySelectorAll('script').forEach(sc => {
-          const text = sc.textContent || '';
-          if (text.includes('cdn.shopier.app')) {
-            const matches = text.match(/https:\/\/cdn\.shopier\.app\/[^\s"'\\]+\.(?:jpe?g|png|webp)/gi);
-            if (matches) matches.forEach(m => imgSet.add(m.split('?')[0]));
-          }
-        });
-        
-        // Fallback: og:image
-        if (imgSet.size === 0) {
-          const ogImg = document.querySelector('meta[property="og:image"]');
-          if (ogImg?.content && ogImg.content.includes('cdn.shopier.app')) {
-            imgSet.add(ogImg.content.split('?')[0]);
-          }
+        // Fallback to all images if we have few
+        if (imgSet.size < 2) {
+          document.querySelectorAll('img').forEach(img => addIfValid(img.getAttribute('data-src') || img.getAttribute('src')));
         }
-
+        
         // --- Variations ---
         const variations = [];
-        document.querySelectorAll('select').forEach(select => {
-          const options = Array.from(select.querySelectorAll('option'))
-            .map(opt => opt.textContent.trim())
-            .filter(val => val && !val.includes('Seçiniz'));
-          if (options.length > 0) variations.push({ name: 'Seçenek', options });
+        document.querySelectorAll('.variation-container, .product-variations, select').forEach(v => {
+           // This is simplified, usually variations are in select options or radio buttons
+           const name = v.previousElementSibling?.textContent?.trim() || 'Seçenek';
+           const opts = Array.from(v.querySelectorAll('option, .variation-value'))
+             .map(o => o.textContent.trim())
+             .filter(t => t && !t.includes('Seçiniz'));
+           if (opts.length > 0) variations.push({ name, options: opts });
         });
 
-        // --- Category ---
-        const breadcrumb = Array.from(document.querySelectorAll('.breadcrumb li, .shopier-breadcrumb li'))
-          .map(li => li.textContent.trim());
-        const category = breadcrumb.length > 1 ? breadcrumb[1] : 'Genel';
-        
         // --- Description ---
-        const descEl = document.querySelector('.product-description, #tab-description, .description, .product-details, [class*="description"]');
-        const description = descEl?.innerHTML || '';
+        const descSelectors = [
+          '.product-description', 
+          '#tab-description', 
+          '.description', 
+          '.product-details', 
+          '.shopier-product-description',
+          '[class*="description"]'
+        ];
+        let description = '';
+        for (const sel of descSelectors) {
+          const el = document.querySelector(sel);
+          if (el && el.innerText.trim().length > 5) {
+            description = el.innerHTML;
+            break;
+          }
+        }
         
         return { 
           title, 
@@ -1061,12 +1060,12 @@ module.exports = {
           discountPrice,
           images: [...imgSet].slice(0, 15), 
           variations, 
-          category, 
+          category: 'Genel', 
           description 
         };
       });
       
-      console.log(`🤖 [PuppeteerStealth] Done: "${details.title}", ${details.images.length} images, ${details.price} TL`);
+      console.log(`🤖 [PuppeteerStealth] Done: "${details.title}", ${details.images.length} images`);
       return { url, ...details };
     } catch (e) {
       console.error(`❌ [PuppeteerStealth] Error:`, e.message);
