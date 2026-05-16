@@ -68,17 +68,17 @@ const CertificatesPage = () => {
       qrTarget: 'https://odelink.shop/verify/privacy'
     },
     {
-      id: 'ODL-ETBIS-TR-26',
-      title: 'ETBİS Kayıt ve Ticaret Belgesi',
-      subtitle: 'Official E-Commerce Registration',
-      issuer: 'Ministry of Commerce & Digital Board',
-      entity: 'Ödelink International TR',
-      ref: 'ETBIS-ODL-449',
+      id: 'ODL-TRUST-DS-26',
+      title: 'Dijital Güven ve Satıcı Güvenilirliği',
+      subtitle: 'Global Merchant Reliability & Trust Seal',
+      issuer: 'Ödelink International Strategic Board',
+      entity: 'Ödelink Digital Infrastructure',
+      ref: 'TRUST-ODL-552',
       period: 'Active Member',
-      stamp: 'Official Merchant',
-      desc: 'Ödelink International, Türkiye Cumhuriyeti Elektronik Ticaret Bilgi Sistemi (ETBİS) üyesi resmi bir kuruluştur. Tüm ticari faaliyetlerimiz yasal mevzuatlara ve dijital ticaret protokollerine uygundur.',
-      legalNote: 'Verified via Gümrük ve Ticaret Bakanlığı ETBİS Sistemi',
-      qrTarget: 'https://odelink.shop/verify/etbis'
+      stamp: 'Reliability Verified',
+      desc: 'Ödelink International, dijital ticaret ekosisteminde şeffaflık, güvenilirlik ve kullanıcı odaklı hizmet standartlarını benimsemiştir. Platformumuzun işleyişi ve teknolojik altyapısı, global güven protokollerine uygun olarak optimize edilmiştir.',
+      legalNote: 'Verified via Ödelink Strategic Merchant Protection Program',
+      qrTarget: 'https://odelink.shop/verify/trust-seal'
     }
   ];
 
