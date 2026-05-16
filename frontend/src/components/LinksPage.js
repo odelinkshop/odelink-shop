@@ -113,7 +113,7 @@ const LinksPage = () => {
               transition={{ delay: 0.05 * idx }}
               className="space-y-4 md:space-y-5"
             >
-              <h3 className="text-[11px] md:text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{section.title}</h3>
+              <h3 className="text-[10px] md:text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{section.title}</h3>
               <div className="space-y-3">
                 {section.links.filter(l => !l.hidden).map((link, lIdx) => (
                   <button
@@ -154,7 +154,7 @@ const LinksPage = () => {
             <Shield className="text-red-600" size={20} />
           </div>
           <div>
-            <h4 className="text-[11px] md:text-xs font-black text-white mb-2 uppercase tracking-widest">YASAL BİLGİLENDİRME</h4>
+            <h4 className="text-[10px] md:text-xs font-black text-white mb-2 uppercase tracking-widest">YASAL BİLGİLENDİRME</h4>
             <p className="text-[10px] md:text-xs text-gray-500 font-medium leading-relaxed">
               Ödelink, Shopier ile resmi bir ortaklık veya temsil ilişkisi içinde değildir. Tüm bağlantılar sizi güvenli bir şekilde ilgili platformlara yönlendirmek amacıyla dizinlenmiştir.
             </p>
