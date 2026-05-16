@@ -426,40 +426,44 @@ router.get('/proxy-image', async (req, res) => {
     imageUrl = (req.query?.url || '').toString().trim();
     if (!imageUrl) return res.status(400).send('URL gerekli');
     
-    // Decode if double encoded
-    if (imageUrl.includes('%')) {
-      imageUrl = decodeURIComponent(imageUrl);
-    }
-
-    if (!imageUrl.includes('shopier.app') && !imageUrl.includes('shopier.com')) {
-      return res.status(403).send('Sadece Shopier resimleri proxy edilebilir');
-    }
+    if (imageUrl.includes('%')) imageUrl = decodeURIComponent(imageUrl);
 
     const axios = require('axios');
-    console.log(`🖼️ [IMAGE_PROXY] Fetching: ${imageUrl}`);
-    
+    const userAgents = [
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+    ];
+    const randomUA = userAgents[Math.floor(Math.random() * userAgents.length)];
+
     const response = await axios.get(imageUrl, {
       responseType: 'stream',
       headers: {
         'Referer': 'https://www.shopier.com/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+        'User-Agent': randomUA,
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+        'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
       },
-      timeout: 20000,
-      validateStatus: false // Get response even if it's 404/403 to debug
+      timeout: 25000,
+      validateStatus: false
     });
 
     if (response.status !== 200) {
-      console.error(`❌ [IMAGE_PROXY] Shopier returned ${response.status} for ${imageUrl}`);
-      return res.status(response.status).send(`Shopier hatası: ${response.status}`);
+      console.error(`❌ [PROXY_FAIL] Status ${response.status} for ${imageUrl}`);
+      // If direct proxy fails, try to redirect as last resort (some browsers might allow it)
+      return res.redirect(imageUrl);
     }
 
     res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
     res.setHeader('Cache-Control', 'public, max-age=604800');
     response.data.pipe(res);
   } catch (error) {
-    console.error(`❌ [IMAGE_PROXY_FATAL] ${imageUrl}:`, error.message);
-    res.status(500).send('Resim köprüsü hatası: ' + error.message);
+    console.error(`❌ [PROXY_FATAL] ${error.message}`);
+    // Redirect on error as fallback
+    if (imageUrl) return res.redirect(imageUrl);
+    res.status(500).send('Hata');
   }
 });
 
