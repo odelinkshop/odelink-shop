@@ -141,24 +141,18 @@ export default function ProductClient() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Resimleri normalize et ve tekilleştir - BOŞLUKLARI VE HATALARI TAMİZLE
+  // Resimleri normalize et ve tekilleştir
   const allImages = [...new Set((product.images || []).map(img => {
     if (!img || typeof img !== 'string' || img.trim() === "") return "";
     
-    // Kesinlikle dışlanması gereken kalıplar (logo, ikon, boş piksel vb.)
     const lower = img.toLowerCase();
     if (lower.includes('blank') || lower.includes('pixel') || lower.includes('loader') || 
         lower.includes('icon') || lower.includes('logo_') || lower.includes('shopier.svg')) return "";
     
-    // Temizleme işlemi
-    let clean = img.split('?')[0]
-      .replace('/pictures_mid/', '/pictures/')
-      .replace('/pictures_small/', '/pictures/')
-      .replace('/pictures_large/', '/pictures/');
-    
+    let clean = img.split('?')[0];
     if (clean.startsWith('//')) clean = `https:${clean}`;
     return clean.trim();
-  }))].filter(img => img !== "" && img.length > 20);
+  }))].filter(img => img !== "" && img.length > 10);
 
   const handleAddToCart = () => {
     // URL önceliği: shopier_url > url > link > #
