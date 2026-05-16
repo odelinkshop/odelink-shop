@@ -381,8 +381,15 @@ export default function SiteSettingsPage() {
 
             {/* REALISTIC IPAD PRO Mockup */}
             {previewMode === 'tablet' && (
-              <div className="relative flex items-center justify-center w-[450px] h-[600px] sm:w-[576px] sm:h-[768px] transition-all duration-700 flex-shrink-0">
-                <div className="absolute w-[768px] h-[1024px] transform scale-[0.58] sm:scale-[0.75] origin-center">
+              <div 
+                className="relative flex items-center justify-center transition-all duration-700 flex-shrink-0"
+                style={{ 
+                  '--scale': 'min(0.8, calc((100vh - 140px) / 1024))',
+                  width: 'calc(768px * var(--scale))', 
+                  height: 'calc(1024px * var(--scale))' 
+                }}
+              >
+                <div className="absolute w-[768px] h-[1024px] origin-center" style={{ transform: 'scale(var(--scale))' }}>
                   {/* iPad outer shell */}
                   <div className="w-full h-full bg-[#1C1D1F] rounded-[2.5rem] p-3.5 shadow-[0_50px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10 relative">
                     {/* Screen */}
@@ -403,8 +410,15 @@ export default function SiteSettingsPage() {
 
             {/* REALISTIC IPHONE 17 PRO Mockup */}
             {previewMode === 'mobile' && (
-              <div className="relative flex items-center justify-center w-[280px] h-[600px] sm:w-[320px] sm:h-[650px] transition-all duration-700 flex-shrink-0">
-                <div className="absolute w-[375px] h-[812px] transform scale-[0.75] sm:scale-[0.8] origin-center">
+              <div 
+                className="relative flex items-center justify-center transition-all duration-700 flex-shrink-0"
+                style={{ 
+                  '--scale': 'min(0.85, calc((100vh - 140px) / 812))',
+                  width: 'calc(375px * var(--scale))', 
+                  height: 'calc(812px * var(--scale))' 
+                }}
+              >
+                <div className="absolute w-[375px] h-[812px] origin-center" style={{ transform: 'scale(var(--scale))' }}>
                   {/* iPhone outer shell */}
                   <div className="w-full h-full bg-[#1C1D1F] rounded-[3rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
                     {/* Screen */}
