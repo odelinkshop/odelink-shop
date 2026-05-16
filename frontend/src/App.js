@@ -577,11 +577,9 @@ function App() {
       void e;
     }
 
-    // Nova Security Signature (No freeze, just branding)
+    // Nova Security Signature
     console.clear();
-    console.log('%cNOVA ELITE PROTECTION', 'color: #FFFFFF; font-size: 40px; font-weight: bold; text-shadow: 0 0 20px rgba(255,255,255,0.5); font-family: serif;');
-    console.log('%cSOURCE PROTECTION ACTIVE: ORIGINAL FILES ENCRYPTED', 'color: #00F0FF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;');
-    console.log('%cACCESS GRANTED - SİBER KORUMA AKTİF', 'color: #888; font-size: 10px; font-weight: bold;');
+    console.log('%cNOVA SECURE SYSTEM', 'color: #FFFFFF; font-size: 40px; font-weight: bold; text-shadow: 0 0 20px rgba(255,255,255,0.5); font-family: serif;');
   }, []);
 
   return (

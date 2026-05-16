@@ -256,7 +256,7 @@ const ProductManagement = ({ onOpenBulk }) => {
         <div className="space-y-6 text-center lg:text-left">
           <div className="inline-flex items-center gap-4 bg-white/5 border border-white/10 px-6 py-2.5 rounded-full">
             <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/60">Elite Inventory Control v2.0</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/60">Envanter Yönetim Sistemi</span>
           </div>
           <div className="space-y-2">
             <h2 className="text-6xl sm:text-8xl font-serif text-[#F2EBE1] tracking-tighter leading-none">Katalog</h2>
@@ -341,7 +341,7 @@ const ProductManagement = ({ onOpenBulk }) => {
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-white/5 gap-4">
                       <ImageIcon size={60} strokeWidth={1} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em]">No Visual</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em]">Görsel Yok</span>
                     </div>
                   )}
                   
@@ -361,7 +361,7 @@ const ProductManagement = ({ onOpenBulk }) => {
                     </div>
                   </div>
 
-                  {/* Elite Actions Overlay */}
+                  {/* Actions Overlay */}
                   <div className="absolute inset-0 bg-[#0A0A0A]/95 opacity-0 group-hover:opacity-100 transition-all duration-700 backdrop-blur-md flex flex-col items-center justify-center gap-5">
                      <button 
                        onClick={() => openEditModal(product)} 
@@ -404,7 +404,7 @@ const ProductManagement = ({ onOpenBulk }) => {
         </div>
       )}
 
-      {/* ARISTOKRATIK ÜRÜN MODALI (CAM GİBİ ŞEFFAF & HD) */}
+      {/* Urun Ekleme / Duzenleme Modali */}
       <AnimatePresence>
         {showAddModal && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-6 lg:p-12">
@@ -424,10 +424,10 @@ const ProductManagement = ({ onOpenBulk }) => {
                 <div className="space-y-4 mb-12">
                   <div className="flex items-center gap-3 text-white">
                     <ImageIcon size={16} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.4em]">Visual Studio</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.4em]">Görsel Yönetimi</span>
                   </div>
                   <p className="text-[11px] text-white/30 font-bold uppercase tracking-widest leading-relaxed">
-                    HD Ürün Vitrinini Tasarlayın
+                    Ürün görsellerini buradan yönetebilirsiniz.
                   </p>
                 </div>
 
@@ -445,7 +445,7 @@ const ProductManagement = ({ onOpenBulk }) => {
                       className="aspect-[3/4] border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-4 hover:border-white/40 hover:bg-white/5 transition-all group rounded-sm"
                     >
                       <Plus size={28} className="text-white/10 group-hover:text-white transition-all" strokeWidth={2.5} />
-                      <span className="text-[9px] font-black text-white/20 group-hover:text-white uppercase tracking-widest">HD YÜKLE</span>
+                      <span className="text-[9px] font-black text-white/20 group-hover:text-white uppercase tracking-widest">GÖRSEL YÜKLE</span>
                     </button>
                   </div>
                   <input type="file" multiple hidden ref={fileInputRef} onChange={handleImageUpload} accept="image/*" />
@@ -473,10 +473,10 @@ const ProductManagement = ({ onOpenBulk }) => {
               <div className="flex-1 p-10 sm:p-20 flex flex-col overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between mb-20">
                   <div className="space-y-4">
-                    <h3 className="text-4xl sm:text-6xl font-serif text-white tracking-tighter">Ürün Arşivi</h3>
+                    <h3 className="text-4xl sm:text-6xl font-serif text-white tracking-tighter">Ürün Detayları</h3>
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-px bg-white/20" />
-                      <span className="text-[11px] uppercase tracking-[0.5em] text-white/40 font-black">Matrix Studio Edit Mode</span>
+                      <span className="text-[11px] uppercase tracking-[0.5em] text-white/40 font-black">Ürün Düzenleme Paneli</span>
                     </div>
                   </div>
                   <button onClick={closeModal} className="w-14 h-14 bg-white/5 text-white/30 hover:text-white flex items-center justify-center transition-all border border-white/10 rounded-sm"><X size={28} /></button>
@@ -486,7 +486,7 @@ const ProductManagement = ({ onOpenBulk }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
                     <div className="md:col-span-2 space-y-5">
                       <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black flex items-center gap-4">ÜRÜN BAŞLIĞI <Layers size={14} /></label>
-                      <input required type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-transparent border-b border-white/10 py-6 text-3xl sm:text-4xl text-white focus:border-white focus:outline-none transition-all font-serif italic" placeholder="The Masterpiece..." />
+                      <input required type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-transparent border-b border-white/10 py-6 text-3xl sm:text-4xl text-white focus:border-white focus:outline-none transition-all font-serif italic" placeholder="Ürün adı..." />
                     </div>
 
 
@@ -527,8 +527,8 @@ const ProductManagement = ({ onOpenBulk }) => {
                     </div>
 
                     <div className="md:col-span-2 space-y-5">
-                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black">ÜRÜN AÇIKLAMASI (KURUMSAL)</label>
-                      <textarea rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-white/[0.03] border border-white/10 px-10 py-8 text-[14px] text-white/70 focus:border-white focus:outline-none transition-all resize-none leading-relaxed font-medium rounded-sm" placeholder="Ürünün hikayesini buraya nakşedin..." />
+                      <label className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-black">ÜRÜN AÇIKLAMASI</label>
+                      <textarea rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-white/[0.03] border border-white/10 px-10 py-8 text-[14px] text-white/70 focus:border-white focus:outline-none transition-all resize-none leading-relaxed font-medium rounded-sm" placeholder="Ürün açıklamasını buraya girin..." />
                     </div>
                   </div>
 

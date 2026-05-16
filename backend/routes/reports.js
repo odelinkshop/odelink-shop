@@ -43,7 +43,7 @@ router.get('/monthly-summary', authMiddleware, async (req, res) => {
 
 /**
  * GET /api/reports/download
- * Generates a professional, comprehensive Nova Elite Intelligence Report (HTML).
+ * Generates a professional, comprehensive Nova System Report (HTML).
  */
 router.get('/download', authMiddleware, async (req, res) => {
   try {
@@ -95,14 +95,14 @@ router.get('/download', authMiddleware, async (req, res) => {
     // Aristocratic CEO Summary logic
     let insight = "Nova platformu üzerinden istikrarlı bir büyüme gözlemleniyor.";
     if (Number(cr) > 5) insight = "Mağaza dönüşüm oranlarınız (CR) %5 eşiğinin üzerinde, pazar ortalamasının üstünde bir performans!";
-    if (views > 1000) insight += " Yüksek trafik hacmi, marka bilinirliğinizin aristokratik bir seviyeye ulaştığını gösteriyor.";
+    if (views > 1000) insight += " Yüksek trafik hacmi, marka bilinirliğinizin oldukça yüksek bir seviyeye ulaştığını gösteriyor.";
 
     const html = `
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Nova Elite Intelligence Report - ${dateStr}</title>
+    <title>Nova System Report - ${dateStr}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap');
         
@@ -261,7 +261,7 @@ router.get('/download', authMiddleware, async (req, res) => {
         <div class="header">
             <div class="logo">NOVA</div>
             <div class="report-title">
-                <h1>Elite Intelligence Report</h1>
+                <h1>System Report</h1>
                 <p>${dateStr}</p>
             </div>
         </div>
@@ -338,7 +338,7 @@ router.get('/download', authMiddleware, async (req, res) => {
     `;
 
     res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Content-Disposition', `attachment; filename=Nova_Elite_Report_${new Date().getTime()}.html`);
+    res.setHeader('Content-Disposition', `attachment; filename=Nova_System_Report_${new Date().getTime()}.html`);
     return res.send(html);
 
   } catch (e) {

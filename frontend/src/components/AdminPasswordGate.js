@@ -60,7 +60,7 @@ const AdminPasswordGate = ({ children }) => {
           <BrandLogo withText size={42} textClassName="text-white text-2xl font-black italic tracking-tighter" />
           <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20">
             <ShieldCheck size={12} className="text-red-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-red-400">CEO Komuta Merkezi</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-red-400">Yönetici Paneli</span>
           </div>
         </div>
 

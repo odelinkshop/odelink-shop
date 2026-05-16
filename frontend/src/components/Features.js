@@ -12,7 +12,7 @@ const Features = () => {
     {
       icon: Smartphone,
       title: 'Mobil Uyumlu',
-      description: 'Tüm cihazlarda mükemmel görünen, mobil-first tasarım yaklaşımı.'
+      description: 'Tüm cihazlarda kusursuz görünen, mobil-first tasarım yaklaşımı.'
     },
     {
       icon: CreditCard,

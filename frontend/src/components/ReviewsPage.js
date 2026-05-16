@@ -40,7 +40,7 @@ const reviews = [
     business: 'Saf Doğa Kozmetik',
     rating: 5,
     date: '3 Nisan 2026',
-    text: 'Mobil uyumluluk benim için her şeydi çünkü müşterilerimin %90\'ı mobilden geliyor. Noir Fashion teması telefonlarda harika görünüyor. VIP destek ekibi kurulumda her soruma anında yanıt verdi.',
+    text: 'Mobil uyumluluk benim için her şeydi çünkü müşterilerimin %90\'ı mobilden geliyor. Noir Fashion teması telefonlarda çok profesyonel görünüyor. VIP destek ekibi kurulumda her soruma anında yanıt verdi.',
     avatar: '💄',
     color: '#EC4899'
   },
@@ -50,7 +50,7 @@ const reviews = [
     business: 'Öztürk Kitabevi',
     rating: 5,
     date: '1 Nisan 2026',
-    text: 'Özel alan adı (domain) bağlama özelliği sayesinde sitem tam bir kurumsal kimliğe büründü. Aylık raporlar sayesinde hangi ürünlerimin daha çok tıklandığını takip edebiliyorum. Harika bir analitik paneli var.',
+    text: 'Özel alan adı (domain) bağlama özelliği sayesinde sitem tam bir kurumsal kimliğe büründü. Aylık raporlar sayesinde hangi ürünlerimin daha çok tıklandığını takip edebiliyorum. Kapsamlı bir analitik paneli var.',
     avatar: '📚',
     color: '#10B981'
   },

@@ -545,7 +545,7 @@ class ProductInjectorService {
       // Meta description'ı Türkçeleştir
       html = html.replace(
         /<meta name="description" content=".*?">/i,
-        '<meta name="description" content="Online mağazanızı Wearix ile yükseltin. Moda perakendecileri için çağdaş bir tema. Minimalist tasarım ve güçlü e-ticaret özellikleri ile modern, dönüşüm odaklı giyim markanız için mükemmel temel.">'
+        '<meta name="description" content="Online mağazanızı Wearix ile yükseltin. Moda perakendecileri için çağdaş bir tema. Minimalist tasarım ve güçlü e-ticaret özellikleri ile modern, dönüşüm odaklı giyim markanız için güçlü temel.">'
       );
 
       // OG meta tag'lerini Türkçeleştir
@@ -597,7 +597,7 @@ class ProductInjectorService {
           currency: 'TRY',
           image: this._sanitizeUrl(product.image || product.image_url || product.main_image || ''),
           url: this._sanitizeUrl(product.url || product.product_url || ''),
-          description: this._sanitizeString(product.description || '', 5000), // Increased for elite descriptions
+          description: this._sanitizeString(product.description || '', 5000), // Increased for long descriptions
           stock: parseInt(product.stock || product.stock_amount || 0, 10),
           category: this._sanitizeString(product.category || '', 100),
           // Deep Variation Support (Size, Color, etc.)

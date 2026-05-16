@@ -211,7 +211,7 @@ const UserPanel = () => {
             <h1 className="text-4xl sm:text-6xl font-serif tracking-tight text-[#F2EBE1]">Mağaza Paneli</h1>
             <div className="flex items-center justify-center md:justify-start gap-3">
                <div className="h-px w-8 bg-white/20 hidden sm:block" />
-               <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.4em] text-white/50 font-black">Komuta Merkezi & Aristokratik Kontrol</p>
+               <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.4em] text-white/50 font-black">Yönetim Paneli</p>
             </div>
           </div>
           <motion.button 
@@ -383,8 +383,8 @@ const UserPanel = () => {
             <div className="mt-32 pt-20 border-t border-white/10">
                <div className="flex flex-col md:flex-row justify-between items-start gap-12">
                   <div className="max-w-md">
-                     <h3 className="text-xl font-serif text-[#F2EBE1] mb-4">Siber Altyapı & Kaynaklar</h3>
-                     <p className="text-[10px] sm:text-[11px] text-[#F2EBE1]/40 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">Nova SaaS İmparatorluğu'nun global kaynaklarına ve dökümantasyonuna buradan erişebilirsiniz.</p>
+                     <h3 className="text-xl font-serif text-[#F2EBE1] mb-4">Destek & Kaynaklar</h3>
+                     <p className="text-[10px] sm:text-[11px] text-[#F2EBE1]/40 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">Nova SaaS platformunun dokümantasyonuna ve global kaynaklarına buradan erişebilirsiniz.</p>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                      {[
@@ -430,26 +430,26 @@ const UserPanel = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }} 
                 exit={{ opacity: 0, scale: 0.95, y: 40 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="relative w-full h-full sm:h-auto sm:max-w-5xl bg-[#0D0D0D] border-t sm:border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col"
+                className="relative w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-3xl bg-[#0D0D0D] border-t sm:border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col"
               >
-                {/* Elite Modal Header */}
-                <div className="flex items-center justify-between p-10 sm:p-16 border-b border-white/5 relative overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between p-6 sm:p-10 border-b border-white/5 relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-[0.02] pointer-events-none">
-                    <Sparkles size={200} />
+                    <Sparkles size={120} />
                   </div>
                   
-                  <div className="flex items-center gap-10 relative z-10">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/10 rounded-sm shrink-0">
-                      <Link size={32} strokeWidth={2.5} />
+                  <div className="flex items-center gap-6 relative z-10">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/10 rounded-sm shrink-0">
+                      <Link size={24} strokeWidth={2.5} />
                     </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-4">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Nexus Auto-Sync Engine</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">Sistem Entegrasyonu</span>
                       </div>
-                      <h3 className="text-4xl sm:text-6xl font-serif text-[#F2EBE1] tracking-tighter">Link Canavarı</h3>
-                      <p className="text-[10px] sm:text-[12px] text-white/20 font-bold uppercase tracking-[0.3em] max-w-md leading-relaxed">
-                        Shopier portföyünüzü saniyeler içinde kurumsal arşive senkronize edin.
+                      <h3 className="text-2xl sm:text-3xl font-serif text-[#F2EBE1] tracking-tighter">Toplu Veri Aktarımı</h3>
+                      <p className="text-[9px] sm:text-[10px] text-white/20 font-bold uppercase tracking-[0.2em] max-w-md leading-relaxed">
+                        Shopier bağlantılarınızı kurumsal arşive entegre edin.
                       </p>
                     </div>
                   </div>
@@ -465,15 +465,15 @@ const UserPanel = () => {
                 </div>
 
                 {/* Processing Core */}
-                <div className="p-10 sm:p-16 gap-8 flex-1 overflow-y-auto no-scrollbar flex flex-col">
-                  <div className="flex flex-col flex-1 space-y-6">
-                    <div className="flex justify-between items-end px-2 shrink-0">
-                       <div className="space-y-2">
-                         <label className="text-[11px] font-black uppercase tracking-[0.4em] text-white/60">Veri Giriş Matrisi</label>
-                         <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Her satıra bir Shopier ürün linki ekleyin</p>
+                <div className="p-6 sm:p-10 gap-6 flex-1 overflow-y-auto no-scrollbar flex flex-col">
+                  <div className="flex flex-col flex-1 space-y-4">
+                    <div className="flex justify-between items-end px-1 shrink-0">
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Veri Giriş Matrisi</label>
+                         <p className="text-[8px] text-white/20 font-bold uppercase tracking-widest">Her satıra bir ürün linki ekleyin</p>
                        </div>
-                       <div className="flex items-center gap-3">
-                         <span className="text-[10px] font-black text-white/30 tracking-widest">{bulkLinks.split('\n').filter(l => l.trim()).length} LİNK TESPİT EDİLDİ</span>
+                       <div className="flex items-center gap-2">
+                         <span className="text-[9px] font-black text-white/30 tracking-widest">{bulkLinks.split('\n').filter(l => l.trim()).length} LİNK TESPİT EDİLDİ</span>
                        </div>
                     </div>
                     
@@ -484,19 +484,19 @@ const UserPanel = () => {
                         onChange={(e) => setBulkLinks(e.target.value)} 
                         disabled={isImporting}
                         placeholder="https://www.shopier.com/shop/..."
-                        className="w-full flex-1 min-h-[300px] bg-[#0A0A0A] border border-white/5 p-10 text-[14px] text-white/80 focus:border-white/20 focus:outline-none transition-all font-mono resize-none leading-relaxed rounded-sm shadow-inner"
+                        className="w-full flex-1 min-h-[160px] max-h-[250px] bg-[#0A0A0A] border border-white/5 p-6 text-[13px] text-white/80 focus:border-white/20 focus:outline-none transition-all font-mono resize-none leading-relaxed rounded-sm shadow-inner"
                       />
                     </div>
                   </div>
 
-                  {/* Elite Action Bar */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-10 pt-4 shrink-0">
-                    <div className="flex items-center gap-6 text-white/20">
-                      <div className="w-12 h-12 border border-white/5 flex items-center justify-center">
-                        <Zap size={18} />
+                  {/* Action Bar */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2 shrink-0">
+                    <div className="flex items-center gap-4 text-white/20">
+                      <div className="w-10 h-10 border border-white/5 flex items-center justify-center shrink-0">
+                        <Zap size={14} />
                       </div>
-                      <p className="text-[10px] font-medium uppercase tracking-[0.3em] leading-relaxed max-w-[280px]">
-                        Yapay zeka destekli crawler ürün bilgilerini ve HD görselleri otomatik olarak işler.
+                      <p className="text-[9px] font-medium uppercase tracking-[0.2em] leading-relaxed max-w-[250px]">
+                        Gelişmiş altyapı, ürün verilerinizi otomatik olarak sisteme işler.
                       </p>
                     </div>
                     
@@ -505,7 +505,7 @@ const UserPanel = () => {
                       whileTap={{ scale: 0.98 }}
                       onClick={handleBulkImport} 
                       disabled={isImporting || !bulkLinks.trim()}
-                      className="w-full sm:w-auto flex items-center justify-center gap-8 bg-white text-[#0A0A0A] px-16 py-7 font-black uppercase tracking-[0.3em] text-[13px] hover:bg-[#F2EBE1] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.1)] rounded-sm group overflow-hidden relative"
+                      className="w-full sm:w-auto flex items-center justify-center gap-4 bg-white text-[#0A0A0A] px-8 py-4 font-black uppercase tracking-[0.2em] text-[11px] hover:bg-[#F2EBE1] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.1)] rounded-sm group overflow-hidden relative"
                     >
                       {isImporting && (
                         <motion.div 
@@ -513,11 +513,11 @@ const UserPanel = () => {
                           className="absolute inset-0 bg-black/5"
                         />
                       )}
-                      <span className="relative z-10 flex items-center gap-6">
+                      <span className="relative z-10 flex items-center gap-3">
                         {isImporting ? (
-                          <><Loader2 className="animate-spin" size={22} /> <span>PROTOKOL ÇALIŞIYOR...</span></>
+                          <><Loader2 className="animate-spin" size={16} /> <span>İŞLENİYOR...</span></>
                         ) : (
-                          <><Sparkles size={22} className="group-hover:rotate-12 transition-transform" /> <span>LİNKLERİ SİSTEME İŞLE</span></>
+                          <><Sparkles size={16} className="group-hover:rotate-12 transition-transform" /> <span>LİNKLERİ SİSTEME İŞLE</span></>
                         )}
                       </span>
                     </motion.button>

@@ -50,7 +50,7 @@ const SimpleAdminPanel = () => {
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Socket.io for Real-time Matrix Feed
+  // Socket.io for Real-time Data Feed
   const [liveFeed, setLiveFeed] = useState([]);
   
   useEffect(() => {
@@ -198,7 +198,7 @@ const SimpleAdminPanel = () => {
   };
 
   const handleDeleteSite = async (siteId) => {
-    if (!window.confirm('DİKKAT: Bu mağaza siber yörüngeden KÖKTEN SİLİNECEK! Emin misin CEO?')) return;
+    if (!window.confirm('DİKKAT: Bu mağaza sistemden tamamen silinecektir. Onaylıyor musunuz?')) return;
     const token = getAuthToken();
     setActionLoading(true);
     try {
@@ -207,7 +207,7 @@ const SimpleAdminPanel = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
-        toast.success('Mağaza Kökten Silindi');
+        toast.success('Mağaza Tamamen Silindi');
         confetti();
         setRefreshTick(t => t + 1);
       }
@@ -356,7 +356,7 @@ const SimpleAdminPanel = () => {
                    <DataCard title="Toplam Müşteri" value={adminOverview?.total_users || '0'} icon={Users} color="blue" trend="+12%" />
                    <DataCard title="Canlı Vitrinler" value={adminOverview?.total_sites || '0'} icon={Monitor} color="emerald" trend="+5%" />
                    <DataCard title="Abonelik Gücü" value={adminOverview?.active_subscriptions || '0'} icon={Zap} color="indigo" trend="Stabil" />
-                   <DataCard title="Anlık Siber Trafik" value={activeVisitors} icon={Activity} color="rose" pulse trend="Live" />
+                   <DataCard title="Anlık Trafik" value={activeVisitors} icon={Activity} color="rose" pulse trend="Live" />
                 </div>
 
                 <div className="bg-[#0C0D0E]/50 backdrop-blur-3xl border border-white/5 rounded-[2rem] p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
@@ -615,7 +615,7 @@ const SimpleAdminPanel = () => {
                            </button>
                            <button 
                              onClick={() => handleDeleteSite(site.id)}
-                             title="Mağazayı Kökten Sil"
+                             title="Mağazayı Tamamen Sil"
                              className="w-14 h-14 bg-red-600/10 border border-red-600/20 text-red-500 rounded-2xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shadow-xl shadow-red-900/10"
                            >
                               <Trash2 size={20} />

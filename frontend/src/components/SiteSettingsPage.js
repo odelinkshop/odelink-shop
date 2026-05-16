@@ -205,7 +205,7 @@ export default function SiteSettingsPage() {
 
       <div className="flex-1 flex overflow-hidden relative bg-[#050505]">
         
-        {/* --- ULTRA-MODERN COLLAPSIBLE SIDEBAR --- */}
+        {/* --- COLLAPSIBLE SIDEBAR --- */}
         <AnimatePresence mode="wait">
           {!isSidebarCollapsed && (
             <motion.aside 
@@ -244,7 +244,7 @@ export default function SiteSettingsPage() {
                     </div>
                   </div>
 
-                  {/* Navigation - Ultra Minimal */}
+                  {/* Navigation */}
                   <div className="grid grid-cols-4 gap-2">
                     {[
                       { id: 'brand', icon: Palette },
@@ -401,7 +401,7 @@ export default function SiteSettingsPage() {
 
             {/* REALISTIC IPHONE 17 PRO Mockup */}
             {previewMode === 'mobile' && (
-              <div className="relative transition-all duration-700 w-[360px] h-[740px] flex-shrink-0">
+              <div className="relative transition-all duration-700 w-[300px] h-[600px] sm:w-[320px] sm:h-[640px] flex-shrink-0">
                 {/* iPhone outer shell */}
                 <div className="w-full h-full bg-[#1C1D1F] rounded-[3rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
                   {/* Screen */}

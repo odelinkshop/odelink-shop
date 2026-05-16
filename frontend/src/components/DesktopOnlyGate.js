@@ -38,11 +38,11 @@ const DesktopOnlyGate = ({ children }) => {
         </h2>
         
         <h1 className="text-3xl font-serif text-white mb-6 leading-tight">
-          Elite Studio & <br /> Analitik Karargahı
+          Tasarım Paneli & <br /> Analitik Merkezi
         </h1>
         
         <p className="text-gray-400 text-sm leading-relaxed mb-10 font-light italic">
-          "Kusursuz bir tasarım deneyimi ve derinlemesine veri analizi için çok daha geniş bir tuvale ihtiyacınız var. Nova'nın aristokratik detaylarını yönetebilmeniz için lütfen masaüstü bir cihazdan giriş yapın."
+          "Kusursuz bir tasarım deneyimi ve derinlemesine veri analizi için çok daha geniş bir tuvale ihtiyacınız var. Nova'nın kurumsal yönetim araçlarını kullanabilmeniz için lütfen masaüstü bir cihazdan giriş yapın."
         </p>
 
         <div className="inline-flex items-center space-x-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full">

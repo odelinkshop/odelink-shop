@@ -37,7 +37,7 @@ const CertificatesPage = () => {
       ref: 'NV-ENC-1029',
       period: '2026 - 2027',
       stamp: 'Nova Validated',
-      desc: 'Nova platformu, siber güvenlik mimarisinde TLS 1.3 ve AES-256 bit askeri düzey şifreleme protokollerini temel alır. Tüm veri transferleri, Quantum-Resistant algoritmalarla korunan güvenli tüneller üzerinden gerçekleştirilmektedir.',
+      desc: 'Nova platformu, siber güvenlik mimarisinde TLS 1.3 ve AES-256 bit yüksek güvenlikli şifreleme protokollerini temel alır. Tüm veri transferleri, Quantum-Resistant algoritmalarla korunan güvenli tüneller üzerinden gerçekleştirilmektedir.',
       legalNote: 'Standard Compliance: ISO/IEC 27001 & NIST Cybersecurity Framework',
       qrTarget: 'https://files.nova.shop/certs/security-a4.pdf'
     },
@@ -224,7 +224,7 @@ const CertificatesPage = () => {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="text-xl sm:text-2xl text-white/30 max-w-4xl mx-auto leading-relaxed font-light tracking-wide italic"
           >
-            Nova SaaS altyapısının kurumsal güvenilirliğini, siber güvenlik mimarisini ve küresel veri uyumluluğunu tasdik eden aristokratik dijital arşiv.
+            Nova SaaS altyapısının kurumsal güvenilirliğini, siber güvenlik mimarisini ve küresel veri uyumluluğunu tasdik eden kurumsal dijital arşiv.
           </motion.p>
         </div>
 

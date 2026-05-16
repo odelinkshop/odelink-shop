@@ -540,7 +540,7 @@ app.use(hpp());
 // CSRF middleware
 const { csrfTokenMiddleware } = require('./middleware/csrf');
 
-// ELITE CYBER ARMOR (v2.1) - Nova Intelligence Protocol
+// Security Protocol
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   contentSecurityPolicy: isProduction

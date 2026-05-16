@@ -134,7 +134,7 @@ export default function DomainManagementPage() {
             </div>
             <div>
               <h1 className="text-lg font-black text-white leading-none tracking-tight">Özel Alan Adı Merkezi</h1>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1.5">{site?.name} • Elite Domain Management</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1.5">{site?.name} • Kurumsal Domain Yönetimi</p>
             </div>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function DomainManagementPage() {
                 <div className="space-y-3">
                   <h2 className="text-2xl font-black text-white tracking-tight">Kendi Alan Adını Bağla</h2>
                   <p className="text-gray-500 text-sm font-medium max-w-md leading-relaxed">
-                    Markanı Nova'nın siber altyapısıyla buluştur. "magazam.com" gibi bir alan adını saniyeler içinde mağazana mühürle.
+                    Markanızı Nova altyapısıyla entegre edin. "magazam.com" gibi bir alan adını mağazanıza bağlayın.
                   </p>
                 </div>
 
@@ -266,10 +266,10 @@ export default function DomainManagementPage() {
                </div>
             </div>
 
-            {/* Elite Step-by-Step Guide */}
+            {/* Yonergeler */}
             <div className="bg-[#0C0D0E] border border-white/5 rounded-[40px] p-10 space-y-8">
                <div className="space-y-2">
-                  <h3 className="text-lg font-black text-white tracking-tight">Nasıl Bağlanır? (Siber Protokol)</h3>
+                  <h3 className="text-lg font-black text-white tracking-tight">Nasıl Bağlanır?</h3>
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Adım Adım Kurulum Rehberi</p>
                </div>
 
@@ -318,7 +318,7 @@ export default function DomainManagementPage() {
                 <div className="flex items-center justify-between">
                    <div className="flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                      <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Siber Durum</h3>
+                      <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Durum</h3>
                    </div>
                    <button onClick={fetchStatus} className="p-2 hover:bg-white/5 rounded-xl text-gray-500 transition-all hover:rotate-180">
                       <RefreshCcw size={16} className={refreshing ? 'animate-spin' : ''} />

@@ -98,7 +98,7 @@ const scrapeWithMonsterEngine = async (url, shopSlug) => {
     return res2;
   }
 
-  // 3. KATMAN: SCRAPER API (Elite Proxy Fallback)
+  // 3. KATMAN: SCRAPER API (Proxy Fallback)
   console.log('🛡️ [MonsterEngine] 3. Katman (ScraperAPI) deneniyor...');
   try {
     const res3 = await axios.get('http://api.scraperapi.com', {

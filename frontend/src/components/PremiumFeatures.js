@@ -103,7 +103,7 @@ const PremiumFeatures = () => {
           </h2>
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto font-medium leading-relaxed">
             Shopier ürünlerinizi dünya standartlarında bir teknolojiyle buluşturuyoruz. 
-            Hız, güvenlik ve tasarımın mükemmel uyumunu keşfedin.
+            Hız, güvenlik ve tasarımın kusursuz uyumunu keşfedin.
           </p>
         </motion.div>
 

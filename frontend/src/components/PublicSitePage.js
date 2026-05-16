@@ -135,7 +135,7 @@ export default function PublicSitePage() {
       <div className="text-center max-w-md space-y-8">
         <h1 className="text-8xl font-serif mb-6 tracking-tighter opacity-10">404</h1>
         <p className="text-[11px] opacity-40 uppercase tracking-[0.4em] leading-relaxed font-black">
-          Aradığınız dijital dükkan Nova imparatorluğunda bulunamadı.
+          Aradığınız mağaza sistemimizde bulunamadı.
         </p>
         <button onClick={() => window.location.reload()} className="px-10 py-5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Sistemi Yenile</button>
       </div>
@@ -213,7 +213,7 @@ export default function PublicSitePage() {
             transition={{ delay: 0.2 }}
             className="text-[11px] sm:text-[13px] uppercase tracking-[0.4em] text-white/30 max-w-2xl mx-auto leading-loose font-bold"
           >
-            Nova SaaS tarafından küratörlüğü yapılmış, sınırlı sayıda üretilen aristokratik dükkan seçkisi.
+            Nova SaaS platformu üzerinden oluşturulan kurumsal mağaza seçkisi.
           </motion.p>
         </div>
       </header>
@@ -336,8 +336,8 @@ export default function PublicSitePage() {
         <div className="max-w-[1600px] mx-auto px-12 grid grid-cols-1 md:grid-cols-3 gap-32">
           {[
             { icon: ShieldCheck, title: 'Güvenli Altyapı', sub: 'Nova Şifreleme Standartları' },
-            { icon: Truck, title: 'VIP Lojistik', sub: '24 Saat İçinde Kargolama' },
-            { icon: Clock, title: '7/24 Elit Destek', sub: 'Kişisel Danışman Hizmeti' }
+            { icon: Truck, title: 'Özel Lojistik', sub: '24 Saat İçinde Kargolama' },
+            { icon: Clock, title: '7/24 Öncelikli Destek', sub: 'Kişisel Danışman Hizmeti' }
           ].map((f, i) => (
             <div key={i} className="flex flex-col items-center text-center space-y-8 group">
               <div className="w-20 h-20 bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover:bg-white group-hover:text-[#0A0A0A] group-hover:border-white transition-all duration-700 shadow-2xl">
@@ -447,7 +447,7 @@ export default function PublicSitePage() {
         )}
       </AnimatePresence>
 
-      {/* Global Product Detail Matrix */}
+      {/* Product Detail Section */}
       <AnimatePresence>
         {selectedProduct && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-8 lg:p-12">
@@ -463,7 +463,7 @@ export default function PublicSitePage() {
               exit={{ opacity: 0, y: 100 }}
               className="bg-[#0F0F0F] sm:border border-white/10 w-full h-full sm:h-auto sm:max-w-7xl relative z-10 flex flex-col lg:flex-row sm:max-h-[85vh] overflow-hidden shadow-2xl"
             >
-              {/* Image Matrix */}
+              {/* Product Images */}
               <div className="lg:w-[550px] bg-black/50 border-b lg:border-b-0 lg:border-r border-white/5 p-8 sm:p-12 flex flex-col shrink-0 overflow-y-auto no-scrollbar">
                 <div className="aspect-[3/4] bg-white/[0.02] border border-white/5 relative overflow-hidden rounded-sm mb-8 shadow-2xl">
                   <img src={selectedProduct.images?.[activeImageIndex]} alt="" className="w-full h-full object-cover" />
@@ -481,7 +481,7 @@ export default function PublicSitePage() {
                 </div>
               </div>
 
-              {/* Data Matrix */}
+              {/* Product Data */}
               <div className="flex-1 p-10 sm:p-20 flex flex-col overflow-y-auto no-scrollbar">
                 <div className="flex justify-between items-start mb-16">
                   <div className="space-y-4">
@@ -528,7 +528,7 @@ export default function PublicSitePage() {
                         <p className="text-[12px] font-black text-white/80 uppercase tracking-widest flex items-center gap-3"><Truck size={14} className="text-white/20" /> 24 SAATTE KARGO</p>
                      </div>
                      <div className="space-y-3">
-                        <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Siber Güvenlik</span>
+                        <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Güvenli Altyapı</span>
                         <p className="text-[12px] font-black text-white/80 uppercase tracking-widest flex items-center gap-3"><ShieldCheck size={14} className="text-white/20" /> SSL PROTECTED</p>
                      </div>
                   </div>
