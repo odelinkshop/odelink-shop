@@ -1,7 +1,7 @@
 const { fetchProductDetail } = require('./backend/services/shopierCatalogService');
 
 // Exact link from user's screenshot
-const testLink = 'https://www.shopier.com/ozdosaat/44859710';
+const testLink = 'https://www.shopier.com/LenegeLSaaT/45258616';
 
 async function test() {
     console.log('🧪 Testing:', testLink);
@@ -10,9 +10,9 @@ async function test() {
         console.log('✅ Title:', detail.title);
         console.log('✅ Price:', detail.price);
         console.log('✅ Discount Price:', detail.discountPrice);
-        console.log('✅ Images:', detail.images?.length);
-        if (detail.images?.length > 0) console.log('✅ First Image:', detail.images?.[0]);
-        console.log('✅ Description Snippet:', detail.description?.substring(0, 100), '...');
+        console.log('✅ Images Found:', detail.images?.length);
+        detail.images?.forEach((img, i) => console.log(`   📸 [${i+1}] ${img}`));
+        console.log('✅ Description Snippet:', detail.description?.substring(0, 150), '...');
         if (!detail.images || detail.images.length === 0) {
             console.error('❌ NO IMAGES FOUND - THIS IS THE BUG');
         }

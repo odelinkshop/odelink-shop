@@ -665,254 +665,12 @@ module.exports = {
   }),
   fetchProductDetail: async (url) => {
     try {
-      // 1. URL Normalization - Keep the full URL if possible to avoid redirect issues
       let targetUrl = url.trim();
       if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
-      
-      // If it's a short URL or specific numeric ID, expand it
-      const numericMatch = targetUrl.match(/\/(\d+)$/);
-      if (numericMatch && !targetUrl.includes('ShowProductNew') && !targetUrl.includes('/shop/')) {
-        // Only override if it's very short, otherwise keep the descriptive URL which is better for SEO/metadata
-        if (targetUrl.split('/').length < 4) {
-           targetUrl = `https://www.shopier.com/${numericMatch[1]}`;
-        }
-      }
-
-      console.log(`🔍 [fetchProductDetail] Processing: ${targetUrl}`);
-
-      let html;
-      const axiosConfig = {
-        headers: { 
-            'User-Agent': getRandomItem(USER_AGENTS),
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7'
-        },
-        timeout: 30000
-      };
-
-      try {
-        const res = await axios.get(targetUrl, axiosConfig);
-        html = res.data;
-      } catch (e) {
-        console.log(`⚠️ [fetchProductDetail] Direct access failed (${e.message}), trying ScraperAPI...`);
-        try {
-          const res = await axios.get('http://api.scraperapi.com', {
-              params: { api_key: SCRAPER_API_KEY, url: targetUrl },
-              timeout: 60000
-          });
-          html = res.data;
-        } catch (sErr) {
-          console.log(`❌ [fetchProductDetail] ScraperAPI failed: ${sErr.message}`);
-        }
-      }
-
-      if (!html || html.length < 1000) {
-          console.log(`👻 [fetchProductDetail] HTML too small or empty, using Ghost Puppeteer fallback...`);
-          return await module.exports.fetchWithPuppeteerGhostDetail(targetUrl);
-      }
-
-      const $ = cheerio.load(html);
-      
-      // --- JSON Extraction (Shopier V3) ---
-      let jsonData = null;
-      try {
-          const scripts = $('script').map((i, el) => $(el).html()).get();
-          for (const script of scripts) {
-              if (script && script.includes('} = {')) {
-                  const startIdx = script.indexOf('} = {') + 4;
-                  let bracketCount = 0;
-                  let endIdx = -1;
-                  for (let i = startIdx; i < script.length; i++) {
-                      if (script[i] === '{') bracketCount++;
-                      else if (script[i] === '}') {
-                          if (bracketCount === 0) {
-                              endIdx = i + 1;
-                              break;
-                          }
-                          bracketCount--;
-                      }
-                  }
-                  if (endIdx !== -1) {
-                      jsonData = JSON.parse(script.substring(startIdx, endIdx));
-                      break;
-                  }
-              }
-          }
-      } catch (jsonErr) { /* ignore */ }
-
-      // --- Title ---
-      let title = jsonData?.product?.name || 
-                  $('meta[property="og:title"]').attr('content') ||
-                  $('.product-name, .product-title-text, h1, .product-title').first().text().trim();
-      
-      // Clean title from "Shopier" suffix
-      if (title) title = title.split(' | ')[0].split(' - Shopier')[0].trim();
-
-      // --- Price ---
-      const parseP = (val) => {
-        if (val === undefined || val === null) return 0;
-        if (typeof val === 'object') {
-           val = val.price_formatted || val.price_legacy_formatted || val.amount || val.price || val.value || 0;
-        }
-        let cleaned = val.toString().replace(/[^\d.,]/g, '').replace(/\s/g, '');
-        if (!cleaned) return 0;
-        
-        // Handle thousands separator (1.199,00 -> 1199.00)
-        if (cleaned.includes('.') && cleaned.includes(',')) {
-          cleaned = cleaned.replace(/\./g, '').replace(',', '.');
-        } else if (cleaned.includes(',')) {
-          // Check if comma is decimal (common in TR)
-          cleaned = cleaned.replace(',', '.');
-        }
-        
-        return parseFloat(cleaned) || 0;
-      };
-
-      let currentPrice = 0;
-      let originalPrice = 0;
-
-      if (jsonData?.product?.price) {
-          currentPrice = parseP(jsonData.product.price.price_formatted || jsonData.product.price);
-      }
-
-      const rawCurrent = $('.price-current, .product-price, .price, .price-value, [data-price]').first().text() || $('[data-price]').first().attr('data-price');
-      const rawOld = $('.price-old, .product-old-price, .product-price-old, [class*="old-price"]').first().text();
-
-      if (!currentPrice) currentPrice = parseP(rawCurrent);
-      if (!originalPrice) originalPrice = parseP(rawOld);
-
-      // --- Last Resort Price Extraction (Regex) ---
-      if (currentPrice === 0 || originalPrice === 0) {
-        const fullText = $('body').text().replace(/\s+/g, ' ');
-        // More flexible regex for prices like "1.499,99 TL", "599,98₺", etc.
-        const priceRegex = /([\d.,]{2,12})\s*(?:TL|₺|TRY)/gi;
-        let match;
-        const foundPrices = [];
-        while ((match = priceRegex.exec(fullText)) !== null) {
-          const val = parseP(match[1]);
-          if (val > 20) foundPrices.push(val);
-        }
-        
-        if (foundPrices.length > 0) {
-          // Sort descending
-          foundPrices.sort((a, b) => b - a);
-          if (currentPrice === 0) {
-             // If we only found one, it's the current price
-             // If we found two, the larger is original, smaller is current
-             if (foundPrices.length >= 2) {
-                originalPrice = foundPrices[0];
-                currentPrice = foundPrices[1];
-             } else {
-                currentPrice = foundPrices[0];
-             }
-          } else if (originalPrice === 0 && foundPrices[0] > currentPrice) {
-             originalPrice = foundPrices[0];
-          }
-        }
-      }
-
-      // --- Images (ULTRA AGGRESSIVE) ---
-      const images = [];
-      const seen = new Set();
-      const addImg = (src) => {
-        if (!src) return;
-        // Clean possible quotes or backslashes from JSON strings
-        const cleaned = src.replace(/\\/g, '').replace(/["']/g, '').trim();
-        const norm = normalizeShopierImageUrl(cleaned);
-        if (norm && norm.includes('cdn.shopier.app') && !seen.has(norm)) {
-          if (!norm.includes('600icons') && !norm.includes('logo_')) {
-            images.push(norm);
-            seen.add(norm);
-          }
-        }
-      };
-
-      // 1. Primary from JSON
-      if (jsonData?.product?.primary_variant_image) addImg(jsonData.product.primary_variant_image);
-      if (jsonData?.product?.images) {
-        if (Array.isArray(jsonData.product.images)) jsonData.product.images.forEach(img => addImg(img.url || img));
-        else if (typeof jsonData.product.images === 'object') Object.values(jsonData.product.images).forEach(img => addImg(img.url || img));
-      }
-      
-      // 2. Product Gallery Selectors
-      $('.product-images img, .swiper-slide img, .gallery img, #product-gallery img, .product-detail-images img, .product-image-container img, .product-img img, [class*="product"] img').each((i, el) => {
-         addImg($(el).attr('data-src') || $(el).attr('src') || $(el).attr('data-original') || $(el).attr('data-lazy-src'));
-      });
-
-      // 3. Script search (Regex for image URLs in scripts)
-      if (images.length < 3) {
-        $('script').each((i, el) => {
-          const content = $(el).html();
-          if (content && content.includes('cdn.shopier.app')) {
-            const matches = content.match(/https:\/\/cdn\.shopier\.app\/[^\s"']+\.(?:jpe?g|png|webp)/gi);
-            if (matches) matches.forEach(m => addImg(m));
-          }
-        });
-      }
-
-      // 4. Fallback to Meta
-      if (images.length === 0) addImg($('meta[property="og:image"]').attr('content'));
-
-      // 5. Last resort: all images
-      if (images.length < 2) {
-        $('img').each((i, el) => {
-          const src = $(el).attr('data-src') || $(el).attr('src');
-          addImg(src);
-        });
-      }
-
-      // --- Desperate Image Recovery (Regex on Raw HTML) ---
-      if (images.length === 0) {
-        const rawHtml = $.html();
-        const imgRegex = /https:\/\/cdn\.shopier\.app\/[^\s"']+\.(?:jpe?g|png|webp)/gi;
-        const matches = rawHtml.match(imgRegex);
-        if (matches) matches.forEach(m => addImg(m));
-      }
-
-      // --- Description ---
-      let description = jsonData?.product?.description || 
-                        $('.product-description, #tab-description, .description').html() || 
-                        $('meta[property="og:description"]').attr('content') || '';
-
-      const result = { 
-        url, 
-        title: title || 'Yeni Ürün', 
-        price: originalPrice > currentPrice ? originalPrice : currentPrice, 
-        discountPrice: originalPrice > currentPrice ? currentPrice : 0,
-        images: images.slice(0, 15), 
-        variations: [], 
-        category: 'Genel', 
-        description: description ? description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim() : ''
-      };
-
-      // *** CRITICAL: If axios got HTML but found NO images, Shopier likely returned a bot page ***
-      // Force Puppeteer Stealth fallback
-      if (result.images.length === 0) {
-        console.log(`🔄 [fetchProductDetail] Axios found NO images for ${url} - Shopier bot protection detected! Falling back to Puppeteer Stealth...`);
-        try {
-          const puppeteerResult = await module.exports.fetchWithPuppeteerGhostDetail(url);
-          if (puppeteerResult && puppeteerResult.images && puppeteerResult.images.length > 0) {
-            console.log(`✅ [fetchProductDetail] Puppeteer recovered ${puppeteerResult.images.length} images!`);
-            return puppeteerResult;
-          } else {
-            console.log(`⚠️ [fetchProductDetail] Puppeteer also found no images. Returning axios result with title.`);
-          }
-        } catch (puppErr) {
-          console.error(`❌ [fetchProductDetail] Puppeteer fallback failed:`, puppErr.message);
-        }
-      }
-
-      return result;
-    } catch (e) {
-      console.error(`❌ [fetchProductDetail] Global Error:`, e.message);
-      // Even on global error, try Puppeteer as last resort
-      console.log(`🔄 [fetchProductDetail] Global error caught, trying Puppeteer as last resort for ${url}...`);
-      try {
-        const puppeteerResult = await module.exports.fetchWithPuppeteerGhostDetail(url);
-        if (puppeteerResult && puppeteerResult.images && puppeteerResult.images.length > 0) {
-          return puppeteerResult;
-        }
-      } catch (pe) { /* swallow */ }
+      console.log(`🔍 [fetchProductDetail] Processing with Puppeteer: ${targetUrl}`);
+      return await module.exports.fetchWithPuppeteerGhostDetail(targetUrl);
+    } catch (error) {
+      console.error('❌ [fetchProductDetail] Fatal Error:', error.message);
       return { url, title: 'Yeni Ürün', price: 0, images: [], variations: [], category: '', description: '' };
     }
   },
@@ -955,87 +713,104 @@ module.exports = {
 
       const details = await page.evaluate(() => {
         const cleanT = (t) => t?.replace(/\s+/g, ' ').trim() || '';
+        
+        // --- 1. UTILS ---
+        const finalImgMap = new Map();
+        const addImg = (url) => {
+          if (!url || typeof url !== 'string' || !url.includes('cdn.shopier.app')) return;
+          const cleanUrl = url.split('?')[0].replace(/\\/g, '');
+          const s = cleanUrl.toLowerCase();
+          if (s.includes('logo') || s.includes('icon') || s.includes('pixel') || s.includes('profile') || s.includes('banner')) return;
+          const fileName = cleanUrl.split('/').pop();
+          if (!finalImgMap.has(fileName) || cleanUrl.includes('scaledoriginal')) finalImgMap.set(fileName, cleanUrl);
+        };
 
-        // --- 1. Title ---
-        const titleEl = document.querySelector('.product-title-text, h1, .product-title, .product-name, [class*="product-detail"] h1');
-        let title = cleanT(titleEl?.textContent) || document.title.split(' | ')[0];
-
-        // --- 2. Prices (Surgical Precision) ---
         const parseP = (txt) => {
           if (!txt) return 0;
-          let s = txt.replace(/[^\d.,]/g, '').replace(/\s/g, '');
-          if (s.includes('.') && s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
-          else if (s.includes(',')) s = s.replace(',', '.');
-          return parseFloat(s) || 0;
+          let s = txt.toString().replace(/[^\d.,]/g, '').trim();
+          if (!s) return 0;
+          const dotCount = (s.match(/\./g) || []).length;
+          const commaCount = (s.match(/,/g) || []).length;
+          if (dotCount > 0 && commaCount > 0) s = s.replace(/\./g, '').replace(',', '.');
+          else if (commaCount === 1) s = s.replace(',', '.');
+          else if (dotCount === 1) {
+             const parts = s.split('.');
+             if (parts[1].length === 3) s = s.replace(/\./g, '');
+          } else if (dotCount > 1) s = s.replace(/\./g, '');
+          let val = parseFloat(s) || 0;
+          if (val > 10000000) val = val / 100;
+          return val;
         };
 
-        // TARGET SPECIFIC CONTAINERS FOR PRICE
-        const mainPriceArea = document.querySelector('.product-price-container, .price-container, .shopier-store--product-detail-price');
-        let curPriceEl = mainPriceArea?.querySelector('.price-current, .product-price, .current-price') || 
-                         document.querySelector('.price-current, .product-price, #product-price');
-        let oldPriceEl = mainPriceArea?.querySelector('.price-old, .product-old-price, strike') || 
-                         document.querySelector('.price-old, .product-old-price, strike');
-        
-        let p1 = parseP(curPriceEl?.textContent);
-        let p2 = parseP(oldPriceEl?.textContent);
+        // --- 2. DATA EXTRACTION (Direct Regex) ---
+        let title = '';
+        let price = 0;
+        let discountPrice = 0;
+        let description = '';
 
-        // If still 0, look for the largest number near TL
-        if (p1 === 0) {
-          const bodyText = document.body.innerText;
-          const matches = [...bodyText.matchAll(/([\d.,]{3,12})\s*(?:TL|₺|TRY)/gi)]; // Min 3 digits to avoid '131'
-          const vals = matches.map(m => parseP(m[1])).filter(v => v > 50).sort((a,b) => b-a);
-          if (vals.length >= 2) { p2 = vals[0]; p1 = vals[1]; }
-          else if (vals.length === 1) { p1 = vals[0]; }
-        }
+        try {
+          const scripts = Array.from(document.querySelectorAll('script'));
+          for (const s of scripts) {
+            const content = s.textContent || '';
+            if (content.includes('"product"') && (content.includes('"price_formatted"') || content.includes('"price"'))) {
+              const titleMatch = content.match(/"name":"([^"]+)"/) || content.match(/"title":"([^"]+)"/);
+              if (titleMatch && !title) title = cleanT(titleMatch[1]);
 
-        const price = Math.max(p1, p2);
-        const discountPrice = (p1 > 0 && p2 > 0) ? Math.min(p1, p2) : 0;
+              const pOrigMatch = content.match(/"price_legacy_formatted":"([^"]+)"/);
+              const pCurrMatch = content.match(/"price_formatted":"([^"]+)"/);
+              const pOrig = pOrigMatch ? parseP(pOrigMatch[1]) : 0;
+              const pCurr = pCurrMatch ? parseP(pCurrMatch[1]) : 0;
 
-        // --- 3. Badges ---
-        const badges = Array.from(document.querySelectorAll('.product-badge, .badge, .shipping-info, .cargo-badge'))
-          .map(el => cleanT(el.textContent))
-          .filter(t => t.length > 2 && t.length < 50);
-        
-        // --- 4. Description ---
-        const descEl = document.querySelector('.product-description, #tab-description, .description, .product-details, .shopier-product-description');
-        let description = descEl?.innerHTML || '';
-        
-        if (badges.length > 0) {
-          const badgeHtml = `<div style="margin-bottom:15px; display:flex; flex-wrap:wrap; gap:8px;">${badges.map(b => `<span style="background:#f0f0f0; padding:4px 10px; border-radius:6px; font-weight:bold; color:#111; font-size:12px; border:1px solid #ddd;">${b}</span>`).join('')}</div>`;
-          description = badgeHtml + description;
-        }
+              if (pOrig > 0 || pCurr > 0) {
+                price = Math.max(pOrig, pCurr);
+                if (pOrig > pCurr && pCurr > 0) discountPrice = pCurr;
+              }
 
-        // --- 5. Images (Strict Deduplication) ---
-        const imgSet = new Set();
-        document.querySelectorAll('img').forEach(img => {
-          const src = img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original');
-          if (!src) return;
-          
-          const s = src.toLowerCase();
-          // Filter out junk
-          if (s.includes('blank.gif') || s.includes('loader') || s.includes('600icons') || 
-              s.includes('logo') || s.includes('icon') || s.includes('shopier.svg') ||
-              s.includes('pixel') || s.startsWith('data:') || s.includes('profile')) return;
-          
-          // Only take high-quality CDN images
-          if (s.includes('cdn.shopier.app') && (s.includes('scaledoriginal') || s.includes('/pictures/'))) {
-            imgSet.add(src.split('?')[0]
-              .replace('/pictures_mid/', '/pictures/')
-              .replace('/pictures_small/', '/pictures/')
-              .replace('/pictures_large/', '/pictures/')
-            );
+              const imgMatches = content.match(/https:\/\/cdn\.shopier\.app\/[^\s"']+\.(?:jpe?g|png|webp)/gi);
+              if (imgMatches) imgMatches.forEach(addImg);
+              
+              const descMatch = content.match(/"description":"([^"]+)"/);
+              if (descMatch && !description) description = descMatch[1].replace(/\\n/g, '<br>').replace(/\\"/g, '"');
+            }
           }
-        });
+        } catch (e) { }
 
-        return { 
-          title, 
-          price,
-          discountPrice,
-          images: [...imgSet].slice(0, 15), 
-          variations: [], 
-          category: 'Genel', 
-          description 
-        };
+        // --- 3. FALLBACKS ---
+        if (!title) title = cleanT(document.querySelector('.product-title-text, h1, .product-title')?.textContent) || document.title.split(' | ')[0];
+        if (!description) description = document.querySelector('.product-description, #tab-description')?.innerHTML || '';
+
+        if (finalImgMap.size === 0) {
+          document.querySelectorAll('img').forEach(img => addImg(img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original')));
+        }
+
+        if (price === 0 || discountPrice === 0) {
+           const pEl = document.querySelector('.shopier-store--product-detail-price, .product-price-container, .product-detail-price, .product-price-wrapper');
+           if (pEl) {
+             // Try data-price attributes first (High Accuracy)
+             const currEl = pEl.querySelector('.price-current, [class*="price-current"], .product-price');
+             const oldEl = pEl.querySelector('.price-old, [class*="price-old"], .product-old-price');
+             
+             const p1 = currEl ? parseP(currEl.getAttribute('data-price') || currEl.textContent) : 0;
+             const p2 = oldEl ? parseP(oldEl.getAttribute('data-price') || oldEl.textContent) : 0;
+             
+             if (p1 > 0 || p2 > 0) {
+               price = Math.max(p1, p2, price);
+               const minP = Math.min(p1, p2);
+               if (minP > 0 && minP < price) discountPrice = minP;
+               else if (p1 > 0 && p1 === price && p2 === 0) { /* only current price found */ }
+             }
+
+             // If still no prices, look for numbers in spans
+             if (price === 0) {
+               const nums = Array.from(pEl.querySelectorAll('span, b, div, strong, strike'))
+                 .map(el => parseP(el.textContent)).filter(v => v > 1).sort((a,b) => b-a);
+               if (nums.length >= 1) price = nums[0];
+               if (nums.length >= 2) discountPrice = nums[1];
+             }
+           }
+        }
+
+        return { title, price, discountPrice, images: Array.from(finalImgMap.values()).slice(0, 15), variations: [], category: 'Genel', description };
       });
       
       console.log(`🤖 [PuppeteerStealth] Finished: "${details.title}", ${details.images.length} images`);
