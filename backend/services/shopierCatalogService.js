@@ -960,7 +960,7 @@ module.exports = {
         const titleEl = document.querySelector('.product-title-text, h1, .product-title, .product-name, [class*="product-detail"] h1');
         let title = cleanT(titleEl?.textContent) || document.title.split(' | ')[0];
 
-        // --- 2. Prices ---
+        // --- 2. Prices (Surgical Precision) ---
         const parseP = (txt) => {
           if (!txt) return 0;
           let s = txt.replace(/[^\d.,]/g, '').replace(/\s/g, '');
@@ -969,16 +969,21 @@ module.exports = {
           return parseFloat(s) || 0;
         };
 
-        const curPriceEl = document.querySelector('.price-current, .product-price, .current-price, #product-price, [class*="price-current"]');
-        const oldPriceEl = document.querySelector('.price-old, .product-old-price, .old-price, strike, .price-discounted');
+        // TARGET SPECIFIC CONTAINERS FOR PRICE
+        const mainPriceArea = document.querySelector('.product-price-container, .price-container, .shopier-store--product-detail-price');
+        let curPriceEl = mainPriceArea?.querySelector('.price-current, .product-price, .current-price') || 
+                         document.querySelector('.price-current, .product-price, #product-price');
+        let oldPriceEl = mainPriceArea?.querySelector('.price-old, .product-old-price, strike') || 
+                         document.querySelector('.price-old, .product-old-price, strike');
         
         let p1 = parseP(curPriceEl?.textContent);
         let p2 = parseP(oldPriceEl?.textContent);
 
+        // If still 0, look for the largest number near TL
         if (p1 === 0) {
           const bodyText = document.body.innerText;
-          const matches = [...bodyText.matchAll(/([\d.,]{2,12})\s*(?:TL|₺|TRY)/gi)];
-          const vals = matches.map(m => parseP(m[1])).filter(v => v > 10).sort((a,b) => b-a);
+          const matches = [...bodyText.matchAll(/([\d.,]{3,12})\s*(?:TL|₺|TRY)/gi)]; // Min 3 digits to avoid '131'
+          const vals = matches.map(m => parseP(m[1])).filter(v => v > 50).sort((a,b) => b-a);
           if (vals.length >= 2) { p2 = vals[0]; p1 = vals[1]; }
           else if (vals.length === 1) { p1 = vals[0]; }
         }
@@ -986,49 +991,41 @@ module.exports = {
         const price = Math.max(p1, p2);
         const discountPrice = (p1 > 0 && p2 > 0) ? Math.min(p1, p2) : 0;
 
-        // --- 3. Badges (Delivery, Shipping) ---
-        const badges = Array.from(document.querySelectorAll('.product-badge, .badge, .shipping-info, .cargo-badge, [class*="badge"], [class*="cargo"]'))
+        // --- 3. Badges ---
+        const badges = Array.from(document.querySelectorAll('.product-badge, .badge, .shipping-info, .cargo-badge'))
           .map(el => cleanT(el.textContent))
           .filter(t => t.length > 2 && t.length < 50);
         
         // --- 4. Description ---
-        const descSelectors = ['.product-description', '#tab-description', '.description', '.product-details', '.shopier-product-description', '[class*="description"]'];
-        let description = '';
-        for (const sel of descSelectors) {
-          const el = document.querySelector(sel);
-          if (el && el.innerText.trim().length > 5) {
-            description = el.innerHTML;
-            break;
-          }
-        }
+        const descEl = document.querySelector('.product-description, #tab-description, .description, .product-details, .shopier-product-description');
+        let description = descEl?.innerHTML || '';
         
         if (badges.length > 0) {
           const badgeHtml = `<div style="margin-bottom:15px; display:flex; flex-wrap:wrap; gap:8px;">${badges.map(b => `<span style="background:#f0f0f0; padding:4px 10px; border-radius:6px; font-weight:bold; color:#111; font-size:12px; border:1px solid #ddd;">${b}</span>`).join('')}</div>`;
           description = badgeHtml + description;
         }
 
-        // --- 5. Images (No Placeholders) ---
+        // --- 5. Images (Strict Deduplication) ---
         const imgSet = new Set();
-        const addIfValid = (img) => {
-          if (!img) return;
+        document.querySelectorAll('img').forEach(img => {
           const src = img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original');
           if (!src) return;
           
           const s = src.toLowerCase();
+          // Filter out junk
           if (s.includes('blank.gif') || s.includes('loader') || s.includes('600icons') || 
               s.includes('logo') || s.includes('icon') || s.includes('shopier.svg') ||
-              s.includes('pixel') || s.startsWith('data:')) return;
+              s.includes('pixel') || s.startsWith('data:') || s.includes('profile')) return;
           
-          if (s.includes('cdn.shopier.app')) {
+          // Only take high-quality CDN images
+          if (s.includes('cdn.shopier.app') && (s.includes('scaledoriginal') || s.includes('/pictures/'))) {
             imgSet.add(src.split('?')[0]
               .replace('/pictures_mid/', '/pictures/')
               .replace('/pictures_small/', '/pictures/')
               .replace('/pictures_large/', '/pictures/')
             );
           }
-        };
-
-        document.querySelectorAll('img').forEach(addIfValid);
+        });
 
         return { 
           title, 
