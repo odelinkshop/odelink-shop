@@ -206,10 +206,10 @@ const UserPanel = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-24 pb-32 relative">
         {/* Header Section: Reimagined for Mobile */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 sm:mb-20 px-2">
-          <div className="text-center md:text-left space-y-2">
-            <h1 className="text-4xl sm:text-6xl font-serif tracking-tight text-[#F2EBE1]">Mağaza Paneli</h1>
-            <div className="flex items-center justify-center md:justify-start gap-3">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-20 px-2">
+          <div className="text-center md:text-left space-y-1">
+            <h1 className="text-3xl sm:text-6xl font-serif tracking-tight text-[#F2EBE1]">Mağaza Paneli</h1>
+            <div className="flex items-center justify-center md:justify-start gap-3 mt-2">
                <div className="h-px w-8 bg-white/20 hidden sm:block" />
                <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.4em] text-white/50 font-black">Yönetim Paneli</p>
             </div>
@@ -234,7 +234,7 @@ const UserPanel = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2.5 px-6 sm:px-8 py-5 text-[10px] font-black tracking-[0.2em] transition-all relative whitespace-nowrap ${activeTab === tab.id ? 'text-white' : 'text-white/30 hover:text-white'}`}
+                className={`flex items-center gap-2 px-4 sm:px-8 py-4 sm:py-5 text-[9px] sm:text-[10px] shrink-0 font-black tracking-[0.1em] sm:tracking-[0.2em] transition-all relative whitespace-nowrap ${activeTab === tab.id ? 'text-white' : 'text-white/30 hover:text-white'}`}
               >
                 <tab.icon size={15} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
                 {tab.label}
@@ -250,7 +250,7 @@ const UserPanel = () => {
             {capabilities?.tier === 'profesyonel' && (
               <button 
                 onClick={() => setShowBulkModal(true)}
-                className={`flex items-center gap-2.5 px-6 sm:px-8 py-5 text-[10px] font-black tracking-[0.2em] transition-all relative whitespace-nowrap ${showBulkModal ? 'text-white' : 'text-white/30 hover:text-white'}`}
+                className={`flex items-center gap-2 px-4 sm:px-8 py-4 sm:py-5 text-[9px] sm:text-[10px] shrink-0 font-black tracking-[0.1em] sm:tracking-[0.2em] transition-all relative whitespace-nowrap ${showBulkModal ? 'text-white' : 'text-white/30 hover:text-white'}`}
               >
                 <Link size={15} />
                 TOPLU LİNK YÜKLE
@@ -390,7 +390,7 @@ const UserPanel = () => {
                      {[
                         { label: 'Domain Rehberi', icon: Globe, path: '/guide' },
                         { label: 'Kurulum (Windows)', icon: Monitor, path: '/download' },
-                        { label: 'VIP Akademi', icon: Zap, path: '/services' }
+                        { label: 'Eğitim Merkezi', icon: Zap, path: '/services' }
                       ].map((res, i) => (
                        <div key={i} onClick={() => navigate(res.path)} className="group cursor-pointer">
                          <div className="w-12 h-12 bg-white/5 border border-white/5 flex items-center justify-center text-white/20 group-hover:text-white group-hover:border-white/30 transition-all mb-4">
@@ -438,17 +438,17 @@ const UserPanel = () => {
                     <Sparkles size={120} />
                   </div>
                   
-                  <div className="flex items-center gap-6 relative z-10">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/10 rounded-sm shrink-0">
-                      <Link size={24} strokeWidth={2.5} />
+                  <div className="flex items-center gap-4 sm:gap-6 relative z-10 w-full sm:w-auto">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/10 rounded-sm shrink-0">
+                      <Link size={20} className="sm:w-6 sm:h-6" strokeWidth={2.5} />
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
+                    <div className="space-y-1 sm:space-y-2 flex-1">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">Sistem Entegrasyonu</span>
+                        <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest sm:tracking-[0.3em] text-white/40">Sistem Entegrasyonu</span>
                       </div>
-                      <h3 className="text-2xl sm:text-3xl font-serif text-[#F2EBE1] tracking-tighter">Toplu Veri Aktarımı</h3>
-                      <p className="text-[9px] sm:text-[10px] text-white/20 font-bold uppercase tracking-[0.2em] max-w-md leading-relaxed">
+                      <h3 className="text-xl sm:text-3xl font-serif text-[#F2EBE1] tracking-tighter leading-none">Toplu Veri Aktarımı</h3>
+                      <p className="text-[8px] sm:text-[10px] text-white/20 font-bold uppercase tracking-widest sm:tracking-[0.2em] max-w-md leading-tight sm:leading-relaxed">
                         Shopier bağlantılarınızı kurumsal arşive entegre edin.
                       </p>
                     </div>
@@ -465,15 +465,15 @@ const UserPanel = () => {
                 </div>
 
                 {/* Processing Core */}
-                <div className="p-6 sm:p-10 gap-6 flex-1 overflow-y-auto no-scrollbar flex flex-col">
+                <div className="p-4 sm:p-10 gap-4 sm:gap-6 flex-1 overflow-y-auto no-scrollbar flex flex-col">
                   <div className="flex flex-col flex-1 space-y-4">
-                    <div className="flex justify-between items-end px-1 shrink-0">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-end px-1 shrink-0 gap-2 sm:gap-0">
                        <div className="space-y-1">
                          <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Veri Giriş Matrisi</label>
                          <p className="text-[8px] text-white/20 font-bold uppercase tracking-widest">Her satıra bir ürün linki ekleyin</p>
                        </div>
-                       <div className="flex items-center gap-2">
-                         <span className="text-[9px] font-black text-white/30 tracking-widest">{bulkLinks.split('\n').filter(l => l.trim()).length} LİNK TESPİT EDİLDİ</span>
+                       <div className="flex items-center">
+                         <span className="text-[8px] sm:text-[9px] font-black text-white/30 tracking-widest">{bulkLinks.split('\n').filter(l => l.trim()).length} LİNK TESPİT EDİLDİ</span>
                        </div>
                     </div>
                     
@@ -490,12 +490,12 @@ const UserPanel = () => {
                   </div>
 
                   {/* Action Bar */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2 shrink-0">
-                    <div className="flex items-center gap-4 text-white/20">
-                      <div className="w-10 h-10 border border-white/5 flex items-center justify-center shrink-0">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 pt-2 shrink-0">
+                    <div className="flex items-center gap-3 sm:gap-4 text-white/20 w-full sm:w-auto">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 border border-white/5 flex items-center justify-center shrink-0">
                         <Zap size={14} />
                       </div>
-                      <p className="text-[9px] font-medium uppercase tracking-[0.2em] leading-relaxed max-w-[250px]">
+                      <p className="text-[8px] sm:text-[9px] font-medium uppercase tracking-[0.1em] sm:tracking-[0.2em] leading-relaxed flex-1">
                         Gelişmiş altyapı, ürün verilerinizi otomatik olarak sisteme işler.
                       </p>
                     </div>
@@ -525,8 +525,8 @@ const UserPanel = () => {
                 </div>
 
                 {/* Security Footer */}
-                <div className="px-10 py-8 bg-white/[0.02] border-t border-white/5 flex justify-center">
-                  <p className="text-[8px] sm:text-[9px] text-white/10 font-black uppercase tracking-[0.5em]">Nova SaaS End-to-End Encryption & Security Verified</p>
+                <div className="px-4 sm:px-10 py-6 bg-white/[0.02] border-t border-white/5 flex justify-center text-center">
+                  <p className="text-[7px] sm:text-[9px] text-white/10 font-black uppercase tracking-widest sm:tracking-[0.5em]">Nova SaaS End-to-End Encryption & Security</p>
                 </div>
               </motion.div>
             </div>
