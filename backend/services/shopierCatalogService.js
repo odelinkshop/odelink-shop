@@ -84,6 +84,9 @@ module.exports = {
         const addImg = (u) => {
           if (!u || typeof u !== 'string' || !u.includes('cdn.shopier.app')) return;
           const cleanUrl = u.split('?')[0].replace(/\\/g, '');
+          const s = cleanUrl.toLowerCase();
+          if (s.includes('logo') || s.includes('icon') || s.includes('pixel') || s.includes('profile') || s.includes('banner')) return;
+          
           const fileName = cleanUrl.split('/').pop();
           if (!finalImgMap.has(fileName) || cleanUrl.includes('scaledoriginal')) finalImgMap.set(fileName, cleanUrl);
         };
@@ -135,11 +138,26 @@ module.exports = {
         // Description
         description = cleanT(document.querySelector('#productDescription')?.innerText || document.querySelector('.product-description')?.innerText);
 
-        // Images
-        document.querySelectorAll('img').forEach(img => {
-          addImg(img.src);
-          addImg(img.getAttribute('data-src'));
-          addImg(img.getAttribute('data-lazy-src'));
+        // Images - TARGETED EXTRACTION
+        const productContainer = document.querySelector('.product-container') || document.querySelector('#productDescription')?.closest('div') || document.body;
+        
+        // Find thumbnails and main image specifically
+        const galleryImgs = productContainer.querySelectorAll('img');
+        galleryImgs.forEach(img => {
+          const src = img.src || img.getAttribute('data-src') || img.getAttribute('data-lazy-src');
+          if (!src) return;
+
+          // EXCLUSION LIST: Skip related products, store logos, etc.
+          const isJunk = img.closest('.related-products') || 
+                         img.closest('.suggested-products') || 
+                         img.closest('.product-recommendations') ||
+                         img.closest('.shopier-apps--related-product-product-card-product-link') ||
+                         img.closest('.shopier-store--header-store-link') ||
+                         img.closest('.follow-store-body');
+                         
+          if (isJunk) return;
+
+          addImg(src);
         });
 
         return {
