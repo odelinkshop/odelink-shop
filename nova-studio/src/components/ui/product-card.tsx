@@ -15,11 +15,18 @@ interface ProductCardProps {
 
 const formatPrice = (price: string | number, currency: string = "TL"): string => {
   if (!price && price !== 0) return "-";
-  let str = String(price).trim();
-  if (/[₺TL$€£]/.test(str)) return str;
+  let cleanPrice = String(price).replace(/[₺TL$€£]/g, '').trim();
   
-  const n = parseFloat(str.replace(/\./g, '').replace(',', '.'));
-  if (isNaN(n)) return str;
+  if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
+    cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
+  } else if (cleanPrice.includes('.') && cleanPrice.split('.').pop()?.length === 3) {
+    cleanPrice = cleanPrice.replace(/\./g, '');
+  } else if (cleanPrice.includes(',')) {
+    cleanPrice = cleanPrice.replace(',', '.');
+  }
+  
+  const n = parseFloat(cleanPrice);
+  if (isNaN(n)) return String(price);
   
   const symbolMap: Record<string, string> = {
     'TL': '₺', 'TRY': '₺', 'USD': '$', 'EUR': '€', 'GBP': '£'
@@ -27,7 +34,6 @@ const formatPrice = (price: string | number, currency: string = "TL"): string =>
   
   const symbol = symbolMap[currency.toUpperCase()] || currency;
   
-  // MANUEL FORMATLAMA: Sunucu-Client farkını bitirir
   const parts = n.toFixed(2).split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   const formattedValue = parts.join(',');

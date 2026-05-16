@@ -23,20 +23,27 @@ import { cn } from "@/lib/utils";
 
 const formatPrice = (price: string | number): string => {
   if (price === undefined || price === null || price === "") return "0,00";
+  
+  // Saf sayıya çevir: Tüm noktaları sil, varsa virgülü noktaya çevir
   let cleanPrice = String(price).replace(/[₺TL$€£]/g, '').trim();
   
+  // Eğer '1.250,00' formatındaysa
   if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
-  } else if (cleanPrice.includes(',')) {
-    cleanPrice = cleanPrice.replace(',', '.');
-  } else if (cleanPrice.includes('.') && cleanPrice.split('.').pop()?.length === 3) {
+  } 
+  // Eğer sadece '1.250' formatındaysa (binlik ayracı)
+  else if (cleanPrice.includes('.') && cleanPrice.split('.').pop()?.length === 3) {
     cleanPrice = cleanPrice.replace(/\./g, '');
+  }
+  // Eğer sadece virgül varsa (1250,00)
+  else if (cleanPrice.includes(',')) {
+    cleanPrice = cleanPrice.replace(',', '.');
   }
   
   const n = parseFloat(cleanPrice);
   if (isNaN(n)) return String(price);
   
-  // EL YAPIMI FORMATLAMA: Intl.NumberFormat yerine manuel (sunucu-client farkını bitirir)
+  // Milyarlık/Binlik ayracı nokta, kuruş ayracı virgül olacak şekilde manuel format
   const parts = n.toFixed(2).split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return parts.join(',');
