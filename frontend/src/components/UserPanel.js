@@ -89,6 +89,11 @@ const UserPanel = () => {
           return;
         }
 
+        if (!res.ok) {
+          setError(data?.error || 'Panel verileri alınamadı');
+          return;
+        }
+
         if (cancelled) return;
         setMe(data.user || null);
         setSites(Array.isArray(data.sites) ? data.sites : []);
@@ -153,7 +158,12 @@ const UserPanel = () => {
   };
 
   const handleBulkImport = async () => {
-    const links = bulkLinks.split('\n').map(l => l.trim()).filter(l => l.startsWith('http'));
+    const links = bulkLinks.split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 5)
+      .map(l => l.startsWith('http') ? l : 'https://' + l)
+      .filter(l => l.includes('shopier.com'));
+
     if (links.length === 0) {
       toast.error('Lütfen en az bir geçerli Shopier ürün linki girin.');
       return;
@@ -173,15 +183,23 @@ const UserPanel = () => {
 
       const data = await res.json();
       if (res.ok) {
-        const successCount = data.results.filter(r => r.success).length;
-        const failCount = data.results.filter(r => !r.success).length;
+        const successes = data.results.filter(r => r.success);
+        const failures = data.results.filter(r => !r.success);
         
-        toast.success(`İçe aktarma tamamlandı: ${successCount} başarılı, ${failCount} başarısız.`);
+        if (successes.length > 0) {
+          toast.success(`${successes.length} ürün başarıyla eklendi.`);
+        }
+        
+        if (failures.length > 0) {
+          failures.forEach(f => {
+             toast.error(`Hata (${f.link.split('/').pop()}): ${f.error || 'Veri çekilemedi'}`);
+          });
+        }
         
         setShowBulkModal(false);
         setBulkLinks('');
       } else {
-        toast.error(data.error || 'İçe aktarma sırasında hata oluştu.');
+        toast.error(data.error || 'İçe aktarma sırasında sistem hatası oluştu.');
       }
     } catch (e) {
       toast.error('Bağlantı hatası oluştu.');

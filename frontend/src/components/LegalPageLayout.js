@@ -13,7 +13,8 @@ import {
   Printer,
   Share2,
   ChevronRight,
-  Search
+  Search,
+  X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -112,11 +113,9 @@ const LegalPageLayout = ({ title, children, lastUpdated = '21.04.2026' }) => {
                 <div className="lg:hidden">
                   <button 
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-blue-500 hover:bg-white/10 transition-all active:scale-95"
+                    className="flex items-center justify-center w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-blue-500 hover:bg-white/10 transition-all active:scale-95 shadow-xl"
                   >
-                    <FileText size={18} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">BELGE SEÇ</span>
-                    <ChevronRight size={14} className={`transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : ''}`} />
+                    {isMenuOpen ? <X size={24} /> : <div className="space-y-1.5"><div className="w-6 h-0.5 bg-blue-500 rounded-full" /><div className="w-4 h-0.5 bg-blue-500 rounded-full ml-auto" /><div className="w-6 h-0.5 bg-blue-500 rounded-full" /></div>}
                   </button>
                 </div>
 

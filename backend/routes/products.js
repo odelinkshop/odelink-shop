@@ -71,11 +71,11 @@ router.post('/import-links', authMiddleware, async (req, res) => {
 
     for (const link of links) {
       try {
+        console.log(`🔍 [${req.userId}] Link işleniyor: ${link}`);
         const detail = await fetchProductDetail(link);
+        
         if (detail && detail.images && detail.images.length > 0) {
-          // Shopier HTML'inden başlığı da çekmeye çalışalım (eğer service vermiyorsa)
-          // Normalde fetchProductDetail title vermiyor olabilir, kontrol edelim.
-          // Eğer vermiyorsa linkten veya meta'dan çekebiliriz.
+          console.log(`✅ [${req.userId}] Veri çekildi: "${detail.title}", Resim: ${detail.images.length}, Fiyat: ${detail.price}`);
           
           const product = await Product.create({
             userId: req.userId,
@@ -88,12 +88,14 @@ router.post('/import-links', authMiddleware, async (req, res) => {
             category: detail.category || 'Genel',
             stockCount: 100
           });
+          
           results.push({ link, success: true, id: product.id });
         } else {
-          results.push({ link, success: false, error: 'Ürün verisi çekilemedi' });
+          console.warn(`⚠️ [${req.userId}] Linkten veri alınamadı veya resim yok: ${link}`);
+          results.push({ link, success: false, error: 'Ürün verisi çekilemedi veya resim bulunamadı' });
         }
       } catch (err) {
-        console.error(`❌ Link çekme hatası (${link}):`, err.message);
+        console.error(`❌ [${req.userId}] Link çekme/kaydetme hatası (${link}):`, err.message);
         results.push({ link, success: false, error: err.message });
       }
     }
@@ -108,11 +110,17 @@ router.post('/import-links', authMiddleware, async (req, res) => {
 // Ürün sil
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
+    console.log(`🗑️ [${req.userId}] Ürün siliniyor: ${req.params.id}`);
     const product = await Product.delete(req.params.id, req.userId);
-    if (!product) return res.status(404).json({ error: 'Ürün bulunamadı' });
+    if (!product) {
+      console.warn(`⚠️ [${req.userId}] Silinecek ürün bulunamadı veya yetki yok: ${req.params.id}`);
+      return res.status(404).json({ error: 'Ürün bulunamadı veya silme yetkiniz yok' });
+    }
     await clearUserSiteCaches(req.userId);
+    console.log(`✅ [${req.userId}] Ürün başarıyla silindi: ${req.params.id}`);
     res.json({ message: 'Ürün başarıyla silindi' });
   } catch (error) {
+    console.error(`❌ [${req.userId}] Ürün silme hatası:`, error.message);
     res.status(500).json({ error: error.message });
   }
 });

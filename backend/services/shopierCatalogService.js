@@ -665,189 +665,188 @@ module.exports = {
   }),
   fetchProductDetail: async (url) => {
     try {
-      // 1. URL Normalization
-      let targetUrl = url;
-      const match = url.match(/\/(\d+)$/);
-      if (match && !url.includes('ShowProductNew')) {
-        targetUrl = `https://www.shopier.com/${match[1]}`;
+      // 1. URL Normalization - Keep the full URL if possible to avoid redirect issues
+      let targetUrl = url.trim();
+      if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
+      
+      // If it's a short URL or specific numeric ID, expand it
+      const numericMatch = targetUrl.match(/\/(\d+)$/);
+      if (numericMatch && !targetUrl.includes('ShowProductNew') && !targetUrl.includes('/shop/')) {
+        // Only override if it's very short, otherwise keep the descriptive URL which is better for SEO/metadata
+        if (targetUrl.split('/').length < 4) {
+           targetUrl = `https://www.shopier.com/${numericMatch[1]}`;
+        }
       }
 
-      console.log(`🔍 [fetchProductDetail] Fetching: ${targetUrl}`);
+      console.log(`🔍 [fetchProductDetail] Processing: ${targetUrl}`);
 
       let html;
       const axiosConfig = {
         headers: { 
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': getRandomItem(USER_AGENTS),
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
+            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7'
         },
-        timeout: 25000,
-        maxRedirects: 5
+        timeout: 30000
       };
 
       try {
         const res = await axios.get(targetUrl, axiosConfig);
         html = res.data;
       } catch (e) {
-        console.log(`⚠️ [fetchProductDetail] Direct axios failed (${e.message}), trying ScraperAPI...`);
+        console.log(`⚠️ [fetchProductDetail] Direct access failed (${e.message}), trying ScraperAPI...`);
         try {
           const res = await axios.get('http://api.scraperapi.com', {
-              params: { api_key: process.env.SCRAPER_API_KEY, url: targetUrl },
-              timeout: 45000
+              params: { api_key: SCRAPER_API_KEY, url: targetUrl },
+              timeout: 60000
           });
           html = res.data;
         } catch (sErr) {
-          console.log(`⚠️ [fetchProductDetail] ScraperAPI failed.`);
+          console.log(`❌ [fetchProductDetail] ScraperAPI failed: ${sErr.message}`);
         }
       }
 
-      if (!html || html.length < 500) {
-          console.log(`Ghost fallback for ${targetUrl}`);
+      if (!html || html.length < 1000) {
+          console.log(`👻 [fetchProductDetail] HTML too small or empty, using Ghost Puppeteer fallback...`);
           return await module.exports.fetchWithPuppeteerGhostDetail(targetUrl);
       }
 
       const $ = cheerio.load(html);
       
-      // --- NEW: Enhanced JSON Extraction ---
+      // --- JSON Extraction (Shopier V3) ---
       let jsonData = null;
       try {
           const scripts = $('script').map((i, el) => $(el).html()).get();
           for (const script of scripts) {
               if (script && script.includes('} = {')) {
-                  // Try to find the JSON object starting with { and ending with }
                   const startIdx = script.indexOf('} = {') + 4;
-                  if (startIdx > 4) {
-                      let bracketCount = 0;
-                      let endIdx = -1;
-                      for (let i = startIdx; i < script.length; i++) {
-                          if (script[i] === '{') bracketCount++;
-                          else if (script[i] === '}') {
-                              if (bracketCount === 0) {
-                                  endIdx = i + 1;
-                                  break;
-                              }
-                              bracketCount--;
+                  let bracketCount = 0;
+                  let endIdx = -1;
+                  for (let i = startIdx; i < script.length; i++) {
+                      if (script[i] === '{') bracketCount++;
+                      else if (script[i] === '}') {
+                          if (bracketCount === 0) {
+                              endIdx = i + 1;
+                              break;
                           }
+                          bracketCount--;
                       }
-                      if (endIdx !== -1) {
-                          const jsonStr = script.substring(startIdx, endIdx);
-                          jsonData = JSON.parse(jsonStr);
-                          console.log(`✅ [fetchProductDetail] JSON Found & Parsed!`);
-                          break;
-                      }
+                  }
+                  if (endIdx !== -1) {
+                      jsonData = JSON.parse(script.substring(startIdx, endIdx));
+                      break;
                   }
               }
           }
-      } catch (jsonErr) {
-          console.log(`⚠️ [fetchProductDetail] JSON parse error:`, jsonErr.message);
-      }
+      } catch (jsonErr) { /* ignore */ }
 
-      // --- Title Extraction ---
-      let title = '';
-      if (jsonData?.product?.name) {
-          title = jsonData.product.name;
-      } else {
-          title = $('meta[property="og:title"]').attr('content') ||
-                  $('meta[name="twitter:title"]').attr('content') ||
-                  $('.product-name').first().text().trim() ||
-                  $('.product-title-text').first().text().trim() ||
-                  $('h1').first().text().trim() ||
-                  $('.product-title').first().text().trim() ||
-                  $('.shopier-store--product-detail-title').first().text().trim();
-          
-          if (!title || title === 'Ürün Bilgisi' || title === 'Yeni Ürün') {
-              const headTitle = $('title').text().trim();
-              if (headTitle) title = headTitle.split('|')[0].trim();
-          }
-      }
+      // --- Title ---
+      let title = jsonData?.product?.name || 
+                  $('meta[property="og:title"]').attr('content') ||
+                  $('.product-name, .product-title-text, h1, .product-title').first().text().trim();
+      
+      // Clean title from "Shopier" suffix
+      if (title) title = title.split(' | ')[0].split(' - Shopier')[0].trim();
 
-      // --- Price Extraction ---
-      let priceVal = 0;
-      let oldPriceVal = 0;
-
-      const parseP = (txt) => {
-        if (!txt) return 0;
-        const cleaned = txt.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
+      // --- Price ---
+      const parseP = (val) => {
+        if (val === undefined || val === null) return 0;
+        if (typeof val === 'object') {
+           val = val.price_formatted || val.price_legacy_formatted || val.amount || val.price || val.value || 0;
+        }
+        let cleaned = val.toString().replace(/[^\d.,]/g, '').replace(/\s/g, '');
+        if (!cleaned) return 0;
+        
+        // Handle thousands separator (1.199,00 -> 1199.00)
+        if (cleaned.includes('.') && cleaned.includes(',')) {
+          cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+        } else if (cleaned.includes(',')) {
+          // Check if comma is decimal (common in TR)
+          cleaned = cleaned.replace(',', '.');
+        }
+        
         return parseFloat(cleaned) || 0;
       };
 
-      if (jsonData?.product?.price) {
-          priceVal = parseFloat(jsonData.product.price.price_formatted || 0);
-          if (jsonData.product.labels?.discounted_product?.enabled) {
-              // Usually the main price is the discounted one in Shopier JSON
-              // We might not have the old price easily in JSON, will use selectors as backup
-          }
-      }
-      
-      // Fallback/Reinforce price
-      const dp = $('[data-price]').first().attr('data-price');
-      const opAttr = $('.product-price-old').first().attr('data-price');
-      
-      if (priceVal === 0) {
-          priceVal = parseP(dp || $('.price-current, .product-price, .price, .price-value').first().text());
-      }
-      oldPriceVal = parseP(opAttr || $('.price-old, .product-old-price, .product-price-old').first().text());
+      let currentPrice = 0;
+      let originalPrice = 0;
 
-      // Normalize and Deduplicate with a very strict filter
+      if (jsonData?.product?.price) {
+          currentPrice = parseP(jsonData.product.price.price_formatted || jsonData.product.price);
+      }
+
+      const rawCurrent = $('.price-current, .product-price, .price, .price-value, [data-price]').first().text() || $('[data-price]').first().attr('data-price');
+      const rawOld = $('.price-old, .product-old-price, .product-price-old, [class*="old-price"]').first().text();
+
+      if (!currentPrice) currentPrice = parseP(rawCurrent);
+      if (!originalPrice) originalPrice = parseP(rawOld);
+
+      // --- Last Resort Price Extraction (Regex) ---
+      if (currentPrice === 0) {
+        const fullText = $('body').text();
+        // Look for common price patterns: 1.199 TL, 1.199,00 TL, 1199₺ etc.
+        const priceRegex = /([\d.,]{2,10})\s*(?:TL|₺)/gi;
+        let match;
+        while ((match = priceRegex.exec(fullText)) !== null) {
+          const val = parseP(match[1]);
+          if (val > 10) { // Assume valid price > 10 TL
+            if (currentPrice === 0) currentPrice = val;
+            else if (val < currentPrice) {
+               if (originalPrice === 0) originalPrice = currentPrice;
+               currentPrice = val;
+            } else if (val > currentPrice && originalPrice === 0) {
+               originalPrice = val;
+            }
+          }
+        }
+      }
+
+      // --- Images (SPECIFIC SELECTORS) ---
       const images = [];
       const seen = new Set();
-      
-      const processImg = (src) => {
+      const addImg = (src) => {
         if (!src) return;
         const norm = normalizeShopierImageUrl(src);
         if (norm && norm.includes('cdn.shopier.app') && !seen.has(norm)) {
-          const filename = norm.split('/').pop() || "";
-          if (filename.length > 10) {
-            images.push(norm);
-            seen.add(norm);
-          }
+          images.push(norm);
+          seen.add(norm);
         }
       };
 
-      // 1. JSON
-      if (jsonData?.product?.primary_variant_image) {
-          processImg(jsonData.product.primary_variant_image);
-      }
-      // 2. Meta
-      processImg($('meta[property="og:image"]').attr('content'));
-
-      // 3. Selectors
-      $('img').each((i, el) => {
-        const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
-        processImg(src);
+      // 1. Primary from JSON
+      if (jsonData?.product?.primary_variant_image) addImg(jsonData.product.primary_variant_image);
+      
+      // 2. Product Gallery Selectors (MODERN SHOPIER)
+      $('.product-images img, .swiper-slide img, .gallery img, #product-gallery img, .product-detail-images img, .product-image-container img').each((i, el) => {
+         const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('data-original');
+         addImg(src);
       });
+
+      // 3. Fallback to Meta
+      if (images.length === 0) addImg($('meta[property="og:image"]').attr('content'));
+
+      // 4. Last resort: all images but only if we have very few
+      if (images.length < 2) {
+        $('img').each((i, el) => {
+          const src = $(el).attr('data-src') || $(el).attr('src');
+          if (src && src.includes('cdn.shopier.app') && !src.includes('600icons') && !src.includes('logo_')) addImg(src);
+        });
+      }
 
       // --- Description ---
       let description = jsonData?.product?.description || 
-                        $('meta[property="og:description"]').attr('content') ||
-                        $('.product-description').html() || 
-                        $('#tab-description').html() || 
-                        $('.description').html() || '';
-
-      if (description) {
-          description = description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim();
-      }
-
-      // Final Clean
-      title = title || 'Yeni Ürün';
-      if (title === 'Ürün Bilgisi') {
-          const headTitle = $('title').text().trim();
-          if (headTitle) title = headTitle.split('|')[0].trim();
-      }
-
-      console.log(`✅ [fetchProductDetail] Final: "${title}" | Price: ${priceVal} | Images: ${images.length}`);
+                        $('.product-description, #tab-description, .description').html() || 
+                        $('meta[property="og:description"]').attr('content') || '';
 
       return { 
         url, 
-        title, 
-        price: oldPriceVal > priceVal ? oldPriceVal : priceVal, 
-        discountPrice: oldPriceVal > priceVal ? priceVal : 0,
-        images: images.filter(img => img.startsWith('http')), 
+        title: title || 'Yeni Ürün', 
+        price: originalPrice > currentPrice ? originalPrice : currentPrice, 
+        discountPrice: originalPrice > currentPrice ? currentPrice : 0,
+        images: images.slice(0, 15), 
         variations: [], 
         category: 'Genel', 
-        description 
+        description: description ? description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim() : ''
       };
     } catch (e) {
       console.error(`❌ [fetchProductDetail] Global Error:`, e.message);

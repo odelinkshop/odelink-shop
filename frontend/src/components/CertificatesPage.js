@@ -131,46 +131,46 @@ const CertificatesPage = () => {
         <div className="absolute inset-8 border-[2px] border-black pb-1 mb-1" />
         <div className="absolute inset-[34px] border-[0.5px] border-black/20" />
 
-        <div className="relative z-10 p-12 md:p-20 flex flex-col h-full font-serif">
+        <div className={`relative z-10 p-6 sm:p-12 md:p-20 flex flex-col h-full font-serif ${isModal ? 'overflow-y-auto' : ''}`}>
           {/* Top Header */}
-          <div className="flex justify-between items-start border-b-[2px] border-black pb-10 mb-12">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">Ödelink</h1>
-              <p className="text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-black/50">International Ltd.</p>
+          <div className="flex justify-between items-start border-b-[1.5px] sm:border-b-[2px] border-black pb-6 sm:pb-10 mb-8 sm:mb-12">
+            <div className="space-y-1 sm:space-y-2">
+              <h1 className="text-xl sm:text-3xl font-black tracking-tighter uppercase leading-none">Ödelink</h1>
+              <p className="text-[7px] sm:text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-black/50">International Ltd.</p>
             </div>
-            <div className="text-right font-sans text-[9px] space-y-1">
-              <div className="bg-black text-white px-4 py-1.5 font-black mb-2 inline-block tracking-widest">OFFICIAL DOCUMENT</div>
+            <div className="text-right font-sans text-[7px] sm:text-[9px] space-y-0.5 sm:space-y-1">
+              <div className="bg-black text-white px-2 sm:px-4 py-1 sm:py-1.5 font-black mb-1 sm:mb-2 inline-block tracking-widest">OFFICIAL DOCUMENT</div>
               <p className="font-bold text-black/40 uppercase tracking-widest">DOC ID: <span className="text-black font-black">{cert.id}</span></p>
               <p className="font-bold text-black/40 uppercase tracking-widest">REF: <span className="text-black font-black">{cert.ref}</span></p>
             </div>
           </div>
 
           {/* Certificate Title */}
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl font-black tracking-tight uppercase italic mb-4">Sertifika Tasdiki</h2>
-            <div className="w-48 h-[1px] bg-black/10 mx-auto" />
-            <p className="text-[10px] font-sans font-black text-black/30 tracking-[0.3em] uppercase">Ödelink International Global Compliance Registry</p>
+          <div className="text-center mb-10 sm:mb-16 space-y-2 sm:space-y-4">
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight uppercase italic mb-2 sm:mb-4">Sertifika Tasdiki</h2>
+            <div className="w-32 sm:w-48 h-[1px] bg-black/10 mx-auto" />
+            <p className="text-[8px] sm:text-[10px] font-sans font-black text-black/30 tracking-[0.3em] uppercase">Ödelink International Global Compliance Registry</p>
           </div>
 
           {/* Content Body */}
-          <div className="space-y-10 flex-1">
-            <div className="space-y-2">
-              <label className="text-[9px] font-sans font-black text-black/20 uppercase tracking-[0.3em]">Belge Türü / Protocol</label>
-              <h3 className="text-2xl font-black border-b border-black/5 pb-3 uppercase tracking-tight leading-tight">{cert.title}</h3>
-              <p className="text-[11px] italic text-black/40 font-medium font-sans uppercase tracking-wider">{cert.subtitle}</p>
+          <div className="space-y-6 sm:space-y-10 flex-1">
+            <div className="space-y-1 sm:space-y-2">
+              <label className="text-[7px] sm:text-[9px] font-sans font-black text-black/20 uppercase tracking-[0.3em]">Belge Türü / Protocol</label>
+              <h3 className="text-lg sm:text-2xl font-black border-b border-black/5 pb-2 sm:pb-3 uppercase tracking-tight leading-tight">{cert.title}</h3>
+              <p className="text-[9px] sm:text-[11px] italic text-black/40 font-medium font-sans uppercase tracking-wider">{cert.subtitle}</p>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[9px] font-sans font-black text-black/20 uppercase tracking-[0.3em]">Onaylayan Makam / Authority</label>
-              <h3 className="text-2xl font-black border-b border-black/5 pb-3 uppercase tracking-tight">{cert.issuer}</h3>
+            <div className="space-y-1 sm:space-y-2">
+              <label className="text-[7px] sm:text-[9px] font-sans font-black text-black/20 uppercase tracking-[0.3em]">Onaylayan Makam / Authority</label>
+              <h3 className="text-lg sm:text-2xl font-black border-b border-black/5 pb-2 sm:pb-3 uppercase tracking-tight">{cert.issuer}</h3>
             </div>
 
-            <div className="bg-black/[0.02] p-8 border-l-[6px] border-black relative">
-              <p className="text-[14px] leading-relaxed text-justify font-serif text-black/80 italic">
+            <div className="bg-black/[0.01] p-4 sm:p-8 border-l-[4px] sm:border-l-[6px] border-black relative">
+              <p className="text-[12px] sm:text-[14px] leading-relaxed text-justify font-serif text-black/80 italic">
                 {cert.desc}
               </p>
-              <div className="mt-8 pt-6 border-t border-black/10">
-                <p className="text-[9px] font-sans font-bold text-black/40 uppercase tracking-[0.2em]">
+              <div className="mt-4 sm:mt-8 pt-4 sm:pt-6 border-t border-black/10">
+                <p className="text-[7px] sm:text-[9px] font-sans font-bold text-black/40 uppercase tracking-[0.2em]">
                   Yasal Dayanak: {cert.legalNote}
                 </p>
               </div>
@@ -178,35 +178,34 @@ const CertificatesPage = () => {
           </div>
 
           {/* Footer Area */}
-          <div className="mt-auto pt-12 flex justify-between items-end border-t-[1px] border-black/10">
-            <div className="flex gap-8 items-end">
-              <div className="bg-white p-2 border border-black/5 shadow-sm">
-                <img src={qrUrl} alt="Verification" className="w-20 h-20" />
-                <p className="text-[7px] font-sans font-black text-center mt-2 text-black/40 tracking-widest">DİJİTAL DOĞRULAMA</p>
+          <div className="mt-auto pt-8 sm:pt-12 flex justify-between items-end border-t-[1px] border-black/10">
+            <div className="flex gap-4 sm:gap-8 items-end">
+              <div className="bg-white p-1.5 sm:p-2 border border-black/5 shadow-sm shrink-0">
+                <img src={qrUrl} alt="Verification" className="w-14 h-14 sm:w-20 sm:h-20" />
+                <p className="text-[5px] sm:text-[7px] font-sans font-black text-center mt-1 sm:mt-2 text-black/40 tracking-widest">DİJİTAL DOĞRULAMA</p>
               </div>
-              <div className="space-y-1 pb-1">
-                <p className="text-[8px] font-sans font-bold text-black/20 uppercase tracking-[0.2em]">Geçerlilik Süresi</p>
-                <p className="text-[12px] font-black uppercase tracking-widest">{cert.period}</p>
+              <div className="space-y-0.5 sm:space-y-1 pb-1">
+                <p className="text-[7px] sm:text-[8px] font-sans font-bold text-black/20 uppercase tracking-[0.2em]">Geçerlilik Süresi</p>
+                <p className="text-[10px] sm:text-[12px] font-black uppercase tracking-widest">{cert.period}</p>
               </div>
             </div>
 
             <div className="text-center relative">
               {/* Official Seal Style Overlay */}
-              <div className="absolute -top-20 -left-12 w-32 h-32 rounded-full border-[1.5px] border-black border-double flex items-center justify-center rotate-[-12deg] opacity-20 pointer-events-none">
-                <div className="text-center font-sans">
+              <div className="absolute -top-12 -left-8 sm:-top-20 sm:-left-12 w-20 h-20 sm:w-32 sm:h-32 rounded-full border-[1.5px] border-black border-double flex items-center justify-center rotate-[-12deg] opacity-20 pointer-events-none">
+                <div className="text-center font-sans scale-[0.6] sm:scale-100">
                   <p className="text-[7px] font-black uppercase">ÖDELINK INTL</p>
                   <p className="text-[10px] font-black uppercase my-1 tracking-[0.2em] border-y border-black">CERTIFIED</p>
                   <p className="text-[7px] font-black uppercase">COMPLIANCE 2026</p>
                 </div>
               </div>
               
-              <div className="pt-8">
-                 <div className="font-serif italic text-3xl mb-1 opacity-90 text-black/90">
+              <div className="pt-4 sm:pt-8">
+                 <div className="font-serif italic text-xl sm:text-3xl mb-1 opacity-90 text-black/90 whitespace-nowrap">
                    Ödelink International
                  </div>
-                <div className="w-56 h-[1.5px] bg-black mb-2" />
-                <p className="text-[9px] font-sans font-black uppercase tracking-[0.3em]">Hukuk ve Uyum Birimi</p>
-                <p className="text-[8px] font-sans text-black/30 uppercase tracking-[0.1em] mt-1">Ödelink International Global HQ</p>
+                <div className="w-32 sm:w-56 h-[1px] sm:h-[1.5px] bg-black mb-1 sm:mb-2" />
+                <p className="text-[7px] sm:text-[9px] font-sans font-black uppercase tracking-[0.3em]">Hukuk ve Uyum Birimi</p>
               </div>
             </div>
           </div>
