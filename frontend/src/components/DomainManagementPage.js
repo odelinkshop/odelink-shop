@@ -124,12 +124,12 @@ export default function DomainManagementPage() {
           </button>
           <div className="h-6 md:h-8 w-px bg-white/10" />
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-sm flex items-center justify-center text-white border border-white/10">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-sm flex items-center justify-center text-white border border-white/10 shrink-0">
               <Globe size={20} className="md:w-6 md:h-6" />
             </div>
-            <div>
-              <h1 className="text-base md:text-lg font-serif text-[#F2EBE1] leading-none tracking-tight">Alan Adı Merkezi</h1>
-              <p className="text-[9px] md:text-[10px] text-white/40 font-black uppercase tracking-widest mt-1">Domain Yönetimi</p>
+            <div className="flex flex-col justify-center">
+              <h1 className="text-sm md:text-lg font-semibold text-[#F2EBE1] leading-none tracking-tight whitespace-nowrap">Alan Adı Merkezi</h1>
+              <p className="text-[9px] md:text-[10px] text-white/40 font-black uppercase tracking-widest mt-1 whitespace-nowrap">Domain Yönetimi</p>
             </div>
           </div>
         </div>

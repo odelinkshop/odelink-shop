@@ -381,42 +381,46 @@ export default function SiteSettingsPage() {
 
             {/* REALISTIC IPAD PRO Mockup */}
             {previewMode === 'tablet' && (
-              <div className="relative transition-all duration-700 h-[80vh] max-h-[800px] aspect-[3/4] flex-shrink-0">
-                {/* iPad outer shell */}
-                <div className="w-full h-full bg-[#1C1D1F] rounded-[2.5rem] p-3.5 shadow-[0_50px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10 relative">
-                  {/* Screen */}
-                  <div className="w-full h-full bg-black rounded-[2rem] overflow-hidden relative">
-                    {/* Front camera dot */}
-                    <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1a1a1a] rounded-full z-50 ring-1 ring-white/5" />
-                    <PreviewFrame site={site} />
+              <div className="relative flex items-center justify-center w-[450px] h-[600px] sm:w-[576px] sm:h-[768px] transition-all duration-700 flex-shrink-0">
+                <div className="absolute w-[768px] h-[1024px] transform scale-[0.58] sm:scale-[0.75] origin-center">
+                  {/* iPad outer shell */}
+                  <div className="w-full h-full bg-[#1C1D1F] rounded-[2.5rem] p-3.5 shadow-[0_50px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10 relative">
+                    {/* Screen */}
+                    <div className="w-full h-full bg-black rounded-[2rem] overflow-hidden relative">
+                      {/* Front camera dot */}
+                      <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1a1a1a] rounded-full z-50 ring-1 ring-white/5" />
+                      <PreviewFrame site={site} />
+                    </div>
                   </div>
+                  {/* Volume buttons */}
+                  <div className="absolute right-[-4px] top-[15%] w-[4px] h-[5%] bg-[#2a2a2a] rounded-r-sm" />
+                  <div className="absolute right-[-4px] top-[22%] w-[4px] h-[5%] bg-[#2a2a2a] rounded-r-sm" />
+                  {/* Power button */}
+                  <div className="absolute top-[-4px] right-[15%] h-[4px] w-[8%] bg-[#2a2a2a] rounded-t-sm" />
                 </div>
-                {/* Volume buttons */}
-                <div className="absolute right-[-4px] top-[15%] w-[4px] h-[5%] bg-[#2a2a2a] rounded-r-sm" />
-                <div className="absolute right-[-4px] top-[22%] w-[4px] h-[5%] bg-[#2a2a2a] rounded-r-sm" />
-                {/* Power button */}
-                <div className="absolute top-[-4px] right-[15%] h-[4px] w-[8%] bg-[#2a2a2a] rounded-t-sm" />
               </div>
             )}
 
             {/* REALISTIC IPHONE 17 PRO Mockup */}
             {previewMode === 'mobile' && (
-              <div className="relative transition-all duration-700 w-[300px] h-[600px] sm:w-[320px] sm:h-[640px] flex-shrink-0">
-                {/* iPhone outer shell */}
-                <div className="w-full h-full bg-[#1C1D1F] rounded-[3rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
-                  {/* Screen */}
-                  <div className="w-full h-full bg-black rounded-[2.5rem] overflow-hidden relative">
-                    <PreviewFrame site={site} />
-                    {/* Home Indicator */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50 pointer-events-none" />
+              <div className="relative flex items-center justify-center w-[280px] h-[600px] sm:w-[320px] sm:h-[650px] transition-all duration-700 flex-shrink-0">
+                <div className="absolute w-[375px] h-[812px] transform scale-[0.75] sm:scale-[0.8] origin-center">
+                  {/* iPhone outer shell */}
+                  <div className="w-full h-full bg-[#1C1D1F] rounded-[3rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
+                    {/* Screen */}
+                    <div className="w-full h-full bg-black rounded-[2.5rem] overflow-hidden relative">
+                      <PreviewFrame site={site} />
+                      {/* Home Indicator */}
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50 pointer-events-none" />
+                    </div>
                   </div>
+                  {/* Side buttons */}
+                  <div className="absolute left-[-4px] top-[20%] w-[4px] h-[4%] bg-[#2a2a2a] rounded-l-sm" />
+                  <div className="absolute left-[-4px] top-[28%] w-[4px] h-[8%] bg-[#2a2a2a] rounded-l-sm" />
+                  <div className="absolute left-[-4px] top-[38%] w-[4px] h-[8%] bg-[#2a2a2a] rounded-l-sm" />
+                  {/* Power button */}
+                  <div className="absolute right-[-4px] top-[30%] w-[4px] h-[12%] bg-[#2a2a2a] rounded-r-sm" />
                 </div>
-                {/* Side buttons */}
-                <div className="absolute left-[-4px] top-[20%] w-[4px] h-[4%] bg-[#2a2a2a] rounded-l-sm" />
-                <div className="absolute left-[-4px] top-[28%] w-[4px] h-[8%] bg-[#2a2a2a] rounded-l-sm" />
-                <div className="absolute left-[-4px] top-[38%] w-[4px] h-[8%] bg-[#2a2a2a] rounded-l-sm" />
-                {/* Power button */}
-                <div className="absolute right-[-4px] top-[30%] w-[4px] h-[12%] bg-[#2a2a2a] rounded-r-sm" />
               </div>
             )}
           </motion.div>
