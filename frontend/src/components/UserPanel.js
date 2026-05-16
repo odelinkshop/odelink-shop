@@ -275,16 +275,16 @@ const UserPanel = () => {
                   transition={{ delay: i * 0.1 }}
                   className={`bg-white/[0.03] border p-8 sm:p-10 relative group transition-all rounded-sm flex flex-col ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'border-white/40 bg-white/10' : 'border-white/5 hover:border-white/20'}`}
                 >
-                  <div className="flex justify-between items-start mb-8">
-                    <div className={`w-12 h-12 border flex items-center justify-center rounded-sm ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'bg-white text-[#0A0A0A] border-transparent shadow-xl shadow-white/10' : 'bg-white/5 border-white/10 text-white/50'}`}>
-                      <stat.icon size={20} strokeWidth={2.5} />
+                  <div className="flex justify-between items-start mb-6 sm:mb-8">
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 border flex items-center justify-center rounded-sm ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'bg-white text-[#0A0A0A] border-transparent shadow-xl shadow-white/10' : 'bg-white/5 border-white/10 text-white/50'}`}>
+                      <stat.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2.5} />
                     </div>
                     {stat.isPlan && capabilities?.tier !== 'profesyonel' && (
                       <button onClick={() => navigate('/premium')} className="px-4 py-1.5 bg-white text-[#0A0A0A] text-[9px] font-black uppercase tracking-tighter hover:bg-[#F2EBE1] transition-colors">YÜKSELT</button>
                     )}
                   </div>
                   <div className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-black mb-2">{stat.label}</div>
-                  <div className={`text-3xl sm:text-4xl font-serif mb-2 ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'text-white' : 'text-[#F2EBE1]'}`}>{stat.value}</div>
+                  <div className={`text-2xl sm:text-4xl font-serif mb-1 sm:mb-2 ${stat.isPlan && capabilities?.tier === 'profesyonel' ? 'text-white' : 'text-[#F2EBE1]'}`}>{stat.value}</div>
                   <div className="text-[9px] text-white/20 font-bold tracking-widest uppercase">{stat.sub}</div>
                 </motion.div>
               ))}
@@ -292,24 +292,24 @@ const UserPanel = () => {
  
             {/* Pro Advantage Banner: High End */}
             {capabilities?.tier === 'profesyonel' && (
-              <div className="bg-white/[0.04] border border-white/10 p-8 sm:p-12 mb-16 flex flex-col lg:flex-row items-center justify-between gap-10 rounded-sm relative overflow-hidden">
+              <div className="bg-white/[0.04] border border-white/10 p-6 sm:p-12 mb-12 sm:mb-16 flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-10 rounded-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-2 opacity-5">
                    <Zap size={120} strokeWidth={1} />
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto text-center sm:text-left relative z-10">
-                  <div className="w-16 h-16 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/10 shrink-0 rounded-sm">
-                    <Zap size={28} strokeWidth={2.5} />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white text-[#0A0A0A] flex items-center justify-center shadow-2xl shadow-white/10 shrink-0 rounded-sm">
+                    <Zap size={24} className="sm:w-7 sm:h-7" strokeWidth={2.5} />
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-2xl sm:text-3xl font-serif text-[#F2EBE1]">Avantajlar Aktif</h3>
                     <p className="text-[9px] sm:text-[11px] text-white/50 uppercase tracking-[0.2em] font-black">Öncelikli Destek & Stratejik Rapor Erişimi</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 w-full lg:w-auto relative z-10">
-                  <button onClick={() => navigate('/support')} className="px-6 py-5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/60 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4 w-full lg:w-auto relative z-10">
+                  <button onClick={() => navigate('/support')} className="px-3 sm:px-6 py-4 sm:py-5 border border-white/10 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-widest text-white/60 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-2 sm:gap-3 text-center leading-none">
                     <Headphones size={14} /> DESTEK
                   </button>
-                  <button onClick={handleDownloadReport} disabled={isDownloading} className="px-6 py-5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/60 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-3">
+                  <button onClick={handleDownloadReport} disabled={isDownloading} className="px-3 sm:px-6 py-4 sm:py-5 border border-white/10 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-widest text-white/60 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-2 sm:gap-3 text-center leading-none">
                     {isDownloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} RAPOR
                   </button>
                 </div>
@@ -324,7 +324,7 @@ const UserPanel = () => {
                </div>
                
                {sites.length === 0 ? (
-                 <div className="py-32 text-center border border-dashed border-white/10 bg-white/[0.01] rounded-sm group">
+                 <div className="py-20 sm:py-32 text-center border border-dashed border-white/10 bg-white/[0.01] rounded-sm group">
                    <div className="w-16 h-16 border border-white/5 bg-white/[0.02] flex items-center justify-center mx-auto mb-6 transition-all group-hover:border-white/20">
                       <Store className="w-8 h-8 text-white/10 group-hover:text-white/30 transition-all" />
                    </div>
@@ -338,13 +338,12 @@ const UserPanel = () => {
                        initial={{ opacity: 0, scale: 0.98 }}
                        whileInView={{ opacity: 1, scale: 1 }}
                        viewport={{ once: true }}
-                       className="bg-white/[0.03] border border-white/5 p-8 sm:p-12 relative group overflow-hidden rounded-sm hover:border-white/20 transition-all"
+                       className="bg-white/[0.03] border border-white/5 p-6 sm:p-12 relative group overflow-hidden rounded-sm hover:border-white/20 transition-all flex flex-col"
                      >
                        <div className="absolute -bottom-10 -right-10 text-[120px] font-serif text-white/5 select-none pointer-events-none uppercase tracking-tighter italic opacity-0 group-hover:opacity-100 transition-opacity duration-1000">{site.subdomain}</div>
-                       
-                       <div className="flex justify-between items-start mb-12 relative z-10">
-                          <div className="space-y-3">
-                             <h3 className="text-2xl sm:text-3xl font-serif text-[#F2EBE1] leading-tight">{site.name}</h3>
+                       <div className="flex justify-between items-start mb-8 sm:mb-12 relative z-10 gap-4">
+                          <div className="space-y-2 sm:space-y-3 flex-1 overflow-hidden">
+                             <h3 className="text-xl sm:text-3xl font-serif text-[#F2EBE1] leading-tight truncate">{site.name}</h3>
                              <div className="flex items-center gap-2.5">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
                                 <span className="text-[9px] text-emerald-500/80 font-black tracking-[0.2em] uppercase">YAYINDA</span>
@@ -352,27 +351,27 @@ const UserPanel = () => {
                           </div>
                           <button 
                             onClick={() => openPublicSiteNewTab(site)} 
-                            className="w-14 h-14 bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:bg-white hover:text-black hover:border-white transition-all rounded-sm shadow-xl"
+                            className="w-10 h-10 sm:w-14 sm:h-14 bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:bg-white hover:text-black hover:border-white transition-all rounded-sm shadow-xl shrink-0"
                           >
-                             <ExternalLink size={20} />
+                             <ExternalLink size={16} className="sm:w-5 sm:h-5" />
                           </button>
                        </div>
  
-                       <div className="grid grid-cols-1 gap-4 relative z-10">
-                            <div className="grid grid-cols-2 gap-4">
-                               <button onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/analytics`)} className="py-4 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-3">
-                                 <BarChart3 size={14} strokeWidth={2.5} /> ANALİTİK
-                               </button>
-                               <button onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/settings/design`)} className="py-4 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-3">
-                                 <Layout size={14} strokeWidth={2.5} /> TASARIM
-                               </button>
-                            </div>
-                            <button 
-                              onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/domain`)} 
-                              className={`py-4 border text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 rounded-sm ${!capabilities?.allowCustomDomain ? 'bg-white/5 border-white/5 text-white/20' : 'bg-white/5 border-white/20 text-white/80 hover:bg-white hover:text-black hover:border-white'}`}
-                            >
-                              {!capabilities?.allowCustomDomain ? <Lock size={12} /> : <Globe size={14} />} DOMAİN YÖNETİMİ
-                            </button>
+                       <div className="grid grid-cols-1 gap-3 sm:gap-4 relative z-10 mt-auto">
+                          <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3 sm:gap-4">
+                             <button onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/analytics`)} className="w-full py-4 sm:py-4 border border-white/10 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-3">
+                               <BarChart3 size={14} strokeWidth={2.5} /> ANALİTİK
+                             </button>
+                             <button onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/settings/design`)} className="w-full py-4 sm:py-4 border border-white/10 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-3">
+                               <Layout size={14} strokeWidth={2.5} /> TASARIM
+                             </button>
+                          </div>
+                          <button 
+                            onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/domain`)} 
+                            className={`w-full py-4 sm:py-4 border text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 rounded-sm ${!capabilities?.allowCustomDomain ? 'bg-white/5 border-white/5 text-white/20' : 'bg-white/5 border-white/20 text-white/80 hover:bg-white hover:text-black hover:border-white'}`}
+                          >
+                            {!capabilities?.allowCustomDomain ? <Lock size={12} /> : <Globe size={14} />} DOMAİN YÖNETİMİ
+                          </button>
                         </div>
                      </motion.div>
                    ))}
@@ -380,21 +379,21 @@ const UserPanel = () => {
                )}
             </div>
 
-            <div className="mt-32 pt-20 border-t border-white/10">
-               <div className="flex flex-col md:flex-row justify-between items-start gap-12">
-                  <div className="max-w-md">
+            <div className="mt-20 sm:mt-32 pt-12 sm:pt-20 border-t border-white/10">
+               <div className="flex flex-col lg:flex-row justify-between items-start gap-8 sm:gap-12">
+                  <div className="max-w-md w-full">
                      <h3 className="text-xl font-serif text-[#F2EBE1] mb-4">Destek & Kaynaklar</h3>
                      <p className="text-[10px] sm:text-[11px] text-[#F2EBE1]/40 leading-relaxed font-bold uppercase tracking-[0.2em] sm:tracking-widest">Nova SaaS platformunun dokümantasyonuna ve global kaynaklarına buradan erişebilirsiniz.</p>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-8 w-full lg:w-auto">
                      {[
                         { label: 'Domain Rehberi', icon: Globe, path: '/guide' },
                         { label: 'Kurulum (Windows)', icon: Monitor, path: '/download' },
                         { label: 'Eğitim Merkezi', icon: Zap, path: '/services' }
                       ].map((res, i) => (
-                       <div key={i} onClick={() => navigate(res.path)} className="group cursor-pointer">
-                         <div className="w-12 h-12 bg-white/5 border border-white/5 flex items-center justify-center text-white/20 group-hover:text-white group-hover:border-white/30 transition-all mb-4">
-                           <res.icon size={20} />
+                       <div key={i} onClick={() => navigate(res.path)} className="group cursor-pointer bg-white/[0.02] p-4 sm:p-0 sm:bg-transparent border sm:border-0 border-white/5 hover:border-white/20 transition-all rounded-sm flex flex-col items-center sm:items-start text-center sm:text-left">
+                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/5 flex items-center justify-center text-white/20 group-hover:text-white group-hover:border-white/30 transition-all mb-3 sm:mb-4 rounded-sm">
+                           <res.icon size={18} className="sm:w-5 sm:h-5" />
                          </div>
                          <p className="text-[10px] font-black uppercase tracking-widest text-[#F2EBE1]/40 group-hover:text-white transition-colors">{res.label}</p>
                        </div>
