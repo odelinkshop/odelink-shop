@@ -138,13 +138,6 @@ export default function SiteSettingsPage() {
     finally { setSaving(false); }
   };
 
-  if (loading) return (
-    <div className="h-screen bg-[#08090A] flex flex-col items-center justify-center gap-6">
-      <div className="w-16 h-16 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500">Odelink Studio Altyapısı Hazırlanıyor</p>
-    </div>
-  );
-
   // Dynamic Scaling States
   const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
   useEffect(() => {
@@ -155,6 +148,13 @@ export default function SiteSettingsPage() {
 
   const tabletScale = Math.min(0.8, (windowHeight - 140) / 1024);
   const mobileScale = Math.min(0.85, (windowHeight - 140) / 812);
+
+  if (loading) return (
+    <div className="h-screen bg-[#08090A] flex flex-col items-center justify-center gap-6">
+      <div className="w-16 h-16 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+      <p className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500">Odelink Studio Altyapısı Hazırlanıyor</p>
+    </div>
+  );
 
   return (
     <div className="h-screen bg-[#08090A] text-[#E1E1E1] flex flex-col overflow-hidden font-sans selection:bg-blue-500/30">
