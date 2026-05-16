@@ -208,7 +208,8 @@ const UserPanel = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-24 pb-32 relative">
         {/* Header Section: Reimagined for Mobile */}
-        <div className="flex justify-end md:justify-between items-end gap-6 mb-4 sm:mb-20 px-2">
+        <div className="flex justify-between items-center mb-8 sm:mb-20 px-2 relative z-50">
+          {/* Desktop Title */}
           <div className="hidden md:block text-left space-y-1">
             <h1 className="text-6xl font-serif tracking-tight text-[#F2EBE1] uppercase">Mağaza Paneli</h1>
             <div className="flex items-center justify-start gap-3 mt-2">
@@ -216,7 +217,19 @@ const UserPanel = () => {
                <p className="text-[10px] uppercase tracking-[0.4em] text-white/50 font-black">Yönetim Paneli</p>
             </div>
           </div>
-          <div className="flex items-center justify-end w-full md:w-auto">
+          
+          {/* Mobile App Bar Title */}
+          <div className="md:hidden flex items-center gap-3">
+             <div className="w-10 h-10 bg-white/5 border border-white/10 text-white flex items-center justify-center rounded-sm">
+                <Store size={18} />
+             </div>
+             <div className="flex flex-col">
+                <span className="text-[14px] font-serif text-[#F2EBE1]">Mağaza Paneli</span>
+                <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">Yönetim Paneli</span>
+             </div>
+          </div>
+
+          <div className="flex items-center gap-4">
              <motion.button 
                whileTap={{ scale: 0.98 }}
                onClick={() => navigate('/site-builder')}
@@ -274,13 +287,19 @@ const UserPanel = () => {
           {/* MOBILE HAMBURGER DROPDOWN */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="md:hidden overflow-hidden bg-white/[0.02] border border-white/5 rounded-sm mt-2"
-              >
-                <div className="flex flex-col py-2">
+              <>
+                <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+                />
+                <motion.div 
+                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="md:hidden absolute top-0 left-2 right-2 z-50 bg-[#0D0D0D] border border-white/10 shadow-2xl p-4 flex flex-col gap-2 rounded-sm"
+                >
                   {[
                     { id: 'overview', label: 'GENEL BAKIŞ', icon: BarChart3 },
                     { id: 'products', label: 'ÜRÜNLERİM', icon: ShoppingBag },
@@ -289,9 +308,9 @@ const UserPanel = () => {
                     <button
                       key={tab.id}
                       onClick={() => { setActiveTab(tab.id); setIsMobileMenuOpen(false); }}
-                      className={`flex items-center gap-3 px-4 py-3 text-[8px] font-black tracking-[0.2em] transition-all ${activeTab === tab.id ? 'bg-white/10 text-white border-l-2 border-white' : 'text-white/40 hover:text-white hover:bg-white/5 border-l-2 border-transparent'}`}
+                      className={`flex items-center gap-4 px-6 py-5 text-[10px] font-black tracking-[0.2em] transition-all rounded-sm ${activeTab === tab.id ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white bg-white/[0.02]'}`}
                     >
-                      <tab.icon size={14} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
+                      <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
                       {tab.label}
                     </button>
                   ))}
@@ -299,22 +318,24 @@ const UserPanel = () => {
                   {capabilities?.tier === 'profesyonel' && (
                     <button 
                       onClick={() => { setShowBulkModal(true); setIsMobileMenuOpen(false); }}
-                      className={`flex items-center gap-3 px-4 py-3 text-[9px] font-black tracking-[0.2em] transition-all text-white/40 hover:text-white hover:bg-white/5 border-l-2 border-transparent mt-1 border-t border-white/5 pt-4`}
+                      className={`flex items-center gap-4 px-6 py-5 text-[10px] font-black tracking-[0.2em] transition-all rounded-sm text-white/40 hover:text-white bg-white/[0.02] mt-2`}
                     >
-                      <Link size={14} />
+                      <Link size={16} />
                       TOPLU LİNK YÜKLE
                     </button>
                   )}
 
+                  <div className="h-px bg-white/10 my-2" />
+
                   <button 
                     onClick={() => { navigate('/site-builder'); setIsMobileMenuOpen(false); }}
-                    className={`flex items-center gap-3 px-4 py-4 text-[9px] font-black tracking-[0.2em] transition-all text-[#0A0A0A] bg-white hover:bg-[#F2EBE1] border-l-2 border-transparent mt-2 rounded-sm`}
+                    className={`flex items-center justify-center gap-3 px-6 py-5 text-[10px] font-black tracking-[0.2em] transition-all text-[#0A0A0A] bg-white hover:bg-[#F2EBE1] rounded-sm`}
                   >
-                    <Plus size={14} strokeWidth={3} />
+                    <Plus size={16} strokeWidth={3} />
                     YENİ MAĞAZA OLUŞTUR
                   </button>
-                </div>
-              </motion.div>
+                </motion.div>
+              </>
             )}
           </AnimatePresence>
         </div>
@@ -443,19 +464,19 @@ const UserPanel = () => {
                <div className="flex flex-col lg:flex-row justify-between items-start gap-6 sm:gap-12">
                   <div className="max-w-md w-full">
                      <h3 className="text-lg sm:text-xl font-serif text-[#F2EBE1] mb-2 sm:mb-4">Destek & Kaynaklar</h3>
-                     <p className="text-[9px] sm:text-[11px] text-[#F2EBE1]/40 leading-relaxed font-bold uppercase tracking-[0.1em] sm:tracking-widest">Nova SaaS platformunun dokümantasyonuna ve global kaynaklarına buradan erişebilirsiniz.</p>
+                     <p className="text-[10px] sm:text-[12px] text-[#F2EBE1]/40 leading-relaxed font-medium tracking-wide">Nova SaaS platformunun dokümantasyonuna ve global kaynaklarına buradan erişebilirsiniz.</p>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-8 w-full lg:w-auto">
+                  <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-8 w-full lg:w-auto">
                      {[
                         { label: 'Domain Rehberi', icon: Globe, path: '/guide' },
                         { label: 'Kurulum (Windows)', icon: Monitor, path: '/download' },
                         { label: 'Eğitim Merkezi', icon: Zap, path: '/services' }
                       ].map((res, i) => (
-                       <div key={i} onClick={() => navigate(res.path)} className="group cursor-pointer bg-white/[0.02] p-3 sm:p-0 sm:bg-transparent border sm:border-0 border-white/5 hover:border-white/20 transition-all rounded-sm flex flex-col items-center sm:items-start text-center sm:text-left">
-                         <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white/5 border border-white/5 flex items-center justify-center text-white/20 group-hover:text-white group-hover:border-white/30 transition-all mb-2 sm:mb-4 rounded-sm">
+                       <div key={i} onClick={() => navigate(res.path)} className="group cursor-pointer bg-white/[0.02] sm:bg-transparent border border-white/5 sm:border-0 hover:border-white/20 transition-all rounded-sm flex flex-row sm:flex-col items-center sm:items-start p-3 sm:p-0 gap-3 sm:gap-0">
+                         <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white/5 border border-white/5 flex items-center justify-center text-white/20 group-hover:text-white group-hover:border-white/30 transition-all mb-0 sm:mb-4 rounded-sm shrink-0">
                            <res.icon size={14} className="sm:w-5 sm:h-5" />
                          </div>
-                         <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-widest text-[#F2EBE1]/40 group-hover:text-white transition-colors">{res.label}</p>
+                         <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-widest text-[#F2EBE1]/40 group-hover:text-white transition-colors text-left">{res.label}</p>
                        </div>
                      ))}
                   </div>
@@ -502,13 +523,13 @@ const UserPanel = () => {
                       <Link size={16} className="sm:w-6 sm:h-6" strokeWidth={2.5} />
                     </div>
                     <div className="space-y-1 sm:space-y-2 flex-1">
-                      <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="hidden sm:flex items-center gap-2 sm:gap-3">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest sm:tracking-[0.3em] text-white/40">Sistem Entegrasyonu</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">Hızlı Entegrasyon</span>
                       </div>
-                      <h3 className="text-lg sm:text-3xl font-serif text-[#F2EBE1] tracking-tighter leading-none">Toplu Veri Aktarımı</h3>
-                      <p className="text-[7px] sm:text-[10px] text-white/20 font-bold uppercase tracking-widest sm:tracking-[0.2em] max-w-md leading-tight sm:leading-relaxed">
-                        Shopier bağlantılarınızı kurumsal arşive entegre edin.
+                      <h3 className="text-xl sm:text-3xl font-serif text-[#F2EBE1] tracking-tighter leading-none">Toplu Link Yükle</h3>
+                      <p className="text-[10px] sm:text-[12px] text-white/40 font-medium max-w-md leading-relaxed">
+                        Shopier ürün linklerini alt alta ekleyerek tek seferde sisteme aktarabilirsiniz.
                       </p>
                     </div>
                   </div>
@@ -527,12 +548,9 @@ const UserPanel = () => {
                 <div className="p-4 sm:p-10 gap-3 sm:gap-6 flex-1 overflow-y-auto no-scrollbar flex flex-col">
                   <div className="flex flex-col flex-1 space-y-3 sm:space-y-4">
                     <div className="flex flex-col sm:flex-row justify-between sm:items-end px-1 shrink-0 gap-1 sm:gap-0">
-                       <div className="space-y-1">
-                         <label className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Veri Giriş Matrisi</label>
-                         <p className="text-[7px] sm:text-[8px] text-white/20 font-bold uppercase tracking-widest">Her satıra bir ürün linki ekleyin</p>
-                       </div>
+                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">LİNKLER</label>
                        <div className="flex items-center">
-                         <span className="text-[7px] sm:text-[9px] font-black text-white/30 tracking-widest">{bulkLinks.split('\n').filter(l => l.trim()).length} LİNK TESPİT EDİLDİ</span>
+                         <span className="text-[9px] font-black text-emerald-500/80 tracking-widest">{bulkLinks.split('\n').filter(l => l.trim()).length} LİNK TESPİT EDİLDİ</span>
                        </div>
                     </div>
                     
@@ -549,22 +567,13 @@ const UserPanel = () => {
                   </div>
 
                   {/* Action Bar */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 pt-2 shrink-0">
-                    <div className="flex items-center gap-2 sm:gap-4 text-white/20 w-full sm:w-auto">
-                      <div className="w-6 h-6 sm:w-10 sm:h-10 border border-white/5 flex items-center justify-center shrink-0">
-                        <Zap size={12} className="sm:w-[14px] sm:h-[14px]" />
-                      </div>
-                      <p className="text-[7px] sm:text-[9px] font-medium uppercase tracking-[0.1em] sm:tracking-[0.2em] leading-relaxed flex-1">
-                        Gelişmiş altyapı, ürün verilerinizi otomatik olarak sisteme işler.
-                      </p>
-                    </div>
-                    
+                  <div className="flex justify-end pt-2 shrink-0">
                     <motion.button 
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleBulkImport} 
                       disabled={isImporting || !bulkLinks.trim()}
-                      className="w-full sm:w-auto flex items-center justify-center gap-3 sm:gap-4 bg-white text-[#0A0A0A] px-5 py-3 sm:px-8 sm:py-4 font-black uppercase tracking-[0.2em] text-[9px] sm:text-[11px] hover:bg-[#F2EBE1] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.1)] rounded-sm group overflow-hidden relative"
+                      className="w-full sm:w-auto flex items-center justify-center gap-3 sm:gap-4 bg-white text-[#0A0A0A] px-5 py-4 sm:px-8 font-black uppercase tracking-[0.2em] text-[10px] sm:text-[11px] hover:bg-[#F2EBE1] transition-all rounded-sm group overflow-hidden relative"
                     >
                       {isImporting && (
                         <motion.div 
@@ -581,11 +590,6 @@ const UserPanel = () => {
                       </span>
                     </motion.button>
                   </div>
-                </div>
-
-                {/* Security Footer */}
-                <div className="px-4 sm:px-10 py-6 bg-white/[0.02] border-t border-white/5 flex justify-center text-center">
-                  <p className="text-[7px] sm:text-[9px] text-white/10 font-black uppercase tracking-widest sm:tracking-[0.5em]">Nova SaaS End-to-End Encryption & Security</p>
                 </div>
               </motion.div>
             </div>

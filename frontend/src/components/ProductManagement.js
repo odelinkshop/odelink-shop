@@ -252,36 +252,23 @@ const ProductManagement = ({ onOpenBulk }) => {
   return (
     <div className="space-y-8 sm:space-y-12 pb-20 px-4 lg:px-0">
       {/* ENTERPRISE HEADER: Reimagined for Mobile */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-12 border-b border-white/5 pb-10 sm:pb-20">
-        <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
-          <div className="inline-flex items-center gap-3 sm:gap-4 bg-white/5 border border-white/10 px-4 py-2 sm:px-6 sm:py-2.5 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.4em] text-white/60">Envanter Yönetim Sistemi</span>
-          </div>
-          <div className="space-y-1 sm:space-y-2">
-            <h2 className="text-4xl sm:text-8xl font-serif text-[#F2EBE1] tracking-tighter leading-none">Katalog</h2>
-            <div className="flex items-center justify-center lg:justify-start gap-3 sm:gap-4">
-              <div className="h-px w-8 sm:w-12 bg-white/20" />
-              <p className="text-[8px] sm:text-[11px] text-white/30 uppercase tracking-[0.5em] font-black">
-                Kurumsal Ürün Arşivi
-              </p>
-            </div>
-          </div>
-          <p className="text-[9px] sm:text-[13px] text-white/40 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-            Mağazanızdaki ürünleri Shopier altyapısı ile senkronize edin. 
-            Yüksek çözünürlüklü görseller ve otomatik veri çekme sistemi aktiftir.
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-12 border-b border-white/5 pb-6 sm:pb-20">
+        <div className="space-y-2 sm:space-y-6 text-left">
+          <h2 className="text-3xl sm:text-6xl font-serif text-[#F2EBE1] tracking-tight leading-none">Katalog</h2>
+          <p className="text-[10px] sm:text-[13px] text-white/40 max-w-xl leading-relaxed font-medium">
+            Tüm ürünlerinizi tek bir merkezden yönetin ve listeleyin.
           </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-          <div className="relative group w-full sm:min-w-[320px]">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
+        <div className="flex flex-row items-center gap-2 sm:gap-4 w-full lg:w-auto">
+          <div className="relative group flex-1 sm:min-w-[320px]">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
             <input 
               type="text"
-              placeholder="ARŞİVDE ARA..."
+              placeholder="Ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/[0.02] border border-white/5 pl-12 pr-4 py-3 sm:pl-14 sm:pr-6 sm:py-4 text-[9px] sm:text-[11px] text-white focus:border-white/40 focus:bg-white/[0.05] focus:outline-none transition-all font-bold tracking-[0.2em] uppercase rounded-sm"
+              className="w-full bg-white/[0.02] border border-white/5 pl-10 pr-4 py-3 sm:py-4 text-[11px] text-white focus:border-white/40 focus:outline-none transition-all rounded-sm"
             />
           </div>
           
@@ -289,10 +276,10 @@ const ProductManagement = ({ onOpenBulk }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onOpenBulk}
-            className="flex items-center justify-center gap-2 sm:gap-3 bg-transparent border border-white/20 text-white px-5 py-3 sm:px-8 sm:py-4 font-bold uppercase tracking-[0.2em] text-[9px] sm:text-[11px] hover:bg-white hover:text-[#0A0A0A] hover:border-white transition-all rounded-sm group whitespace-nowrap"
+            className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white px-4 py-3 sm:px-8 sm:py-4 font-bold uppercase tracking-[0.2em] text-[10px] sm:text-[11px] hover:bg-white hover:text-[#0A0A0A] transition-all rounded-sm shrink-0"
           >
-            <Link size={14} className="sm:w-4 sm:h-4 group-hover:rotate-45 transition-transform" strokeWidth={2} /> 
-            <span>TOPLU LİNK YÜKLE</span>
+            <Link size={16} strokeWidth={2} /> 
+            <span className="hidden sm:inline">TOPLU LİNK YÜKLE</span>
           </motion.button>
         </div>
       </div>
@@ -346,18 +333,18 @@ const ProductManagement = ({ onOpenBulk }) => {
                   )}
                   
                   {/* Status & Price Overlay */}
-                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent translate-y-2 sm:translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
+                  <div className="absolute inset-x-0 bottom-0 p-4 sm:p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent translate-y-2 sm:translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
                     <div className="flex items-end justify-between gap-3 sm:gap-4">
                       <div className="space-y-1">
-                        <span className="text-[8px] sm:text-[10px] font-black text-white/40 uppercase tracking-widest">{product.category || 'General'}</span>
-                        <div className="flex items-center gap-3 sm:gap-4">
+                        <span className="text-[9px] font-black text-white/40 uppercase tracking-wider">{product.category || 'Genel'}</span>
+                        <div className="flex items-center gap-2">
                           <span className="text-xl sm:text-2xl font-serif text-white tracking-tighter">{product.price} TL</span>
-                          {product.discount_price && (
-                            <span className="text-[9px] sm:text-[11px] text-white/30 line-through font-bold tracking-tighter">{product.discount_price} TL</span>
+                          {product.discount_price && parseFloat(product.discount_price) > 0 && (
+                            <span className="text-[10px] text-white/30 line-through font-medium">{product.discount_price} TL</span>
                           )}
                         </div>
                       </div>
-                      <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${product.stock_count > 0 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`} />
+                      <div className={`w-2 h-2 rounded-full ${product.stock_count > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
                     </div>
                   </div>
 
@@ -389,13 +376,13 @@ const ProductManagement = ({ onOpenBulk }) => {
                 </div>
 
                   {/* Title & Info */}
-                <div className="mt-4 sm:mt-8 space-y-2 sm:space-y-3 px-1 sm:px-2">
-                  <h3 className="text-lg sm:text-2xl font-serif text-[#F2EBE1] group-hover:text-white transition-colors line-clamp-1 tracking-tight">
+                <div className="mt-3 sm:mt-6 px-1 sm:px-2">
+                  <h3 className="text-base sm:text-xl font-serif text-[#F2EBE1] group-hover:text-white transition-colors line-clamp-1 tracking-tight">
                     {product.title}
                   </h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[8px] sm:text-[10px] font-black text-white/20 uppercase tracking-[0.2em] sm:tracking-[0.3em]">{product.stock_count} Ünite Stok</span>
-                    <span className="text-[7px] sm:text-[9px] font-black text-white/10 tracking-widest italic">{product.sku || 'REF-PENDING'}</span>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-[9px] font-medium text-white/30">{product.stock_count} Stok</span>
+                    <span className="text-[8px] font-medium text-white/20">{product.sku || 'REF-PENDING'}</span>
                   </div>
                 </div>
               </motion.div>
