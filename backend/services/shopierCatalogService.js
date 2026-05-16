@@ -78,7 +78,17 @@ module.exports = {
       await sleep(1000);
 
       const details = await page.evaluate(() => {
-        const cleanT = (t) => t?.replace(/\s+/g, ' ').trim() || '';
+        const decodeUnicode = (str) => {
+          return str.replace(/\\u([a-fA-F0-9]{4})/g, (match, grp) => {
+            return String.fromCharCode(parseInt(grp, 16));
+          }).replace(/\\/g, '');
+        };
+
+        const cleanT = (t) => {
+          if (!t) return '';
+          let decoded = decodeUnicode(t);
+          return decoded.replace(/\s+/g, ' ').trim();
+        };
         
         const finalImgMap = new Map();
         const addImg = (u) => {
@@ -93,17 +103,22 @@ module.exports = {
 
         const parseP = (txt) => {
           if (!txt) return 0;
+          // 450,00 or 450.00 -> 450
           let s = txt.toString().replace(/[^\d.,]/g, '').trim();
           if (!s) return 0;
-          const dotCount = (s.match(/\./g) || []).length;
-          const commaCount = (s.match(/,/g) || []).length;
-          if (dotCount > 0 && commaCount > 0) s = s.replace(/\./g, '').replace(',', '.');
-          else if (commaCount === 1) s = s.replace(',', '.');
-          else if (dotCount === 1) {
-             const parts = s.split('.');
-             if (parts[1].length === 3) s = s.replace(/\./g, '');
-          } else if (dotCount > 1) s = s.replace(/\./g, '');
-          return parseFloat(s) || 0;
+          
+          // If contains both . and , (e.g. 1.250,00)
+          if (s.includes('.') && s.includes(',')) {
+            s = s.replace(/\./g, '').replace(',', '.');
+          } else if (s.includes(',')) {
+            // Only comma (Turkish decimal)
+            s = s.replace(',', '.');
+          }
+          
+          let val = parseFloat(s) || 0;
+          // Protect against extra decimal shifts (if 450.00 was 45000)
+          if (val > 1000000) val = val / 100; 
+          return val;
         };
 
         let title = '';
