@@ -874,7 +874,7 @@ module.exports = {
                         $('.product-description, #tab-description, .description').html() || 
                         $('meta[property="og:description"]').attr('content') || '';
 
-      return { 
+      const result = { 
         url, 
         title: title || 'Yeni Ürün', 
         price: originalPrice > currentPrice ? originalPrice : currentPrice, 
@@ -884,72 +884,192 @@ module.exports = {
         category: 'Genel', 
         description: description ? description.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim() : ''
       };
+
+      // *** CRITICAL: If axios got HTML but found NO images, Shopier likely returned a bot page ***
+      // Force Puppeteer Stealth fallback
+      if (result.images.length === 0) {
+        console.log(`🔄 [fetchProductDetail] Axios found NO images for ${url} - Shopier bot protection detected! Falling back to Puppeteer Stealth...`);
+        try {
+          const puppeteerResult = await module.exports.fetchWithPuppeteerGhostDetail(url);
+          if (puppeteerResult && puppeteerResult.images && puppeteerResult.images.length > 0) {
+            console.log(`✅ [fetchProductDetail] Puppeteer recovered ${puppeteerResult.images.length} images!`);
+            return puppeteerResult;
+          } else {
+            console.log(`⚠️ [fetchProductDetail] Puppeteer also found no images. Returning axios result with title.`);
+          }
+        } catch (puppErr) {
+          console.error(`❌ [fetchProductDetail] Puppeteer fallback failed:`, puppErr.message);
+        }
+      }
+
+      return result;
     } catch (e) {
       console.error(`❌ [fetchProductDetail] Global Error:`, e.message);
+      // Even on global error, try Puppeteer as last resort
+      console.log(`🔄 [fetchProductDetail] Global error caught, trying Puppeteer as last resort for ${url}...`);
+      try {
+        const puppeteerResult = await module.exports.fetchWithPuppeteerGhostDetail(url);
+        if (puppeteerResult && puppeteerResult.images && puppeteerResult.images.length > 0) {
+          return puppeteerResult;
+        }
+      } catch (pe) { /* swallow */ }
       return { url, title: 'Yeni Ürün', price: 0, images: [], variations: [], category: '', description: '' };
     }
   },
   fetchWithPuppeteerGhostDetail: async (url) => {
     let browser;
     try {
-      browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+      console.log(`🤖 [PuppeteerStealth] Starting for: ${url}`);
+      browser = await puppeteer.launch({ 
+        headless: 'new', 
+        args: [
+          '--no-sandbox', 
+          '--disable-setuid-sandbox',
+          '--disable-blink-features=AutomationControlled',
+          '--disable-features=IsolateOrigins,site-per-process',
+          '--window-size=1920,1080'
+        ] 
+      });
       const page = await browser.newPage();
       await page.setUserAgent(getRandomItem(USER_AGENTS));
-      await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+      await page.setViewport({ width: 1920, height: 1080 });
+      
+      // Set extra headers to look more like a real browser
+      await page.setExtraHTTPHeaders({
+        'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+        'sec-ch-ua-platform': '"Windows"',
+      });
+
+      await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
+      
+      // Wait a bit more for dynamic content
+      await sleep(2000);
+      
+      // Try to wait for product-specific elements
+      try {
+        await page.waitForSelector('img[src*="cdn.shopier.app"], .product-title-text, h1', { timeout: 10000 });
+      } catch (e) {
+        console.log(`⚠️ [PuppeteerStealth] Could not find product elements, continuing anyway...`);
+      }
+
+      // Scroll down to trigger lazy-loaded images
+      await page.evaluate(() => window.scrollBy(0, 1000));
+      await sleep(1000);
       
       const details = await page.evaluate(() => {
-        const title = document.querySelector('.shopier-store--product-detail-title, .product-title-text, h1, .product-title, .product-name')?.textContent.trim() || 'Yeni Ürün';
-        const priceText = document.querySelector('.price-current, .product-price, .price, .price-value')?.textContent.trim() || '0';
-        const oldPriceText = document.querySelector('.price-old, .product-old-price')?.textContent.trim() || '';
+        // --- Title ---
+        const titleEl = document.querySelector('.product-title-text, h1, .product-title, .product-name, [class*="product-detail"] h1, [class*="product-detail"] h2');
+        let title = titleEl?.textContent?.trim() || '';
+        if (!title) {
+          const ogTitle = document.querySelector('meta[property="og:title"]');
+          title = ogTitle?.content || 'Yeni Ürün';
+        }
+        title = title.split(' | ')[0].split(' - Shopier')[0].trim();
 
-        const parseP = (txt) => {
+        // --- Prices (regex from full page text) ---
+        const parsePrice = (txt) => {
           if (!txt) return 0;
-          const cleaned = txt.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
-          return parseFloat(cleaned) || 0;
+          let s = txt.replace(/[^\d.,]/g, '').replace(/\s/g, '');
+          if (s.includes('.') && s.includes(',')) {
+            s = s.replace(/\./g, '').replace(',', '.');
+          } else if (s.includes(',')) {
+            s = s.replace(',', '.');
+          }
+          return parseFloat(s) || 0;
         };
 
-        const p = parseP(priceText);
-        const op = oldPriceText ? parseP(oldPriceText) : 0;
+        const bodyText = document.body.innerText || '';
+        const priceMatches = [...bodyText.matchAll(/([\d.,]{2,12})\s*(?:TL|₺|TRY)/gi)];
+        const foundPrices = [];
+        for (const m of priceMatches) {
+          const v = parsePrice(m[1]);
+          if (v > 20) foundPrices.push(v);
+        }
+        // Deduplicate
+        const uniquePrices = [...new Set(foundPrices)].sort((a, b) => b - a);
+        
+        let price = 0, discountPrice = 0;
+        if (uniquePrices.length >= 2) {
+          price = uniquePrices[0]; // original (higher)
+          discountPrice = uniquePrices[1]; // discounted (lower)
+          // Swap: price should be the higher one (original), discountPrice the lower
+        } else if (uniquePrices.length === 1) {
+          price = uniquePrices[0];
+        }
 
-        const images = Array.from(document.querySelectorAll('img'))
-          .map(img => img.getAttribute('data-src') || img.getAttribute('src'))
-          .filter(src => src && src.includes('cdn.shopier.app') && !src.includes('600icons') && !src.includes('logo_'))
-          .map(src => {
-            // Helper function is not available inside evaluate, use inline normalization
-            return src.split('?')[0]
-              .replace('pictures_mid', 'pictures')
-              .replace('pictures_small', 'pictures')
-              .replace('pictures_large', 'pictures');
-          });
-          
-        const variations = [];
-        document.querySelectorAll('select').forEach(select => {
-            const options = Array.from(select.querySelectorAll('option'))
-                .map(opt => opt.textContent.trim())
-                .filter(val => val && !val.includes('Seçiniz'));
-            if (options.length > 0) variations.push({ name: 'Seçenek', options });
+        // --- Images (aggressive collection) ---
+        const imgSet = new Set();
+        // All img tags
+        document.querySelectorAll('img').forEach(img => {
+          const src = img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original') || img.getAttribute('data-lazy-src');
+          if (src && src.includes('cdn.shopier.app') && !src.includes('600icons') && !src.includes('logo_') && !src.includes('shopier.svg') && !src.includes('blank.gif')) {
+            imgSet.add(src.split('?')[0]
+              .replace('/pictures_mid/', '/pictures/')
+              .replace('/pictures_small/', '/pictures/')
+              .replace('/pictures_large/', '/pictures/')
+            );
+          }
+        });
+        
+        // Also check background images
+        document.querySelectorAll('[style*="cdn.shopier.app"]').forEach(el => {
+          const style = el.getAttribute('style');
+          const match = style?.match(/url\(['"]?(https?:\/\/cdn\.shopier\.app[^'")\s]+)/i);
+          if (match) imgSet.add(match[1].split('?')[0]);
         });
 
+        // Also scan scripts for image URLs
+        document.querySelectorAll('script').forEach(sc => {
+          const text = sc.textContent || '';
+          if (text.includes('cdn.shopier.app')) {
+            const matches = text.match(/https:\/\/cdn\.shopier\.app\/[^\s"'\\]+\.(?:jpe?g|png|webp)/gi);
+            if (matches) matches.forEach(m => imgSet.add(m.split('?')[0]));
+          }
+        });
+        
+        // Fallback: og:image
+        if (imgSet.size === 0) {
+          const ogImg = document.querySelector('meta[property="og:image"]');
+          if (ogImg?.content && ogImg.content.includes('cdn.shopier.app')) {
+            imgSet.add(ogImg.content.split('?')[0]);
+          }
+        }
+
+        // --- Variations ---
+        const variations = [];
+        document.querySelectorAll('select').forEach(select => {
+          const options = Array.from(select.querySelectorAll('option'))
+            .map(opt => opt.textContent.trim())
+            .filter(val => val && !val.includes('Seçiniz'));
+          if (options.length > 0) variations.push({ name: 'Seçenek', options });
+        });
+
+        // --- Category ---
         const breadcrumb = Array.from(document.querySelectorAll('.breadcrumb li, .shopier-breadcrumb li'))
-            .map(li => li.textContent.trim());
+          .map(li => li.textContent.trim());
         const category = breadcrumb.length > 1 ? breadcrumb[1] : 'Genel';
         
-        const description = document.querySelector('.product-description, #tab-description, .description, .product-details, [class*="description"]')?.innerHTML || '';
+        // --- Description ---
+        const descEl = document.querySelector('.product-description, #tab-description, .description, .product-details, [class*="description"]');
+        const description = descEl?.innerHTML || '';
         
         return { 
           title, 
-          price: op > p ? op : p,
-          discountPrice: op > p ? p : 0,
-          images: [...new Set(images)], 
+          price,
+          discountPrice,
+          images: [...imgSet].slice(0, 15), 
           variations, 
           category, 
           description 
         };
       });
       
+      console.log(`🤖 [PuppeteerStealth] Done: "${details.title}", ${details.images.length} images, ${details.price} TL`);
       return { url, ...details };
     } catch (e) {
-      console.error(`❌ [GhostDetail] Hata:`, e.message);
+      console.error(`❌ [PuppeteerStealth] Error:`, e.message);
       return null;
     } finally {
       if (browser) await browser.close();
