@@ -7,7 +7,6 @@ import {
   Download, 
   ShieldCheck, 
   Zap, 
-  Cpu, 
   Activity,
   ArrowLeft
 } from 'lucide-react';
@@ -49,12 +48,6 @@ const DownloadPage = () => {
     }
   ];
 
-  const requirements = [
-    { label: 'İşlemci', value: 'Intel Core i3 / M1 veya üstü' },
-    { label: 'Bellek (RAM)', value: '4 GB (8 GB Önerilir)' },
-    { label: 'Depolama', value: '500 MB Boş Alan' },
-    { label: 'İnternet', value: 'Aktif Bağlantı Gerekli' }
-  ];
 
   return (
     <div className="min-h-screen bg-[#050505] text-white pt-32 pb-20 px-4 overflow-hidden relative">
@@ -132,49 +125,25 @@ const DownloadPage = () => {
           ))}
         </div>
 
-        {/* Requirements & Info */}
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Requirements */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-10"
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <Cpu className="text-blue-500" size={24} />
-              <h4 className="text-xl font-black uppercase italic tracking-tight">SİSTEM GEREKSİNİMLERİ</h4>
+        {/* Info Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {[
+            { icon: ShieldCheck, title: 'Güvenli Altyapı', desc: 'Uçtan uca şifrelenmiş veri iletimi.' },
+            { icon: Zap, title: 'Yüksek Performans', desc: 'Native mimari ile sıfır gecikme.' },
+            { icon: Activity, title: 'Anlık Bildirimler', desc: 'Masaüstü bildirimleriyle satışları takip edin.' },
+            { icon: Monitor, title: 'Modern Arayüz', desc: 'Çoklu monitör ve yüksek çözünürlük desteği.' }
+          ].map((f, i) => (
+            <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.04] transition-colors">
+              <f.icon className="text-blue-500 mb-4" size={24} />
+              <div className="text-sm font-bold tracking-wide mb-2">{f.title}</div>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">{f.desc}</p>
             </div>
-            
-            <div className="space-y-6">
-              {requirements.map((req, i) => (
-                <div key={i} className="flex justify-between items-center py-4 border-b border-white/5">
-                  <span className="text-gray-500 text-xs font-black uppercase tracking-widest">{req.label}</span>
-                  <span className="text-sm font-bold text-gray-200">{req.value}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Feature Grid Mini */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="grid grid-cols-2 gap-6"
-          >
-            {[
-              { icon: ShieldCheck, title: 'Güvenli Altyapı', desc: 'Uçtan uca şifrelenmiş veri iletimi.' },
-              { icon: Zap, title: 'Yüksek Performans', desc: 'Native mimari ile sıfır gecikme.' },
-              { icon: Activity, title: 'Anlık Bildirimler', desc: 'Masaüstü bildirimleriyle satışları takip edin.' },
-              { icon: Monitor, title: 'Modern Arayüz', desc: 'Çoklu monitör ve yüksek çözünürlük desteği.' }
-            ].map((f, i) => (
-              <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.04] transition-colors">
-                <f.icon className="text-blue-500 mb-4" size={24} />
-                <div className="text-sm font-bold tracking-wide mb-2">{f.title}</div>
-                <p className="text-xs text-gray-500 font-medium leading-relaxed">{f.desc}</p>
-              </div>
-            ))}
-          </motion.div>
-        </div>
+          ))}
+        </motion.div>
 
         {/* Footer Note */}
         <div className="text-center mt-20 opacity-30">

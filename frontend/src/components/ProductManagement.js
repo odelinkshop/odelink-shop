@@ -273,15 +273,15 @@ const ProductManagement = ({ onOpenBulk }) => {
           </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-6">
-          <div className="relative group w-full sm:min-w-[360px]">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="relative group w-full sm:min-w-[320px]">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 w-4 h-4 group-focus-within:text-white transition-all" />
             <input 
               type="text"
               placeholder="ARŞİVDE ARA..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/[0.02] border border-white/5 pl-16 pr-8 py-6 text-[12px] text-white focus:border-white/40 focus:bg-white/[0.05] focus:outline-none transition-all font-black tracking-[0.2em] uppercase rounded-sm"
+              className="w-full bg-white/[0.02] border border-white/5 pl-14 pr-6 py-4 text-[11px] text-white focus:border-white/40 focus:bg-white/[0.05] focus:outline-none transition-all font-bold tracking-[0.2em] uppercase rounded-sm"
             />
           </div>
           
@@ -289,9 +289,9 @@ const ProductManagement = ({ onOpenBulk }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onOpenBulk}
-            className="flex items-center justify-center gap-5 bg-white text-[#0A0A0A] px-12 py-6 font-black uppercase tracking-[0.3em] text-[11px] hover:bg-[#F2EBE1] transition-all shadow-[0_20px_50px_rgba(255,255,255,0.1)] rounded-sm group"
+            className="flex items-center justify-center gap-3 bg-transparent border border-white/20 text-white px-8 py-4 font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-white hover:text-[#0A0A0A] hover:border-white transition-all rounded-sm group whitespace-nowrap"
           >
-            <Link size={18} strokeWidth={3} className="group-hover:rotate-45 transition-transform" /> 
+            <Link size={16} strokeWidth={2} className="group-hover:rotate-45 transition-transform" /> 
             <span>TOPLU LİNK YÜKLE</span>
           </motion.button>
         </div>

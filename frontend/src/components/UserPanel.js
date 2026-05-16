@@ -465,9 +465,9 @@ const UserPanel = () => {
                 </div>
 
                 {/* Processing Core */}
-                <div className="p-10 sm:p-16 space-y-12 flex-1 overflow-y-auto no-scrollbar">
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-end px-2">
+                <div className="p-10 sm:p-16 gap-8 flex-1 overflow-y-auto no-scrollbar flex flex-col">
+                  <div className="flex flex-col flex-1 space-y-6">
+                    <div className="flex justify-between items-end px-2 shrink-0">
                        <div className="space-y-2">
                          <label className="text-[11px] font-black uppercase tracking-[0.4em] text-white/60">Veri Giriş Matrisi</label>
                          <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Her satıra bir Shopier ürün linki ekleyin</p>
@@ -477,20 +477,20 @@ const UserPanel = () => {
                        </div>
                     </div>
                     
-                    <div className="relative group">
+                    <div className="relative group flex-1 flex flex-col">
                       <div className="absolute -inset-1 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity rounded-sm pointer-events-none" />
                       <textarea 
                         value={bulkLinks} 
                         onChange={(e) => setBulkLinks(e.target.value)} 
                         disabled={isImporting}
                         placeholder="https://www.shopier.com/shop/..."
-                        className="w-full h-72 sm:h-[400px] bg-[#0A0A0A] border border-white/5 p-10 text-[14px] text-white/80 focus:border-white/20 focus:outline-none transition-all font-mono resize-none leading-relaxed rounded-sm shadow-inner"
+                        className="w-full flex-1 min-h-[300px] bg-[#0A0A0A] border border-white/5 p-10 text-[14px] text-white/80 focus:border-white/20 focus:outline-none transition-all font-mono resize-none leading-relaxed rounded-sm shadow-inner"
                       />
                     </div>
                   </div>
 
                   {/* Elite Action Bar */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-10 pt-6">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-10 pt-4 shrink-0">
                     <div className="flex items-center gap-6 text-white/20">
                       <div className="w-12 h-12 border border-white/5 flex items-center justify-center">
                         <Zap size={18} />

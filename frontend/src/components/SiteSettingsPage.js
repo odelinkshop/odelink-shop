@@ -401,18 +401,14 @@ export default function SiteSettingsPage() {
 
             {/* REALISTIC IPHONE 17 PRO Mockup */}
             {previewMode === 'mobile' && (
-              <div className="relative transition-all duration-700 h-[80vh] max-h-[750px] aspect-[9/19.5] flex-shrink-0">
+              <div className="relative transition-all duration-700 w-[360px] h-[740px] flex-shrink-0">
                 {/* iPhone outer shell */}
-                <div className="w-full h-full bg-[#1C1D1F] rounded-[3.5rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
+                <div className="w-full h-full bg-[#1C1D1F] rounded-[3rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
                   {/* Screen */}
                   <div className="w-full h-full bg-black rounded-[2.5rem] overflow-hidden relative">
-                    {/* Dynamic Island */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-50 flex items-center justify-end pr-2 ring-1 ring-[#1C1D1F]">
-                      <div className="w-2 h-2 bg-[#0a0a0a] rounded-full ring-1 ring-[#222]" />
-                    </div>
                     <PreviewFrame site={site} />
                     {/* Home Indicator */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50" />
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50 pointer-events-none" />
                   </div>
                 </div>
                 {/* Side buttons */}
