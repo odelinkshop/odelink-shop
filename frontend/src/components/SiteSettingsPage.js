@@ -238,22 +238,6 @@ export default function SiteSettingsPage() {
                     <button onClick={() => setIsSidebarCollapsed(true)} className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all"><X size={18} /></button>
                   </div>
 
-                  {/* Subdomain - Compact & Sexy */}
-                  <div className="bg-gradient-to-br from-blue-600/10 to-transparent border border-blue-500/20 p-6 rounded-[2.5rem] relative overflow-hidden group">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Store Address</span>
-                      <div className="px-2 py-1 bg-blue-600 rounded-lg text-[8px] font-black text-white">{3 - (site?.subdomain_change_count || 0)} LEFT</div>
-                    </div>
-                    <div className="flex items-center gap-2 bg-black/60 rounded-2xl p-4 border border-white/5 focus-within:border-blue-500/50 transition-all">
-                      <input 
-                        defaultValue={site?.subdomain} 
-                        onBlur={(e) => handleSubdomainUpdate(e.target.value)}
-                        disabled={(3 - (site?.subdomain_change_count || 0)) <= 0}
-                        className="bg-transparent border-none outline-none text-[12px] font-bold text-white w-full uppercase tracking-widest"
-                      />
-                      <span className="text-[10px] font-black text-white/20">.odelink</span>
-                    </div>
-                  </div>
 
                   {/* Navigation */}
                   <div className="grid grid-cols-4 gap-2">

@@ -103,21 +103,19 @@ module.exports = {
 
         const parseP = (txt) => {
           if (!txt) return 0;
-          // 450,00 or 450.00 -> 450
           let s = txt.toString().replace(/[^\d.,]/g, '').trim();
           if (!s) return 0;
           
-          // If contains both . and , (e.g. 1.250,00)
           if (s.includes('.') && s.includes(',')) {
             s = s.replace(/\./g, '').replace(',', '.');
           } else if (s.includes(',')) {
-            // Only comma (Turkish decimal)
             s = s.replace(',', '.');
+          } else if (s.includes('.') && s.split('.').pop()?.length === 3) {
+            // Eğer sadece nokta varsa ve sonu 3 haneliyse (Örn: 2.100)
+            s = s.replace(/\./g, '');
           }
           
           let val = parseFloat(s) || 0;
-          // Protect against extra decimal shifts (if 450.00 was 45000)
-          if (val > 1000000) val = val / 100; 
           return val;
         };
 
