@@ -25,25 +25,21 @@ const formatPrice = (price: string | number): string => {
   if (price === undefined || price === null || price === "") return "0,00";
   let cleanPrice = String(price).replace(/[₺TL$€£]/g, '').trim();
   
-  // Eğer giriş '1.990' gibi bir formatta ise (binlik ayracı nokta olan TR formatı)
-  // Ve eğer biz bunu doğrudan parseFloat yaparsak 1.99 olur. 
-  // O yüzden noktaları silip, virgülü noktaya çeviriyoruz.
   if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
   } else if (cleanPrice.includes(',')) {
     cleanPrice = cleanPrice.replace(',', '.');
   } else if (cleanPrice.includes('.') && cleanPrice.split('.').pop()?.length === 3) {
-    // Eğer sadece nokta varsa ve sonu 3 haneliyse (Örn: 1.990)
     cleanPrice = cleanPrice.replace(/\./g, '');
   }
   
   const n = parseFloat(cleanPrice);
   if (isNaN(n)) return String(price);
   
-  return new Intl.NumberFormat('tr-TR', { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
-  }).format(n);
+  // EL YAPIMI FORMATLAMA: Intl.NumberFormat yerine manuel (sunucu-client farkını bitirir)
+  const parts = n.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return parts.join(',');
 };
 
 const slugify = (text: string) => {
@@ -231,7 +227,7 @@ export default function ProductClient() {
         )}
       </AnimatePresence>
 
-      <main className="bg-white text-black min-h-screen pt-28 pb-24 px-4 md:px-8 lg:px-12 max-w-[1600px] mx-auto">
+      <main suppressHydrationWarning className="bg-white text-black min-h-screen pt-28 pb-24 px-4 md:px-8 lg:px-12 max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
           {/* SOL KOLON: HD GALERİ */}

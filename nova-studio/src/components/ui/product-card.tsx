@@ -17,21 +17,24 @@ const formatPrice = (price: string | number, currency: string = "TL"): string =>
   if (!price && price !== 0) return "-";
   let str = String(price).trim();
   if (/[₺TL$€£]/.test(str)) return str;
+  
   const n = parseFloat(str.replace(/\./g, '').replace(',', '.'));
   if (isNaN(n)) return str;
   
   const symbolMap: Record<string, string> = {
-    'TL': '₺',
-    'TRY': '₺',
-    'USD': '$',
-    'EUR': '€',
-    'GBP': '£'
+    'TL': '₺', 'TRY': '₺', 'USD': '$', 'EUR': '€', 'GBP': '£'
   };
   
   const symbol = symbolMap[currency.toUpperCase()] || currency;
+  
+  // MANUEL FORMATLAMA: Sunucu-Client farkını bitirir
+  const parts = n.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const formattedValue = parts.join(',');
+
   return symbol === '$' || symbol === '€' || symbol === '£' 
-    ? `${symbol}${n.toLocaleString('tr-TR')}`
-    : `${n.toLocaleString('tr-TR')} ${symbol}`;
+    ? `${symbol}${formattedValue}`
+    : `${formattedValue} ${symbol}`;
 };
 
 const safeImage = (src: string | undefined): string => {
