@@ -580,7 +580,15 @@ async function fetchWithPuppeteerScroll(url, shopSlug) {
     console.log(`🌀 [AutoScroll] Başlatılıyor: ${url}`);
     browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      executablePath: process.platform === 'linux' ? '/usr/bin/google-chrome-stable' : undefined,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--shm-size=1gb'
+      ]
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });
@@ -679,12 +687,15 @@ module.exports = {
     try {
       console.log(`🤖 [PuppeteerStealth] Starting for: ${url}`);
       browser = await puppeteer.launch({ 
-        headless: 'new', 
+        headless: true, 
+        executablePath: process.platform === 'linux' ? '/usr/bin/google-chrome-stable' : undefined,
         args: [
           '--no-sandbox', 
           '--disable-setuid-sandbox',
           '--disable-blink-features=AutomationControlled',
           '--disable-features=IsolateOrigins,site-per-process',
+          '--disable-dev-shm-usage',
+          '--shm-size=1gb',
           '--window-size=1920,1080'
         ] 
       });
