@@ -160,8 +160,8 @@ class Subscription {
         );
 
         const insertRes = await client.query(
-          `INSERT INTO user_subscriptions (user_id, subscription_id, payment_method_id, status, start_date, end_date, created_at)
-           VALUES ($1, $2, $3, 'active', NOW(), NOW() + (CASE WHEN $4 = 'yearly' THEN INTERVAL '1 year' ELSE INTERVAL '1 month' END), NOW())
+          `INSERT INTO user_subscriptions (user_id, subscription_id, payment_method_id, status, start_date, end_date, billing_cycle, created_at)
+           VALUES ($1, $2, $3, 'active', NOW(), NOW() + (CASE WHEN $4 = 'yearly' THEN INTERVAL '1 year' ELSE INTERVAL '1 month' END), $4, NOW())
            RETURNING *`,
           [userId, subscriptionId, paymentMethodId, cycle]
         );

@@ -487,7 +487,7 @@ const SimpleAdminPanel = () => {
                                <td className="px-6 py-6">
                                   <div className="flex flex-col gap-1">
                                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded w-fit ${u.subscription_name ? 'bg-blue-500/10 text-blue-400' : 'bg-gray-500/10 text-gray-500'}`}>
-                                        {u.subscription_name ? (u.subscription_name === 'profesyonel' ? 'PRO ÜYE' : 'STANDART') : 'FREE'}
+                                        {u.subscription_name ? (['profesyonel', 'pro', 'premium'].includes(u.subscription_name.toLowerCase()) ? 'PRO ÜYE' : 'STANDART') : 'FREE'}
                                      </span>
                                      <span className="text-[9px] text-gray-600 font-medium uppercase tracking-tight">{u.billing_cycle === 'yearly' ? 'Yıllık Dönem' : 'Aylık Dönem'}</span>
                                   </div>
@@ -531,8 +531,8 @@ const SimpleAdminPanel = () => {
                                      <div className="text-[10px] text-gray-500 font-medium truncate max-w-[120px]">{u.email}</div>
                                   </div>
                                </div>
-                               <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${u.subscription_name?.toLowerCase().includes('pro') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
-                                  {u.subscription_name || 'FREE'}
+                               <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${['profesyonel', 'pro', 'premium'].includes((u.subscription_name || '').toLowerCase()) ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
+                                  {u.subscription_name ? (['profesyonel', 'pro', 'premium'].includes(u.subscription_name.toLowerCase()) ? 'PRO ÜYE' : 'STANDART') : 'FREE'}
                                </span>
                             </div>
                             <div className="flex justify-between items-center text-[10px] font-bold py-4 border-y border-white/5">
