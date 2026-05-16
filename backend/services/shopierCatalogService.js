@@ -782,55 +782,91 @@ module.exports = {
       if (!originalPrice) originalPrice = parseP(rawOld);
 
       // --- Last Resort Price Extraction (Regex) ---
-      if (currentPrice === 0) {
-        const fullText = $('body').text();
-        // Look for common price patterns: 1.199 TL, 1.199,00 TL, 1199₺ etc.
-        const priceRegex = /([\d.,]{2,10})\s*(?:TL|₺)/gi;
+      if (currentPrice === 0 || originalPrice === 0) {
+        const fullText = $('body').text().replace(/\s+/g, ' ');
+        // More flexible regex for prices like "1.499,99 TL", "599,98₺", etc.
+        const priceRegex = /([\d.,]{2,12})\s*(?:TL|₺|TRY)/gi;
         let match;
+        const foundPrices = [];
         while ((match = priceRegex.exec(fullText)) !== null) {
           const val = parseP(match[1]);
-          if (val > 10) { // Assume valid price > 10 TL
-            if (currentPrice === 0) currentPrice = val;
-            else if (val < currentPrice) {
-               if (originalPrice === 0) originalPrice = currentPrice;
-               currentPrice = val;
-            } else if (val > currentPrice && originalPrice === 0) {
-               originalPrice = val;
-            }
+          if (val > 20) foundPrices.push(val);
+        }
+        
+        if (foundPrices.length > 0) {
+          // Sort descending
+          foundPrices.sort((a, b) => b - a);
+          if (currentPrice === 0) {
+             // If we only found one, it's the current price
+             // If we found two, the larger is original, smaller is current
+             if (foundPrices.length >= 2) {
+                originalPrice = foundPrices[0];
+                currentPrice = foundPrices[1];
+             } else {
+                currentPrice = foundPrices[0];
+             }
+          } else if (originalPrice === 0 && foundPrices[0] > currentPrice) {
+             originalPrice = foundPrices[0];
           }
         }
       }
 
-      // --- Images (SPECIFIC SELECTORS) ---
+      // --- Images (ULTRA AGGRESSIVE) ---
       const images = [];
       const seen = new Set();
       const addImg = (src) => {
         if (!src) return;
-        const norm = normalizeShopierImageUrl(src);
+        // Clean possible quotes or backslashes from JSON strings
+        const cleaned = src.replace(/\\/g, '').replace(/["']/g, '').trim();
+        const norm = normalizeShopierImageUrl(cleaned);
         if (norm && norm.includes('cdn.shopier.app') && !seen.has(norm)) {
-          images.push(norm);
-          seen.add(norm);
+          if (!norm.includes('600icons') && !norm.includes('logo_')) {
+            images.push(norm);
+            seen.add(norm);
+          }
         }
       };
 
       // 1. Primary from JSON
       if (jsonData?.product?.primary_variant_image) addImg(jsonData.product.primary_variant_image);
+      if (jsonData?.product?.images) {
+        if (Array.isArray(jsonData.product.images)) jsonData.product.images.forEach(img => addImg(img.url || img));
+        else if (typeof jsonData.product.images === 'object') Object.values(jsonData.product.images).forEach(img => addImg(img.url || img));
+      }
       
-      // 2. Product Gallery Selectors (MODERN SHOPIER)
-      $('.product-images img, .swiper-slide img, .gallery img, #product-gallery img, .product-detail-images img, .product-image-container img').each((i, el) => {
-         const src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('data-original');
-         addImg(src);
+      // 2. Product Gallery Selectors
+      $('.product-images img, .swiper-slide img, .gallery img, #product-gallery img, .product-detail-images img, .product-image-container img, .product-img img, [class*="product"] img').each((i, el) => {
+         addImg($(el).attr('data-src') || $(el).attr('src') || $(el).attr('data-original') || $(el).attr('data-lazy-src'));
       });
 
-      // 3. Fallback to Meta
+      // 3. Script search (Regex for image URLs in scripts)
+      if (images.length < 3) {
+        $('script').each((i, el) => {
+          const content = $(el).html();
+          if (content && content.includes('cdn.shopier.app')) {
+            const matches = content.match(/https:\/\/cdn\.shopier\.app\/[^\s"']+\.(?:jpe?g|png|webp)/gi);
+            if (matches) matches.forEach(m => addImg(m));
+          }
+        });
+      }
+
+      // 4. Fallback to Meta
       if (images.length === 0) addImg($('meta[property="og:image"]').attr('content'));
 
-      // 4. Last resort: all images but only if we have very few
+      // 5. Last resort: all images
       if (images.length < 2) {
         $('img').each((i, el) => {
           const src = $(el).attr('data-src') || $(el).attr('src');
-          if (src && src.includes('cdn.shopier.app') && !src.includes('600icons') && !src.includes('logo_')) addImg(src);
+          addImg(src);
         });
+      }
+
+      // --- Desperate Image Recovery (Regex on Raw HTML) ---
+      if (images.length === 0) {
+        const rawHtml = $.html();
+        const imgRegex = /https:\/\/cdn\.shopier\.app\/[^\s"']+\.(?:jpe?g|png|webp)/gi;
+        const matches = rawHtml.match(imgRegex);
+        if (matches) matches.forEach(m => addImg(m));
       }
 
       // --- Description ---
