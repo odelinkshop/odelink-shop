@@ -71,11 +71,19 @@ router.post('/import-links', authMiddleware, async (req, res) => {
 
     for (const link of links) {
       try {
-        console.log(`🔍 [${req.userId}] Link işleniyor: ${link}`);
-        const detail = await fetchProductDetail(link);
+        const cleanLink = (link || '').toString().trim();
+        if (!cleanLink) continue;
+
+        console.log(`🔍 [${req.userId}] Link işleniyor: ${cleanLink}`);
         
-        if (detail && detail.images && detail.images.length > 0) {
-          console.log(`✅ [${req.userId}] Veri çekildi: "${detail.title}", Resim: ${detail.images.length}, Fiyat: ${detail.price}`);
+        // Use the unified scraper with its built-in robustness
+        const detail = await fetchProductDetail(cleanLink).catch(e => {
+          console.error(`❌ Scraper detail error for ${cleanLink}:`, e.message);
+          return null;
+        });
+        
+        if (detail && (detail.title || detail.price > 0)) {
+          console.log(`✅ [${req.userId}] Veri çekildi: "${detail.title}", Resim: ${detail.images?.length || 0}, Fiyat: ${detail.price}`);
           
           const product = await Product.create({
             userId: req.userId,
@@ -83,19 +91,19 @@ router.post('/import-links', authMiddleware, async (req, res) => {
             description: detail.description || '',
             price: detail.price || 0,
             discountPrice: detail.discountPrice || 0,
-            images: detail.images,
-            shopierUrl: link,
+            images: Array.isArray(detail.images) ? detail.images : [],
+            shopierUrl: cleanLink,
             category: detail.category || 'Genel',
             stockCount: 100
           });
           
-          results.push({ link, success: true, id: product.id });
+          results.push({ link: cleanLink, success: true, id: product.id });
         } else {
-          console.warn(`⚠️ [${req.userId}] Linkten veri alınamadı veya resim yok: ${link}`);
-          results.push({ link, success: false, error: 'Ürün verisi çekilemedi veya resim bulunamadı' });
+          console.warn(`⚠️ [${req.userId}] Linkten yeterli veri alınamadı: ${cleanLink}`);
+          results.push({ link: cleanLink, success: false, error: 'Ürün verisi (başlık/fiyat) çekilemedi.' });
         }
       } catch (err) {
-        console.error(`❌ [${req.userId}] Link çekme/kaydetme hatası (${link}):`, err.message);
+        console.error(`❌ [${req.userId}] Toplu çekim hatası (${link}):`, err.message);
         results.push({ link, success: false, error: err.message });
       }
     }
