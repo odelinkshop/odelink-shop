@@ -134,7 +134,7 @@ const PremiumPricing = () => {
             <span className={`text-[10px] sm:text-xs font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-gray-600'}`}>AYLIK</span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
-              className="relative w-16 sm:w-20 h-8 sm:h-10 bg-white/5 border border-white/10 rounded-full p-1 transition-all duration-300 hover:border-blue-500/50 group"
+              className="relative w-16 sm:w-20 h-8 sm:h-10 shrink-0 bg-white/5 border border-white/10 rounded-full p-1 transition-all duration-300 hover:border-blue-500/50 group"
             >
               <div className={`w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 ${isAnnual ? 'translate-x-8 sm:translate-x-10' : 'translate-x-0'}`} />
             </button>
@@ -372,7 +372,7 @@ const PremiumPricing = () => {
         {/* Trust Badges - OPTIMIZED FOR MOBILE */}
         <div className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 max-w-5xl mx-auto">
           {[
-            { icon: ShieldCheck, title: 'Güvenli Ödeme', desc: 'Dodo Payments altyapısı ile PCI-DSS uyumlu %100 güvenli ödeme.' },
+            { icon: ShieldCheck, title: 'Güvenli Ödeme', desc: 'Bütün ödemeleriniz Shopier altyapısıyla korunur, PCI-DSS uyumlu %100 güvenli ödeme.' },
             { icon: Zap, title: 'Anında Aktivasyon', desc: 'Ödeme sonrası paketiniz saniyeler içinde hesabınıza tanımlanır.' },
             { icon: Headphones, title: 'Uzman Destek', desc: 'Kurulum veya tasarımda yardıma mı ihtiyacınız var? Buradayız.' }
           ].map((item, idx) => (
