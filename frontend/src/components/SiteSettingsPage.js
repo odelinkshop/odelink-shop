@@ -145,6 +145,17 @@ export default function SiteSettingsPage() {
     </div>
   );
 
+  // Dynamic Scaling States
+  const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
+  useEffect(() => {
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const tabletScale = Math.min(0.8, (windowHeight - 140) / 1024);
+  const mobileScale = Math.min(0.85, (windowHeight - 140) / 812);
+
   return (
     <div className="h-screen bg-[#08090A] text-[#E1E1E1] flex flex-col overflow-hidden font-sans selection:bg-blue-500/30">
       
@@ -384,12 +395,11 @@ export default function SiteSettingsPage() {
               <div 
                 className="relative flex items-center justify-center transition-all duration-700 flex-shrink-0"
                 style={{ 
-                  '--scale': 'min(0.8, calc((100vh - 140px) / 1024))',
-                  width: 'calc(768px * var(--scale))', 
-                  height: 'calc(1024px * var(--scale))' 
+                  width: `${768 * tabletScale}px`, 
+                  height: `${1024 * tabletScale}px` 
                 }}
               >
-                <div className="absolute w-[768px] h-[1024px] origin-center" style={{ transform: 'scale(var(--scale))' }}>
+                <div className="absolute w-[768px] h-[1024px] origin-center" style={{ transform: `scale(${tabletScale})` }}>
                   {/* iPad outer shell */}
                   <div className="w-full h-full bg-[#1C1D1F] rounded-[2.5rem] p-3.5 shadow-[0_50px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10 relative">
                     {/* Screen */}
@@ -413,12 +423,11 @@ export default function SiteSettingsPage() {
               <div 
                 className="relative flex items-center justify-center transition-all duration-700 flex-shrink-0"
                 style={{ 
-                  '--scale': 'min(0.85, calc((100vh - 140px) / 812))',
-                  width: 'calc(375px * var(--scale))', 
-                  height: 'calc(812px * var(--scale))' 
+                  width: `${375 * mobileScale}px`, 
+                  height: `${812 * mobileScale}px` 
                 }}
               >
-                <div className="absolute w-[375px] h-[812px] origin-center" style={{ transform: 'scale(var(--scale))' }}>
+                <div className="absolute w-[375px] h-[812px] origin-center" style={{ transform: `scale(${mobileScale})` }}>
                   {/* iPhone outer shell */}
                   <div className="w-full h-full bg-[#1C1D1F] rounded-[3rem] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.8)] ring-1 ring-white/20 relative">
                     {/* Screen */}
