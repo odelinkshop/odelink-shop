@@ -934,7 +934,6 @@ module.exports = {
       await page.setUserAgent(getRandomItem(USER_AGENTS));
       await page.setViewport({ width: 1920, height: 1080 });
       
-      // Set extra headers to look more like a real browser
       await page.setExtraHTTPHeaders({
         'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -944,35 +943,25 @@ module.exports = {
 
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
       
-      // Wait a bit more for dynamic content
+      // --- WAIT FOR DYNAMIC CONTENT ---
+      await sleep(5000); 
+      
+      // Scroll to trigger lazy loading
+      await page.evaluate(() => {
+        window.scrollBy(0, 500);
+        setTimeout(() => window.scrollBy(0, 500), 1000);
+      });
       await sleep(2000);
-      
-      // Try to wait for product-specific elements
-      try {
-        await page.waitForSelector('img[src*="cdn.shopier.app"], .product-title-text, h1', { timeout: 10000 });
-      } catch (e) {
-        console.log(`⚠️ [PuppeteerStealth] Could not find product elements, continuing anyway...`);
-      }
 
-      // Scroll down to trigger lazy-loaded images
-      await page.evaluate(() => window.scrollBy(0, 800));
-      await sleep(1500);
-      
       const details = await page.evaluate(() => {
-        // --- Helper for Cleaning Text ---
         const cleanT = (t) => t?.replace(/\s+/g, ' ').trim() || '';
 
-        // --- Title ---
-        const titleEl = document.querySelector('.product-title-text, h1, .product-title, .product-name, [class*="product-detail"] h1, [class*="product-detail"] h2');
-        let title = cleanT(titleEl?.textContent);
-        if (!title) {
-          const ogTitle = document.querySelector('meta[property="og:title"]');
-          title = ogTitle?.content || 'Yeni Ürün';
-        }
-        title = title.split(' | ')[0].split(' - Shopier')[0].trim();
+        // --- 1. Title ---
+        const titleEl = document.querySelector('.product-title-text, h1, .product-title, .product-name, [class*="product-detail"] h1');
+        let title = cleanT(titleEl?.textContent) || document.title.split(' | ')[0];
 
-        // --- Prices ---
-        const parsePrice = (txt) => {
+        // --- 2. Prices ---
+        const parseP = (txt) => {
           if (!txt) return 0;
           let s = txt.replace(/[^\d.,]/g, '').replace(/\s/g, '');
           if (s.includes('.') && s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
@@ -980,86 +969,30 @@ module.exports = {
           return parseFloat(s) || 0;
         };
 
-        const bodyText = document.body.innerText || '';
-        // Look for prices specifically near TL/₺
-        const priceMatches = [...bodyText.matchAll(/([\d.,]{2,12})\s*(?:TL|₺|TRY)/gi)];
-        const foundPrices = [];
-        for (const m of priceMatches) {
-          const v = parsePrice(m[1]);
-          if (v > 20) foundPrices.push(v);
-        }
-        const uniquePrices = [...new Set(foundPrices)].sort((a, b) => b - a);
+        const curPriceEl = document.querySelector('.price-current, .product-price, .current-price, #product-price, [class*="price-current"]');
+        const oldPriceEl = document.querySelector('.price-old, .product-old-price, .old-price, strike, .price-discounted');
         
-        let price = 0, discountPrice = 0;
-        if (uniquePrices.length >= 2) {
-          price = uniquePrices[0]; 
-          discountPrice = uniquePrices[1];
-        } else if (uniquePrices.length === 1) {
-          price = uniquePrices[0];
+        let p1 = parseP(curPriceEl?.textContent);
+        let p2 = parseP(oldPriceEl?.textContent);
+
+        if (p1 === 0) {
+          const bodyText = document.body.innerText;
+          const matches = [...bodyText.matchAll(/([\d.,]{2,12})\s*(?:TL|₺|TRY)/gi)];
+          const vals = matches.map(m => parseP(m[1])).filter(v => v > 10).sort((a,b) => b-a);
+          if (vals.length >= 2) { p2 = vals[0]; p1 = vals[1]; }
+          else if (vals.length === 1) { p1 = vals[0]; }
         }
 
-        // --- Images (ULTRA STRICT FILTERING) ---
-        const imgSet = new Set();
-        const addIfValid = (img) => {
-          if (!img) return;
-          const src = img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original');
-          if (!src) return;
-          
-          const s = src.toLowerCase();
-          // 1. Check for known placeholders and icons
-          if (s.includes('blank.gif') || s.includes('loader') || s.includes('600icons') || 
-              s.includes('logo') || s.includes('icon') || s.includes('shopier.svg') ||
-              s.includes('pixel') || s.includes('tracking') || s.startsWith('data:') ||
-              s.includes('base64')) return;
-          
-          // 2. Check dimensions (Product images are usually > 400px, icons are small)
-          // Note: On lazy-loaded pages, naturalWidth might be 0 until scrolled, 
-          // so we also check the 'width' attribute if it exists.
-          const w = img.naturalWidth || img.width || 0;
-          const h = img.naturalHeight || img.height || 0;
-          if ((w > 0 && w < 150) || (h > 0 && h < 150)) return;
+        const price = Math.max(p1, p2);
+        const discountPrice = (p1 > 0 && p2 > 0) ? Math.min(p1, p2) : 0;
 
-          const cleanSrc = src.split('?')[0]
-            .replace('/pictures_mid/', '/pictures/')
-            .replace('/pictures_small/', '/pictures/')
-            .replace('/pictures_large/', '/pictures/');
-            
-          if (cleanSrc.includes('cdn.shopier.app')) {
-            imgSet.add(cleanSrc);
-          }
-        };
-
-        // Scan gallery first
-        document.querySelectorAll('.swiper-slide img, .product-images img, .gallery img, #product-gallery img, .product-detail-images img').forEach(addIfValid);
-
-        // If still no images, scan all but keep it strict
-        if (imgSet.size === 0) {
-          document.querySelectorAll('img').forEach(addIfValid);
-        }
+        // --- 3. Badges (Delivery, Shipping) ---
+        const badges = Array.from(document.querySelectorAll('.product-badge, .badge, .shipping-info, .cargo-badge, [class*="badge"], [class*="cargo"]'))
+          .map(el => cleanT(el.textContent))
+          .filter(t => t.length > 2 && t.length < 50);
         
-        // Final sanity check: if any image is still suspiciously like a placeholder
-        const finalImages = [...imgSet].filter(url => !url.includes('blank.gif') && !url.includes('placeholder'));
-        
-        // --- Variations ---
-        const variations = [];
-        document.querySelectorAll('.variation-container, .product-variations, select').forEach(v => {
-           // This is simplified, usually variations are in select options or radio buttons
-           const name = v.previousElementSibling?.textContent?.trim() || 'Seçenek';
-           const opts = Array.from(v.querySelectorAll('option, .variation-value'))
-             .map(o => o.textContent.trim())
-             .filter(t => t && !t.includes('Seçiniz'));
-           if (opts.length > 0) variations.push({ name, options: opts });
-        });
-
-        // --- Description ---
-        const descSelectors = [
-          '.product-description', 
-          '#tab-description', 
-          '.description', 
-          '.product-details', 
-          '.shopier-product-description',
-          '[class*="description"]'
-        ];
+        // --- 4. Description ---
+        const descSelectors = ['.product-description', '#tab-description', '.description', '.product-details', '.shopier-product-description', '[class*="description"]'];
         let description = '';
         for (const sel of descSelectors) {
           const el = document.querySelector(sel);
@@ -1069,18 +1002,46 @@ module.exports = {
           }
         }
         
+        if (badges.length > 0) {
+          const badgeHtml = `<div style="margin-bottom:15px; display:flex; flex-wrap:wrap; gap:8px;">${badges.map(b => `<span style="background:#f0f0f0; padding:4px 10px; border-radius:6px; font-weight:bold; color:#111; font-size:12px; border:1px solid #ddd;">${b}</span>`).join('')}</div>`;
+          description = badgeHtml + description;
+        }
+
+        // --- 5. Images (No Placeholders) ---
+        const imgSet = new Set();
+        const addIfValid = (img) => {
+          if (!img) return;
+          const src = img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original');
+          if (!src) return;
+          
+          const s = src.toLowerCase();
+          if (s.includes('blank.gif') || s.includes('loader') || s.includes('600icons') || 
+              s.includes('logo') || s.includes('icon') || s.includes('shopier.svg') ||
+              s.includes('pixel') || s.startsWith('data:')) return;
+          
+          if (s.includes('cdn.shopier.app')) {
+            imgSet.add(src.split('?')[0]
+              .replace('/pictures_mid/', '/pictures/')
+              .replace('/pictures_small/', '/pictures/')
+              .replace('/pictures_large/', '/pictures/')
+            );
+          }
+        };
+
+        document.querySelectorAll('img').forEach(addIfValid);
+
         return { 
           title, 
           price,
           discountPrice,
-          images: finalImages.slice(0, 15), 
-          variations, 
+          images: [...imgSet].slice(0, 15), 
+          variations: [], 
           category: 'Genel', 
           description 
         };
       });
       
-      console.log(`🤖 [PuppeteerStealth] Done: "${details.title}", ${details.images.length} images`);
+      console.log(`🤖 [PuppeteerStealth] Finished: "${details.title}", ${details.images.length} images`);
       return { url, ...details };
     } catch (e) {
       console.error(`❌ [PuppeteerStealth] Error:`, e.message);
