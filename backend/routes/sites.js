@@ -1279,7 +1279,10 @@ router.get('/:id', authMiddleware, requireAccess, async (req, res) => {
       return res.status(403).json({ error: 'Erişim izniniz yok' });
     }
 
-    return res.json({ site });
+    return res.json({ 
+      site,
+      capabilities: req.capabilities || {}
+    });
   } catch (error) {
     console.error('❌ Get site error:', error);
     return res.status(500).json({

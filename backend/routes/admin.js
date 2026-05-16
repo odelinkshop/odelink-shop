@@ -616,10 +616,7 @@ router.get('/overview', authMiddleware, adminOnly, async (req, res) => {
       `
       SELECT
         s.name as plan_name,
-        CASE
-          WHEN (us.end_date - us.start_date) >= INTERVAL '300 days' THEN 'yearly'
-          ELSE 'monthly'
-        END as derived_billing_cycle,
+        us.billing_cycle as derived_billing_cycle,
         COUNT(*)::int as count
       FROM user_subscriptions us
       JOIN subscriptions s ON s.id = us.subscription_id
@@ -706,10 +703,7 @@ router.get('/subscriptions', authMiddleware, adminOnly, async (req, res) => {
         u.email as user_email,
         s.name as plan_name,
         s.price,
-        CASE
-          WHEN (us.end_date - us.start_date) >= INTERVAL '300 days' THEN 'yearly'
-          ELSE 'monthly'
-        END as billing_cycle
+        us.billing_cycle,
       FROM user_subscriptions us
       JOIN users u ON u.id = us.user_id
       JOIN subscriptions s ON s.id = us.subscription_id
@@ -905,11 +899,7 @@ router.get('/users', authMiddleware, adminOnly, async (req, res) => {
         us.status as subscription_status,
         us.start_date,
         us.end_date,
-        CASE
-          WHEN us.id IS NULL THEN NULL
-          WHEN (us.end_date - us.start_date) >= INTERVAL '300 days' THEN 'yearly'
-          ELSE 'monthly'
-        END as billing_cycle,
+        us.billing_cycle,
         (
           SELECT COUNT(*)::int
           FROM sites st
@@ -1045,7 +1035,11 @@ router.post('/users/:userId/subscription', authMiddleware, adminOnly, ownerOnly,
       resolvedPlanName = (match?.name || '').toString().trim().toLowerCase();
     }
 
-    if (resolvedPlanName === 'ekonomi' && cycle !== 'yearly') {
+    // ENFORCE PLAN MAPPING
+    const pName = resolvedPlanName.toLowerCase();
+    if (pName === 'standart' || pName === 'standard') {
+      cycle = 'monthly';
+    } else if (pName === 'profesyonel' || pName === 'pro' || pName === 'professional') {
       cycle = 'yearly';
     }
 

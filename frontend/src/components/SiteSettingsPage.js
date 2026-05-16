@@ -57,6 +57,7 @@ export default function SiteSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [site, setSite] = useState(null);
+  const [capabilities, setCapabilities] = useState({});
   const [activeTab, setActiveTab] = useState('brand'); 
   const [previewMode, setPreviewMode] = useState('desktop');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -96,6 +97,7 @@ export default function SiteSettingsPage() {
         const data = await res.json();
         if (res.ok) {
           setSite(data.site);
+          setCapabilities(data.capabilities || {});
           // Merge with defaults
           setFormData({
             ...DEFAULT_SETTINGS,
@@ -285,13 +287,24 @@ export default function SiteSettingsPage() {
                               </select>
                             </div>
 
-                            <div className="flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
+                            <div className={`flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 rounded-3xl relative overflow-hidden ${!capabilities.allowHideBranding ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                              {!capabilities.allowHideBranding && (
+                                <div className="absolute inset-0 z-10 bg-black/20 backdrop-blur-[2px] flex items-center justify-center">
+                                   <div className="px-3 py-1 bg-amber-500 rounded-full text-[8px] font-black text-black uppercase tracking-widest shadow-xl">PROFESYONEL PAKET GEREKLİ</div>
+                                </div>
+                              )}
                               <div>
                                  <p className="text-[10px] font-black text-white uppercase tracking-widest">Odelink Logosu</p>
                                  <p className="text-[8px] text-gray-500 font-bold uppercase mt-1">Footer kısmında gizle</p>
                               </div>
-                              <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" checked={formData.branding.hide_odelink_credit} onChange={e => setFormData({...formData, branding: {...formData.branding, hide_odelink_credit: e.target.checked}})} className="sr-only peer" />
+                              <label className={`relative inline-flex items-center ${!capabilities.allowHideBranding ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                <input 
+                                  type="checkbox" 
+                                  disabled={!capabilities.allowHideBranding}
+                                  checked={formData.branding.hide_odelink_credit} 
+                                  onChange={e => setFormData({...formData, branding: {...formData.branding, hide_odelink_credit: e.target.checked}})} 
+                                  className="sr-only peer" 
+                                />
                                 <div className="w-12 h-7 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                               </label>
                             </div>

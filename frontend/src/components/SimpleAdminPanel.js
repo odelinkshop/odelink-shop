@@ -762,19 +762,19 @@ const SimpleAdminPanel = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                    <PlanOption 
                      title="Standart Paket"
-                     cycle="Aylık"
-                     price="299 TL"
-                     desc="Mağaza başına aylık ücretlendirme."
-                     active={selectedUser.subscription_name?.toLowerCase() === 'standart'}
+                     cycle="AYLIK"
+                     price="299 TL / Ay"
+                     desc="Mağaza başına aylık ücretlendirme. Temel özellikler dahildir."
+                     active={selectedUser.subscription_name?.toLowerCase() === 'standart' && selectedUser.billing_cycle === 'monthly'}
                      onClick={() => handleAssignPlan(selectedUser.id, 'standart', 'monthly')}
                    />
                    <PlanOption 
                      title="Profesyonel"
-                     cycle="Yıllık"
-                     price="399 TL"
-                     desc="CEO Tavsiyesi: En popüler yıllık paket."
+                     cycle="YILLIK"
+                     price="3.990 TL / Yıl"
+                     desc="CEO Tavsiyesi: 10 Mağaza limiti, Özel Domain ve VIP destek."
                      highlight
-                     active={selectedUser.subscription_name?.toLowerCase() === 'profesyonel'}
+                     active={selectedUser.subscription_name?.toLowerCase() === 'profesyonel' && selectedUser.billing_cycle === 'yearly'}
                      onClick={() => handleAssignPlan(selectedUser.id, 'profesyonel', 'yearly')}
                    />
                 </div>
