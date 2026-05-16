@@ -36,6 +36,10 @@ const LegalPageLayout = ({ title, children, lastUpdated = '21.04.2026' }) => {
     window.print();
   };
 
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  const activeLink = legalLinks.find(l => l.path === location.pathname);
+
   return (
     <div className="min-h-screen bg-[#050505] text-white pt-24 pb-20 relative overflow-hidden">
       {/* Optimized Mesh Gradient Background */}
@@ -104,6 +108,18 @@ const LegalPageLayout = ({ title, children, lastUpdated = '21.04.2026' }) => {
                   </div>
                 </div>
 
+                {/* Mobile Hamburger Navigation Button */}
+                <div className="lg:hidden">
+                  <button 
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-blue-500 hover:bg-white/10 transition-all active:scale-95"
+                  >
+                    <FileText size={18} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">BELGE SEÇ</span>
+                    <ChevronRight size={14} className={`transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : ''}`} />
+                  </button>
+                </div>
+
                 <div className="flex items-center gap-3">
                   <button 
                     onClick={handlePrint}
@@ -121,7 +137,36 @@ const LegalPageLayout = ({ title, children, lastUpdated = '21.04.2026' }) => {
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 italic uppercase">
+              {/* Mobile Dropdown Menu (Glassmorphism) */}
+              <motion.div
+                initial={false}
+                animate={isMenuOpen ? { height: 'auto', opacity: 1, marginBottom: 32 } : { height: 0, opacity: 0, marginBottom: 0 }}
+                className="lg:hidden overflow-hidden"
+              >
+                <div className="p-2 bg-white/[0.03] border border-white/10 rounded-3xl backdrop-blur-xl grid grid-cols-1 gap-1">
+                  {legalLinks.map((link) => (
+                    <NavLink
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={({ isActive }) => `
+                        flex items-center justify-between p-4 rounded-2xl transition-all
+                        ${isActive 
+                          ? 'bg-blue-600 text-white shadow-lg' 
+                          : 'text-gray-400 hover:bg-white/5 hover:text-white'}
+                      `}
+                    >
+                      <div className="flex items-center gap-3">
+                        <link.icon size={16} />
+                        <span className="text-[11px] font-bold uppercase tracking-wider">{link.name}</span>
+                      </div>
+                      <ChevronRight size={14} className="opacity-50" />
+                    </NavLink>
+                  ))}
+                </div>
+              </motion.div>
+
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 italic uppercase leading-none">
                 {title.split(' ').map((word, i) => (
                   <span key={i} className={i === 0 ? 'text-white' : 'text-blue-500'}>
                     {word}{' '}
