@@ -134,9 +134,10 @@ const PremiumPricing = () => {
             <span className={`text-[10px] sm:text-xs font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-gray-600'}`}>AYLIK</span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
-              className="relative w-16 sm:w-20 h-8 sm:h-10 shrink-0 bg-white/5 border border-white/10 rounded-full p-1 transition-all duration-300 hover:border-blue-500/50 group"
+              className="relative flex items-center shrink-0 w-[64px] h-[32px] sm:w-[80px] sm:h-[40px] bg-white/5 border border-white/10 rounded-full p-[4px] sm:p-[5px] transition-all duration-300 hover:border-blue-500/50 group"
+              style={{ minWidth: '64px' }}
             >
-              <div className={`w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 ${isAnnual ? 'translate-x-8 sm:translate-x-10' : 'translate-x-0'}`} />
+              <div className={`w-[22px] h-[22px] sm:w-[28px] sm:h-[28px] bg-blue-500 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-transform duration-300 ${isAnnual ? 'translate-x-[32px] sm:translate-x-[40px]' : 'translate-x-0'}`} />
             </button>
             <div className="flex flex-col items-start">
               <span className={`text-[10px] sm:text-xs font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-gray-600'}`}>YILLIK</span>
