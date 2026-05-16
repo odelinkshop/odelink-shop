@@ -421,30 +421,45 @@ router.get('/public/:subdomain/product-detail', async (req, res) => {
  * Proxies Shopier images to bypass hotlinking protection
  */
 router.get('/proxy-image', async (req, res) => {
+  let imageUrl = '';
   try {
-    const imageUrl = (req.query?.url || '').toString().trim();
+    imageUrl = (req.query?.url || '').toString().trim();
     if (!imageUrl) return res.status(400).send('URL gerekli');
     
-    if (!imageUrl.includes('cdn.shopier.app')) {
+    // Decode if double encoded
+    if (imageUrl.includes('%')) {
+      imageUrl = decodeURIComponent(imageUrl);
+    }
+
+    if (!imageUrl.includes('shopier.app') && !imageUrl.includes('shopier.com')) {
       return res.status(403).send('Sadece Shopier resimleri proxy edilebilir');
     }
 
     const axios = require('axios');
+    console.log(`🖼️ [IMAGE_PROXY] Fetching: ${imageUrl}`);
+    
     const response = await axios.get(imageUrl, {
       responseType: 'stream',
       headers: {
         'Referer': 'https://www.shopier.com/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
       },
-      timeout: 10000
+      timeout: 20000,
+      validateStatus: false // Get response even if it's 404/403 to debug
     });
 
+    if (response.status !== 200) {
+      console.error(`❌ [IMAGE_PROXY] Shopier returned ${response.status} for ${imageUrl}`);
+      return res.status(response.status).send(`Shopier hatası: ${response.status}`);
+    }
+
     res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day cache
+    res.setHeader('Cache-Control', 'public, max-age=604800');
     response.data.pipe(res);
   } catch (error) {
-    console.error('❌ Image Proxy Error:', error.message);
-    res.status(500).send('Resim yüklenemedi');
+    console.error(`❌ [IMAGE_PROXY_FATAL] ${imageUrl}:`, error.message);
+    res.status(500).send('Resim köprüsü hatası: ' + error.message);
   }
 });
 
