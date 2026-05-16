@@ -1,95 +1,84 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/odelinkshop/odelink-shop/main/frontend/public/logo.png" alt="Odelink Logo" width="120" />
-  <h1>🏛️ Nova: Elite Shopier Showcase SaaS</h1>
-  <p><strong>Transforming Shopier Stores into Premium E-Commerce Masterpieces in Seconds.</strong></p>
+  <img src="https://raw.githubusercontent.com/odelinkshop/odelink-shop/main/frontend/public/logo.png" alt="Ödelink Logo" width="220"/>
+  <h1>💎 Ödelink Enterprise</h1>
+  <p><b>Türkiye'nin En Güçlü Şirketsiz E-Ticaret ve Showcase Altyapısı</b></p>
 
-  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-  [![Version](https://img.shields.io/badge/Version-7.0.0--Elite-gold.svg)](#)
-  [![Security](https://img.shields.io/badge/Cyber--Armor-Active-emerald.svg)](#)
-  [![Status](https://img.shields.io/badge/Status-Production--Ready-blue.svg)](#)
+  <p>
+    <img src="https://img.shields.io/badge/Lisans-MIT-blue.svg" alt="License"/>
+    <img src="https://img.shields.io/badge/Versiyon-8.0.0--Elite-gold" alt="Version"/>
+    <img src="https://img.shields.io/badge/Siber--Z%C4%B1rh-Aktif-green" alt="Security"/>
+    <img src="https://img.shields.io/badge/Durum-Üretime--Haz%C4%B1r-blue" alt="Status"/>
+  </p>
 </div>
 
 ---
 
-## 💎 The Nova Vision
+## 🚀 Ödelink Nedir?
 
-**Odelink Shop (Code Name: Nova)** is an aristocrat-grade SaaS platform designed for high-performance e-commerce. It allows Shopier merchants to bypass technical hurdles and corporate requirements, deploying high-fidelity showcase websites instantly with zero-code effort.
+**Ödelink Enterprise**, Shopier satıcıları için özel olarak geliştirilmiş, kurumsal düzeyde bir vitrin yönetim platformudur. Satıcıların teknik karmaşayla uğraşmadan, saniyeler içinde dünya standartlarında bir e-ticaret sitesine sahip olmasını sağlar. Ödelink, Shopier'in güvenli ödeme altyapısını premium tasarım ve gelişmiş otomasyon teknolojileriyle birleştirir.
 
-### 🏛️ Aristocratic Features
+## 🏛️ Ödelink Elite Özellikleri
 
-- **⚡ 4K High-Fidelity Scraping:** Advanced catalog engine that extracts 4K/Original product assets and deep variant data (Size, Color, Material).
-- **🛡️ Cyber Armor Security:** Enterprise-grade registration guards, email domain whitelisting, and DevTools protection.
-- **📊 3D CEO Command Center:** A stunning WebGL-powered 3D analytics dashboard for global traffic monitoring.
-- **🚀 Zero-Downtime Deployment:** Integrated CI/CD pipelines with automated SSH-based VPS synchronization.
-- **🎨 Elite Design System:** Next.js 16 + Tailwind CSS + Framer Motion for a premium, buttery-smooth user experience.
-- **🌐 Custom Domain Engine:** Professional Cloudflare for SaaS integration for white-label domain management.
+*   ⚡ **Ultra-Hızlı Ürün Aktarımı:** Shopier linklerinizi yapıştırın, Ödelink saniyeler içinde tüm ürün verilerini (HD Resimler, Varyantlar, Açıklamalar) otomatik olarak ayıklasın.
+*   🛡️ **Cyber-Armor Güvenlik:** Gelişmiş koruma kalkanları ile siteniz her türlü saldırıya karşı izole edilmiştir.
+*   🎨 **Premium Vitrin Deneyimi:** Minimalist, hızlı ve dönüşüm odaklı tasarımlarla müşterilerinize elit bir alışveriş deneyimi sunun.
+*   📉 **%0 Ek Komisyon:** Ödelink, Shopier altyapısını doğrudan kullanır; kazancınızdan ek komisyon almaz.
 
----
+## 🛠️ Teknoloji Üstünlüğü
 
-## 🛠️ Cyber Tech Stack
+| Katman | Teknoloji |
+| :--- | :--- |
+| **Önyüz (Frontend)** | React 19, Next.js 16 (Studio Mode), Framer Motion |
+| **Arkayüz (Backend)** | Node.js Elite Cluster, Express.js |
+| **Veritabanı** | PostgreSQL (Relational Master) |
+| **Altyapı** | Docker Engine, Nginx Reverse Proxy, PM2 |
+| **Otomasyon** | Puppeteer Stealth Pro (Shopier Scraper) |
+| **Ağ ve Güvenlik** | Cloudflare Enterprise DNS & WAF Integration |
 
-| Component | Technology |
-| --- | --- |
-| **Frontend** | React 19, Next.js 16, Framer Motion, Three.js (WebGL) |
-| **Backend** | Node.js (Elite Cluster), Express.js |
-| **Database** | PostgreSQL (Relational Master) |
-| **Infrastructure** | Nginx Reverse Proxy, Docker, PM2 |
-| **Automation** | Puppeteer (Super-Scraper), Sharp (4K Optimization) |
-| **Networking** | Cloudflare for SaaS API |
+## 📐 Sistem Mimarisi
 
----
-
-## 🛰️ Architecture Overview
-
-Nova is built on a distributed micro-services architecture designed for infinite scalability and maximum privacy.
+Ödelink, kesintisiz hizmet için dağıtık bir yapı sunar.
 
 ```mermaid
 graph TD
-    User((User)) -->|HTTPS| CF[Cloudflare / DNS]
-    CF -->|Proxy| Nginx[Nginx Edge]
-    Nginx -->|Route| FE[Frontend - Next.js]
-    Nginx -->|API| BE[Backend - Node.js]
-    BE -->|Query| DB[(PostgreSQL)]
-    BE -->|Scrape| Shopier((Shopier App))
-    Shopier -->|4K Assets| BE
+    Client((Müşteri)) -->|HTTPS| CF[Cloudflare]
+    CF --> Proxy[Nginx Edge]
+    Proxy -->|Site Servisi| FE[Ödelink Studio - Next.js]
+    Proxy -->|Veri Servisi| BE[Ödelink Core - Node.js]
+    BE -->|Veritabanı| DB[(PostgreSQL)]
+    BE -->|Veri Çekme| SA[Shopier Cloud]
+    SA -->|Varlıklar| BE
 ```
 
----
+## 📦 Hızlı Kurulum (Geliştiriciler İçin)
 
-## 📦 Elite Installation Guide
-
-### 1. Siege Preparation (Ubuntu 24.04+)
+### 1. Sistem Hazırlığı
 ```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install git curl nginx postgresql docker.io -y
+sudo apt update && sudo apt install git docker.io docker-compose -y
 ```
 
-### 2. Ignition
+### 2. Depo Kurulumu
 ```bash
 git clone https://github.com/odelinkshop/odelink-shop.git
 cd odelink-shop
 npm run install:all
 ```
 
-### 3. Cyber Configuration
-Create `backend/.env` with your elite credentials (DB_URL, JWT_SECRET, CF_API_KEY).
+### 3. Yapılandırma
+`backend/.env` dosyasını `example` dosyasına göre doldurun.
 
-### 4. Lift-off
+### 4. Ateşleme
 ```bash
-npm run dev # Development
-# or
-npm run build && pm2 start backend/server.js --name nova-core # Production
+docker-compose up -d --build
 ```
 
----
+## 📜 Lisans ve Güvenlik
 
-## 📜 Legal & Security
-
-This project is protected under the **MIT License**. For security reports, please refer to our [Security Policy](SECURITY.md).
+Ödelink projesi **MIT Lisansı** ile korunmaktadır. Güvenlik bildirimleri için [SECURITY.md](SECURITY.md) dosyasını takip edin.
 
 ---
 
 <div align="center">
-  <p><i>Developed with passion for the next generation of digital moguls.</i></p>
-  <p><strong>🏛️ Nova Empire © 2024-2026</strong></p>
+  <p><i>Dijital geleceği Ödelink ile şekillendirin.</i></p>
+  <p>🏛️ <b>Ödelink Enterprise © 2024-2026</b></p>
 </div>

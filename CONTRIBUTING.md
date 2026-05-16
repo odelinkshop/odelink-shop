@@ -1,37 +1,24 @@
-# Contributing to Odelink Shop
+# 🤝 Nova'ya Katkıda Bulunma Rehberi
 
-First off, thank you for considering contributing to Odelink Shop! It's people like you that make Odelink such a powerful tool for the community.
+Nova (Odelink) projesine katkıda bulunmak istediğiniz için teşekkürler! Bu proje, Shopier satıcıları için en iyi deneyimi sunmayı hedefler.
 
-## Code of Conduct
+## 🚀 Geliştirme Süreci
 
-By participating in this project, you agree to abide by our professional standards:
-- Be respectful to all contributors.
-- Maintain high code quality (DRY, Clean Code).
-- Prioritize security and performance in every PR.
+1.  **Repo'yu Forklayın:** Kendi GitHub hesabınıza projeyi çatallayın.
+2.  **Branch Oluşturun:** Yapacağınız değişiklik için anlamlı bir branch ismi seçin (`feature/yeni-ozellik` veya `fix/hata-duzeltme`).
+3.  **Kod Standartları:** Prettier ve ESLint kurallarına uyun. Aristokrat bir kod yazımı bekliyoruz; temiz, okunaklı ve verimli.
+4.  **Test Edin:** Değişikliklerinizi hem yerelde hem de mümkünse VDS ortamında test edin.
+5.  **Pull Request Açın:** Değişikliğinizi detaylıca açıklayan bir PR gönderin.
 
-## How Can I Contribute?
+## 🏛️ Kod Prensiplerimiz
 
-### Reporting Bugs
-- Use the GitHub Issue Tracker.
-- Describe the bug in detail and provide steps to reproduce.
+*   **Güvenlik Önce Gelir:** Her zaman `Cyber-Armor` vizyonuyla kod yazın.
+*   **Performans Kritiktir:** Scraper ve Proxy işlemlerinde minimum kaynak tüketimi ve maksimum hız hedefleyin.
+*   **Minimalist Tasarım:** UI tarafında her zaman temiz ve modern estetiği koruyun.
 
-### Suggesting Enhancements
-- Open an issue with the "enhancement" tag.
-- Explain why this feature would be useful for the Nova ecosystem.
+## 💬 İletişim
 
-### Pull Requests
-1. Fork the repo and create your branch from `main`.
-2. Ensure your code follows the existing style.
-3. Write descriptive commit messages.
-4. Open a PR with a clear summary of changes.
-
-## Development Setup
-
-1. Clone the repo.
-2. Run `npm run install:all`.
-3. Configure your local `.env`.
-4. Run `npm run dev` to start the siber engine.
+Büyük bir özellik eklemek istiyorsanız, önce bir `Issue` açarak toplulukla tartışmanızı öneririz.
 
 ---
-
-*Together, we build the future of e-commerce.* 🏛️🚀⚙️✨
+🏛️ **Nova Geliştirici Topluluğu**

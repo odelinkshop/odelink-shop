@@ -1,25 +1,32 @@
-# Security Policy
+# 🛡️ Ödelink Güvenlik Politikası (Security Policy)
 
-## Supported Versions
+Ödelink Enterprise, kullanıcılarının ve verilerinin güvenliğini en üst düzeyde tutmayı taahhüt eder.
 
-We only provide security updates for the latest stable release.
+## Desteklenen Versiyonlar
 
-| Version | Supported          |
-| ------- | ------------------ |
-| v2.x.x  | :white_check_mark: |
-| v1.x.x  | :x:                |
+Şu anda aktif olarak güvenlik güncellemeleri alan versiyonlar:
 
-## Reporting a Vulnerability
+| Versiyon | Destek Durumu |
+| :--- | :--- |
+| 8.x.x | ✅ Aktif Destek |
+| 7.x.x | ⚠️ Kritik Yamalar |
+| < 7.x | ❌ Desteklenmiyor |
 
-**DO NOT OPEN A PUBLIC ISSUE** for security vulnerabilities.
+## Zafiyet Bildirimi
 
-If you discover a security vulnerability within Odelink Shop, please send an e-mail to security@odelink.shop. All security vulnerabilities will be promptly addressed.
+Bir güvenlik zafiyeti keşfettiyseniz, lütfen bunu herkese açık bir `Issue` olarak bildirmek yerine doğrudan **security@odelink.shop** (veya kurumsal iletişim kanalları) üzerinden bizimle paylaşın. 
 
-### Our Security Protocol
-- We will acknowledge receipt of your vulnerability report within 24 hours.
-- We will provide an estimated timeframe for a fix.
-- We will notify you once the vulnerability has been patched.
+Bildiriminizden sonra ekibimiz:
+1.  Zafiyeti 24 saat içinde teyit edecektir.
+2.  Çözüm sürecini başlatacak ve sizi düzenli olarak bilgilendirecektir.
+3.  Zafiyet giderildiğinde, katkınız için size teşekkür edilecektir.
+
+## Siber-Zırh (Cyber-Armor) Vizyonu
+
+Ödelink, katmanlı bir güvenlik mimarisi kullanır:
+*   **WAF:** Cloudflare üzerinden gelen DDOS ve Bot saldırılarına karşı koruma.
+*   **İzolasyon:** Her mağaza kendi subdomain'i ve izolasyon katmanıyla çalışır.
+*   **Şifreleme:** Tüm veri trafiği end-to-end SSL/TLS ile korunmaktadır.
 
 ---
-
-*Nova SaaS: Privacy, Security, Quality.* 🏛️🛡️✨
+🏛️ **Ödelink Güvenlik Operasyon Merkezi**

@@ -1,46 +1,29 @@
-# 🏛️ Nova Aristocratic Premium — SaaS Architecture
+# 📐 Ödelink Enterprise Mimarisi
 
-Bu doküman, Nova temasının Odelink SaaS platformuna entegrasyonu ve teknik mimarisi hakkında rehber niteliğindedir.
+Bu belge, Ödelink ekosisteminin teknik altyapısını ve veri akışını detaylandırır.
 
-## 🏗️ Mimari Yapı
-Nova, Odelink ekosisteminde bağımsız bir **Theme Service** olarak çalışır.
+## 1. Dağıtık Yapı
+Ödelink, yüksek trafik ve düşük gecikme süresi için tasarlanmış dağıtık bir yapıya sahiptir.
 
-- **Backend (Node.js/Express):** Tüm `*.odelink.shop` isteklerini karşılar ve bunları dinamik olarak Nova servisine (Port 3001) proxy eder.
-- **Frontend (Next.js 16):** Mağaza verilerini subdomain üzerinden API'den çeker ve aristokratik tasarım bileşenlerine dağıtır.
-- **Data Engine (Zustand):** Mağaza ayarlarını, ürünlerini ve sepet verilerini merkezi bir state olarak yönetir.
+### 1.1 Ödelink Core (Backend)
+Tüm iş mantığının, otomasyonun ve veri yönetiminin kalbidir.
+*   **Elite Cluster:** Node.js kümeleri sayesinde eş zamanlı binlerce isteği işleyebilir.
+*   **Super-Scraper:** Shopier verilerini "Stealth" modunda, IP engellerine takılmadan ayıklar.
 
-## 📡 Subdomain Yönlendirme (Multi-Tenant)
-Backend `server.js` içerisinde kurulu olan proxy katmanı, gelen `Host` başlığını kontrol eder:
-1. `api.odelink.shop` -> Backend API
-2. `www.odelink.shop` -> Ana Tanıtım Sitesi (React)
-3. `*.odelink.shop` -> **Nova Theme Service** (Dinamik Mağaza)
+### 1.2 Ödelink Studio (Frontend)
+Kullanıcıların dükkanlarını yönettiği ve müşterilerin alışveriş yaptığı vitrin katmanıdır.
+*   **Next.js 16:** SSR (Server Side Rendering) ile SEO uyumlu ve ışık hızında sayfalar.
+*   **Studio Mode:** Gerçek zamanlı önizleme ve dükkan özelleştirme motoru.
 
-## 🎨 Editör (Ödelink Studio) Entegrasyonu
-Nova, Editör içinden gelen `postMessage` sinyallerini dinler. Bu sayede kullanıcı renk veya yazı değiştirdiğinde, Nova **yenilenmeden** bu değişikliği önizleme ekranında gösterir.
+## 2. Veri Güvenliği (Cyber-Armor)
+Verileriniz Ödelink'in siber zırhı ile korunur:
+*   **SSL/TLS:** Uçtan uca şifreleme.
+*   **Subdomain Isolation:** Her satıcı kendi izole subdomain alanında çalışır.
+*   **Database Master:** PostgreSQL ile ilişkisel ve güvenli veri depolama.
 
-### Desteklenen Değişkenler:
-- `primaryColor`, `secondaryColor`, `accentColor`
-- `heroTitle`, `heroSubtitle`, `heroButtonText`
-- `announcementBar` content
-
-## 🛠️ Kurulum ve Dağıtım (Deployment)
-
-### Nova Servisini Başlatma
-```bash
-cd Nova
-npm install
-npm run dev # Geliştirme modu
-npm run build && npm start # Üretim modu
-```
-
-### PM2 ile Canlıya Alma
-```bash
-pm2 start npm --name "odelink-nova" -- start --prefix Nova -- -p 3001
-```
-
-## 📜 Lisans ve Sahiplik
-Bu tema **Odelink SaaS** platformu için özel olarak tasarlanmış "Aristocratic Premium" edisyonudur. İzinsiz kopyalanamaz veya dağıtılamaz.
+## 3. Altyapı ve Ölçeklendirme
+*   **Docker Integration:** Her bileşen konteynırize edilmiştir, saniyeler içinde yeni sunuculara taşınabilir.
+*   **Cloudflare DNS:** Dünya genelinde hızlı erişim ve DDOS koruması.
 
 ---
-**Versiyon:** 2.0.0 (Nova SaaS Era)
-**Geliştirici:** Antigravity AI
+🏛️ **Ödelink Enterprise Mühendislik Ekibi**
