@@ -760,15 +760,11 @@ module.exports = {
               const pCurrMatch = content.match(/"price_formatted":"([^"]+)"/);
               const pOrig = pOrigMatch ? parseP(pOrigMatch[1]) : 0;
               const pCurr = pCurrMatch ? parseP(pCurrMatch[1]) : 0;
-
               if (pOrig > 0 || pCurr > 0) {
                 price = Math.max(pOrig, pCurr);
                 if (pOrig > pCurr && pCurr > 0) discountPrice = pCurr;
               }
 
-              const imgMatches = content.match(/https:\/\/cdn\.shopier\.app\/[^\s"']+\.(?:jpe?g|png|webp)/gi);
-              if (imgMatches) imgMatches.forEach(addImg);
-              
               const descMatch = content.match(/"description":"([^"]+)"/);
               if (descMatch && !description) description = descMatch[1].replace(/\\n/g, '<br>').replace(/\\"/g, '"');
             }
@@ -779,31 +775,57 @@ module.exports = {
         if (!title) title = cleanT(document.querySelector('.product-title-text, h1, .product-title')?.textContent) || document.title.split(' | ')[0];
         if (!description) description = document.querySelector('.product-description, #tab-description')?.innerHTML || '';
 
-        if (finalImgMap.size === 0) {
-          document.querySelectorAll('img').forEach(img => addImg(img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original')));
+        // --- 4. IMAGE CAPTURE (SMART & RELIABLE) ---
+        // Prioritize the visible product images
+        const galleryImgs = Array.from(document.querySelectorAll('.shopier-store--product-detail-images img, .swiper-slide img, .product-images img, #product-gallery img'))
+          .filter(img => {
+             // EXCLUDE related products at the bottom
+             const parent = img.closest('[class*="related"], [class*="suggested"], [id*="related"], .other-products');
+             return !parent;
+          })
+          .map(img => img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original'))
+          .filter(src => src && src.includes('cdn.shopier.app'));
+
+        if (galleryImgs.length > 0) {
+          galleryImgs.forEach(addImg);
         }
 
+        // If DOM fails or we want more details, check script ONLY for this product
+        if (finalImgMap.size < 2) {
+          try {
+            const scripts = Array.from(document.querySelectorAll('script'));
+            for (const s of scripts) {
+              const content = s.textContent || '';
+              if (content.includes('"product"') && content.includes('"images"')) {
+                const imgSection = content.match(/"images":\s*\[([^\]]+)\]/);
+                if (imgSection) {
+                   const urls = imgSection[1].match(/https:\/\/cdn\.shopier\.app\/[^\s"']+\.(?:jpe?g|png|webp)/gi);
+                   if (urls) urls.forEach(addImg);
+                }
+                const primaryMatch = content.match(/"primary_variant_image":"([^"]+)"/);
+                if (primaryMatch) addImg(primaryMatch[1]);
+                break; 
+              }
+            }
+          } catch(e) {}
+        }
+
+        // Final Price Fallback
         if (price === 0 || discountPrice === 0) {
            const pEl = document.querySelector('.shopier-store--product-detail-price, .product-price-container, .product-detail-price, .product-price-wrapper');
            if (pEl) {
-             // Try data-price attributes first (High Accuracy)
              const currEl = pEl.querySelector('.price-current, [class*="price-current"], .product-price');
              const oldEl = pEl.querySelector('.price-old, [class*="price-old"], .product-old-price');
-             
              const p1 = currEl ? parseP(currEl.getAttribute('data-price') || currEl.textContent) : 0;
              const p2 = oldEl ? parseP(oldEl.getAttribute('data-price') || oldEl.textContent) : 0;
-             
              if (p1 > 0 || p2 > 0) {
                price = Math.max(p1, p2, price);
                const minP = Math.min(p1, p2);
                if (minP > 0 && minP < price) discountPrice = minP;
-               else if (p1 > 0 && p1 === price && p2 === 0) { /* only current price found */ }
              }
-
-             // If still no prices, look for numbers in spans
              if (price === 0) {
                const nums = Array.from(pEl.querySelectorAll('span, b, div, strong, strike'))
-                 .map(el => parseP(el.textContent)).filter(v => v > 1).sort((a,b) => b-a);
+                 .map(el => parseP(el.textContent)).filter(v => v > 10).sort((a,b) => b-a);
                if (nums.length >= 1) price = nums[0];
                if (nums.length >= 2) discountPrice = nums[1];
              }
