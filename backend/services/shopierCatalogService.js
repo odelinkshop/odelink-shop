@@ -998,32 +998,47 @@ module.exports = {
           price = uniquePrices[0];
         }
 
-        // --- Images (Strict Filtering) ---
+        // --- Images (ULTRA STRICT FILTERING) ---
         const imgSet = new Set();
-        const addIfValid = (src) => {
+        const addIfValid = (img) => {
+          if (!img) return;
+          const src = img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original');
           if (!src) return;
+          
           const s = src.toLowerCase();
-          // Filter out obvious non-product images
+          // 1. Check for known placeholders and icons
           if (s.includes('blank.gif') || s.includes('loader') || s.includes('600icons') || 
               s.includes('logo') || s.includes('icon') || s.includes('shopier.svg') ||
-              s.includes('pixel') || s.includes('tracking')) return;
+              s.includes('pixel') || s.includes('tracking') || s.startsWith('data:') ||
+              s.includes('base64')) return;
           
-          imgSet.add(src.split('?')[0]
+          // 2. Check dimensions (Product images are usually > 400px, icons are small)
+          // Note: On lazy-loaded pages, naturalWidth might be 0 until scrolled, 
+          // so we also check the 'width' attribute if it exists.
+          const w = img.naturalWidth || img.width || 0;
+          const h = img.naturalHeight || img.height || 0;
+          if ((w > 0 && w < 150) || (h > 0 && h < 150)) return;
+
+          const cleanSrc = src.split('?')[0]
             .replace('/pictures_mid/', '/pictures/')
             .replace('/pictures_small/', '/pictures/')
-            .replace('/pictures_large/', '/pictures/')
-          );
+            .replace('/pictures_large/', '/pictures/');
+            
+          if (cleanSrc.includes('cdn.shopier.app')) {
+            imgSet.add(cleanSrc);
+          }
         };
 
-        // Prioritize gallery/slider images
-        document.querySelectorAll('.swiper-slide img, .product-images img, .gallery img, #product-gallery img').forEach(img => {
-          addIfValid(img.getAttribute('data-src') || img.getAttribute('src') || img.getAttribute('data-original'));
-        });
+        // Scan gallery first
+        document.querySelectorAll('.swiper-slide img, .product-images img, .gallery img, #product-gallery img, .product-detail-images img').forEach(addIfValid);
 
-        // Fallback to all images if we have few
-        if (imgSet.size < 2) {
-          document.querySelectorAll('img').forEach(img => addIfValid(img.getAttribute('data-src') || img.getAttribute('src')));
+        // If still no images, scan all but keep it strict
+        if (imgSet.size === 0) {
+          document.querySelectorAll('img').forEach(addIfValid);
         }
+        
+        // Final sanity check: if any image is still suspiciously like a placeholder
+        const finalImages = [...imgSet].filter(url => !url.includes('blank.gif') && !url.includes('placeholder'));
         
         // --- Variations ---
         const variations = [];
@@ -1058,7 +1073,7 @@ module.exports = {
           title, 
           price,
           discountPrice,
-          images: [...imgSet].slice(0, 15), 
+          images: finalImages.slice(0, 15), 
           variations, 
           category: 'Genel', 
           description 
