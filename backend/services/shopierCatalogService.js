@@ -848,11 +848,17 @@ module.exports = {
       
       console.log(`🤖 [PuppeteerStealth] Finished: "${details.title}", ${details.images.length} images`);
       return { url, ...details };
-    } catch (e) {
-      console.error(`❌ [PuppeteerStealth] Error:`, e.message);
+    } catch (error) {
+      console.error(`❌ [PuppeteerStealth ERROR] URL: ${url}`);
+      console.error(`❌ Message: ${error.message}`);
+      console.error(`❌ Stack: ${error.stack}`);
+      
+      // Attempt a fallback/screenshot if possible in future
       return null;
     } finally {
-      if (browser) await browser.close();
+      if (browser) {
+        await browser.close().catch(e => console.error('❌ Browser close error:', e.message));
+      }
     }
   },
   enrichCatalogProductsWithDetails: async (products) => {
