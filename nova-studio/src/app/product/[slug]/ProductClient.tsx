@@ -90,6 +90,11 @@ export default function ProductClient() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>("ozellikler");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const product = products.find(p => {
     const currentSlug = typeof slug === 'string' ? slug : '';
@@ -137,15 +142,6 @@ export default function ProductClient() {
 
   if (isLoading) return <div className="min-h-screen bg-white" />;
   if (!product) return <div className="min-h-screen bg-white" />;
-
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-    // Sayfa yenilendiğinde meta verileri tekrar zorla güncelle
-    if (product) {
-      document.title = `${product.name} | ${store?.name || "Mağaza"}`;
-    }
-  }, [product, store]);
 
   // Resimleri normalize et ve tekilleştir
   const allImages = [...new Set((product.images || []).map(img => {
