@@ -37,56 +37,6 @@ export default function CartPage() {
   const formatTotal = (n: number) =>
     `${n.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`;
 
-  const handleCheckout = () => {
-    if (items.length === 0) return;
-
-    const firstItem = items[0];
-    if (!firstItem.url || firstItem.url === "#") {
-      console.error("Shopier URL not found for item:", firstItem.id);
-      return;
-    }
-
-    // Track checkout click in analytics
-    if (typeof window !== "undefined" && (window as any).reportAnalyticsEvent) {
-      (window as any).reportAnalyticsEvent({
-        type: 'begin_checkout',
-        page: '/cart',
-        target: 'checkout_button',
-        label: 'Proceed to Shopier',
-        amount: subtotal
-      });
-    }
-
-    // Redirect to the first item's Shopier URL
-    let targetUrl = firstItem.url || "";
-    
-    // Fallback: If URL is missing or internal, try to construct it
-    if (!targetUrl || targetUrl === "#" || targetUrl.startsWith('/')) {
-      console.warn("⚠️ Shopier URL missing, attempting reconstruction...");
-      // Try to get shop slug from window or store
-      const storeSlug = (window as any).STORE_DATA?.settings?.shopier_user || "";
-      if (storeSlug && firstItem.productId) {
-        targetUrl = `https://www.shopier.com/${storeSlug}/${firstItem.productId}`;
-      }
-    }
-
-    if (targetUrl.startsWith('//')) {
-      targetUrl = `https:${targetUrl}`;
-    } else if (targetUrl && !targetUrl.startsWith('http')) {
-      // If it looks like a relative path or just a slug
-      if (targetUrl.includes('/')) {
-        targetUrl = `https://www.shopier.com/${targetUrl}`;
-      }
-    }
-    
-    // Use assign for direct redirection
-    console.log("🚀 Final Redirect to Shopier:", targetUrl);
-    if (targetUrl && targetUrl !== "#") {
-      window.location.assign(targetUrl);
-    } else {
-      alert("Ödeme sayfasına yönlendirilemedi. Lütfen mağaza sahibiyle iletişime geçin.");
-    }
-  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -212,12 +162,38 @@ export default function CartPage() {
                   </div>
                 </div>
                 
-                <button 
-                  onClick={handleCheckout}
+                <a 
+                  href={items.length > 0 ? (
+                    items[0].url && items[0].url !== "#" && !items[0].url.startsWith('/') 
+                      ? (items[0].url.startsWith('//') ? `https:${items[0].url}` : (items[0].url.startsWith('http') ? items[0].url : `https://www.shopier.com/${items[0].url}`))
+                      : (typeof window !== "undefined" && (window as any).STORE_DATA?.settings?.shopier_user ? `https://www.shopier.com/${(window as any).STORE_DATA?.settings?.shopier_user}/${items[0].productId}` : "#")
+                  ) : "#"}
+                  onClick={(e) => {
+                    if (items.length === 0) {
+                      e.preventDefault();
+                      return;
+                    }
+                    
+                    if (typeof window !== "undefined" && (window as any).reportAnalyticsEvent) {
+                      (window as any).reportAnalyticsEvent({
+                        type: 'begin_checkout',
+                        page: '/cart',
+                        target: 'checkout_button',
+                        label: 'Proceed to Shopier',
+                        amount: subtotal
+                      });
+                    }
+                    
+                    const href = e.currentTarget.href;
+                    if (!href || href.endsWith("#")) {
+                      e.preventDefault();
+                      alert("Ödeme sayfasına yönlendirilemedi. Lütfen mağaza sahibiyle iletişime geçin.");
+                    }
+                  }}
                   className="w-full bg-[#C5A059] text-black hover:brightness-110 font-bold tracking-[0.2em] uppercase py-6 h-auto text-[11px] mt-4 flex items-center justify-center transition-all"
                 >
                   ÖDEMEYE GEÇ →
-                </button>
+                </a>
 
                 <Link href="/shop" className="block text-center text-[10px] tracking-widest uppercase font-bold text-primary/40 hover:text-primary transition-colors pt-2">
                   Alışverişe Devam Et
