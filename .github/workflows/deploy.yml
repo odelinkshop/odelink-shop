@@ -33,11 +33,8 @@ jobs:
             git config --global --add safe.directory "$HOME/odelink-shop"
             
             echo "---- DEPLOY: Configure git credentials ----"
-            git config --global credential.helper store
-            echo "https://${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
-            
-            # Configure git for HTTPS to avoid SSH key issues
-            git remote set-url origin https://github.com/odelinkshop/odelink-shop.git
+            # Embed the token directly into the git remote URL for reliable authentication
+            git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/odelinkshop/odelink-shop.git"
             
             echo "---- DEPLOY: Starting git sync ----"
             git fetch --depth 1 origin main
