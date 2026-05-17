@@ -160,8 +160,9 @@ export default function ProductClient() {
   }))].filter(img => img !== "" && img.length > 10);
 
   const handleAddToCart = () => {
-    // URL önceliği: shopier_url > url > link > #
-    const finalUrl = product.shopier_url || product.url || (product as any).link || "#";
+    // URL önceliği: shopierUrl > shopier_url > url > link > #
+    const finalUrl = (product as any).shopierUrl || (product as any).shopier_url || (product as any).url || (product as any).link || "#";
+
 
     addItem({
       id: `${product.id}-${selectedSize || 'OS'}`,

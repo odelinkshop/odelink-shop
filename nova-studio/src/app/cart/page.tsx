@@ -5,6 +5,7 @@ import Image from "next/image";
 import Navbar from "@/components/layout/navbar";
 import Link from "next/link";
 import { useCart } from "@/store/useCart";
+import { useStoreData } from "@/store/useStoreData";
 import { Button } from "@/components/ui/button";
 import { Trash2, ShoppingBag, Minus, Plus } from "lucide-react";
 
@@ -27,6 +28,9 @@ const safeImage = (src: string) =>
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity } = useCart();
+  const storeData = (useStoreData as any)();
+  const shopierUser = storeData?.settings?.shopier_user || storeData?.settings?.shopierUrl;
+
 
   const subtotal = items.reduce(
     (acc, item) => acc + toNum(item.price) * item.quantity,
@@ -166,8 +170,9 @@ export default function CartPage() {
                   href={items.length > 0 ? (
                     items[0].url && items[0].url !== "#" && !items[0].url.startsWith('/') 
                       ? (items[0].url.startsWith('//') ? `https:${items[0].url}` : (items[0].url.startsWith('http') ? items[0].url : `https://www.shopier.com/${items[0].url}`))
-                      : (typeof window !== "undefined" && (window as any).STORE_DATA?.settings?.shopier_user ? `https://www.shopier.com/${(window as any).STORE_DATA?.settings?.shopier_user}/${items[0].productId}` : "#")
+                      : (shopierUser && items[0].productId ? `https://www.shopier.com/${shopierUser}/${items[0].productId}` : "#")
                   ) : "#"}
+
                   onClick={(e) => {
                     if (items.length === 0) {
                       e.preventDefault();
