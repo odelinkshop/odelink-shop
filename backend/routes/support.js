@@ -1,3 +1,4 @@
+// Support ticket mail router verified for Gmail SMTP
 const express = require('express');
 const Joi = require('joi');
 const nodemailer = require('nodemailer');
