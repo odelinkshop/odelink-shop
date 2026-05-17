@@ -69,7 +69,7 @@ const PremiumPricing = () => {
     { name: 'Özel Alan Adı (Domain)', standart: false, profesyonel: true },
     { name: 'Reklamsız Deneyim', standart: false, profesyonel: true },
     { name: 'Gelişmiş SEO Yönetimi', standart: false, profesyonel: true },
-    { name: 'Ziyaretçi Analitiği', standart: 'Temel', profesyonel: 'Gelişmiş' },
+    { name: 'Ziyaretçi Analitiği', standart: false, profesyonel: true },
     { name: 'Tasarım & CSS Editörü', standart: false, profesyonel: true },
     { name: 'VIP & Canlı Destek', standart: false, profesyonel: true },
   ];
@@ -182,7 +182,6 @@ const PremiumPricing = () => {
                   'Shopier Ürün Senkronizasyonu',
                   'Noir Fashion Modern Tema',
                   'Mobil & Tablet Uyumlu',
-                  'Temel Analitik Raporu',
                   'Ücretsiz SSL Sertifikası',
                   'Sınırsız Ürün Listeleme',
                   '%0 Nova Satış Komisyonu'

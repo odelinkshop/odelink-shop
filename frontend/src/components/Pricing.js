@@ -25,7 +25,7 @@ const Pricing = () => {
     { name: 'Gelecek Tüm Temalar', standart: false, profesyonel: true },
     { name: 'Özel Alan Adı (Domain)', standart: false, profesyonel: true },
     { name: 'Gelişmiş SEO Ayarları', standart: false, profesyonel: true },
-    { name: 'Detaylı Ziyaretçi Analitiği', standart: 'Temel', profesyonel: 'Gelişmiş' },
+    { name: 'Detaylı Ziyaretçi Analitiği', standart: false, profesyonel: true },
     { name: '7/24 Öncelikli Destek', standart: false, profesyonel: true },
     { name: 'Sınırsız Ürün Listeleme', standart: true, profesyonel: true },
   ];
@@ -100,8 +100,7 @@ const Pricing = () => {
                   '1 Adet Vitrin Sitesi',
                   'Shopier Entegrasyonu',
                   'Noir Fashion Teması',
-                  'Mobil Uyumlu Tasarım',
-                  'Temel Analitik'
+                  'Mobil Uyumlu Tasarım'
                 ].map((f, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-400">
                     <Check size={16} className="text-blue-500" />
