@@ -3,6 +3,8 @@ const Joi = require('joi');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const Subscription = require('../models/Subscription');
+const fs = require('fs');
+const path = require('path');
 
 const router = express.Router();
 
@@ -101,10 +103,42 @@ router.post('/send', async (req, res) => {
 
     return res.json({ ok: true });
   } catch (e) {
-    if (e && e.code === 'EMAIL_MISCONFIG') {
-      return res.status(500).json({ error: 'E-posta gönderimi yapılandırılmadı (EMAIL_HOST/EMAIL_USER/EMAIL_PASS).' });
+    console.error('Support email failed, falling back to local file log:', e.message || e);
+    try {
+      const logDir = path.join(__dirname, '../logs');
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+      const logFilePath = path.join(logDir, 'support_messages.json');
+      let currentLogs = [];
+      if (fs.existsSync(logFilePath)) {
+        const fileContent = fs.readFileSync(logFilePath, 'utf8');
+        try {
+          currentLogs = JSON.parse(fileContent);
+        } catch (parseErr) {
+          currentLogs = [];
+        }
+      }
+
+      const newLog = {
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+        timestamp: new Date().toISOString(),
+        name: req.body.name,
+        email: req.body.email,
+        subject: req.body.subject,
+        message: req.body.message,
+        page: req.body.page || '',
+        visitorId: req.body.visitorId || ''
+      };
+
+      currentLogs.push(newLog);
+      fs.writeFileSync(logFilePath, JSON.stringify(currentLogs, null, 2), 'utf8');
+
+      return res.json({ ok: true, savedLocally: true });
+    } catch (fallbackErr) {
+      console.error('Fallback logging also failed:', fallbackErr);
+      return res.status(500).json({ error: 'Mesaj gönderilemedi' });
     }
-    return res.status(500).json({ error: 'Mesaj gönderilemedi' });
   }
 });
 
