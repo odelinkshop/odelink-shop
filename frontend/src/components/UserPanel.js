@@ -493,7 +493,14 @@ const UserPanel = () => {
                              </button>
                           </div>
                           <button 
-                            onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/domain`)} 
+                            onClick={() => {
+                              if (!capabilities?.allowCustomDomain) {
+                                toast.error('Domain yönetimi sadece Profesyonel Pakete özeldir. Lütfen paketinizi yükseltin.');
+                                navigate('/premium');
+                                return;
+                              }
+                              navigate(`/sites/${encodeURIComponent(site.id)}/domain`);
+                            }}
                             className={`w-full py-2.5 sm:py-4 border text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 sm:gap-3 rounded-sm ${!capabilities?.allowCustomDomain ? 'bg-white/5 border-white/5 text-white/20' : 'bg-white/5 border-white/20 text-white/80 hover:bg-white hover:text-black hover:border-white'}`}
                           >
                             {!capabilities?.allowCustomDomain ? <Lock size={10} className="sm:w-[12px] sm:h-[12px]" /> : <Globe size={12} className="sm:w-[14px] sm:h-[14px]" />} DOMAİN YÖNETİMİ
