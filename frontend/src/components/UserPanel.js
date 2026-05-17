@@ -250,7 +250,14 @@ const UserPanel = () => {
           <div className="flex items-center gap-4">
              <motion.button 
                whileTap={{ scale: 0.98 }}
-               onClick={() => navigate('/site-builder')}
+               onClick={() => {
+                 if (sites.length >= (capabilities?.maxSites || 1)) {
+                   toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Lütfen paketinizi yükseltin.`);
+                   navigate('/premium');
+                   return;
+                 }
+                 navigate('/site-builder');
+               }}
                className="hidden md:flex items-center justify-center gap-3 bg-white text-[#0A0A0A] px-8 py-4 font-black uppercase tracking-[0.2em] text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-white/5 rounded-sm"
              >
                <Plus size={18} strokeWidth={3} /> YENİ MAĞAZA OLUŞTUR
@@ -346,7 +353,16 @@ const UserPanel = () => {
                   <div className="h-px bg-white/10 my-2" />
 
                   <button 
-                    onClick={() => { navigate('/site-builder'); setIsMobileMenuOpen(false); }}
+                    onClick={() => { 
+                      if (sites.length >= (capabilities?.maxSites || 1)) {
+                        toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Lütfen paketinizi yükseltin.`);
+                        setIsMobileMenuOpen(false);
+                        navigate('/premium');
+                        return;
+                      }
+                      navigate('/site-builder'); 
+                      setIsMobileMenuOpen(false); 
+                    }}
                     className={`flex items-center justify-center gap-3 px-6 py-5 text-[10px] font-black tracking-[0.2em] transition-all text-[#0A0A0A] bg-white hover:bg-[#F2EBE1] rounded-sm`}
                   >
                     <Plus size={16} strokeWidth={3} />
@@ -458,9 +474,20 @@ const UserPanel = () => {
  
                        <div className="grid grid-cols-1 gap-2 sm:gap-4 relative z-10 mt-auto">
                           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2 sm:gap-4">
-                             <button onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/analytics`)} className="w-full py-2.5 sm:py-4 border border-white/10 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-2 sm:gap-3">
-                               <BarChart3 size={12} className="sm:w-[14px] sm:h-[14px]" strokeWidth={2.5} /> ANALİTİK
+                             <button 
+                               onClick={() => {
+                                 if (capabilities?.tier !== 'profesyonel') {
+                                   toast.error('Analitik özelliği sadece Profesyonel Pakete özeldir. Lütfen paketinizi yükseltin.');
+                                   navigate('/premium');
+                                   return;
+                                 }
+                                 navigate(`/sites/${encodeURIComponent(site.id)}/analytics`);
+                               }} 
+                               className={`w-full py-2.5 sm:py-4 border text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 sm:gap-3 rounded-sm ${capabilities?.tier === 'profesyonel' ? 'border-white/10 text-white/40 hover:bg-white hover:text-black hover:border-white' : 'border-white/5 bg-white/5 text-white/20'}`}
+                             >
+                               {capabilities?.tier === 'profesyonel' ? <BarChart3 size={12} className="sm:w-[14px] sm:h-[14px]" strokeWidth={2.5} /> : <Lock size={10} className="sm:w-[12px] sm:h-[12px]" />} ANALİTİK
                              </button>
+
                              <button onClick={() => navigate(`/sites/${encodeURIComponent(site.id)}/settings/design`)} className="w-full py-2.5 sm:py-4 border border-white/10 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-2 sm:gap-3">
                                <Layout size={12} className="sm:w-[14px] sm:h-[14px]" strokeWidth={2.5} /> TASARIM
                              </button>

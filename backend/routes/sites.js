@@ -77,6 +77,15 @@ router.post('/create-simple', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Bu mağaza adı zaten alınmış. Başka bir tane dene.' });
     }
 
+    // Limit Kontrolü
+    const limits = await Subscription.checkSiteLimit(req.userId);
+    if (!limits.hasActiveSubscription) {
+      return res.status(403).json({ error: 'Aktif bir aboneliğiniz bulunmuyor.' });
+    }
+    if (limits.currentSites >= limits.maxSites) {
+      return res.status(403).json({ error: `Limit aşımı! Paketiniz en fazla ${limits.maxSites} mağaza oluşturmanıza izin veriyor.` });
+    }
+
     const newSite = await Site.create({
       userId: req.userId,
       name: subdomain.toUpperCase(),
@@ -108,6 +117,15 @@ router.post('/create-from-api', authMiddleware, requireAccess, async (req, res) 
   try {
     const { apiKey } = req.body;
     if (!apiKey) return res.status(400).json({ error: 'Shopier API anahtarı zorunludur.' });
+
+    // Limit Kontrolü
+    const limits = await Subscription.checkSiteLimit(req.userId);
+    if (!limits.hasActiveSubscription) {
+      return res.status(403).json({ error: 'Aktif bir aboneliğiniz bulunmuyor.' });
+    }
+    if (limits.currentSites >= limits.maxSites) {
+      return res.status(403).json({ error: `Limit aşımı! Paketiniz en fazla ${limits.maxSites} mağaza oluşturmanıza izin veriyor.` });
+    }
 
     console.log(`🔑 [${req.userId}] API ile mağaza kurma isteği...`);
 

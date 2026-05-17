@@ -265,7 +265,7 @@ class Subscription {
   static async checkSiteLimit(userId) {
     try {
       const caps = await this.getUserCapabilities(userId);
-      const maxSites = 999999;
+      const maxSites = caps.maxSites || 0;
       if (!maxSites) {
         return { maxSites: 0, currentSites: 0, hasActiveSubscription: false };
       }
