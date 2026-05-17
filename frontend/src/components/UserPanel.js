@@ -477,8 +477,7 @@ const UserPanel = () => {
                              <button 
                                onClick={() => {
                                  if (capabilities?.tier !== 'profesyonel') {
-                                   toast.error('Analitik özelliği sadece Profesyonel Pakete özeldir. Lütfen paketinizi yükseltin.');
-                                   navigate('/premium');
+                                   toast.error('Profesyonel pakete geçiş yapın.');
                                    return;
                                  }
                                  navigate(`/sites/${encodeURIComponent(site.id)}/analytics`);
@@ -495,8 +494,7 @@ const UserPanel = () => {
                           <button 
                             onClick={() => {
                               if (!capabilities?.allowCustomDomain) {
-                                toast.error('Domain yönetimi sadece Profesyonel Pakete özeldir. Lütfen paketinizi yükseltin.');
-                                navigate('/premium');
+                                toast.error('Profesyonel pakete geçiş yapın.');
                                 return;
                               }
                               navigate(`/sites/${encodeURIComponent(site.id)}/domain`);
