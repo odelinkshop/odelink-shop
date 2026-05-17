@@ -248,20 +248,6 @@ const UserPanel = () => {
           </div>
 
           <div className="flex items-center gap-4">
-             <motion.button 
-               whileTap={{ scale: 0.98 }}
-               onClick={() => {
-                 if (sites.length >= (capabilities?.maxSites || 1)) {
-                   toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Profesyonel pakete geçiş yapın.`);
-                   return;
-                 }
-                 navigate('/site-builder');
-               }}
-               className="hidden md:flex items-center justify-center gap-3 bg-white text-[#0A0A0A] px-8 py-4 font-black uppercase tracking-[0.2em] text-[11px] hover:bg-[#F2EBE1] transition-all shadow-2xl shadow-white/5 rounded-sm"
-             >
-               <Plus size={18} strokeWidth={3} /> YENİ MAĞAZA OLUŞTUR
-             </motion.button>
-             
              {/* Mobile Hamburger Toggle */}
              <button 
                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -348,24 +334,6 @@ const UserPanel = () => {
                       TOPLU LİNK YÜKLE
                     </button>
                   )}
-
-                  <div className="h-px bg-white/10 my-2" />
-
-                  <button 
-                    onClick={() => { 
-                      if (sites.length >= (capabilities?.maxSites || 1)) {
-                        toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Profesyonel pakete geçiş yapın.`);
-                        setIsMobileMenuOpen(false);
-                        return;
-                      }
-                      navigate('/site-builder'); 
-                      setIsMobileMenuOpen(false); 
-                    }}
-                    className={`flex items-center justify-center gap-3 px-6 py-5 text-[10px] font-black tracking-[0.2em] transition-all text-[#0A0A0A] bg-white hover:bg-[#F2EBE1] rounded-sm`}
-                  >
-                    <Plus size={16} strokeWidth={3} />
-                    YENİ MAĞAZA OLUŞTUR
-                  </button>
                 </motion.div>
               </>
             )}
