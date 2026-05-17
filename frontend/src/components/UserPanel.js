@@ -252,8 +252,7 @@ const UserPanel = () => {
                whileTap={{ scale: 0.98 }}
                onClick={() => {
                  if (sites.length >= (capabilities?.maxSites || 1)) {
-                   toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Lütfen paketinizi yükseltin.`);
-                   navigate('/premium');
+                   toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Profesyonel pakete geçiş yapın.`);
                    return;
                  }
                  navigate('/site-builder');
@@ -355,9 +354,8 @@ const UserPanel = () => {
                   <button 
                     onClick={() => { 
                       if (sites.length >= (capabilities?.maxSites || 1)) {
-                        toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Lütfen paketinizi yükseltin.`);
+                        toast.error(`Maksimum site limitinize ulaştınız (${capabilities?.maxSites || 1} site). Profesyonel pakete geçiş yapın.`);
                         setIsMobileMenuOpen(false);
-                        navigate('/premium');
                         return;
                       }
                       navigate('/site-builder'); 
