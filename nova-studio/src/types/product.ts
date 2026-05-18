@@ -35,6 +35,8 @@ export interface Product {
   originalPrice?: string | number | null;
   hasFreeShipping?: boolean;
   shopierUrl?: string;
+  deliveryInfo?: string;
+  delivery_info?: string;
   [key: string]: any;
 }
 

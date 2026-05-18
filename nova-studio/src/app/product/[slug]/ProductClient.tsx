@@ -86,7 +86,7 @@ export default function ProductClient() {
   const { products, store, isLoading } = useStoreData();
   const addItem = useCart((state) => state.addItem);
   
-  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selections, setSelections] = useState<Record<string, string>>({});
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
@@ -106,10 +106,18 @@ export default function ProductClient() {
   });
   
   useEffect(() => {
-    if (product && product.sizes && product.sizes.length > 0) {
-      setSelectedSize(product.sizes[0]);
-    } else if (product && product.variations && product.variations.length > 0) {
-      setSelectedSize(product.variations[0].options[0]);
+    if (product) {
+      const initialSelections: Record<string, string> = {};
+      if (product.variations && product.variations.length > 0) {
+        product.variations.forEach((v: any) => {
+          if (v.options && v.options.length > 0) {
+            initialSelections[v.name] = v.options[0];
+          }
+        });
+      } else if (product.sizes && product.sizes.length > 0) {
+        initialSelections['Beden'] = product.sizes[0];
+      }
+      setSelections(initialSelections);
     }
   }, [product]);
 
@@ -163,14 +171,19 @@ export default function ProductClient() {
     // URL önceliği: shopierUrl > shopier_url > url > link > #
     const finalUrl = (product as any).shopierUrl || (product as any).shopier_url || (product as any).url || (product as any).link || "#";
 
+    // Seçilen tüm varyasyonları birleştir
+    let finalSize = "OS";
+    if (Object.keys(selections).length > 0) {
+      finalSize = Object.entries(selections).map(([k, v]) => `${v}`).join(' / ');
+    }
 
     addItem({
-      id: `${product.id}-${selectedSize || 'OS'}`,
+      id: `${product.id}-${finalSize}`,
       productId: product.id,
       name: product.name.split('|')[0].trim(),
       price: product.price,
       quantity: quantity,
-      size: selectedSize || "OS",
+      size: finalSize,
       image: allImages[0],
       url: finalUrl,
       currency: product.currency,
@@ -317,35 +330,48 @@ export default function ProductClient() {
             </div>
 
             <div className="space-y-8">
-              <div className="space-y-4">
-                <div className="text-[12px] font-black uppercase tracking-widest text-gray-400">Renk: <span className="text-black">Varsayılan</span></div>
-                <div className="flex gap-3">
-                  {allImages.slice(0, 5).map((img, idx) => (
-                    <button 
-                      key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={cn(
-                        "w-14 h-18 border-2 transition-all p-0.5",
-                        selectedImage === idx ? "border-black" : "border-gray-100"
-                      )}
-                    >
-                      <img src={safeImage(img)} alt="" className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {product.variations && product.variations.length > 0 ? (
+                product.variations.map((v: any, idx: number) => {
+                  if (!v.options || v.options.length === 0) return null;
+                  if (v.options.length === 1 && v.options[0].toLowerCase() === 'varsayılan') return null;
 
-              {((product.sizes && product.sizes.length > 0) || (product.variations && product.variations.length > 0)) && (
+                  return (
+                    <div key={idx} className="space-y-4">
+                      <div className="text-[12px] font-black uppercase tracking-widest text-gray-400">
+                        {v.name}: <span className="text-black">{selections[v.name] || v.options[0]}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {v.options.map((opt: string) => (
+                          <button
+                            key={opt}
+                            onClick={() => setSelections(prev => ({ ...prev, [v.name]: opt }))}
+                            className={cn(
+                              "px-6 py-3 flex items-center justify-center text-[12px] font-black transition-all border",
+                              selections[v.name] === opt 
+                                ? "bg-black text-white border-black" 
+                                : "bg-white text-black border-gray-200 hover:border-black"
+                            )}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (product.sizes && product.sizes.length > 0) ? (
                 <div className="space-y-4">
                   <div className="text-[12px] font-black uppercase tracking-widest text-gray-400">Beden Seçin:</div>
                   <div className="flex flex-wrap gap-2">
-                    {((product.sizes && product.sizes.length > 0) ? product.sizes : (product.variations?.[0]?.options || [])).map((size: string) => (
+                    {product.sizes.map((size: string) => (
                       <button
                         key={size}
-                        onClick={() => setSelectedSize(size)}
+                        onClick={() => setSelections(prev => ({ ...prev, Beden: size }))}
                         className={cn(
                           "px-8 h-12 flex items-center justify-center text-[12px] font-black transition-all border",
-                          selectedSize === size ? "bg-black text-white border-black" : "bg-white text-black border-gray-200 hover:border-black"
+                          selections['Beden'] === size 
+                            ? "bg-black text-white border-black" 
+                            : "bg-white text-black border-gray-200 hover:border-black"
                         )}
                       >
                         {size}
@@ -353,7 +379,7 @@ export default function ProductClient() {
                     ))}
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* SATIN ALMA ALANI - FIX: WHITESPACE-NOWRAP VE FERAH BUTONLAR */}
@@ -419,7 +445,11 @@ export default function ProductClient() {
               <Accordion 
                 id="teslimat" 
                 title="GARANTİ VE TESLİMAT" 
-                content="Siparişleriniz 1-3 iş günü içerisinde kargoya verilir." 
+                content={
+                  <div className="whitespace-pre-line leading-relaxed">
+                    {product.deliveryInfo || product.delivery_info || "Siparişleriniz 1-3 iş günü içerisinde kargoya verilir."}
+                  </div>
+                } 
               />
             </div>
           </div>

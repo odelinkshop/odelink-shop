@@ -410,8 +410,17 @@ router.get('/public/:subdomain/product-detail', async (req, res) => {
             merged.images = detail.images;
             changed = true;
           }
-          if ((!Array.isArray(merged.sizes) || merged.sizes.length === 0) && Array.isArray(detail.sizes) && detail.sizes.length) {
+          if (Array.isArray(detail.sizes) && detail.sizes.length) {
             merged.sizes = detail.sizes;
+            changed = true;
+          }
+          if (Array.isArray(detail.variations) && detail.variations.length) {
+            merged.variations = detail.variations;
+            changed = true;
+          }
+          if (detail.deliveryInfo) {
+            merged.deliveryInfo = detail.deliveryInfo;
+            merged.delivery_info = detail.deliveryInfo;
             changed = true;
           }
           if (!merged.image && detail.image) { merged.image = detail.image; changed = true; }

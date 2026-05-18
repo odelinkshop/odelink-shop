@@ -44,6 +44,15 @@ class Product {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='personalization_settings') THEN
           ALTER TABLE products ADD COLUMN personalization_settings JSONB DEFAULT '{}';
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='sizes') THEN
+          ALTER TABLE products ADD COLUMN sizes JSONB DEFAULT '[]';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='variations') THEN
+          ALTER TABLE products ADD COLUMN variations JSONB DEFAULT '[]';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='delivery_info') THEN
+          ALTER TABLE products ADD COLUMN delivery_info TEXT;
+        END IF;
       END $$;
     `;
     try {
@@ -54,12 +63,12 @@ class Product {
   }
 
   static async create(productData) {
-    const { userId, title, description, price, discountPrice, images, stockCount, sku, category, shopierUrl, tags, personalizationSettings } = productData;
+    const { userId, title, description, price, discountPrice, images, stockCount, sku, category, shopierUrl, tags, personalizationSettings, sizes, variations, deliveryInfo, delivery_info } = productData;
     await this.ensureSchema();
 
     const query = `
-      INSERT INTO products (user_id, title, description, price, discount_price, images, stock_count, sku, category, shopier_url, tags, personalization_settings)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      INSERT INTO products (user_id, title, description, price, discount_price, images, stock_count, sku, category, shopier_url, tags, personalization_settings, sizes, variations, delivery_info)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING *
     `;
 
@@ -76,7 +85,10 @@ class Product {
         category,
         shopierUrl,
         JSON.stringify(tags || []),
-        JSON.stringify(personalizationSettings || {})
+        JSON.stringify(personalizationSettings || {}),
+        JSON.stringify(sizes || []),
+        JSON.stringify(variations || []),
+        delivery_info || deliveryInfo || ''
       ]);
       return result.rows[0];
     } catch (error) {
@@ -96,7 +108,7 @@ class Product {
   }
 
   static async update(productId, userId, updateData) {
-    const { title, description, price, discountPrice, images, stockCount, sku, category, shopierUrl, tags, personalizationSettings, isActive } = updateData;
+    const { title, description, price, discountPrice, images, stockCount, sku, category, shopierUrl, tags, personalizationSettings, isActive, sizes, variations, deliveryInfo, delivery_info } = updateData;
     const query = `
       UPDATE products
       SET 
@@ -112,8 +124,11 @@ class Product {
         tags = COALESCE($10, tags),
         personalization_settings = COALESCE($11, personalization_settings),
         is_active = COALESCE($12, is_active),
+        sizes = COALESCE($13, sizes),
+        variations = COALESCE($14, variations),
+        delivery_info = COALESCE($15, delivery_info),
         updated_at = NOW()
-      WHERE id = $13 AND user_id = $14
+      WHERE id = $16 AND user_id = $17
       RETURNING *
     `;
 
@@ -131,6 +146,9 @@ class Product {
         tags ? JSON.stringify(tags) : null,
         personalizationSettings ? JSON.stringify(personalizationSettings) : null,
         isActive,
+        sizes ? JSON.stringify(sizes) : null,
+        variations ? JSON.stringify(variations) : null,
+        delivery_info || deliveryInfo || null,
         productId,
         userId
       ]);

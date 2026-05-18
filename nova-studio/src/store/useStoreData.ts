@@ -176,7 +176,9 @@ const mapProduct = (p: any, index: number): Product => {
     shippingType: p.shippingType || '',
     shippingFee: p.shippingFee || 0,
     hasFreeShipping: Boolean(p.hasFreeShipping || p.shippingType === 'Ücretsiz Kargo'),
-    shopierUrl: p.url || p.link || ""
+    shopierUrl: p.url || p.link || "",
+    deliveryInfo: p.deliveryInfo || p.delivery_info || "",
+    delivery_info: p.delivery_info || p.deliveryInfo || ""
   };
 };
 

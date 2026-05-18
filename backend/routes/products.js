@@ -94,7 +94,10 @@ router.post('/import-links', authMiddleware, async (req, res) => {
             images: Array.isArray(detail.images) ? detail.images : [],
             shopierUrl: cleanLink,
             category: detail.category || 'Genel',
-            stockCount: 100
+            stockCount: 100,
+            sizes: Array.isArray(detail.sizes) ? detail.sizes : [],
+            variations: Array.isArray(detail.variations) ? detail.variations : [],
+            delivery_info: detail.deliveryInfo || ''
           });
           
           results.push({ link: cleanLink, success: true, id: product.id });
