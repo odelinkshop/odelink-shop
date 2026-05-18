@@ -503,9 +503,14 @@ async function fetchShopierCatalog(shopierUrl, opts = {}) {
 async function getShopierHtml(url, shopSlug) {
     let browser;
     try {
+        const puppeteerArgs = ['--no-sandbox', '--disable-setuid-sandbox'];
+        if (process.env.TOR_PROXY_URL) {
+            console.log(`🧅 [getShopierHtml] Routing Puppeteer through Tor proxy: ${process.env.TOR_PROXY_URL}`);
+            puppeteerArgs.push(`--proxy-server=${process.env.TOR_PROXY_URL}`);
+        }
         browser = await puppeteer.launch({
             headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: puppeteerArgs
         });
         const page = await browser.newPage();
         await page.setUserAgent(getRandomItem(USER_AGENTS));
@@ -614,10 +619,23 @@ module.exports = {
       // Önce basit axios ile dene (Hızlı)
       let html;
       try {
-        const res = await axios.get(url, {
+        const axiosConfig = {
           headers: { 'User-Agent': getRandomItem(USER_AGENTS) },
           timeout: 10000
-        });
+        };
+        if (process.env.TOR_PROXY_URL) {
+          try {
+            const urlParsed = new URL(process.env.TOR_PROXY_URL);
+            axiosConfig.proxy = {
+              host: urlParsed.hostname,
+              port: parseInt(urlParsed.port)
+            };
+            console.log(`🧅 [fetchProductDetail] Routing Axios request through Tor proxy: ${process.env.TOR_PROXY_URL}`);
+          } catch (urlErr) {
+            console.error('❌ Failed parsing TOR_PROXY_URL:', urlErr.message);
+          }
+        }
+        const res = await axios.get(url, axiosConfig);
         html = res.data;
       } catch (e) {
         console.log(`⚠️ Axios direct fetch failed, trying ScraperAPI: ${e.message}`);
@@ -867,18 +885,23 @@ module.exports = {
   fetchWithPuppeteerGhostDetail: async (url) => {
     let browser;
     try {
+      const puppeteerArgs = [
+        '--no-sandbox', 
+        '--disable-setuid-sandbox',
+        '--disable-blink-features=AutomationControlled',
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--disable-dev-shm-usage',
+        '--shm-size=1gb',
+        '--window-size=1920,1080'
+      ];
+      if (process.env.TOR_PROXY_URL) {
+        console.log(`🧅 [fetchWithPuppeteerGhostDetail] Routing Puppeteer through Tor proxy: ${process.env.TOR_PROXY_URL}`);
+        puppeteerArgs.push(`--proxy-server=${process.env.TOR_PROXY_URL}`);
+      }
       browser = await puppeteer.launch({ 
         headless: true, 
         executablePath: process.platform === 'linux' ? '/usr/bin/google-chrome-stable' : undefined,
-        args: [
-          '--no-sandbox', 
-          '--disable-setuid-sandbox',
-          '--disable-blink-features=AutomationControlled',
-          '--disable-features=IsolateOrigins,site-per-process',
-          '--disable-dev-shm-usage',
-          '--shm-size=1gb',
-          '--window-size=1920,1080'
-        ] 
+        args: puppeteerArgs
       });
       const page = await browser.newPage();
       await page.setUserAgent(getRandomItem(USER_AGENTS));
