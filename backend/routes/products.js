@@ -6,6 +6,8 @@ const cacheService = require('../services/cacheService');
 const authMiddleware = require('../middleware/auth');
 const { fetchProductDetail } = require('../services/shopierCatalogService');
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const clearUserSiteCaches = async (userId) => {
   try {
     const sites = await Site.findByUserId(userId);
@@ -69,10 +71,19 @@ router.post('/import-links', authMiddleware, async (req, res) => {
     console.log(`🚀 [${req.userId}] ${links.length} link için toplu çekim başlatıldı...`);
     const results = [];
 
+    let count = 0;
     for (const link of links) {
       try {
         const cleanLink = (link || '').toString().trim();
         if (!cleanLink) continue;
+
+        // Her link arasında (ilk link hariç) 2.5 - 4.5 saniye arası rastgele bekleme süresi koyalım
+        if (count > 0) {
+          const waitTime = 2500 + Math.random() * 2000;
+          console.log(`⏱️ Shopier limit koruması: ${Math.round(waitTime)}ms bekleniyor...`);
+          await sleep(waitTime);
+        }
+        count++;
 
         console.log(`🔍 [${req.userId}] Link işleniyor: ${cleanLink}`);
         
