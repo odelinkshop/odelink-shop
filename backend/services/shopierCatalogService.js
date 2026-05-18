@@ -637,6 +637,22 @@ module.exports = {
         }
       }
 
+      // Eğer HTML bloklama veya istek sınırı uyarısı içeriyorsa, Puppeteer yedek planına zorla
+      if (html && typeof html === 'string') {
+        const lowerHtml = html.toLowerCase();
+        if (lowerHtml.includes('istek sınırı aşıldı') || 
+            lowerHtml.includes('too many requests') || 
+            lowerHtml.includes('request limit exceeded') || 
+            lowerHtml.includes('rate limit') || 
+            lowerHtml.includes('cloudflare') || 
+            lowerHtml.includes('access denied') || 
+            lowerHtml.includes('captcha') || 
+            lowerHtml.includes('robot değilim')) {
+          console.log('⚠️ Scraped HTML contains rate limit or blocking page, setting html = null to force Puppeteer fallback!');
+          html = null;
+        }
+      }
+
       // Eğer hem direkt axios hem de ScraperAPI başarısız olduysa Puppeteer ile son kez dene
       if (!html) {
           console.log(`👻 [GhostDetail] API'ler başarısız veya bulunamadı, Puppeteer ile detay çekiliyor: ${url}`);
