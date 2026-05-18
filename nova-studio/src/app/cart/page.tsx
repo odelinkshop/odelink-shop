@@ -166,18 +166,9 @@ export default function CartPage() {
                   </div>
                 </div>
                 
-                <a 
-                  href={items.length > 0 ? (
-                    items[0].url && items[0].url !== "#" && !items[0].url.startsWith('/') 
-                      ? (items[0].url.startsWith('//') ? `https:${items[0].url}` : (items[0].url.startsWith('http') ? items[0].url : `https://www.shopier.com/${items[0].url}`))
-                      : (shopierUser && items[0].productId ? `https://www.shopier.com/${shopierUser}/${items[0].productId}` : "#")
-                  ) : "#"}
-
-                  onClick={(e) => {
-                    if (items.length === 0) {
-                      e.preventDefault();
-                      return;
-                    }
+                <button 
+                  onClick={() => {
+                    if (items.length === 0) return;
                     
                     if (typeof window !== "undefined" && (window as any).reportAnalyticsEvent) {
                       (window as any).reportAnalyticsEvent({
@@ -189,16 +180,64 @@ export default function CartPage() {
                       });
                     }
                     
-                    const href = e.currentTarget.href;
-                    if (!href || href.endsWith("#")) {
-                      e.preventDefault();
+                    // Direct Shopier POST Checkout
+                    const item = items[0];
+                    const finalUrl = item.url && item.url !== "#" && !item.url.startsWith('/') 
+                      ? (item.url.startsWith('//') ? `https:${item.url}` : (item.url.startsWith('http') ? item.url : `https://www.shopier.com/${item.url}`))
+                      : (shopierUser && item.productId ? `https://www.shopier.com/${shopierUser}/${item.productId}` : null);
+
+                    if (!finalUrl) {
                       alert("Ödeme sayfasına yönlendirilemedi. Lütfen mağaza sahibiyle iletişime geçin.");
+                      return;
                     }
+
+                    try {
+                      const url = new URL(finalUrl);
+                      let shopName: string | null = null;
+                      let productId: string | null = null;
+
+                      if (url.searchParams.has('id')) {
+                        productId = url.searchParams.get('id');
+                      }
+
+                      const pathParts = url.pathname.split('/').filter(Boolean);
+                      if (pathParts.length >= 2) {
+                        if (!isNaN(Number(pathParts[1]))) {
+                          shopName = pathParts[0];
+                          productId = pathParts[1];
+                        }
+                      } else if (pathParts.length === 1) {
+                        if (!isNaN(Number(pathParts[0]))) {
+                          productId = pathParts[0];
+                        }
+                      }
+
+                      if (shopName && productId) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `https://www.shopier.com/s/shipping/${shopName}`;
+                        
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'product_id';
+                        input.value = productId;
+                        form.appendChild(input);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form);
+                        return;
+                      }
+                    } catch (err) {
+                      console.error('Error parsing Shopier URL:', err);
+                    }
+
+                    window.location.href = finalUrl;
                   }}
-                  className="w-full bg-[#C5A059] text-black hover:brightness-110 font-bold tracking-[0.2em] uppercase py-6 h-auto text-[11px] mt-4 flex items-center justify-center transition-all"
+                  className="w-full bg-[#C5A059] text-black hover:brightness-110 font-bold tracking-[0.2em] uppercase py-6 h-auto text-[11px] mt-4 flex items-center justify-center transition-all cursor-pointer border-0 outline-none"
                 >
                   ÖDEMEYE GEÇ →
-                </a>
+                </button>
 
                 <Link href="/shop" className="block text-center text-[10px] tracking-widest uppercase font-bold text-primary/40 hover:text-primary transition-colors pt-2">
                   Alışverişe Devam Et
