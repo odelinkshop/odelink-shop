@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/Lisans-MIT-blue.svg" alt="License"/>
     <img src="https://img.shields.io/badge/Versiyon-8.0.0--Elite-gold" alt="Version"/>
     <img src="https://img.shields.io/badge/Siber--Z%C4%B1rh-Aktif-green" alt="Security"/>
-    <img src="https://img.shields.io/badge/Durum-Üretime--Haz%C4%B1r-blue" alt="Status"/>
+    <img src="https://img.shields.io/badge/Durum-%C3%9Cretime--Haz%C4%B1r%20%28%C3%9Cst%C3%BCn%29-blue" alt="Status"/>
   </p>
 </div>
 
