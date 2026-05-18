@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const pool = require('../config/database');
 const Subscription = require('../models/Subscription');
 const User = require('../models/User');
 const DodoPaymentService = require('../services/dodoPaymentService');

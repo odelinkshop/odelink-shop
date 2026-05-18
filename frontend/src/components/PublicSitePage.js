@@ -50,6 +50,8 @@ export default function PublicSitePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
+
+
   useEffect(() => {
     localStorage.setItem('nova_cart', JSON.stringify(cart));
   }, [cart]);
@@ -107,16 +109,68 @@ export default function PublicSitePage() {
 
   const cartTotal = cart.reduce((sum, item) => sum + (parseFloat(item.discount_price || item.price) * item.quantity), 0);
 
+  const handleShopierDirectCheckout = (product) => {
+    if (!product || !product.shopier_url) {
+      alert('Bu ürün için ödeme linki tanımlanmamış.');
+      return;
+    }
+
+    try {
+      const urlStr = product.shopier_url.trim();
+      const url = new URL(urlStr);
+      
+      let shopName = null;
+      let productId = null;
+
+      // Extract product ID from query parameter if present: e.g. ?id=46527715
+      if (url.searchParams.has('id')) {
+        productId = url.searchParams.get('id');
+      }
+
+      // Extract from pathname: /Odelink/46527715
+      const pathParts = url.pathname.split('/').filter(Boolean);
+      
+      if (pathParts.length >= 2) {
+        if (!isNaN(pathParts[1])) {
+          shopName = pathParts[0];
+          productId = pathParts[1];
+        }
+      } else if (pathParts.length === 1) {
+        if (!isNaN(pathParts[0])) {
+          productId = pathParts[0];
+        }
+      }
+
+      // If we could extract both shopName and productId, execute the direct POST checkout to original 3rd page
+      if (shopName && productId) {
+        console.log('🚀 Redirecting directly to Shopier Shipping form: Shop:', shopName, 'Product ID:', productId);
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `https://www.shopier.com/s/shipping/${shopName}`;
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'product_id';
+        input.value = productId;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+        return;
+      }
+    } catch (err) {
+      console.error('Error parsing Shopier URL:', err);
+    }
+
+    // Fallback: direct redirect
+    window.location.href = product.shopier_url;
+  };
+
   const handleCheckout = () => {
     if (cart.length === 0) return;
-    // User wants to go to the product link (Shopier) directly
-    const firstItem = cart[0];
-    if (firstItem.shopier_url) {
-      window.location.href = firstItem.shopier_url;
-    } else {
-      // Fallback or alert if no URL
-      alert('Bu ürün için ödeme linki tanımlanmamış.');
-    }
+    handleShopierDirectCheckout(cart[0]);
   };
 
   const filteredProducts = activeCategory === 'Tümü' 
@@ -289,7 +343,7 @@ export default function PublicSitePage() {
                       <button 
                          onClick={(e) => {
                            e.stopPropagation();
-                           if (product.shopier_url) window.location.href = product.shopier_url;
+                           handleShopierDirectCheckout(product);
                          }}
                          className="bg-transparent border border-white text-white w-64 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all transform translate-y-8 group-hover:translate-y-0 duration-700 delay-75 shadow-2xl"
                       >
@@ -546,7 +600,7 @@ export default function PublicSitePage() {
                   </button>
                   <button 
                     onClick={() => {
-                      if (selectedProduct.shopier_url) window.location.href = selectedProduct.shopier_url;
+                      handleShopierDirectCheckout(selectedProduct);
                     }}
                     className="flex-[2] bg-white text-[#0A0A0A] py-8 font-black uppercase tracking-[0.4em] text-[13px] hover:bg-[#F2EBE1] transition-all flex items-center justify-center gap-6 rounded-sm shadow-[0_30px_70px_rgba(255,255,255,0.1)] active:scale-[0.98]"
                   >
@@ -561,3 +615,4 @@ export default function PublicSitePage() {
     </div>
   );
 }
+
