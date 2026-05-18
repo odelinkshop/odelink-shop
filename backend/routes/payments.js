@@ -190,4 +190,99 @@ router.post('/shopier-callback', async (req, res) => {
   }
 });
 
+/**
+ * Public Shopier Checkout Variation Resolver
+ * GET /api/payments/shopier-checkout-data
+ */
+const cheerio = require('cheerio');
+const axios = require('axios');
+
+router.get('/shopier-checkout-data', async (req, res) => {
+  try {
+    const { url, size } = req.query;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+
+    const cleanUrl = decodeURIComponent(url).trim();
+    console.log(`🔍 [Shopier Checkout Parser] Fetching page: ${cleanUrl}, Size: ${size}`);
+
+    const response = await axios.get(cleanUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7'
+      },
+      timeout: 10000
+    });
+
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    let shopName = null;
+    let productId = null;
+    let variationId = null;
+
+    try {
+      const parsedUrl = new URL(cleanUrl);
+      if (parsedUrl.searchParams.has('id')) {
+        productId = parsedUrl.searchParams.get('id');
+      }
+
+      const pathParts = parsedUrl.pathname.split('/').filter(Boolean);
+      if (pathParts.length >= 2) {
+        if (!isNaN(Number(pathParts[1]))) {
+          shopName = pathParts[0];
+          productId = pathParts[1];
+        }
+      } else if (pathParts.length === 1) {
+        if (!isNaN(Number(pathParts[0]))) {
+          productId = pathParts[0];
+        }
+      }
+    } catch (err) {
+      console.error('URL parse error:', err.message);
+    }
+
+    if (!productId) {
+      productId = $('input[name="product_id"]').val();
+    }
+    if (!shopName) {
+      const formAction = $('#buy-form').attr('action') || '';
+      if (formAction.includes('shipping/')) {
+        shopName = formAction.split('shipping/')[1];
+      }
+    }
+
+    if (size) {
+      const targetSize = size.toString().trim().toLowerCase();
+      const selectElement = $('select[name="size"]');
+      if (selectElement.length > 0) {
+        selectElement.find('option').each((i, el) => {
+          const optionText = $(el).text().trim().toLowerCase();
+          const optionValue = $(el).val();
+          
+          if (optionText === targetSize || optionText.includes(targetSize) || targetSize.includes(optionText)) {
+            variationId = optionValue;
+            return false;
+          }
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      shopName,
+      productId,
+      variationId
+    });
+
+  } catch (error) {
+    console.error('❌ Shopier checkout data error:', error.message);
+    res.json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

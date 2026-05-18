@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/layout/navbar";
 import Link from "next/link";
@@ -30,6 +30,7 @@ export default function CartPage() {
   const { items, removeItem, updateQuantity } = useCart();
   const storeData = (useStoreData as any)();
   const shopierUser = storeData?.settings?.shopier_user || storeData?.settings?.shopierUrl;
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
 
   const subtotal = items.reduce(
@@ -167,8 +168,10 @@ export default function CartPage() {
                 </div>
                 
                 <button 
-                  onClick={() => {
-                    if (items.length === 0) return;
+                  disabled={isCheckingOut}
+                  onClick={async () => {
+                    if (items.length === 0 || isCheckingOut) return;
+                    setIsCheckingOut(true);
                     
                     if (typeof window !== "undefined" && (window as any).reportAnalyticsEvent) {
                       (window as any).reportAnalyticsEvent({
@@ -180,7 +183,6 @@ export default function CartPage() {
                       });
                     }
                     
-                    // Direct Shopier POST Checkout
                     const item = items[0];
                     const finalUrl = item.url && item.url !== "#" && !item.url.startsWith('/') 
                       ? (item.url.startsWith('//') ? `https:${item.url}` : (item.url.startsWith('http') ? item.url : `https://www.shopier.com/${item.url}`))
@@ -188,40 +190,55 @@ export default function CartPage() {
 
                     if (!finalUrl) {
                       alert("Ödeme sayfasına yönlendirilemedi. Lütfen mağaza sahibiyle iletişime geçin.");
+                      setIsCheckingOut(false);
                       return;
                     }
 
                     try {
-                      const url = new URL(finalUrl);
-                      let shopName: string | null = null;
-                      let productId: string | null = null;
+                      // Fetch resolved checkout data from backend to ensure variations are parsed correctly
+                      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || "https://api.odelink.shop"}/api/payments/shopier-checkout-data?url=${encodeURIComponent(finalUrl)}&size=${encodeURIComponent(item.size || '')}`;
+                      const response = await fetch(apiUrl);
+                      const resData = await response.json();
 
-                      if (url.searchParams.has('id')) {
-                        productId = url.searchParams.get('id');
-                      }
-
-                      const pathParts = url.pathname.split('/').filter(Boolean);
-                      if (pathParts.length >= 2) {
-                        if (!isNaN(Number(pathParts[1]))) {
-                          shopName = pathParts[0];
-                          productId = pathParts[1];
-                        }
-                      } else if (pathParts.length === 1) {
-                        if (!isNaN(Number(pathParts[0]))) {
-                          productId = pathParts[0];
-                        }
-                      }
-
-                      if (shopName && productId) {
+                      if (resData.success && resData.shopName && resData.productId) {
                         const form = document.createElement('form');
                         form.method = 'POST';
-                        form.action = `https://www.shopier.com/s/shipping/${shopName}`;
+                        form.action = `https://www.shopier.com/s/shipping/${resData.shopName}`;
                         
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'product_id';
-                        input.value = productId;
-                        form.appendChild(input);
+                        // Add product_id
+                        const inputId = document.createElement('input');
+                        inputId.type = 'hidden';
+                        inputId.name = 'product_id';
+                        inputId.value = resData.productId;
+                        form.appendChild(inputId);
+
+                        // If variation/size is present and resolved, send its option ID
+                        if (resData.variationId) {
+                          const inputSize = document.createElement('input');
+                          inputSize.type = 'hidden';
+                          inputSize.name = 'size';
+                          inputSize.value = resData.variationId;
+                          form.appendChild(inputSize);
+
+                          const inputVarName = document.createElement('input');
+                          inputVarName.type = 'hidden';
+                          inputVarName.name = 'first_variation_name';
+                          inputVarName.value = 'Beden ';
+                          form.appendChild(inputVarName);
+
+                          const inputVarId = document.createElement('input');
+                          inputVarId.type = 'hidden';
+                          inputVarId.name = 'first_variation_id';
+                          inputVarId.value = '0';
+                          form.appendChild(inputVarId);
+                        }
+
+                        // Add quantity
+                        const inputQty = document.createElement('input');
+                        inputQty.type = 'hidden';
+                        inputQty.name = 'quantity';
+                        inputQty.value = String(item.quantity || 1);
+                        form.appendChild(inputQty);
 
                         document.body.appendChild(form);
                         form.submit();
@@ -229,14 +246,21 @@ export default function CartPage() {
                         return;
                       }
                     } catch (err) {
-                      console.error('Error parsing Shopier URL:', err);
+                      console.error('Error fetching/parsing Shopier checkout data:', err);
                     }
 
+                    // Fallback redirect
+                    setIsCheckingOut(false);
                     window.location.href = finalUrl;
                   }}
-                  className="w-full bg-[#C5A059] text-black hover:brightness-110 font-bold tracking-[0.2em] uppercase py-6 h-auto text-[11px] mt-4 flex items-center justify-center transition-all cursor-pointer border-0 outline-none"
+                  className="w-full bg-[#C5A059] text-black hover:brightness-110 font-bold tracking-[0.2em] uppercase py-6 h-auto text-[11px] mt-4 flex items-center justify-center transition-all cursor-pointer border-0 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  ÖDEMEYE GEÇ →
+                  {isCheckingOut ? (
+                    <span className="flex items-center gap-2">
+                      <span className="animate-spin rounded-full h-3 w-3 border-2 border-black border-t-transparent" />
+                      YÖNLENDİRİLİYOR...
+                    </span>
+                  ) : "ÖDEMEYE GEÇ →"}
                 </button>
 
                 <Link href="/shop" className="block text-center text-[10px] tracking-widest uppercase font-bold text-primary/40 hover:text-primary transition-colors pt-2">

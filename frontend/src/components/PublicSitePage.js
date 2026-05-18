@@ -109,7 +109,7 @@ export default function PublicSitePage() {
 
   const cartTotal = cart.reduce((sum, item) => sum + (parseFloat(item.discount_price || item.price) * item.quantity), 0);
 
-  const handleShopierDirectCheckout = (product) => {
+  const handleShopierDirectCheckout = async (product) => {
     if (!product || !product.shopier_url) {
       alert('Bu ürün için ödeme linki tanımlanmamış.');
       return;
@@ -117,43 +117,49 @@ export default function PublicSitePage() {
 
     try {
       const urlStr = product.shopier_url.trim();
-      const url = new URL(urlStr);
+      const apiUrl = `${API_BASE}/api/payments/shopier-checkout-data?url=${encodeURIComponent(urlStr)}&size=${encodeURIComponent(product.selectedSize || '')}`;
       
-      let shopName = null;
-      let productId = null;
+      const response = await fetch(apiUrl);
+      const resData = await response.json();
 
-      // Extract product ID from query parameter if present: e.g. ?id=46527715
-      if (url.searchParams.has('id')) {
-        productId = url.searchParams.get('id');
-      }
-
-      // Extract from pathname: /Odelink/46527715
-      const pathParts = url.pathname.split('/').filter(Boolean);
-      
-      if (pathParts.length >= 2) {
-        if (!isNaN(pathParts[1])) {
-          shopName = pathParts[0];
-          productId = pathParts[1];
-        }
-      } else if (pathParts.length === 1) {
-        if (!isNaN(pathParts[0])) {
-          productId = pathParts[0];
-        }
-      }
-
-      // If we could extract both shopName and productId, execute the direct POST checkout to original 3rd page
-      if (shopName && productId) {
-        console.log('🚀 Redirecting directly to Shopier Shipping form: Shop:', shopName, 'Product ID:', productId);
+      if (resData.success && resData.shopName && resData.productId) {
+        console.log('🚀 Redirecting directly to Shopier Shipping form:', resData);
         
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `https://www.shopier.com/s/shipping/${shopName}`;
+        form.action = `https://www.shopier.com/s/shipping/${resData.shopName}`;
         
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'product_id';
-        input.value = productId;
-        form.appendChild(input);
+        const inputId = document.createElement('input');
+        inputId.type = 'hidden';
+        inputId.name = 'product_id';
+        inputId.value = resData.productId;
+        form.appendChild(inputId);
+
+        if (resData.variationId) {
+          const inputSize = document.createElement('input');
+          inputSize.type = 'hidden';
+          inputSize.name = 'size';
+          inputSize.value = resData.variationId;
+          form.appendChild(inputSize);
+
+          const inputVarName = document.createElement('input');
+          inputVarName.type = 'hidden';
+          inputVarName.name = 'first_variation_name';
+          inputVarName.value = 'Beden ';
+          form.appendChild(inputVarName);
+
+          const inputVarId = document.createElement('input');
+          inputVarId.type = 'hidden';
+          inputVarId.name = 'first_variation_id';
+          inputVarId.value = '0';
+          form.appendChild(inputVarId);
+        }
+
+        const inputQty = document.createElement('input');
+        inputQty.type = 'hidden';
+        inputQty.name = 'quantity';
+        inputQty.value = String(product.quantity || 1);
+        form.appendChild(inputQty);
 
         document.body.appendChild(form);
         form.submit();
@@ -161,7 +167,7 @@ export default function PublicSitePage() {
         return;
       }
     } catch (err) {
-      console.error('Error parsing Shopier URL:', err);
+      console.error('Error in Shopier direct checkout fetch:', err);
     }
 
     // Fallback: direct redirect
