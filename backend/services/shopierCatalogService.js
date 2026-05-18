@@ -655,9 +655,18 @@ module.exports = {
         }
       }
 
-      // Eğer HTML bloklama veya istek sınırı uyarısı içeriyorsa, Puppeteer yedek planına zorla
+      // Eğer HTML bloklama veya istek sınırı veya proxy hata uyarısı içeriyorsa ya da geçerli bir Shopier sayfası değilse Puppeteer'a zorla
       if (html && typeof html === 'string') {
         const lowerHtml = html.toLowerCase();
+        
+        // Geçerli bir Shopier sayfası olduğunu belirten işaretler (örneğin product, shopier cdn veya sepete ekle butonu)
+        const isValidShopierPage = lowerHtml.includes('shopier') && 
+                                   (lowerHtml.includes('addtocart') || 
+                                    lowerHtml.includes('sepete ekle') || 
+                                    lowerHtml.includes('product') || 
+                                    lowerHtml.includes('fiyat') || 
+                                    lowerHtml.includes('price'));
+
         if (lowerHtml.includes('istek sınırı aşıldı') || 
             lowerHtml.includes('too many requests') || 
             lowerHtml.includes('request limit exceeded') || 
@@ -665,8 +674,14 @@ module.exports = {
             lowerHtml.includes('cloudflare') || 
             lowerHtml.includes('access denied') || 
             lowerHtml.includes('captcha') || 
-            lowerHtml.includes('robot değilim')) {
-          console.log('⚠️ Scraped HTML contains rate limit or blocking page, setting html = null to force Puppeteer fallback!');
+            lowerHtml.includes('robot değilim') ||
+            lowerHtml.includes('privoxy') ||
+            lowerHtml.includes('tor') ||
+            lowerHtml.includes('503 gateway') ||
+            lowerHtml.includes('connect failed') ||
+            lowerHtml.includes('502 bad gateway') ||
+            !isValidShopierPage) {
+          console.log('⚠️ Scraped HTML is invalid, contains rate limit, or proxy/privoxy error. Setting html = null to force Puppeteer fallback!');
           html = null;
         }
       }
