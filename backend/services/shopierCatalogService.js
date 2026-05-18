@@ -620,18 +620,26 @@ module.exports = {
         });
         html = res.data;
       } catch (e) {
-        // Bloklanırsak ScraperAPI ile dene
-        const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY;
-        const res = await axios.get('http://api.scraperapi.com', {
-            params: { api_key: SCRAPER_API_KEY, url: url, render: 'false' },
-            timeout: 30000
-        });
-        html = res.data;
+        console.log(`⚠️ Axios direct fetch failed, trying ScraperAPI: ${e.message}`);
+        try {
+          const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY;
+          if (SCRAPER_API_KEY) {
+            const res = await axios.get('http://api.scraperapi.com', {
+                params: { api_key: SCRAPER_API_KEY, url: url, render: 'false' },
+                timeout: 30000
+            });
+            html = res.data;
+          } else {
+            console.log('⚠️ No SCRAPER_API_KEY set, skipping ScraperAPI.');
+          }
+        } catch (apiErr) {
+          console.error(`⚠️ ScraperAPI failed: ${apiErr.message}`);
+        }
       }
 
       // Eğer hem direkt axios hem de ScraperAPI başarısız olduysa Puppeteer ile son kez dene
       if (!html) {
-          console.log(`👻 [GhostDetail] API'ler başarısız, Puppeteer ile detay çekiliyor: ${url}`);
+          console.log(`👻 [GhostDetail] API'ler başarısız veya bulunamadı, Puppeteer ile detay çekiliyor: ${url}`);
           const ghost = await module.exports.fetchWithPuppeteerGhostDetail(url);
           if (ghost) return ghost;
       }
