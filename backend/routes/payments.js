@@ -261,7 +261,25 @@ router.get('/shopier-checkout-data', async (req, res) => {
           const optionText = $(el).text().trim().toLowerCase();
           const optionValue = $(el).val();
           
-          if (optionText === targetSize || optionText.includes(targetSize) || targetSize.includes(optionText)) {
+          // Skip empty default/placeholder options (e.g. value="-1")
+          if (!optionText || optionValue === '-1') return;
+          
+          // Extremely robust split-based variation matcher to handle slashes or composite variation selections
+          const targetParts = targetSize.split('/').map(p => p.trim());
+          const optionParts = optionText.split('/').map(p => p.trim());
+          
+          let isMatch = false;
+          for (const tp of targetParts) {
+            for (const op of optionParts) {
+              if (tp === op || tp.includes(op) || op.includes(tp)) {
+                isMatch = true;
+                break;
+              }
+            }
+            if (isMatch) break;
+          }
+          
+          if (isMatch) {
             variationId = optionValue;
             return false;
           }
