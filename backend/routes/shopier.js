@@ -14,6 +14,30 @@ const router = express.Router();
 /** GET /api/shopier/products — Tema ve eski scriptlerle uyumluluk */
 router.get('/products', handleProducts);
 
+// GET /api/shopier/callback
+router.get('/callback', async (req, res) => {
+  console.log('🔔 Shopier OAuth callback triggered via GET:', req.query);
+  return res.status(200).send('OK');
+});
+
+// POST /api/shopier/callback
+router.post('/callback', async (req, res) => {
+  console.log('🔔 Shopier OAuth callback triggered via POST:', req.body);
+  return res.status(200).json({ success: true });
+});
+
+// GET /api/shopier/webhook
+router.get('/webhook', async (req, res) => {
+  console.log('🔔 Shopier Webhook triggered via GET:', req.query);
+  return res.status(200).send('OK');
+});
+
+// POST /api/shopier/webhook
+router.post('/webhook', async (req, res) => {
+  console.log('🔔 Shopier Webhook triggered via POST:', req.body);
+  return res.status(200).json({ success: true });
+});
+
 async function scrapeShopier({ url, force } = {}) {
   const normalized = normalizeShopierUrl(url);
   if (!normalized) {
