@@ -773,7 +773,18 @@ module.exports = {
       // Extract all images including scaledoriginal with priority de-duplication
       const finalImgMap = new Map();
       $('img').each((i, el) => {
-        let src = $(el).attr('data-src') || $(el).attr('src') || $(el).attr('srcset')?.split(' ')[0];
+        const $el = $(el);
+        if ($el.closest('.product-card-slider-wrapper').length > 0 ||
+            $el.closest('.product-card-slider').length > 0 ||
+            $el.closest('.product-card').length > 0 ||
+            $el.closest('.related-products').length > 0 ||
+            $el.closest('.suggested-products').length > 0 ||
+            $el.closest('.product-recommendations').length > 0 ||
+            $el.closest('.shopier-apps--related-product-product-card-product-link').length > 0) {
+          return; // Skip suggested/recommended product images
+        }
+
+        let src = $el.attr('data-src') || $el.attr('src') || $el.attr('srcset')?.split(' ')[0];
         if (src) {
           src = src.trim();
           if (src.startsWith('//')) src = 'https:' + src;
@@ -985,7 +996,10 @@ module.exports = {
                          img.closest('.product-recommendations') ||
                          img.closest('.shopier-apps--related-product-product-card-product-link') ||
                          img.closest('.shopier-store--header-store-link') ||
-                         img.closest('.follow-store-body');
+                         img.closest('.follow-store-body') ||
+                         img.closest('.product-card-slider-wrapper') ||
+                         img.closest('.product-card-slider') ||
+                         img.closest('.product-card');
                          
           if (isJunk) return;
 

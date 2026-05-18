@@ -1,7 +1,6 @@
 const { fetchProductDetail } = require('./backend/services/shopierCatalogService');
 
-// Exact link from user's request
-const testLink = 'https://www.shopier.com/DUFO/31170077';
+const testLink = 'https://www.shopier.com/cansayerkekgiyim/47287399';
 
 async function test() {
     console.log('🧪 Testing:', testLink);
