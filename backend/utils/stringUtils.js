@@ -47,10 +47,39 @@ const isSubdomainReserved = (subdomain) => {
   return SUBDOMAIN_BLACKLIST.includes(s);
 };
 
+const isValidSubdomainStructure = (subdomain) => {
+  const s = (subdomain || '').toLowerCase().trim();
+  
+  // 1. Min length: 3 characters, Max length: 20 characters
+  if (s.length < 3 || s.length > 20) return false;
+  
+  // 2. Must contain at least one lowercase letter (no pure number subdomains)
+  if (!/[a-z]/.test(s)) return false;
+  
+  // 3. Block consecutive repeating characters more than 3 times (e.g. aaaa, xxxx)
+  if (/(.)\1\1\1/.test(s)) return false;
+  
+  // 4. Block 5 or more consecutive consonants (typical random keyboard walks like asdfg, sdfghj, qwrty)
+  // Consonants: b, c, d, f, g, h, j, k, l, m, n, p, q, r, s, t, v, w, x, y, z
+  if (/[bcdfghjklmnpqrstvwxyz]{5,}/.test(s)) return false;
+  
+  // 5. Block consecutive vowels more than 4 times (e.g., aeiou)
+  if (/[aeiou]{4,}/.test(s)) return false;
+  
+  // 6. Block common keyboard walks/nonsense patterns
+  const keyboardWalks = ['asdf', 'qwer', 'zxcv', 'hjkl', 'yuiop', 'bnm', 'lkj', 'mnb', 'rewq', 'fdsa'];
+  for (const walk of keyboardWalks) {
+    if (s.includes(walk)) return false;
+  }
+  
+  return true;
+};
+
 module.exports = {
   normalizeTurkishChars,
   slugify,
   clampSubdomain,
   isSubdomainReserved,
+  isValidSubdomainStructure,
   SUBDOMAIN_BLACKLIST
 };

@@ -23,6 +23,7 @@ const multer = require('multer');
 const xlsx = require('xlsx');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { isValidSubdomainStructure, isSubdomainReserved } = require('../utils/stringUtils');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -70,7 +71,17 @@ router.post('/create-simple', authMiddleware, async (req, res) => {
     
     // Temizleme ve Kontrol
     const cleanSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    
+
+    if (isSubdomainReserved(cleanSubdomain)) {
+      return res.status(400).json({ error: 'Bu mağaza adı sisteme özel rezerve edilmiştir. Başka bir isim deneyin.' });
+    }
+
+    if (!isValidSubdomainStructure(cleanSubdomain)) {
+      return res.status(400).json({ 
+        error: 'Geçersiz mağaza adı. Lütfen anlamlı, en az 3 karakterli bir isim seçin. Ardışık rastgele harfler (keyboard smash), klavye yürüyüşleri veya tekrarlanan karakterler kabul edilmemektedir.' 
+      });
+    }
+
     // Mükerrer Kontrolü
     const existing = await pool.query('SELECT id FROM sites WHERE subdomain = $1', [cleanSubdomain]);
     if (existing.rows.length > 0) {

@@ -18,7 +18,6 @@ import {
   Lock,
   Monitor,
   ShoppingBag,
-  ShoppingCart,
   Link,
   X,
   Sparkles,
@@ -28,7 +27,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getApiBase } from '../utils/apiBase';
 import { getAuthHeaders, getAuthToken } from '../utils/authStorage';
 import ProductManagement from './ProductManagement';
-import OrderList from './OrderList';
 import { Toaster, toast } from 'sonner';
 
 const API_BASE = getApiBase();
@@ -265,7 +263,6 @@ const UserPanel = () => {
             {[
               { id: 'overview', label: 'GENEL BAKIŞ', icon: BarChart3 },
               { id: 'products', label: 'ÜRÜNLERİM', icon: ShoppingBag },
-              { id: 'orders', label: 'SİPARİŞLERİM', icon: ShoppingCart },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -313,7 +310,6 @@ const UserPanel = () => {
                   {[
                     { id: 'overview', label: 'GENEL BAKIŞ', icon: BarChart3 },
                     { id: 'products', label: 'ÜRÜNLERİM', icon: ShoppingBag },
-                    { id: 'orders', label: 'SİPARİŞLERİM', icon: ShoppingCart },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -507,11 +503,7 @@ const UserPanel = () => {
           </motion.div>
         )}
 
-        {activeTab === 'orders' && (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <OrderList />
-          </motion.div>
-        )}
+
 
         <AnimatePresence>
           {showBulkModal && (

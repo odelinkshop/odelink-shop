@@ -19,7 +19,30 @@ export default function SiteBuilderWizard() {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const handleSimpleCreate = async () => {
-    if (!subdomain || subdomain.length < 3) {
+    const check = (() => {
+      const s = subdomain.trim().toLowerCase();
+      if (s.length < 3 || s.length > 20) return { valid: false, error: 'Mağaza adı 3 ile 20 karakter arasında olmalıdır.' };
+      if (!/[a-z]/.test(s)) return { valid: false, error: 'Mağaza adı en az bir harf içermelidir.' };
+      if (/(.)\1\1\1/.test(s)) return { valid: false, error: 'Aynı harf 3 kereden fazla peş peşe kullanılamaz.' };
+      if (/[bcdfghjklmnpqrstvwxyz]{5,}/.test(s)) return { valid: false, error: 'Geçersiz harf dizilimi (Rastgele harf kombinasyonu olmamalıdır).' };
+      if (/[aeiou]{4,}/.test(s)) return { valid: false, error: 'Çok fazla ardışık sesli harf içeriyor.' };
+      
+      const blacklist = ['admin', 'api', 'pay', 'auth', 'login', 'www', 'mail', 'smtp', 'dev', 'test', 'stage', 'prod', 'root', 'super', 'odelink', 'nova', 'support', 'help', 'shopier', 'magaza', 'store', 'shop'];
+      if (blacklist.includes(s)) return { valid: false, error: 'Bu mağaza adı rezerve edilmiştir, kullanılamaz.' };
+      
+      const walks = ['asdf', 'qwer', 'zxcv', 'hjkl', 'yuiop', 'bnm', 'lkj', 'mnb', 'rewq', 'fdsa'];
+      for (const walk of walks) {
+        if (s.includes(walk)) return { valid: false, error: 'Klavye harf yürüyüşü (asdf, qwer vb.) veya rastgele kombinasyon içeremez.' };
+      }
+      return { valid: true };
+    })();
+
+    if (!check.valid) {
+      setErrorMsg(check.error);
+      return;
+    }
+
+    if (false) {
       setErrorMsg('Lütfen geçerli bir mağaza adı (en az 3 karakter) belirleyin.');
       return;
     }
