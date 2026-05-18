@@ -638,6 +638,16 @@ module.exports = {
 
       const $ = cheerio.load(html);
       
+      const parsePrice = (txt) => {
+        if (!txt) return 0;
+        let s = txt.toString().replace(/[^\d.,]/g, '').trim();
+        if (!s) return 0;
+        if (s.includes('.') && s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+        else if (s.includes(',')) s = s.replace(',', '.');
+        else if (s.includes('.') && s.split('.').pop()?.length === 3) s = s.replace(/\./g, '');
+        return parseFloat(s) || 0;
+      };
+
       let title = '';
       let price = 0;
       let discountPrice = 0;
@@ -660,16 +670,6 @@ module.exports = {
                 description = p.description || '';
                 
                 if (p.price) {
-                  const parsePrice = (txt) => {
-                    if (!txt) return 0;
-                    let s = txt.toString().replace(/[^\d.,]/g, '').trim();
-                    if (!s) return 0;
-                    if (s.includes('.') && s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
-                    else if (s.includes(',')) s = s.replace(',', '.');
-                    else if (s.includes('.') && s.split('.').pop()?.length === 3) s = s.replace(/\./g, '');
-                    return parseFloat(s) || 0;
-                  };
-                  
                   const pOrig = p.price.price_legacy_formatted ? parsePrice(p.price.price_legacy_formatted) : 0;
                   const pCurr = p.price.price_code_formatted ? parsePrice(p.price.price_code_formatted) : parsePrice(p.price.price_formatted);
                   if (pCurr > 0) {
@@ -724,11 +724,23 @@ module.exports = {
       }
       if (!price) {
         const pText = $('.price').first().text().trim() || $('.current-price').first().text().trim();
-        let s = pText.replace(/[^\d.,]/g, '').trim();
-        if (s.includes('.') && s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
-        else if (s.includes(',')) s = s.replace(',', '.');
-        else if (s.includes('.') && s.split('.').pop()?.length === 3) s = s.replace(/\./g, '');
-        price = parseFloat(s) || 0;
+        price = parsePrice(pText);
+      }
+
+      // Extract old price from DOM if present (to handle discounts)
+      const oldPriceText = $('.product-price-old').attr('data-price') || 
+                           $('.product-price-old').text().trim() || 
+                           $('.shopier-store--product-price-old').attr('data-price') || 
+                           $('.shopier-store--product-price-old').text().trim();
+      if (oldPriceText) {
+        const parsedOldPrice = parsePrice(oldPriceText);
+        if (parsedOldPrice > 0) {
+          const currentPrice = price || parsePrice($('.product-price-current').text() || $('.price-value').text() || $('.current-price').text());
+          if (currentPrice > 0 && parsedOldPrice > currentPrice) {
+            price = parsedOldPrice;
+            discountPrice = currentPrice;
+          }
+        }
       }
 
       // Fallback: description
@@ -977,6 +989,20 @@ module.exports = {
 
         if (!title) title = cleanT(document.querySelector('h1')?.innerText || document.querySelector('.product-title')?.innerText);
         if (!price) price = parseP(document.querySelector('.price')?.innerText || document.querySelector('.current-price')?.innerText);
+
+        // Extract old price from DOM if present (to handle discounts)
+        const oldPriceEl = document.querySelector('.product-price-old') || document.querySelector('.shopier-store--product-price-old');
+        if (oldPriceEl) {
+          const oldPriceText = oldPriceEl.getAttribute('data-price') || oldPriceEl.innerText || '';
+          const parsedOldPrice = parseP(oldPriceText);
+          if (parsedOldPrice > 0) {
+            const currentPrice = price || parseP(document.querySelector('.product-price-current')?.innerText || document.querySelector('.price-value')?.innerText || document.querySelector('.current-price')?.innerText);
+            if (currentPrice > 0 && parsedOldPrice > currentPrice) {
+              price = parsedOldPrice;
+              discountPrice = currentPrice;
+            }
+          }
+        }
 
         // Description
         if (!description) {
