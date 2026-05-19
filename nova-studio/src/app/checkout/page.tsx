@@ -18,7 +18,7 @@ export default function CheckoutPage() {
   // 1. Eğer tek ürün varsa ve o ürünün kendi linki varsa doğrudan oraya (En hızlı satış)
   // 2. Eğer çok ürün varsa mağazanın genel Shopier linkine
   const shopierStoreUrl = settings?.shopier_url || settings?.shopierUrl || "";
-  const singleProductUrl = items.length === 1 ? (items[0] as any).shopierUrl : "";
+  const singleProductUrl = items.length === 1 ? ((items[0] as any).url || (items[0] as any).shopierUrl || "") : "";
   
   const finalTargetUrl = (items.length === 1 && singleProductUrl) ? singleProductUrl : shopierStoreUrl;
   
