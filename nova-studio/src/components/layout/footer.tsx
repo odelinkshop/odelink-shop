@@ -155,31 +155,27 @@ const Footer = () => {
              </a>
           </div>
 
-          <div className="flex items-center gap-6 opacity-60 hover:opacity-100 transition-opacity duration-500 grayscale hover:grayscale-0">
-             {/* Visa SVG */}
-             <svg viewBox="0 0 38 12" className="h-3.5 w-auto fill-white">
-               <path d="M14.656 0h-3.411l-2.146 11.834h3.411L14.656 0zM35.617 11.834h3.298L36.331 0h-2.812c-.649 0-1.196.38-1.42 1.002l-4.502 10.832h3.559l.711-2.001h4.343l.407 2.001zm-3.003-4.577l1.107-3.149 1.899 3.149h-3.006zM27.272 3.659c-1.85-.92-4.992-1.025-4.992 1.34 0 2.213 4.195 1.774 4.195 3.528 0 1.839-4.237 2.002-5.918.66l-.721 2.378c1.37.77 3.551 1.011 5.385 1.011 2.23 0 5.176-.902 5.176-3.693 0-2.483-4.215-2.002-4.215-3.565 0-1.564 3.737-1.373 5.094-.658l.996-2.342zM10.174 0h-2.738c-.687 0-1.229.412-1.47 1.045L.034 11.834h3.618l.719-2.031h4.417L10.174 0zm-5.064 7.21l1.836-5.127 1.047 5.127H5.11z"/>
-             </svg>
-             
-             {/* MasterCard SVG Text */}
-             <svg viewBox="0 0 85 16" className="h-[15px] w-auto fill-white">
-               <text x="0" y="13" fontSize="16.5" fontWeight="900" fontStyle="italic" fontFamily="Arial, sans-serif" letterSpacing="-0.03em" transform="scale(0.95, 1)">MasterCard</text>
-             </svg>
-
-             {/* Troy SVG */}
-             <svg viewBox="0 0 45 16" className="h-[14px] w-auto fill-white">
-               <text x="0" y="13" fontSize="18" fontWeight="900" fontFamily="Arial, sans-serif" letterSpacing="-0.06em">tr</text>
-               <path d="M22.5 4.5 a 4.5 4.5 0 1 0 0 9 a 4.5 4.5 0 1 0 0 -9 M22.5 7 a 2 2 0 1 1 0 4 a 2 2 0 1 1 0 -4" fill="white" transform="translate(1,-0.5) scale(0.9, 0.95)"/>
-               <path d="M22 2 L25 5 L22 8 L19 5 Z" fill="black" transform="translate(1,-0.5) scale(0.9, 0.95)"/>
-               <path d="M22 10 L25 13 L22 16 L19 13 Z" fill="black" transform="translate(1,-0.5) scale(0.9, 0.95)"/>
-               <text x="32" y="13" fontSize="18" fontWeight="900" fontFamily="Arial, sans-serif" letterSpacing="-0.06em">y</text>
-             </svg>
-
-             {/* American Express SVG */}
-             <svg viewBox="0 0 56 16" className="h-[14px] w-auto fill-white">
-               <text x="0" y="6" fontSize="7.5" fontWeight="900" fontFamily="Arial, sans-serif" letterSpacing="0.02em">AMERICAN</text>
-               <text x="0" y="14" fontSize="7.5" fontWeight="900" fontFamily="Arial, sans-serif" letterSpacing="0.02em">EXPRESS</text>
-             </svg>
+          <div className="flex items-center gap-7 opacity-60 hover:opacity-100 transition-opacity duration-500">
+             <img 
+               src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" 
+               alt="Visa" 
+               className="h-[12px] w-auto brightness-0 invert grayscale object-contain"
+             />
+             <img 
+               src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" 
+               alt="Mastercard" 
+               className="h-[18px] w-auto brightness-0 invert grayscale object-contain"
+             />
+             <img 
+               src="https://upload.wikimedia.org/wikipedia/commons/2/23/Troy_logo.svg" 
+               alt="Troy" 
+               className="h-[14px] w-auto brightness-0 invert grayscale object-contain"
+             />
+             <img 
+               src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" 
+               alt="American Express" 
+               className="h-[20px] w-auto brightness-0 invert grayscale object-contain"
+             />
           </div>
         </div>
       </div>
