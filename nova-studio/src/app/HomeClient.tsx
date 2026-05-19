@@ -28,7 +28,6 @@ const reviewsData = [
     rating: 5,
     title: "Satın aldığımdan gerçekten çok memnunum!",
     text: "Genellikle tembel olduğum için yorum yazmam ama bu kapüşonlu sweatshirt gerçekten harika, yumuşak ve malzemesi çok kaliteli, dürüst olmak gerekirse çok etkilendim, bayıldım resmen!",
-    image: "/1.png?v=3",
     likes: 48,
     dislikes: 4
   },
@@ -41,7 +40,6 @@ const reviewsData = [
     rating: 5,
     title: "Kalıbı ve dikiş kalitesi efsane!",
     text: "Oversize kesimi o kadar iyi ayarlanmış ki üzerimde tam hayal ettiğim gibi durdu. Kumaş dokusu kalın ve içi yumuşacık. Kesinlikle başka modellerini de sipariş vereceğim.",
-    image: "/2.png?v=3",
     likes: 34,
     dislikes: 1
   },
@@ -54,7 +52,6 @@ const reviewsData = [
     rating: 5,
     title: "Beklentimin çok üzerinde!",
     text: "Sessiz lüks tasarım çizgisini çok iyi yansıtmış. Dolabımdaki en kaliteli ve şık sweatshirt diyebilirim. Hızlı teslimat ve özenli paketleme için de ayrıca teşekkürler.",
-    image: "/3.png?v=3",
     likes: 22,
     dislikes: 0
   }
@@ -392,22 +389,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Review image and helpful row */}
-                <div className="mt-6 space-y-4 pt-4 border-t border-secondary/10">
-                  {review.image && (
-                    <div className="relative w-20 h-28 overflow-hidden bg-secondary/5 rounded-xs border border-secondary/20 group-hover:scale-105 transition-transform duration-300 shadow-sm">
-                      <img 
-                        src={review.image} 
-                        alt="Customer Photo"
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          const img = e.currentTarget as HTMLImageElement;
-                          img.src = review.id === 2 ? "/2.png?v=3" : (review.id === 3 ? "/3.png?v=3" : "/1.png?v=3");
-                        }}
-                      />
-                    </div>
-                  )}
-
+                {/* Helpful row */}
+                <div className="mt-6 pt-4 border-t border-secondary/10">
                   <div className="flex items-center justify-between text-[10px] text-secondary font-semibold font-sans uppercase tracking-wider">
                     <span>Bu yardımcı oldu mu?</span>
                     <div className="flex items-center gap-2">
@@ -494,20 +477,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Modal Customer image display */}
-              {selectedReview.image && (
-                <div className="relative w-full max-h-[55vh] bg-black rounded-xs overflow-hidden border border-secondary/20 shadow-inner flex items-center justify-center">
-                  <img 
-                    src={selectedReview.image} 
-                    alt="Customer mirror selfie"
-                    className="max-w-full max-h-[55vh] w-auto h-auto object-contain"
-                    onError={(e) => {
-                      const img = e.currentTarget as HTMLImageElement;
-                      img.src = selectedReview.id === 2 ? "/2.png?v=3" : (selectedReview.id === 3 ? "/3.png?v=3" : "/1.png?v=3");
-                    }}
-                  />
-                </div>
-              )}
 
               {/* Modal Footer helpful row */}
               <div className="flex items-center justify-between text-xs text-secondary font-semibold font-sans uppercase tracking-wider border-t border-secondary/10 pt-4">
