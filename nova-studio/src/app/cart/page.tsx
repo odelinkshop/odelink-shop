@@ -223,7 +223,7 @@ export default function CartPage() {
                           const inputVarName = document.createElement('input');
                           inputVarName.type = 'hidden';
                           inputVarName.name = 'first_variation_name';
-                          inputVarName.value = 'Beden ';
+                          inputVarName.value = resData.variationName || 'Beden ';
                           form.appendChild(inputVarName);
 
                           const inputVarId = document.createElement('input');

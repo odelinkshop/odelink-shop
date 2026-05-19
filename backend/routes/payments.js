@@ -256,6 +256,7 @@ router.get('/shopier-checkout-data', async (req, res) => {
     if (size) {
       const targetSize = size.toString().trim().toLowerCase();
       let foundVariationId = null;
+      let foundVariationName = null;
 
       // Svelte SPA JSON State'ten çekme denemesi (Yeni Shopier Mimarisi)
       try {
@@ -298,6 +299,7 @@ router.get('/shopier-checkout-data', async (req, res) => {
                 if (p && p.variations) {
                   for (let vNum = 1; vNum <= 3; vNum++) {
                     const vList = p.variations[`variation_${vNum}`] || [];
+                    const vName = p.variations[`variation_${vNum}_name`] || '';
                     for (const opt of vList) {
                       const optionName = (opt.name || '').toLowerCase().trim();
                       const targetParts = targetSize.split('/').map(p => p.trim());
@@ -316,6 +318,7 @@ router.get('/shopier-checkout-data', async (req, res) => {
 
                       if (isMatch) {
                         foundVariationId = opt.id;
+                        foundVariationName = vName;
                         break;
                       }
                     }
@@ -333,6 +336,7 @@ router.get('/shopier-checkout-data', async (req, res) => {
       }
 
       variationId = foundVariationId;
+      variationName = foundVariationName;
 
       // Legacy HTML Select Element Fallback (Eski Shopier Mimarisi)
       if (!variationId) {
@@ -359,6 +363,8 @@ router.get('/shopier-checkout-data', async (req, res) => {
           
           if (isMatch) {
             variationId = optionValue;
+            const selectName = selectElement.attr('name') || '';
+            variationName = selectName.toLowerCase().includes('renk') ? 'Renk' : 'Beden';
             return false;
           }
         });
@@ -369,7 +375,8 @@ router.get('/shopier-checkout-data', async (req, res) => {
       success: true,
       shopName,
       productId,
-      variationId
+      variationId,
+      variationName
     });
 
   } catch (error) {

@@ -32,7 +32,7 @@ export default function CheckoutPage() {
     }).format(n) + " ₺";
   };
 
-  const handleFinalRedirect = () => {
+  const handleFinalRedirect = async () => {
     if (!finalTargetUrl) {
       console.error("❌ Kritik Hata: Shopier URL bulunamadı!");
       alert("Mağaza ödeme sistemi şu an yapılandırılmamış. Lütfen mağaza sahibi ile iletişime geçin.");
@@ -40,8 +40,77 @@ export default function CheckoutPage() {
     }
     
     setIsRedirecting(true);
+
+    if (typeof window !== "undefined" && (window as any).reportAnalyticsEvent) {
+      try {
+        (window as any).reportAnalyticsEvent({
+          type: 'begin_checkout',
+          page: '/checkout',
+          target: 'complete_payment_button',
+          label: 'Proceed to Shopier',
+          amount: total
+        });
+      } catch (e) {
+        void e;
+      }
+    }
     
-    // Kısa bir bekleme ile profesyonel bir his yarat (Analytics vb. için zaman tanı)
+    // Single product variation POST redirect (exact same logic as CartPage)
+    if (items.length === 1) {
+      const item = items[0];
+      try {
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || "https://api.odelink.shop"}/api/payments/shopier-checkout-data?url=${encodeURIComponent(finalTargetUrl)}&size=${encodeURIComponent(item.size || '')}`;
+        const response = await fetch(apiUrl);
+        const resData = await response.json();
+
+        if (resData.success && resData.shopName && resData.productId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `https://www.shopier.com/s/shipping/${resData.shopName}`;
+          
+          const inputId = document.createElement('input');
+          inputId.type = 'hidden';
+          inputId.name = 'product_id';
+          inputId.value = resData.productId;
+          form.appendChild(inputId);
+
+          if (resData.variationId) {
+            const inputSize = document.createElement('input');
+            inputSize.type = 'hidden';
+            inputSize.name = 'size';
+            inputSize.value = resData.variationId;
+            form.appendChild(inputSize);
+
+            const inputVarName = document.createElement('input');
+            inputVarName.type = 'hidden';
+            inputVarName.name = 'first_variation_name';
+            inputVarName.value = resData.variationName || 'Beden ';
+            form.appendChild(inputVarName);
+
+            const inputVarId = document.createElement('input');
+            inputVarId.type = 'hidden';
+            inputVarId.name = 'first_variation_id';
+            inputVarId.value = '0';
+            form.appendChild(inputVarId);
+          }
+
+          const inputQty = document.createElement('input');
+          inputQty.type = 'hidden';
+          inputQty.name = 'quantity';
+          inputQty.value = String(item.quantity || 1);
+          form.appendChild(inputQty);
+
+          document.body.appendChild(form);
+          form.submit();
+          document.body.removeChild(form);
+          return;
+        }
+      } catch (err) {
+        console.error('Error fetching/parsing Shopier checkout data in checkout page:', err);
+      }
+    }
+    
+    // Fallback direct redirect
     setTimeout(() => {
       window.location.href = finalTargetUrl;
     }, 800);
