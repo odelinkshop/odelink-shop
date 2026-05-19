@@ -255,16 +255,94 @@ router.get('/shopier-checkout-data', async (req, res) => {
 
     if (size) {
       const targetSize = size.toString().trim().toLowerCase();
-      const selectElement = $('select[name="size"]');
-      if (selectElement.length > 0) {
+      let foundVariationId = null;
+
+      // Svelte SPA JSON State'ten çekme denemesi (Yeni Shopier Mimarisi)
+      try {
+        // Dengeli süslü parantez ile JSON bloğu çıkar (catalogService.js'teki aynı mantık)
+        const extractBalancedJson = (str, startIdx) => {
+          if (str[startIdx] !== '{') return null;
+          let depth = 0;
+          let inString = false;
+          let escapeNext = false;
+          for (let i = startIdx; i < str.length && i < startIdx + 500000; i++) {
+            if (escapeNext) { escapeNext = false; continue; }
+            if (str[i] === '\\') { escapeNext = true; continue; }
+            if (str[i] === '"' && !escapeNext) { inString = !inString; continue; }
+            if (inString) continue;
+            if (str[i] === '{') depth++;
+            else if (str[i] === '}') {
+              depth--;
+              if (depth === 0) return str.substring(startIdx, i + 1);
+            }
+          }
+          return null;
+        };
+
+        $('script').each((i, el) => {
+          if (foundVariationId) return;
+          const content = $(el).html() || '';
+          if (content.length < 50) return;
+
+          if (content.includes('"product"') || content.includes("'product'") || content.includes('product:')) {
+            const assignmentRegex = /=\s*\{/g;
+            let assignMatch;
+            while ((assignMatch = assignmentRegex.exec(content)) !== null) {
+              try {
+                const jsonStr = extractBalancedJson(content, assignMatch.index + assignMatch[0].length - 1);
+                if (!jsonStr || jsonStr.length < 100) continue;
+                
+                const data = JSON.parse(jsonStr);
+                const p = data.product || data.$product || data.p;
+                
+                if (p && p.variations) {
+                  for (let vNum = 1; vNum <= 3; vNum++) {
+                    const vList = p.variations[`variation_${vNum}`] || [];
+                    for (const opt of vList) {
+                      const optionName = (opt.name || '').toLowerCase().trim();
+                      const targetParts = targetSize.split('/').map(p => p.trim());
+                      const optionParts = optionName.split('/').map(p => p.trim());
+                      
+                      let isMatch = false;
+                      for (const tp of targetParts) {
+                        for (const op of optionParts) {
+                          if (tp === op || tp.includes(op) || op.includes(tp)) {
+                            isMatch = true;
+                            break;
+                          }
+                        }
+                        if (isMatch) break;
+                      }
+
+                      if (isMatch) {
+                        foundVariationId = opt.id;
+                        break;
+                      }
+                    }
+                    if (foundVariationId) break;
+                  }
+                }
+              } catch (jsonErr) {
+                // Ignore parse error and continue
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.error('Variation JSON parse error:', err.message);
+      }
+
+      variationId = foundVariationId;
+
+      // Legacy HTML Select Element Fallback (Eski Shopier Mimarisi)
+      if (!variationId) {
+        const selectElement = $('select'); 
         selectElement.find('option').each((i, el) => {
           const optionText = $(el).text().trim().toLowerCase();
-          const optionValue = $(el).val();
+          const optionValue = $(el).attr('value');
           
-          // Skip empty default/placeholder options (e.g. value="-1")
-          if (!optionText || optionValue === '-1') return;
+          if (!optionText || optionValue === '-1' || !optionValue) return;
           
-          // Extremely robust split-based variation matcher to handle slashes or composite variation selections
           const targetParts = targetSize.split('/').map(p => p.trim());
           const optionParts = optionText.split('/').map(p => p.trim());
           
