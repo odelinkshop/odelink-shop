@@ -1244,6 +1244,17 @@ const startServer = async () => {
       console.log('📊 Health Check:', `http://localhost:${PORT}/api/health`);
       console.log('📋 Readiness Check:', `http://localhost:${PORT}/api/ready`);
       console.log('⚡ Real Shopier API:', `http://localhost:${PORT}/api/real-shopier`);
+
+      // Shopier Otomatik Sync Cron'u Başlat (Production'da)
+      if (isProduction) {
+        try {
+          const { startSyncCron } = require('./services/shopierSyncService');
+          startSyncCron();
+          console.log('🔄 Shopier Otomatik Sync Cron başlatıldı!');
+        } catch (syncErr) {
+          console.error('❌ Shopier Sync Cron başlatılamadı:', syncErr.message);
+        }
+      }
     });
 
     server.headersTimeout = 12 * 1000;

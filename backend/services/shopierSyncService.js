@@ -190,8 +190,7 @@ async function syncSite(siteId) {
     // Tüm ürünleri birleştir
     let allProducts = [...added, ...updated];
 
-    // Kategorileri güncelle
-    categories = Array.isArray(catalog?.categories) ? catalog.categories : [];
+    // Kategorileri güncelle (zaten yukarıda dolduruldu, sadece boşsa fallback yap)
 
     // Mağaza SEO Meta Verilerini Üret (Eğer yoksa)
     if (!settings.seoTitle || !settings.seoDescription) {
@@ -324,16 +323,15 @@ async function syncAllSites() {
  * Cron job başlat - GERÇEKTEN OTOMATİK MOD
  */
 function startSyncCron() {
-  console.log('⏰ Shopier Akıllı Otomatik Pilot Beklemede (Site Builder önceliği için arka plan sync kısıtlandı)');
+  console.log('⏰ Shopier Otomatik Sync Aktif! Her 10 dakikada bir tüm siteler kontrol edilecek.');
 
-  // Sunucu başladığında tüm siteleri YENİ MOTORLA zorla senkronize etme (Site Builder'ı engellememek için kapalı)
-  /*
+  // Sunucu başladıktan 30 saniye sonra ilk sync'i başlat
   setTimeout(async () => {
-    // ...
-  }, 5000);
-  */
+    console.log('🚀 İlk otomatik sync başlatılıyor...');
+    syncAllSites().catch(e => console.error('İlk sync hatası:', e));
+  }, 30 * 1000);
 
-  // Her 10 dakikada bir kontrol et (daha seyrek)
+  // Her 10 dakikada bir kontrol et
   setInterval(() => {
     syncAllSites().catch(e => console.error('Cron sync error:', e));
   }, 10 * 60 * 1000); 
