@@ -129,7 +129,6 @@ const Navbar = () => {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {link.name}
-                      {link.hasDropdown && <ChevronDown size={18} className="opacity-40" />}
                     </Link>
                   </motion.div>
                 ))}
