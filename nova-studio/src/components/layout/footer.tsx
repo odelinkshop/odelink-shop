@@ -218,32 +218,34 @@ const Footer = () => {
           <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
 
           {/* Bottom Strip - Horizontal Professional Layout */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 mt-8">
             
             {/* Left - Site Management */}
-            <p className="text-[10px] tracking-[0.1em] text-white/50 font-light order-2 md:order-1">
-              <Link href="/" className="font-semibold text-white/70 hover:text-white transition-colors duration-300">{storeDisplayName}</Link>
-              <span className="mx-1.5 text-white/20">|</span>
-              Özenle yönetilmektedir
+            <p className="text-[9px] text-white/40 font-medium order-2 md:order-1 flex items-center">
+              <Link href="/" className="font-bold tracking-[0.2em] uppercase text-white/80 hover:text-white transition-colors duration-300">
+                {storeDisplayName}
+              </Link>
+              <span className="mx-3 text-white/10">|</span>
+              <span className="uppercase tracking-[0.15em]">Özenle Yönetilmektedir</span>
             </p>
 
             {/* Center - Copyright */}
-            <p className="text-[10px] tracking-[0.15em] text-white/40 font-light order-1 md:order-2">
-              © {year} Tüm hakları saklıdır.
+            <p className="text-[8.5px] tracking-[0.3em] uppercase text-white/30 font-semibold order-1 md:order-2">
+              © {year} Tüm Hakları Saklıdır.
             </p>
 
             {/* Right - Payment Security */}
-            <div className="flex items-center gap-1.5 text-[10px] text-white/50 order-3">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/30">
+            <div className="flex items-center gap-2 text-[9px] text-white/40 font-medium order-3">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/30">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
-              <span className="font-light tracking-[0.08em]">
-                Bütün ödemeler{" "}
-                <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-white/70 hover:text-white transition-colors duration-300">
-                  Shopier
+              <span className="uppercase tracking-[0.15em]">
+                Bütün Ödemeler{" "}
+                <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="font-bold text-white/80 hover:text-white transition-colors duration-300 tracking-[0.2em]">
+                  SHOPIER
                 </a>
-                {" "}güvencesindedir
+                {" "}Güvencesindedir
               </span>
             </div>
 
