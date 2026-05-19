@@ -28,7 +28,7 @@ const reviewsData = [
     rating: 5,
     title: "Satın aldığımdan gerçekten çok memnunum!",
     text: "Genellikle tembel olduğum için yorum yazmam ama bu kapüşonlu sweatshirt gerçekten harika, yumuşak ve malzemesi çok kaliteli, dürüst olmak gerekirse çok etkilendim, bayıldım resmen!",
-    image: "/1.png",
+    image: "/1.png?v=3",
     likes: 48,
     dislikes: 4
   },
@@ -41,7 +41,7 @@ const reviewsData = [
     rating: 5,
     title: "Kalıbı ve dikiş kalitesi efsane!",
     text: "Oversize kesimi o kadar iyi ayarlanmış ki üzerimde tam hayal ettiğim gibi durdu. Kumaş dokusu kalın ve içi yumuşacık. Kesinlikle başka modellerini de sipariş vereceğim.",
-    image: "/2.png",
+    image: "/2.png?v=3",
     likes: 34,
     dislikes: 1
   },
@@ -54,7 +54,7 @@ const reviewsData = [
     rating: 5,
     title: "Beklentimin çok üzerinde!",
     text: "Sessiz lüks tasarım çizgisini çok iyi yansıtmış. Dolabımdaki en kaliteli ve şık sweatshirt diyebilirim. Hızlı teslimat ve özenli paketleme için de ayrıca teşekkürler.",
-    image: "/3.png",
+    image: "/3.png?v=3",
     likes: 22,
     dislikes: 0
   }
@@ -352,7 +352,7 @@ export default function Home() {
               <div 
                 key={review.id}
                 onClick={() => setSelectedReview(review)}
-                className="bg-white border border-secondary/5 p-6 rounded-xs shadow-xs hover:border-secondary/15 transition-all duration-300 flex flex-col h-full justify-between cursor-pointer group"
+                className="bg-white border border-secondary/10 p-6 rounded-xs shadow-xs hover:border-secondary/30 hover:shadow-md transition-all duration-300 flex flex-col h-full justify-between cursor-pointer group"
               >
                 <div className="space-y-4">
                   {/* Avatar and name header */}
@@ -386,36 +386,36 @@ export default function Home() {
                     <h4 className="font-bold text-xs md:text-sm text-secondary uppercase font-sans tracking-wide">
                       {review.title}
                     </h4>
-                    <p className="text-[11px] md:text-xs text-secondary/60 leading-relaxed font-sans">
+                    <p className="text-[11px] md:text-xs text-secondary leading-relaxed font-sans">
                       {review.text}
                     </p>
                   </div>
                 </div>
 
                 {/* Review image and helpful row */}
-                <div className="mt-6 space-y-4 pt-4 border-t border-secondary/5">
+                <div className="mt-6 space-y-4 pt-4 border-t border-secondary/10">
                   {review.image && (
-                    <div className="relative w-16 h-20 overflow-hidden bg-secondary/5 rounded-xs border border-secondary/10 group-hover:scale-105 transition-transform duration-300">
+                    <div className="relative w-20 h-28 overflow-hidden bg-secondary/10 rounded-xs border border-secondary/20 group-hover:scale-105 transition-transform duration-300 shadow-sm">
                       <img 
                         src={review.image} 
                         alt="Customer Photo"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-top"
                         onError={(e) => {
                           const img = e.currentTarget as HTMLImageElement;
-                          img.src = review.id === 2 ? "/2.png" : (review.id === 3 ? "/3.png" : "/1.png");
+                          img.src = review.id === 2 ? "/2.png?v=3" : (review.id === 3 ? "/3.png?v=3" : "/1.png?v=3");
                         }}
                       />
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between text-[10px] text-secondary/40 font-semibold font-sans uppercase tracking-wider">
+                  <div className="flex items-center justify-between text-[10px] text-secondary font-semibold font-sans uppercase tracking-wider">
                     <span>Bu yardımcı oldu mu?</span>
                     <div className="flex items-center gap-2">
-                      <button className="flex items-center gap-1 hover:text-[#00b67a] transition-all">
+                      <button className="flex items-center gap-1 text-secondary/80 hover:text-[#00b67a] transition-all">
                         <ThumbsUp size={10} />
                         <span>{review.likes}</span>
                       </button>
-                      <button className="flex items-center gap-1 hover:text-red-500 transition-all">
+                      <button className="flex items-center gap-1 text-secondary/80 hover:text-red-500 transition-all">
                         <ThumbsDown size={10} />
                         <span>{review.dislikes}</span>
                       </button>
@@ -452,13 +452,13 @@ export default function Home() {
               {/* Close Button */}
               <button 
                 onClick={() => setSelectedReview(null)}
-                className="absolute top-4 right-4 text-secondary/60 hover:text-secondary p-1 rounded-full hover:bg-secondary/5 transition-all z-20"
+                className="absolute top-4 right-4 text-secondary hover:text-secondary/80 p-1.5 rounded-full hover:bg-secondary/10 transition-all z-20"
               >
                 <X size={18} />
               </button>
 
               {/* Modal Header */}
-              <div className="flex items-center gap-3 border-b border-secondary/5 pb-4 font-sans">
+              <div className="flex items-center gap-3 border-b border-secondary/10 pb-4 font-sans">
                 <div className={cn("w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg", selectedReview.avatarColor)}>
                   {selectedReview.initials}
                 </div>
@@ -473,7 +473,7 @@ export default function Home() {
                         <Star size={9} fill="currentColor" stroke="none" />
                       </div>
                     ))}
-                    <span className="text-xs font-semibold text-secondary/50 ml-1.5 uppercase tracking-wide">5 YILDIZ</span>
+                    <span className="text-xs font-semibold text-secondary ml-1.5 uppercase tracking-wide">5 YILDIZ</span>
                   </div>
                 </div>
               </div>
@@ -489,35 +489,35 @@ export default function Home() {
                   {selectedReview.title}
                 </h4>
                 
-                <p className="text-xs md:text-sm text-secondary/70 leading-relaxed font-sans font-light">
+                <p className="text-xs md:text-sm text-secondary leading-relaxed font-sans">
                   {selectedReview.text}
                 </p>
               </div>
 
               {/* Modal Customer image display */}
               {selectedReview.image && (
-                <div className="relative w-full aspect-[4/5] bg-secondary/5 rounded-xs overflow-hidden border border-secondary/10">
+                <div className="relative w-full aspect-[2/3] max-h-[50vh] bg-secondary/10 rounded-xs overflow-hidden border border-secondary/20 shadow-inner">
                   <img 
                     src={selectedReview.image} 
                     alt="Customer mirror selfie"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                     onError={(e) => {
                       const img = e.currentTarget as HTMLImageElement;
-                      img.src = selectedReview.id === 2 ? "/2.png" : (selectedReview.id === 3 ? "/3.png" : "/1.png");
+                      img.src = selectedReview.id === 2 ? "/2.png?v=3" : (selectedReview.id === 3 ? "/3.png?v=3" : "/1.png?v=3");
                     }}
                   />
                 </div>
               )}
 
               {/* Modal Footer helpful row */}
-              <div className="flex items-center justify-between text-xs text-secondary/40 font-semibold font-sans uppercase tracking-wider border-t border-secondary/5 pt-4">
+              <div className="flex items-center justify-between text-xs text-secondary font-semibold font-sans uppercase tracking-wider border-t border-secondary/10 pt-4">
                 <span>Bu yardımcı oldu mu?</span>
                 <div className="flex items-center gap-4">
-                  <button className="flex items-center gap-1.5 hover:text-[#00b67a] transition-all">
+                  <button className="flex items-center gap-1.5 text-secondary/80 hover:text-[#00b67a] transition-all">
                     <ThumbsUp size={12} />
                     <span>{selectedReview.likes}</span>
                   </button>
-                  <button className="flex items-center gap-1.5 hover:text-red-500 transition-all">
+                  <button className="flex items-center gap-1.5 text-secondary/80 hover:text-red-500 transition-all">
                     <ThumbsDown size={12} />
                     <span>{selectedReview.dislikes}</span>
                   </button>
