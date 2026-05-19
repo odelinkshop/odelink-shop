@@ -18,13 +18,10 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "SATIŞ", href: "/shop" },
-    { name: "AKTİF", href: "/shop", hasDropdown: true },
-    { name: "ÜSTLER", href: "/shop", hasDropdown: true },
-    { name: "ALT KISIMLAR", href: "/shop", hasDropdown: true },
-    { name: "SPOR AYAKKABILARI", href: "/shop" },
-    { name: "AKSESUARLAR", href: "/shop", hasDropdown: true },
-    { name: "BAYANLAR", href: "/shop", hasDropdown: true },
+    { name: "HAKKIMIZDA", href: "/about" },
+    { name: "İLETİŞİM", href: "/contact" },
+    { name: "SIKÇA SORULANLAR", href: "/faq" },
+    { name: "KARGO TAKİP", href: "/faq" },
   ];
 
   const items = useCart((state) => state.items);
@@ -35,10 +32,24 @@ const Navbar = () => {
         <div className="max-w-[1800px] mx-auto flex items-center justify-between min-h-[70px] gap-8">
           {/* Left: Logo */}
           <div className="flex-shrink-0 min-w-[150px]">
-            <Link href="/" className="group inline-block">
+            <Link href="/" className="group flex items-center relative">
+              {/* SANTO Style Compass Star Icon */}
+              <svg 
+                viewBox="0 0 24 24" 
+                fill="white" 
+                className="absolute -left-2 top-1/2 -translate-y-1/2 w-7 h-7 z-10"
+                style={{ mixBlendMode: 'difference' }}
+              >
+                <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+              </svg>
               <h1 
-                className="text-2xl sm:text-3xl lg:text-4xl font-sans font-black tracking-tighter uppercase text-white truncate max-w-[250px]"
-                style={{ textShadow: "1px 1px 0px rgba(255,255,255,0.15)" }}
+                className="text-3xl sm:text-4xl lg:text-5xl uppercase text-white truncate max-w-[250px] relative z-0 pl-1"
+                style={{ 
+                  fontFamily: "Impact, 'Arial Black', 'Helvetica Neue', sans-serif", 
+                  fontWeight: 900, 
+                  letterSpacing: "-0.05em",
+                  transform: "scaleY(1.05)"
+                }}
               >
                 {mounted ? (siteName.split('|')[0].trim() || "AKKESL") : "AKKESL"}
               </h1>
@@ -46,23 +57,20 @@ const Navbar = () => {
           </div>
 
           {/* Center: Navigation Links */}
-          <div className="hidden lg:flex items-center justify-center flex-grow space-x-6 xl:space-x-8">
+          <div className="hidden lg:flex items-center justify-center flex-grow space-x-8 xl:space-x-10">
             {mounted && navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="group flex items-center gap-1.5 text-[11px] xl:text-[12px] tracking-[0.05em] font-medium transition-all text-white/80 hover:text-white whitespace-nowrap"
+                className="group flex items-center gap-1.5 text-[13px] xl:text-[14px] tracking-[0.08em] font-semibold transition-all text-white hover:text-white/70 whitespace-nowrap"
               >
                 {link.name}
-                {link.hasDropdown && (
-                  <ChevronDown size={12} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                )}
               </Link>
             ))}
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center justify-end space-x-5 xl:space-x-7 flex-shrink-0 min-w-[150px]">
+          <div className="flex items-center justify-end space-x-6 xl:space-x-8 flex-shrink-0 min-w-[150px]">
             <button 
               className="lg:hidden transition-colors text-white"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
