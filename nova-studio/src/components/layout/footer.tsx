@@ -200,11 +200,11 @@ const Footer = () => {
                   Ödelink
                 </span>
                 <div className="flex items-center gap-3 mt-2">
-                  <div className="w-6 h-px bg-white/30" />
-                  <span className="text-[8px] tracking-[0.4em] font-semibold text-white/80 group-hover:text-white transition-colors duration-500 uppercase">
+                  <div className="hidden md:block w-6 h-px bg-white/30" />
+                  <span className="text-[7px] md:text-[8px] tracking-[0.2em] md:tracking-[0.4em] font-semibold text-white/80 group-hover:text-white transition-colors duration-500 uppercase text-center leading-relaxed max-w-[260px] md:max-w-none">
                     Türkiye'nin En İyi E-Ticaret Vitrin Platformu
                   </span>
-                  <div className="w-6 h-px bg-white/30" />
+                  <div className="hidden md:block w-6 h-px bg-white/30" />
                 </div>
               </a>
             </div>
@@ -214,24 +214,24 @@ const Footer = () => {
           <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8" />
 
           {/* Bottom Strip - Horizontal Professional Layout */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 mt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-5 md:gap-4 mt-8 text-center md:text-left">
             
             {/* Left - Site Management */}
-            <p className="text-[9px] text-white/80 font-medium order-2 md:order-1 flex items-center">
+            <p className="text-[9px] text-white/80 font-medium order-1 flex flex-col md:flex-row items-center gap-2 md:gap-0">
               <Link href="/" className="font-bold tracking-[0.2em] uppercase text-white hover:text-white/80 transition-colors duration-300">
                 {storeDisplayName}
               </Link>
-              <span className="mx-3 text-white/40">|</span>
-              <span className="uppercase tracking-[0.15em]">Özenle Yönetilmektedir</span>
+              <span className="hidden md:inline mx-3 text-white/40">|</span>
+              <span className="uppercase tracking-[0.15em] text-[8px] md:text-[9px]">Özenle Yönetilmektedir</span>
             </p>
 
             {/* Center - Copyright */}
-            <p className="text-[8.5px] tracking-[0.3em] uppercase text-white/70 font-semibold order-1 md:order-2">
+            <p className="text-[8px] md:text-[8.5px] tracking-[0.3em] uppercase text-white/70 font-semibold order-3 md:order-2 mt-4 md:mt-0 opacity-60 md:opacity-100">
               © {year} Tüm Hakları Saklıdır.
             </p>
 
             {/* Right - Payment Security */}
-            <div className="flex items-center gap-2 text-[9px] text-white/80 font-medium order-3">
+            <div className="flex items-center gap-2 text-[8px] md:text-[9px] text-white/80 font-medium order-2 md:order-3">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/60">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
