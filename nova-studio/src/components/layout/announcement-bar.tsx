@@ -91,7 +91,7 @@ const AnnouncementBar = () => {
   }, []);
 
   return (
-    <div className="w-full bg-[#000000] text-white py-2.5 border-b border-white/5 relative z-50 font-sans px-4">
+    <div className="w-full bg-[#000000] text-white py-2.5 border-b border-white/5 relative z-[9999] font-sans px-4">
       <div className="flex items-center justify-between max-w-[1800px] mx-auto h-5">
         {/* Left: Social Icons */}
         <div className="hidden lg:flex flex-1 items-center gap-5 pl-1">
