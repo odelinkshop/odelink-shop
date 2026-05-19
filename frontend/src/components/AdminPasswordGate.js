@@ -17,6 +17,7 @@ const AdminPasswordGate = ({ children }) => {
   const [authorized, setAuthorized] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showFake404, setShowFake404] = useState(true);
 
   useEffect(() => {
     // Session kontrolü
@@ -57,6 +58,39 @@ const AdminPasswordGate = ({ children }) => {
 
   if (authorized) {
     return children;
+  }
+
+  // --- FAKE 404 EASTER EGG PORTAL ---
+  if (showFake404) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 select-none font-sans">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center max-w-md w-full"
+        >
+          {/* Double click here to open the CEO gateway */}
+          <h1 
+            onDoubleClick={() => setShowFake404(false)}
+            className="text-9xl font-black tracking-tighter text-white/10 hover:text-white/20 transition-colors cursor-default select-none font-mono"
+            title="404"
+          >
+            404
+          </h1>
+          <h2 className="text-xl font-bold text-white mt-6 uppercase tracking-widest italic">SAYFA BULUNAMADI</h2>
+          <p className="text-gray-500 text-sm mt-4 leading-relaxed font-medium">
+            Aradığınız sayfa kaldırılmış, adı değiştirilmiş veya geçici olarak kullanım dışı kalmış olabilir.
+          </p>
+          
+          <button 
+            onClick={() => navigate('/')}
+            className="mt-10 px-8 py-3.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+          >
+            Ana Sayfaya Dön
+          </button>
+        </motion.div>
+      </div>
+    );
   }
 
   return (
@@ -139,10 +173,10 @@ const AdminPasswordGate = ({ children }) => {
         </div>
 
         <button 
-          onClick={() => navigate('/')}
+          onClick={() => setShowFake404(true)}
           className="w-full mt-8 text-gray-600 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2"
         >
-          Ana Sayfaya Dön
+          Kapat
         </button>
       </motion.div>
     </div>

@@ -90,7 +90,7 @@ try {
     SiteSettingsPage.preload();
     DomainManagementPage.preload();
   }
-  if (p.startsWith('/nova-ceo-karargah-x67')) SimpleAdminPanel.preload();
+  if (p.startsWith('/admin')) SimpleAdminPanel.preload();
   if (p.startsWith('/terms')) TermsPage.preload();
   if (p.startsWith('/privacy')) PrivacyPage.preload();
   if (p.startsWith('/kvkk')) KvkkPage.preload();
@@ -349,7 +349,7 @@ function AppLayout() {
     isCustomDomain ||
     p.startsWith('/s/') ||
     p.startsWith('/preview') ||
-    p.startsWith('/nova-ceo-karargah-x67') ||
+    p.startsWith('/admin') ||
     p.startsWith('/panel') ||
     p.startsWith('/auth') ||
     p.startsWith('/sites/') ||
@@ -357,7 +357,7 @@ function AppLayout() {
     p.startsWith('/auto-theme-builder');
   const disableHeartbeat =
     isCustomDomain ||
-    p.startsWith('/nova-ceo-karargah-x67') ||
+    p.startsWith('/admin') ||
     p.startsWith('/panel') ||
     p.startsWith('/auth') ||
     p.startsWith('/sites/') ||
@@ -409,9 +409,7 @@ function AppLayout() {
           <Route path="/sites/:id/analytics" element={<WithSuspense><ProtectedRoute><DesktopOnlyGate><SiteAnalyticsPage /></DesktopOnlyGate></ProtectedRoute></WithSuspense>} />
           <Route path="/sites/:id/domain" element={<WithSuspense><ProtectedRoute><DomainManagementPage /></ProtectedRoute></WithSuspense>} />
           <Route path="/preview" element={<Navigate to="/panel" replace />} />
-          {/* /s/ routes are handled by backend proxy - DO NOT add React routes here */}
-          <Route path="/nova-ceo-karargah-x67" element={<WithSuspense><AdminPasswordGate><SimpleAdminPanel /></AdminPasswordGate></WithSuspense>} />
-          <Route path="/admin" element={<Navigate to="/" replace />} />
+          <Route path="/admin" element={<WithSuspense><AdminPasswordGate><SimpleAdminPanel /></AdminPasswordGate></WithSuspense>} />
           <Route path="/terms" element={<WithSuspense><TermsPage /></WithSuspense>} />
           <Route path="/privacy" element={<WithSuspense><PrivacyPage /></WithSuspense>} />
           <Route path="/kvkk" element={<WithSuspense><KvkkPage /></WithSuspense>} />
