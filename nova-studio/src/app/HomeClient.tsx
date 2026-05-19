@@ -395,11 +395,11 @@ export default function Home() {
                 {/* Review image and helpful row */}
                 <div className="mt-6 space-y-4 pt-4 border-t border-secondary/10">
                   {review.image && (
-                    <div className="relative w-20 h-28 overflow-hidden bg-secondary/10 rounded-xs border border-secondary/20 group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                    <div className="relative w-20 h-28 overflow-hidden bg-secondary/5 rounded-xs border border-secondary/20 group-hover:scale-105 transition-transform duration-300 shadow-sm">
                       <img 
                         src={review.image} 
                         alt="Customer Photo"
-                        className="w-full h-full object-cover object-top"
+                        className="w-full h-full object-contain"
                         onError={(e) => {
                           const img = e.currentTarget as HTMLImageElement;
                           img.src = review.id === 2 ? "/2.png?v=3" : (review.id === 3 ? "/3.png?v=3" : "/1.png?v=3");
@@ -496,11 +496,11 @@ export default function Home() {
 
               {/* Modal Customer image display */}
               {selectedReview.image && (
-                <div className="relative w-full aspect-[2/3] max-h-[50vh] bg-secondary/10 rounded-xs overflow-hidden border border-secondary/20 shadow-inner">
+                <div className="relative w-full max-h-[55vh] bg-black rounded-xs overflow-hidden border border-secondary/20 shadow-inner flex items-center justify-center">
                   <img 
                     src={selectedReview.image} 
                     alt="Customer mirror selfie"
-                    className="w-full h-full object-cover object-top"
+                    className="max-w-full max-h-[55vh] w-auto h-auto object-contain"
                     onError={(e) => {
                       const img = e.currentTarget as HTMLImageElement;
                       img.src = selectedReview.id === 2 ? "/2.png?v=3" : (selectedReview.id === 3 ? "/3.png?v=3" : "/1.png?v=3");
