@@ -155,27 +155,27 @@ const Footer = () => {
              </a>
           </div>
 
-          <div className="flex items-center gap-7 opacity-60 hover:opacity-100 transition-opacity duration-500">
-             <img 
-               src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" 
-               alt="Visa" 
-               className="h-[12px] w-auto brightness-0 invert grayscale object-contain"
-             />
-             <img 
-               src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" 
-               alt="Mastercard" 
-               className="h-[18px] w-auto brightness-0 invert grayscale object-contain"
-             />
-             <img 
-               src="https://upload.wikimedia.org/wikipedia/commons/2/23/Troy_logo.svg" 
-               alt="Troy" 
-               className="h-[14px] w-auto brightness-0 invert grayscale object-contain"
-             />
-             <img 
-               src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" 
-               alt="American Express" 
-               className="h-[20px] w-auto brightness-0 invert grayscale object-contain"
-             />
+          <div className="flex items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-300 text-white">
+             {/* VISA */}
+             <svg viewBox="0 0 42 14" className="h-[15px] w-auto fill-current">
+               <text x="0" y="12" fontSize="16" fontWeight="900" fontStyle="italic" fontFamily="Arial, Helvetica, sans-serif" letterSpacing="-0.05em">VISA</text>
+             </svg>
+             
+             {/* MasterCard */}
+             <svg viewBox="0 0 86 14" className="h-[15px] w-auto fill-current">
+               <text x="0" y="12" fontSize="15" fontWeight="700" fontStyle="italic" fontFamily="Arial, Helvetica, sans-serif" letterSpacing="-0.02em">MasterCard</text>
+             </svg>
+
+             {/* Troy */}
+             <svg viewBox="0 0 32 14" className="h-[14px] w-auto fill-current">
+               <text x="0" y="12" fontSize="16" fontWeight="700" fontFamily="Arial, Helvetica, sans-serif" letterSpacing="-0.05em">troy</text>
+             </svg>
+
+             {/* American Express */}
+             <svg viewBox="0 0 46 14" className="h-[14px] w-auto fill-current">
+               <text x="0" y="6" fontSize="6" fontWeight="700" fontFamily="Arial, Helvetica, sans-serif" letterSpacing="0.05em">AMERICAN</text>
+               <text x="0" y="13" fontSize="6" fontWeight="700" fontFamily="Arial, Helvetica, sans-serif" letterSpacing="0.05em">EXPRESS</text>
+             </svg>
           </div>
         </div>
       </div>
