@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/ui/product-card";
 import { useStoreData } from "@/store/useStoreData";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { ScrollingText } from "@/components/home/scrolling-text";
+import { cn } from "@/lib/utils";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -24,6 +25,8 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<"satis" | "cok-satanlar" | "aktif">("satis");
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -95,20 +98,53 @@ export default function Home() {
       {/* ————— DYNAMIC BAR 2 ————— */}
       <ScrollingText text="NEW ARRIVALS — ESTATE ITALIANA 26" speed={60} reverse className="bg-primary text-secondary" />
 
-      {/* ————— PRODUCTS ————— */}
-      <section className="py-24 md:py-40 px-6 lg:px-12">
+      {/* ————— PRODUCTS (SANTO TABBED STYLE) ————— */}
+      <section className="py-24 md:py-36 px-6 lg:px-12">
         <div className="max-w-[1800px] mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-20 md:mb-32">
-            <div className="space-y-2">
-               <span className="text-[9px] tracking-[0.8em] text-accent uppercase font-light">The Selection</span>
-               <h3 className="text-4xl md:text-6xl font-serif font-light uppercase">Koleksiyon</h3>
+          {/* Centered Title and Tabs Header */}
+          <div className="text-center space-y-8 mb-20 md:mb-28">
+            <h3 className="text-3xl md:text-5xl font-sans font-extrabold uppercase tracking-widest text-secondary">
+              ALIŞVERİŞ İÇİN TIKLAYIN
+            </h3>
+            
+            <div className="flex justify-center items-center gap-2 md:gap-3 flex-wrap">
+              <button 
+                onClick={() => setActiveTab("satis")}
+                className={cn(
+                  "px-8 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs min-w-[140px]",
+                  activeTab === "satis" 
+                    ? "bg-[#e31c25] text-white shadow-md scale-105" 
+                    : "bg-[#f2f2f2] text-secondary hover:bg-secondary/10"
+                )}
+              >
+                SATIŞ
+              </button>
+              <button 
+                onClick={() => setActiveTab("cok-satanlar")}
+                className={cn(
+                  "px-8 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs min-w-[140px]",
+                  activeTab === "cok-satanlar" 
+                    ? "bg-[#e31c25] text-white shadow-md scale-105" 
+                    : "bg-[#f2f2f2] text-secondary hover:bg-secondary/10"
+                )}
+              >
+                ÇOK SATANLAR
+              </button>
+              <button 
+                onClick={() => setActiveTab("aktif")}
+                className={cn(
+                  "px-8 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs min-w-[140px]",
+                  activeTab === "aktif" 
+                    ? "bg-[#e31c25] text-white shadow-md scale-105" 
+                    : "bg-[#f2f2f2] text-secondary hover:bg-secondary/10"
+                )}
+              >
+                AKTİF
+              </button>
             </div>
-            <Link href="/shop" className="text-[10px] tracking-[0.4em] uppercase border-b border-secondary/20 pb-2 hover:border-accent transition-all">
-              TÜMÜNÜ KEŞFET
-            </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-20 md:gap-y-32">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
             {isLoading
               ? Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="animate-pulse space-y-4">
@@ -116,11 +152,22 @@ export default function Home() {
                     <div className="h-4 bg-secondary/5 w-3/4" />
                   </div>
                 ))
-              : products.slice(0, 8).map((product, i) => (
-                  <motion.div key={product.id} {...fadeInUp} transition={{ delay: i * 0.1 }}>
-                    <ProductCard product={product} />
-                  </motion.div>
-                ))}
+              : (() => {
+                  let list = products;
+                  if (activeTab === "satis") {
+                    list = products.filter(p => p.originalPrice && Number(p.originalPrice) > Number(p.price));
+                  } else if (activeTab === "aktif") {
+                    list = products.filter(p => p.isNew);
+                  }
+                  
+                  const displayList = list.length === 0 ? products.slice(0, 8) : list.slice(0, 8);
+                  
+                  return displayList.map((product, i) => (
+                    <motion.div key={product.id} {...fadeInUp} transition={{ delay: i * 0.1 }} className="h-full">
+                      <ProductCard product={product} />
+                    </motion.div>
+                  ));
+                })()}
           </div>
         </div>
       </section>

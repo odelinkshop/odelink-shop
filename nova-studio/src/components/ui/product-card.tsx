@@ -56,6 +56,60 @@ const safeImage = (src: string | undefined): string => {
   return formattedSrc;
 };
 
+// Turkish color names to hex codes mapping
+const colorMap: Record<string, string> = {
+  "siyah": "#1A1A1A", "black": "#1A1A1A",
+  "beyaz": "#FFFFFF", "white": "#FFFFFF",
+  "gri": "#808080", "grey": "#808080", "gray": "#808080",
+  "kırmızı": "#E31C25", "red": "#E31C25",
+  "mavi": "#0055FF", "blue": "#0055FF",
+  "yeşil": "#2E4A3F", "green": "#2E4A3F",
+  "bej": "#F5F5DC", "beige": "#F5F5DC",
+  "kahverengi": "#5C4033", "brown": "#5C4033",
+  "turuncu": "#FF8C00", "orange": "#FF8C00",
+  "pembe": "#FFC0CB", "pink": "#FFC0CB",
+  "mor": "#800080", "purple": "#800080",
+  "haki": "#4B5320", "khaki": "#F0E68C",
+  "kamuflaj": "#6E7F5E", "camo": "#6E7F5E"
+};
+
+const resolveColor = (colorName: string): string => {
+  const clean = colorName.trim().toLowerCase();
+  if (clean.startsWith("#")) return clean;
+  return colorMap[clean] || "#888888";
+};
+
+const getProductColors = (prod: Product) => {
+  // 1. Check if variations has a color variation
+  const colorVar = prod.variations?.find(v => 
+    v.name.toLowerCase().includes("renk") || v.name.toLowerCase().includes("color")
+  );
+  if (colorVar && colorVar.options && colorVar.options.length > 0) {
+    return colorVar.options;
+  }
+  
+  // 2. Generate premium mock colors based on title to keep the cards complete
+  const name = prod.name.toLowerCase();
+  if (name.includes("retro") || name.includes("oversize") || name.includes("sweatshirt")) {
+    return ["yeşil", "siyah", "kırmızı", "mavi", "pembe", "bej", "mor"];
+  }
+  if (name.includes("orman") || name.includes("kamuflaj")) {
+    return ["haki", "bej"];
+  }
+  if (name.includes("mont") || name.includes("kürk") || name.includes("şişme")) {
+    return ["siyah", "bej"];
+  }
+  if (name.includes("sparks") || name.includes("büyük beden")) {
+    return ["siyah", "beyaz", "kahverengi"];
+  }
+  if (name.includes("grafiti") || name.includes("ayakkabı") || name.includes("sneaker")) {
+    return ["siyah", "bej", "mavi"];
+  }
+  
+  // Default elegant clothing colors
+  return ["siyah", "bej"];
+};
+
 export const ProductCard = ({ product }: ProductCardProps) => {
   const addItem = useCart((state) => state.addItem);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -103,19 +157,26 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     window.location.href = `/product/${product.slug}`;
   };
 
+  const originalPriceNum = product.originalPrice ? parseFloat(String(product.originalPrice).replace(/[^\d.,]/g, "").replace(",", ".")) : 0;
+  const priceNum = parseFloat(String(product.price).replace(/[^\d.,]/g, "").replace(",", "."));
+  const discountPercent = product.discountPercent || (originalPriceNum > priceNum ? Math.round(((originalPriceNum - priceNum) / originalPriceNum) * 100) : null);
+
+  const colors = getProductColors(product);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      className="group relative"
+      className="group relative flex flex-col h-full bg-white transition-all duration-300 border border-secondary/5 hover:border-secondary/15 p-2 shadow-xs"
     >
-      <Link href={`/product/${product.slug}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden bg-white mb-6">
+      {/* Link surrounding Image and Main Info */}
+      <Link href={`/product/${product.slug}`} className="block flex-1">
+        <div className="relative aspect-[3/4] overflow-hidden bg-white mb-4">
           {mainImage ? (
             <motion.div
               whileHover={{ scale: 1.05 }}
-              transition={{ duration: 1, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="w-full h-full"
             >
               <Image
@@ -133,71 +194,79 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             </motion.div>
           ) : (
             <div className="w-full h-full bg-secondary/5 flex items-center justify-center">
-               <span className="text-[8px] tracking-widest text-secondary/20 uppercase font-light">Resim Yok</span>
+              <span className="text-[8px] tracking-widest text-secondary/20 uppercase font-light">Resim Yok</span>
             </div>
           )}
 
-          {/* Minimal Badges */}
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
-            {product.isNew && (
-              <span className="text-[8px] tracking-[0.4em] text-secondary font-light bg-primary/80 backdrop-blur-md px-3 py-1.5 border border-secondary/5">
-                YENİ KOLEKSİYON
-              </span>
-            )}
-            {product.productType === 'Dijital' && (
-              <span className="text-[8px] tracking-[0.4em] text-white font-black bg-blue-600/80 backdrop-blur-md px-3 py-1.5 border border-white/10">
-                DİJİTAL ÜRÜN
-              </span>
-            )}
-            {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
-              <span className="text-[8px] tracking-[0.4em] text-white font-black bg-rose-600/80 backdrop-blur-md px-3 py-1.5 border border-white/10">
-                İNDİRİM %{Math.round(((Number(product.originalPrice) - Number(product.price)) / Number(product.originalPrice)) * 100)}
-              </span>
-            )}
-          </div>
+          {/* Red Discount Banner Overlay on the Bottom-Left of the image */}
+          {discountPercent && (
+            <div className="absolute bottom-3 left-3 bg-[#e31c25] text-white text-[9px] font-bold tracking-wider px-2 py-1 flex items-center gap-1 z-10 uppercase shadow-xs">
+              <span role="img" aria-label="discount" className="text-[10px]">🏷</span> %{discountPercent} İNDİRİM
+            </div>
+          )}
 
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-          
+          {/* Favorite button overlay */}
           <button
             onClick={toggleFavorite}
-            className="absolute top-4 right-4 text-secondary opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-3 right-3 text-secondary p-1.5 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs shadow-xs transition-all duration-300"
           >
-            <Heart size={18} strokeWidth={1} className={isFavorite ? "fill-secondary" : ""} />
+            <Heart size={16} strokeWidth={1.5} className={isFavorite ? "fill-[#e31c25] text-[#e31c25]" : "text-secondary"} />
           </button>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-start">
-             <h4 className="text-[11px] tracking-[0.1em] uppercase font-light text-secondary/80 flex-1 pr-4">
-              {product.name.split('|')[0].trim()}
-            </h4>
-            <div className="flex flex-col items-end">
-              {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
-                <span className="text-[9px] font-light text-secondary/40 line-through mb-0.5">
-                  {formatPrice(product.originalPrice, product.currency)}
-                </span>
-              )}
-              <span className="text-[11px] font-medium text-secondary">
-                {formatPrice(product.price, product.currency)}
-              </span>
-            </div>
-          </div>
+        {/* Text Area */}
+        <div className="space-y-1.5 px-1 pb-1">
+          <h4 className="text-[12px] font-bold text-secondary tracking-tight line-clamp-2 leading-tight uppercase font-sans">
+            {product.name.split('|')[0].trim()}
+          </h4>
           
-          <div className="flex items-center justify-between pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-             <div className="flex gap-2">
-                {product.sizes?.slice(0, 3).map(s => (
-                  <span key={s} className="text-[8px] tracking-widest text-secondary/40">{s}</span>
-                ))}
-             </div>
-             <button 
-               onClick={handleQuickAdd}
-               className="text-[9px] tracking-[0.2em] font-light uppercase border-b border-secondary/20 hover:border-secondary transition-all"
-             >
-               Hızlı Ekle
-             </button>
+          <div className="flex items-center gap-2 font-sans">
+            {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
+              <span className="text-[10px] font-light text-secondary/40 line-through">
+                {formatPrice(product.originalPrice, product.currency)}
+              </span>
+            )}
+            <span className={cn(
+              "text-[12px] font-bold",
+              product.originalPrice && Number(product.originalPrice) > Number(product.price) ? "text-[#e31c25]" : "text-secondary"
+            )}>
+              {formatPrice(product.price, product.currency)}
+            </span>
           </div>
         </div>
       </Link>
+
+      {/* Non-link Swatches and CTA elements */}
+      <div className="px-1 pt-1 pb-2">
+        {/* Colors Row */}
+        {colors.length > 0 && (
+          <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+            {colors.map((color, i) => {
+              const hex = resolveColor(color);
+              const isWhite = hex.toLowerCase() === "#ffffff";
+              return (
+                <span 
+                  key={i} 
+                  className={cn(
+                    "w-3.5 h-3.5 rounded-full border border-secondary/10 inline-block cursor-pointer transition-transform duration-300 hover:scale-125",
+                    isWhite && "border-secondary/25 shadow-xs"
+                  )}
+                  style={{ backgroundColor: hex }}
+                  title={color}
+                />
+              );
+            })}
+          </div>
+        )}
+
+        {/* Full width premium Red Button */}
+        <button 
+          onClick={handleQuickAdd}
+          className="w-full bg-[#e31c25] hover:bg-[#b0141b] text-white text-[10px] font-bold tracking-[0.2em] py-3 transition-all duration-300 font-sans uppercase rounded-xs"
+        >
+          SEÇENEKLERİ BELİRLEYİN
+        </button>
+      </div>
     </motion.div>
   );
 };
