@@ -166,27 +166,31 @@ const Footer = () => {
 
       {/* Final Bottom Bar */}
       <div className="bg-black py-10 px-6 border-t border-white/5">
-        <div className="max-w-[1200px] mx-auto flex flex-col items-center space-y-6">
-          <div className="text-center space-y-2">
-            <p className="text-[10px] font-medium tracking-widest">
-              BU SİTE <Link href="/" className="font-black underline underline-offset-4">{storeDisplayName}</Link> TARAFINDAN YÖNETİLMEKTEDİR.
-            </p>
-            <p className="text-[9px] text-white/40 tracking-[0.2em] font-light uppercase">
-              COPYRIGHT© {year} {storeDisplayName} — TÜM HAKLARI SAKLIDIR.
-            </p>
-            <p className="text-[8px] text-white/20 tracking-widest uppercase">
-              ÖDEMELER <a href="https://www.shopier.com" className="underline">SHOPIER</a> GÜVENCESİYLE KORUNMAKTADIR.
-            </p>
-          </div>
+        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           
-          {!settings?.branding?.hide_odelink_credit && (
-            <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center group opacity-30 hover:opacity-100 transition-opacity">
-              <span className="text-lg font-black tracking-tighter italic">ödelink</span>
-              <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
-            </a>
-          )}
-
+          {/* Left: Localization */}
           <Localization />
+
+          {/* Right: Copyright + ödelink */}
+          <div className="flex flex-col items-center lg:items-end space-y-4">
+            <div className="text-center lg:text-right space-y-2">
+              <p className="text-[10px] font-medium tracking-widest">
+                BU SİTE <Link href="/" className="font-black underline underline-offset-4">{storeDisplayName}</Link> TARAFINDAN YÖNETİLMEKTEDİR.
+              </p>
+              <p className="text-[9px] text-white/40 tracking-[0.2em] font-light uppercase">
+                COPYRIGHT© {year} {storeDisplayName} — TÜM HAKLARI SAKLIDIR.
+              </p>
+              <p className="text-[8px] text-white/20 tracking-widest uppercase">
+                ÖDEMELER <a href="https://www.shopier.com" className="underline">SHOPIER</a> GÜVENCESİYLE KORUNMAKTADIR.
+              </p>
+            </div>
+            {!settings?.branding?.hide_odelink_credit && (
+              <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center lg:items-end group opacity-30 hover:opacity-100 transition-opacity">
+                <span className="text-lg font-black tracking-tighter italic">ödelink</span>
+                <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </footer>
