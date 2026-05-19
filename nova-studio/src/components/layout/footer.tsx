@@ -200,45 +200,45 @@ const Footer = () => {
                   Ödelink
                 </span>
                 <div className="flex items-center gap-3 mt-2">
-                  <div className="w-6 h-px bg-white/15" />
-                  <span className="text-[8px] tracking-[0.4em] font-semibold text-white/40 group-hover:text-white/70 transition-colors duration-500 uppercase">
+                  <div className="w-6 h-px bg-white/30" />
+                  <span className="text-[8px] tracking-[0.4em] font-semibold text-white/80 group-hover:text-white transition-colors duration-500 uppercase">
                     Türkiye'nin En İyi E-Ticaret Vitrin Platformu
                   </span>
-                  <div className="w-6 h-px bg-white/15" />
+                  <div className="w-6 h-px bg-white/30" />
                 </div>
               </a>
             </div>
           )}
 
           {/* Divider */}
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8" />
 
           {/* Bottom Strip - Horizontal Professional Layout */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 mt-8">
             
             {/* Left - Site Management */}
-            <p className="text-[9px] text-white/40 font-medium order-2 md:order-1 flex items-center">
-              <Link href="/" className="font-bold tracking-[0.2em] uppercase text-white/80 hover:text-white transition-colors duration-300">
+            <p className="text-[9px] text-white/80 font-medium order-2 md:order-1 flex items-center">
+              <Link href="/" className="font-bold tracking-[0.2em] uppercase text-white hover:text-white/80 transition-colors duration-300">
                 {storeDisplayName}
               </Link>
-              <span className="mx-3 text-white/10">|</span>
+              <span className="mx-3 text-white/40">|</span>
               <span className="uppercase tracking-[0.15em]">Özenle Yönetilmektedir</span>
             </p>
 
             {/* Center - Copyright */}
-            <p className="text-[8.5px] tracking-[0.3em] uppercase text-white/30 font-semibold order-1 md:order-2">
+            <p className="text-[8.5px] tracking-[0.3em] uppercase text-white/70 font-semibold order-1 md:order-2">
               © {year} Tüm Hakları Saklıdır.
             </p>
 
             {/* Right - Payment Security */}
-            <div className="flex items-center gap-2 text-[9px] text-white/40 font-medium order-3">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/30">
+            <div className="flex items-center gap-2 text-[9px] text-white/80 font-medium order-3">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/60">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
               <span className="uppercase tracking-[0.15em]">
                 Bütün Ödemeler{" "}
-                <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="font-bold text-white/80 hover:text-white transition-colors duration-300 tracking-[0.2em]">
+                <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="font-bold text-white hover:text-white/80 transition-colors duration-300 tracking-[0.2em]">
                   SHOPIER
                 </a>
                 {" "}Güvencesindedir
