@@ -89,7 +89,7 @@ export const Localization = () => {
   );
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+    <div className="flex flex-col sm:flex-row gap-4 justify-start items-start sm:items-end">
       {/* Country/Region Dropdown */}
       <div className="relative" ref={countryRef}>
         <div className="text-[11px] text-white/80 mb-2 font-medium tracking-wide">Ülke/bölge</div>

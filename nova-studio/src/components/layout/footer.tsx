@@ -166,11 +166,19 @@ const Footer = () => {
 
       {/* Final Bottom Bar */}
       <div className="bg-black py-10 px-6 border-t border-white/5">
-        <div className="max-w-[1200px] mx-auto flex flex-col items-center space-y-8">
+        <div className="relative max-w-[1200px] mx-auto flex flex-col items-center gap-8">
           
-          <Localization />
+          {/* Desktop Localization (Left Aligned) */}
+          <div className="hidden lg:block absolute left-0 top-0">
+            <Localization />
+          </div>
+
+          {/* Mobile Localization (Centered Stacked) */}
+          <div className="lg:hidden">
+            <Localization />
+          </div>
           
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 pt-0 lg:pt-0">
             <p className="text-[10px] font-medium tracking-widest">
               BU SİTE <Link href="/" className="font-black underline underline-offset-4">{storeDisplayName}</Link> TARAFINDAN YÖNETİLMEKTEDİR.
             </p>
