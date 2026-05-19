@@ -29,7 +29,7 @@ const AnnouncementBar = () => {
     if (announcements.length <= 1) return;
     const timer = setInterval(() => {
       handleNext();
-    }, 4500);
+    }, 3500);
     return () => clearInterval(timer);
   }, [index, announcements.length]);
 
@@ -68,18 +68,19 @@ const AnnouncementBar = () => {
   return (
     <div className="w-full bg-[#000000] text-white py-3 border-b border-white/5 relative z-50 overflow-hidden font-sans">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between px-4 md:px-8 h-5">
-        {/* Left Arrow */}
-        {hasMultiple ? (
-          <button 
-            onClick={handlePrev}
-            className="text-white/60 hover:text-white transition-colors duration-200 p-1 focus:outline-none"
-            aria-label="Önceki Duyuru"
-          >
-            <ChevronLeft size={16} strokeWidth={2.5} />
-          </button>
-        ) : (
-          <div className="w-6" />
-        )}
+        {/* Left Arrow — always visible */}
+        <button 
+          onClick={handlePrev}
+          disabled={!hasMultiple}
+          className={`p-1 focus:outline-none transition-colors duration-200 ${
+            hasMultiple
+              ? "text-white/70 hover:text-white cursor-pointer"
+              : "text-white/20 cursor-default"
+          }`}
+          aria-label="Önceki Duyuru"
+        >
+          <ChevronLeft size={16} strokeWidth={2.5} />
+        </button>
 
         {/* Sliding Text Wrapper */}
         <div className="flex-1 relative h-5 flex items-center justify-center overflow-hidden mx-4">
@@ -100,18 +101,19 @@ const AnnouncementBar = () => {
           </AnimatePresence>
         </div>
 
-        {/* Right Arrow */}
-        {hasMultiple ? (
-          <button 
-            onClick={handleNext}
-            className="text-white/60 hover:text-white transition-colors duration-200 p-1 focus:outline-none"
-            aria-label="Sonraki Duyuru"
-          >
-            <ChevronRight size={16} strokeWidth={2.5} />
-          </button>
-        ) : (
-          <div className="w-6" />
-        )}
+        {/* Right Arrow — always visible */}
+        <button 
+          onClick={handleNext}
+          disabled={!hasMultiple}
+          className={`p-1 focus:outline-none transition-colors duration-200 ${
+            hasMultiple
+              ? "text-white/70 hover:text-white cursor-pointer"
+              : "text-white/20 cursor-default"
+          }`}
+          aria-label="Sonraki Duyuru"
+        >
+          <ChevronRight size={16} strokeWidth={2.5} />
+        </button>
       </div>
     </div>
   );
