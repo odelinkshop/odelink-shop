@@ -620,8 +620,17 @@ module.exports = {
       let html;
       try {
         const axiosConfig = {
-          headers: { 'User-Agent': getRandomItem(USER_AGENTS) },
-          timeout: 10000
+          headers: { 
+            'User-Agent': getRandomItem(USER_AGENTS),
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Referer': 'https://www.shopier.com/',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+          },
+          timeout: 20000,
+          maxRedirects: 5
         };
         if (process.env.TOR_PROXY_URL) {
           try {
@@ -659,15 +668,18 @@ module.exports = {
       if (html && typeof html === 'string') {
         const lowerHtml = html.toLowerCase();
         
-        // Geçerli bir Shopier sayfası olduğunu belirten işaretler (örneğin product, shopier cdn veya sepete ekle butonu)
-        const isValidShopierPage = lowerHtml.includes('shopier') && 
+        // Geçerli bir Shopier sayfası olduğunu belirten işaretler
+        const isValidShopierPage = (lowerHtml.includes('shopier') || lowerHtml.includes('cdn.shopier.app')) && 
                                    (lowerHtml.includes('addtocart') || 
                                     lowerHtml.includes('sepete ekle') || 
                                     lowerHtml.includes('product') || 
                                     lowerHtml.includes('fiyat') || 
-                                    lowerHtml.includes('price'));
+                                    lowerHtml.includes('price') ||
+                                    lowerHtml.includes('og:title') ||
+                                    lowerHtml.includes('product:price:amount') ||
+                                    lowerHtml.includes('"name"'));
 
-        if (lowerHtml.includes('istek sınırı aşıldı') || 
+        const isBlockedPage = lowerHtml.includes('istek sınırı aşıldı') || 
             lowerHtml.includes('too many requests') || 
             lowerHtml.includes('request limit exceeded') || 
             lowerHtml.includes('rate limit') || 
@@ -676,12 +688,13 @@ module.exports = {
             lowerHtml.includes('captcha') || 
             lowerHtml.includes('robot değilim') ||
             lowerHtml.includes('privoxy') ||
-            lowerHtml.includes('tor') ||
+            lowerHtml.includes('tor proxy') ||
             lowerHtml.includes('503 gateway') ||
             lowerHtml.includes('connect failed') ||
-            lowerHtml.includes('502 bad gateway') ||
-            !isValidShopierPage) {
-          console.log('⚠️ Scraped HTML is invalid, contains rate limit, or proxy/privoxy error. Setting html = null to force Puppeteer fallback!');
+            lowerHtml.includes('502 bad gateway');
+
+        if (isBlockedPage || !isValidShopierPage) {
+          console.log(`⚠️ Scraped HTML is invalid (blocked=${isBlockedPage}, validPage=${isValidShopierPage}). Setting html = null to force Puppeteer fallback!`);
           html = null;
         }
       }
@@ -712,62 +725,152 @@ module.exports = {
       const variations = [];
       const sizes = [];
 
-      // Extract from scripts (Foolproof State Hydration JSON)
+      // ===== KATMAN 0: META TAG'LARDAN VERİ ÇEK (EN GÜVENİLİR) =====
       try {
+        // Title from meta tags
+        const ogTitle = $('meta[property="og:title"]').attr('content') || '';
+        const metaName = $('meta[property="name"]').attr('content') || '';
+        const twitterTitle = $('meta[name="twitter:title"]').attr('content') || '';
+        if (ogTitle) title = ogTitle.split('|')[0].trim();
+        else if (metaName) title = metaName.trim();
+        else if (twitterTitle) title = twitterTitle.split('|')[0].trim();
+
+        // Price from meta tags (product:price:amount is standard Open Graph product)
+        const metaPrice = $('meta[property="product:price:amount"]').attr('content') || '';
+        if (metaPrice) {
+          price = parsePrice(metaPrice);
+          console.log(`✅ [MetaTag] Fiyat meta tag'dan çekildi: ${price}`);
+        }
+
+        // Description from meta tags
+        const ogDesc = $('meta[property="og:description"]').attr('content') || '';
+        const metaDesc = $('meta[name="description"]').attr('content') || '';
+        if (ogDesc) description = ogDesc.trim();
+        else if (metaDesc) description = metaDesc.trim();
+
+        if (title) console.log(`✅ [MetaTag] Başlık meta tag'dan çekildi: "${title}"`);
+      } catch (metaErr) {
+        console.warn('⚠️ Meta tag parse hatası:', metaErr.message);
+      }
+
+      // ===== KATMAN 1: SCRIPT İÇİNDEKİ JSON VERİSİNİ ÇEK =====
+      // Shopier'ın Svelte/SPA yapısında product verisi script tag'ları içinde JSON olarak bulunur
+      // Format: let { product: $product, ... } = { product: {...}, ... };
+      // veya: var __STATE__ = { product: {...} };
+      try {
+        // Helper: Dengeli süslü parantez ile JSON bloğu çıkar
+        const extractBalancedJson = (str, startIdx) => {
+          if (str[startIdx] !== '{') return null;
+          let depth = 0;
+          let inString = false;
+          let escapeNext = false;
+          for (let i = startIdx; i < str.length && i < startIdx + 500000; i++) {
+            if (escapeNext) { escapeNext = false; continue; }
+            if (str[i] === '\\') { escapeNext = true; continue; }
+            if (str[i] === '"' && !escapeNext) { inString = !inString; continue; }
+            if (inString) continue;
+            if (str[i] === '{') depth++;
+            else if (str[i] === '}') {
+              depth--;
+              if (depth === 0) return str.substring(startIdx, i + 1);
+            }
+          }
+          return null;
+        };
+
         $('script').each((i, el) => {
+          if (title && price > 0 && variations.length > 0) return; // Zaten bulunduysa atla
           const content = $(el).html() || '';
-          if (content.includes('"product"') && (content.includes('"price_formatted"') || content.includes('"price"'))) {
-            // Find the JSON state object
-            const match = content.match(/=\s*(\{.+?\});?\s*$/m) || content.match(/({(?:[^{}]+|{(?:[^{}]+|{[^{}]*})*})*})/);
-            if (match) {
-              const data = JSON.parse(match[1]);
-              const p = data.product;
-              if (p) {
-                title = p.name || '';
-                description = p.description || '';
+          if (content.length < 50) return;
+
+          // Strateji 1: "product" key'i içeren tüm JSON nesnelerini bul
+          // Shopier formatları: let {...} = {...}; veya var x = {...}; veya __STATE__ = {...};
+          if (content.includes('"product"') || content.includes("'product'") || content.includes('product:')) {
+            // = { ... } formatındaki tüm JSON'ları bul
+            const assignmentRegex = /=\s*\{/g;
+            let assignMatch;
+            while ((assignMatch = assignmentRegex.exec(content)) !== null) {
+              try {
+                const jsonStr = extractBalancedJson(content, assignMatch.index + assignMatch[0].length - 1);
+                if (!jsonStr || jsonStr.length < 100) continue;
                 
-                if (p.price) {
-                  const pOrig = p.price.price_legacy_formatted ? parsePrice(p.price.price_legacy_formatted) : 0;
-                  const pCurr = p.price.price_code_formatted ? parsePrice(p.price.price_code_formatted) : parsePrice(p.price.price_formatted);
-                  if (pCurr > 0) {
-                    if (pOrig > pCurr) { price = pOrig; discountPrice = pCurr; }
-                    else { price = pCurr; }
+                const data = JSON.parse(jsonStr);
+                const p = data.product || data.$product || data.p;
+                if (p && (p.name || p.title || p.price)) {
+                  console.log(`✅ [ScriptJSON] Ürün verisi script içinden çıkarıldı!`);
+                  if (!title && (p.name || p.title)) title = (p.name || p.title || '').replace(/\\u[\dA-Fa-f]{4}/g, (m) => String.fromCharCode(parseInt(m.slice(2), 16)));
+                  if (!description && p.description) description = (p.description || '').replace(/\\u[\dA-Fa-f]{4}/g, (m) => String.fromCharCode(parseInt(m.slice(2), 16)));
+                  
+                  if (p.price && typeof p.price === 'object') {
+                    const pOrig = p.price.price_legacy_formatted ? parsePrice(p.price.price_legacy_formatted) : 0;
+                    const pCurr = p.price.price_code_formatted ? parsePrice(p.price.price_code_formatted) : parsePrice(p.price.price_formatted);
+                    if (pCurr > 0) {
+                      if (pOrig > pCurr) { price = pOrig; discountPrice = pCurr; }
+                      else if (!price || pCurr > 0) { price = pCurr; }
+                    }
+                  } else if (p.price && !price) {
+                    price = parsePrice(p.price.toString());
+                  }
+                  
+                  // Variations
+                  if (p.variations && variations.length === 0) {
+                    for (let vNum = 1; vNum <= 3; vNum++) {
+                      const vName = (p.variations[`variation_${vNum}_name`] || '').trim();
+                      const vList = p.variations[`variation_${vNum}`] || [];
+                      if (vName && vList.length > 0) {
+                        let label = vName;
+                        const ll = label.toLowerCase();
+                        if (ll.includes('beden') || ll.includes('size') || ll.includes('seçenek') || ll === 'seçiniz') label = 'Beden';
+                        else if (ll.includes('renk') || ll.includes('color')) label = 'Renk';
+                        const options = vList.map(o => (o.name || '').trim()).filter(Boolean);
+                        variations.push({ name: label, options });
+                        if (label === 'Beden') sizes.push(...options);
+                      }
+                    }
                   }
                 }
-                
-                // Variations
-                if (p.variations) {
-                  const v1_name = (p.variations.variation_1_name || '').trim();
-                  const v1_list = p.variations.variation_1 || [];
-                  if (v1_name && v1_list.length > 0) {
-                    let label = v1_name;
-                    const lowerLabel = label.toLowerCase();
-                    if (lowerLabel.includes('beden') || lowerLabel.includes('size') || lowerLabel.includes('seçenek') || lowerLabel === 'seçiniz') {
-                      label = 'Beden';
-                    } else if (lowerLabel.includes('renk') || lowerLabel.includes('color')) {
-                      label = 'Renk';
-                    }
-                    const options = v1_list.map(o => (o.name || '').trim()).filter(Boolean);
-                    variations.push({ name: label, options });
-                    if (label === 'Beden') sizes.push(...options);
-                  }
+              } catch (jsonErr) {
+                // Bu JSON parse edilemedi, devam et
+              }
+            }
+          }
 
-                  const v2_name = (p.variations.variation_2_name || '').trim();
-                  const v2_list = p.variations.variation_2 || [];
-                  if (v2_name && v2_list.length > 0) {
-                    let label = v2_name;
-                    const lowerLabel = label.toLowerCase();
-                    if (lowerLabel.includes('beden') || lowerLabel.includes('size') || lowerLabel.includes('seçenek') || lowerLabel === 'seçiniz') {
-                      label = 'Beden';
-                    } else if (lowerLabel.includes('renk') || lowerLabel.includes('color')) {
-                      label = 'Renk';
-                    }
-                    const options = v2_list.map(o => (o.name || '').trim()).filter(Boolean);
-                    variations.push({ name: label, options });
-                    if (label === 'Beden') sizes.push(...options);
+          // Strateji 2: Doğrudan "name":"...", "price":... formatında raw JSON aranması
+          if (!title || !price) {
+            try {
+              // "name":"Ürün Adı" formatını yakala
+              const nameMatch = content.match(/"name"\s*:\s*"([^"]{3,200})"/);
+              if (nameMatch && !title) {
+                const candidate = nameMatch[1].replace(/\\u[\dA-Fa-f]{4}/g, (m) => String.fromCharCode(parseInt(m.slice(2), 16))).trim();
+                // Mağaza adı değil ürün adı olduğundan emin ol
+                if (candidate.length > 5 && !candidate.toLowerCase().includes('shopier')) {
+                  title = candidate;
+                  console.log(`✅ [ScriptRaw] Başlık raw regex ile çekildi: "${title}"`);
+                }
+              }
+              // "price_formatted":"799,99 TL" veya "price_code_formatted":"799.99" formatını yakala
+              if (!price) {
+                const priceMatch = content.match(/"price_(?:code_)?formatted"\s*:\s*"([^"]+)"/);
+                if (priceMatch) {
+                  price = parsePrice(priceMatch[1]);
+                  console.log(`✅ [ScriptRaw] Fiyat raw regex ile çekildi: ${price}`);
+                }
+              }
+              // İndirimli fiyat: price_legacy_formatted (eski fiyat)
+              if (price > 0 && !discountPrice) {
+                const legacyMatch = content.match(/"price_legacy_formatted"\s*:\s*"([^"]+)"/);
+                const currentMatch = content.match(/"price_code_formatted"\s*:\s*"([^"]+)"/);
+                if (legacyMatch && currentMatch) {
+                  const oldP = parsePrice(legacyMatch[1]);
+                  const newP = parsePrice(currentMatch[1]);
+                  if (oldP > newP && newP > 0) {
+                    price = oldP;
+                    discountPrice = newP;
                   }
                 }
               }
+            } catch (rawErr) {
+              // Sessizce devam
             }
           }
         });
@@ -775,27 +878,34 @@ module.exports = {
         console.error('Error parsing script JSON:', err.message);
       }
 
-      // Fallback: title and price
+      // ===== KATMAN 2: DOM FALLBACK =====
       if (!title) {
-        title = $('h1').first().text().trim() || $('.product-title').first().text().trim();
+        title = $('h1').first().text().trim() || 
+                $('.product-title').first().text().trim() || 
+                $('title').text().split('|')[0].trim() || '';
       }
       if (!price) {
-        const pText = $('.price').first().text().trim() || $('.current-price').first().text().trim();
+        const pText = $('.price').first().text().trim() || 
+                      $('.current-price').first().text().trim() ||
+                      $('[class*="price-current"]').first().text().trim() ||
+                      $('[class*="price-value"]').first().text().trim();
         price = parsePrice(pText);
       }
 
       // Extract old price from DOM if present (to handle discounts)
-      const oldPriceText = $('.product-price-old').attr('data-price') || 
-                           $('.product-price-old').text().trim() || 
-                           $('.shopier-store--product-price-old').attr('data-price') || 
-                           $('.shopier-store--product-price-old').text().trim();
-      if (oldPriceText) {
-        const parsedOldPrice = parsePrice(oldPriceText);
-        if (parsedOldPrice > 0) {
-          const currentPrice = price || parsePrice($('.product-price-current').text() || $('.price-value').text() || $('.current-price').text());
-          if (currentPrice > 0 && parsedOldPrice > currentPrice) {
-            price = parsedOldPrice;
-            discountPrice = currentPrice;
+      if (!discountPrice) {
+        const oldPriceText = $('.product-price-old').attr('data-price') || 
+                             $('.product-price-old').text().trim() || 
+                             $('.shopier-store--product-price-old').attr('data-price') || 
+                             $('.shopier-store--product-price-old').text().trim();
+        if (oldPriceText) {
+          const parsedOldPrice = parsePrice(oldPriceText);
+          if (parsedOldPrice > 0) {
+            const currentPrice = price || parsePrice($('.product-price-current').text() || $('.price-value').text() || $('.current-price').text());
+            if (currentPrice > 0 && parsedOldPrice > currentPrice) {
+              price = parsedOldPrice;
+              discountPrice = currentPrice;
+            }
           }
         }
       }
@@ -804,6 +914,7 @@ module.exports = {
       if (!description) {
         description = $('.product-description').html() || 
                       $('#tab-description').html() || 
+                      $('#productDescription').html() ||
                       $('.description').html() || 
                       $('.product-details').html() || 
                       $('[class*="description"]').html() || '';
@@ -839,8 +950,45 @@ module.exports = {
         });
       }
 
-      // Extract all images including scaledoriginal with priority de-duplication
+      // ===== GÖRSEL ÇIKARMA =====
       const finalImgMap = new Map();
+
+      // Önce meta tag'lardan og:image çek
+      const ogImage = $('meta[property="og:image"]').attr('content') || '';
+      if (ogImage && ogImage.includes('cdn.shopier.app')) {
+        const cleaned = ogImage.split('?')[0];
+        const fileName = cleaned.split('/').pop();
+        if (fileName) {
+          finalImgMap.set(fileName, { url: cleaned, priority: 5 });
+        }
+      }
+
+      // Script içindeki image URL'lerini de çek
+      try {
+        const imgMatches = html.match(/https?:\/\/cdn\.shopier\.app\/[^\s"'\\]+/g) || [];
+        imgMatches.forEach(imgUrl => {
+          const lower = imgUrl.toLowerCase();
+          if (lower.includes('logo') || lower.includes('icon') || lower.includes('pixel') || lower.includes('profile') || lower.includes('banner')) return;
+          if (lower.includes('pictures') || lower.includes('scaledoriginal')) {
+            const cleaned = imgUrl.split('?')[0].replace(/\\/g, '');
+            const fileName = cleaned.split('/').pop();
+            if (fileName) {
+              let priority = 1;
+              if (cleaned.includes('scaledoriginal')) priority = 4;
+              else if (cleaned.includes('pictures_large')) priority = 3;
+              else if (cleaned.includes('pictures/')) priority = 2;
+              const existing = finalImgMap.get(fileName);
+              if (!existing || existing.priority < priority) {
+                finalImgMap.set(fileName, { url: cleaned, priority });
+              }
+            }
+          }
+        });
+      } catch (imgErr) {
+        console.warn('⚠️ Script image extraction error:', imgErr.message);
+      }
+
+      // DOM'daki img elementlerinden de çek
       $('img').each((i, el) => {
         const $el = $(el);
         if ($el.closest('.product-card-slider-wrapper').length > 0 ||
@@ -850,7 +998,7 @@ module.exports = {
             $el.closest('.suggested-products').length > 0 ||
             $el.closest('.product-recommendations').length > 0 ||
             $el.closest('.shopier-apps--related-product-product-card-product-link').length > 0) {
-          return; // Skip suggested/recommended product images
+          return;
         }
 
         let src = $el.attr('data-src') || $el.attr('src') || $el.attr('srcset')?.split(' ')[0];
@@ -879,7 +1027,7 @@ module.exports = {
       });
       const images = Array.from(finalImgMap.values()).map(x => x.url);
 
-      // Delivery Info (shipping-fee container, delivery-info-pane or deliveryInformation ID)
+      // Delivery Info
       let deliveryInfo = $('#delivery-info-pane').text().trim() || 
                          $('.shipping-fee').text().trim() || 
                          $('#deliveryInformation').text().trim() || '';
@@ -890,6 +1038,8 @@ module.exports = {
       // Category (Breadcrumb)
       const breadcrumb = $('.breadcrumb li, .shopier-breadcrumb li').map((i, el) => $(el).text().trim()).get();
       const category = breadcrumb.length > 1 ? breadcrumb[1] : '';
+      
+      console.log(`📊 [fetchProductDetail] Sonuç: title="${title}", price=${price}, discount=${discountPrice}, images=${images.length}, variations=${variations.length}`);
       
       return { url, title, price, discountPrice, images, variations, sizes, category, description, deliveryInfo };
     } catch (e) {
