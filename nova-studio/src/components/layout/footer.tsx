@@ -164,8 +164,8 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Final Bottom Bar - Premium White */}
-      <div className="bg-white pt-12 pb-8 px-6 lg:px-12">
+      {/* Final Bottom Bar - Premium Dark */}
+      <div className="bg-black pt-12 pb-8 px-6 lg:px-12 border-t border-white/5">
         <div className="max-w-[1200px] mx-auto">
           
           {/* Ödelink Branding - Centered Hero */}
@@ -178,49 +178,49 @@ const Footer = () => {
                 className="group flex flex-col items-center"
               >
                 <span 
-                  className="text-[2.2rem] font-black text-black/85 group-hover:text-black transition-colors duration-500"
+                  className="text-[2.2rem] font-black text-white/85 group-hover:text-white transition-colors duration-500"
                   style={{ fontStyle: 'italic', letterSpacing: '-0.04em', fontFamily: 'Georgia, serif' }}
                 >
                   Ödelink
                 </span>
                 <div className="flex items-center gap-3 mt-2">
-                  <div className="w-6 h-px bg-black/15" />
-                  <span className="text-[8px] tracking-[0.4em] font-semibold text-black/35 group-hover:text-black/55 transition-colors duration-500 uppercase">
+                  <div className="w-6 h-px bg-white/15" />
+                  <span className="text-[8px] tracking-[0.4em] font-semibold text-white/40 group-hover:text-white/70 transition-colors duration-500 uppercase">
                     Türkiye'nin En İyi E-Ticaret Vitrin Platformu
                   </span>
-                  <div className="w-6 h-px bg-black/15" />
+                  <div className="w-6 h-px bg-white/15" />
                 </div>
               </a>
             </div>
           )}
 
           {/* Divider */}
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-black/10 to-transparent mb-8" />
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
 
           {/* Bottom Strip - Horizontal Professional Layout */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             
             {/* Left - Site Management */}
-            <p className="text-[10px] tracking-[0.1em] text-black/45 font-light order-2 md:order-1">
-              <Link href="/" className="font-semibold text-black/65 hover:text-black/90 transition-colors duration-300">{storeDisplayName}</Link>
-              <span className="mx-1.5 text-black/15">|</span>
+            <p className="text-[10px] tracking-[0.1em] text-white/50 font-light order-2 md:order-1">
+              <Link href="/" className="font-semibold text-white/70 hover:text-white transition-colors duration-300">{storeDisplayName}</Link>
+              <span className="mx-1.5 text-white/20">|</span>
               Özenle yönetilmektedir
             </p>
 
             {/* Center - Copyright */}
-            <p className="text-[10px] tracking-[0.15em] text-black/30 font-light order-1 md:order-2">
+            <p className="text-[10px] tracking-[0.15em] text-white/40 font-light order-1 md:order-2">
               © {year} Tüm hakları saklıdır.
             </p>
 
             {/* Right - Payment Security */}
-            <div className="flex items-center gap-1.5 text-[10px] text-black/40 order-3">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black/30">
+            <div className="flex items-center gap-1.5 text-[10px] text-white/50 order-3">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/30">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
               <span className="font-light tracking-[0.08em]">
                 Bütün ödemeler{" "}
-                <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-black/55 hover:text-black/80 transition-colors duration-300">
+                <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-white/70 hover:text-white transition-colors duration-300">
                   Shopier
                 </a>
                 {" "}güvencesindedir
