@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 
 export default function NotFound() {
   return (
     <main className="min-h-screen bg-background flex flex-col">
-      <Navbar />
       
       <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
         <h1 className="text-[12rem] font-serif text-secondary/5 leading-none absolute select-none">404</h1>

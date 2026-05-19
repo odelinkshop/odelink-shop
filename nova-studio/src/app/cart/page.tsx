@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Navbar from "@/components/layout/navbar";
 import Link from "next/link";
 import { useCart } from "@/store/useCart";
 import { useStoreData } from "@/store/useStoreData";
@@ -45,7 +44,6 @@ export default function CartPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Navbar />
 
       <div className="pt-40 pb-24 px-4 sm:px-6 lg:px-12 max-w-[1200px] mx-auto">
         <h1 className="text-4xl font-serif text-secondary uppercase tracking-tight mb-12">

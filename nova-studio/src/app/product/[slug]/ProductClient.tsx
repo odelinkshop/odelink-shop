@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Navbar from "@/components/layout/navbar";
 import { useStoreData } from "@/store/useStoreData";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -222,7 +221,6 @@ export default function ProductClient() {
 
   return (
     <>
-      <Navbar />
       
       {/* HD Fullscreen Görsel */}
       <AnimatePresence>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/store/useAuth";
 import { useRouter } from "next/navigation";
@@ -91,7 +90,6 @@ export default function AccountPage() {
   if (isLoggedIn && customer) {
     return (
       <main className="min-h-screen bg-background">
-        <Navbar />
         <div className="pt-48 pb-32 px-6 max-w-md mx-auto text-center space-y-12">
           <div className="space-y-4">
             <h1 className="text-4xl font-serif text-secondary uppercase tracking-tight">Hoş Geldin, {customer.name}</h1>
@@ -105,7 +103,6 @@ export default function AccountPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Navbar />
       
       <div className="pt-48 pb-32 px-6 max-w-md mx-auto text-center space-y-12">
         <div className="space-y-4">

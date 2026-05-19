@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -30,7 +29,6 @@ const articles = [
 export default function BlogPage() {
   return (
     <main className="min-h-screen bg-background">
-      <Navbar />
       
       <div className="pt-40 pb-24 px-6 lg:px-12 max-w-[1400px] mx-auto">
         <div className="text-center mb-24 space-y-6">

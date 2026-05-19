@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import Navbar from "@/components/layout/navbar";
 import { ProductCard } from "@/components/ui/product-card";
 import { useStoreData } from "@/store/useStoreData";
 import { motion } from "framer-motion";
@@ -40,7 +39,6 @@ function ShopContent() {
 
   return (
     <>
-      <Navbar />
       <div className="pt-40 pb-24 px-6 lg:px-12 max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 space-y-8 md:space-y-0">

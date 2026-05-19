@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 
 import { useStoreData } from "@/store/useStoreData";
@@ -12,7 +11,6 @@ export default function KVKKPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Navbar />
       
       <div className="pt-40 pb-24 px-6 lg:px-12 max-w-[1000px] mx-auto">
         <div className="mb-24 space-y-6">

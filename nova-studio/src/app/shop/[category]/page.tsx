@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
-import Navbar from "@/components/layout/navbar";
 import { ProductCard } from "@/components/ui/product-card";
 import { MOCK_PRODUCTS } from "@/services/mockData";
 import { motion } from "framer-motion";
@@ -19,7 +18,6 @@ export default function CategoryPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Navbar />
       
       <div className="pt-40 pb-24 px-6 lg:px-12 max-w-[1800px] mx-auto">
         <header className="mb-24 text-center space-y-4">
