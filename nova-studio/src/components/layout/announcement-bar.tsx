@@ -10,17 +10,11 @@ const ANNOUNCEMENTS = [
 ];
 
 const REGIONS = [
-  "Türkiye | GBP £",
-  "United Kingdom | GBP £",
-  "United States | USD $",
-  "Europe | EUR €",
+  "Türkiye | TRY ₺",
 ];
 
 const LANGUAGES = [
-  "İngilizce",
   "Türkçe",
-  "Deutsch",
-  "Français",
 ];
 
 const slideVariants = {
@@ -42,8 +36,8 @@ const AnnouncementBar = () => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [activeDropdown, setActiveDropdown] = useState<"region" | "language" | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState("Türkiye | GBP £");
-  const [selectedLanguage, setSelectedLanguage] = useState("İngilizce");
+  const [selectedRegion, setSelectedRegion] = useState("Türkiye | TRY ₺");
+  const [selectedLanguage, setSelectedLanguage] = useState("Türkçe");
 
   const handlePrev = useCallback(() => {
     setDirection(-1);
