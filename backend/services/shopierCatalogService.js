@@ -953,52 +953,85 @@ module.exports = {
       // ===== GÖRSEL ÇIKARMA =====
       const finalImgMap = new Map();
 
-      // Önce meta tag'lardan og:image çek
+      const addImageToMap = (imgUrl, basePriority) => {
+        if (!imgUrl || typeof imgUrl !== 'string') return;
+        const lower = imgUrl.toLowerCase();
+        if (lower.includes('logo') || lower.includes('icon') || lower.includes('pixel') || lower.includes('profile') || lower.includes('banner')) return;
+        if (!lower.includes('pictures') && !lower.includes('scaledoriginal')) return;
+        const cleaned = imgUrl.split('?')[0].replace(/\\/g, '');
+        const fileName = cleaned.split('/').pop();
+        if (!fileName) return;
+        let priority = basePriority || 1;
+        if (cleaned.includes('scaledoriginal')) priority = Math.max(priority, 4);
+        else if (cleaned.includes('pictures_large')) priority = Math.max(priority, 3);
+        else if (cleaned.includes('pictures/')) priority = Math.max(priority, 2);
+        const existing = finalImgMap.get(fileName);
+        if (!existing || existing.priority < priority) {
+          finalImgMap.set(fileName, { url: cleaned, priority });
+        }
+      };
+
+      // 1) Meta tag'lardan og:image çek (ana ürün görseli)
       const ogImage = $('meta[property="og:image"]').attr('content') || '';
       if (ogImage && ogImage.includes('cdn.shopier.app')) {
-        const cleaned = ogImage.split('?')[0];
-        const fileName = cleaned.split('/').pop();
-        if (fileName) {
-          finalImgMap.set(fileName, { url: cleaned, priority: 5 });
-        }
+        addImageToMap(ogImage, 5);
       }
 
-      // Script içindeki image URL'lerini de çek
+      // 2) Ürün JSON verisinden görselleri çek (SADECE ana ürüne ait)
       try {
-        const imgMatches = html.match(/https?:\/\/cdn\.shopier\.app\/[^\s"'\\]+/g) || [];
-        imgMatches.forEach(imgUrl => {
-          const lower = imgUrl.toLowerCase();
-          if (lower.includes('logo') || lower.includes('icon') || lower.includes('pixel') || lower.includes('profile') || lower.includes('banner')) return;
-          if (lower.includes('pictures') || lower.includes('scaledoriginal')) {
-            const cleaned = imgUrl.split('?')[0].replace(/\\/g, '');
-            const fileName = cleaned.split('/').pop();
-            if (fileName) {
-              let priority = 1;
-              if (cleaned.includes('scaledoriginal')) priority = 4;
-              else if (cleaned.includes('pictures_large')) priority = 3;
-              else if (cleaned.includes('pictures/')) priority = 2;
-              const existing = finalImgMap.get(fileName);
-              if (!existing || existing.priority < priority) {
-                finalImgMap.set(fileName, { url: cleaned, priority });
-              }
-            }
+        $('script').each((i, el) => {
+          const content = $(el).html() || '';
+          if (!content.includes('"product"') && !content.includes('product:')) return;
+          
+          // primary_image alanını yakala
+          const primaryImgMatch = content.match(/"primary_image"\s*:\s*"([^"]+)"/);
+          if (primaryImgMatch) {
+            const imgKey = primaryImgMatch[1].replace(/\\/g, '');
+            const imgUrl = imgKey.startsWith('http') ? imgKey : `https://cdn.shopier.app/scaledoriginal/${imgKey}`;
+            addImageToMap(imgUrl, 5);
+          }
+
+          // images dizisini yakala: "images":["img1.jpg","img2.jpg"]
+          const imagesMatch = content.match(/"images"\s*:\s*\[([^\]]+)\]/);
+          if (imagesMatch) {
+            const imgList = imagesMatch[1].match(/"([^"]+)"/g) || [];
+            imgList.forEach(raw => {
+              const imgKey = raw.replace(/"/g, '').replace(/\\/g, '');
+              const imgUrl = imgKey.startsWith('http') ? imgKey : `https://cdn.shopier.app/scaledoriginal/${imgKey}`;
+              addImageToMap(imgUrl, 4);
+            });
           }
         });
       } catch (imgErr) {
         console.warn('⚠️ Script image extraction error:', imgErr.message);
       }
 
-      // DOM'daki img elementlerinden de çek
+      // 3) DOM'daki img elementlerinden çek (önerilen ürünler HARİÇ)
       $('img').each((i, el) => {
         const $el = $(el);
+        // "Bu ürünleri beğenebilirsiniz" ve benzeri önerilen ürün bölümlerini ATLA
         if ($el.closest('.product-card-slider-wrapper').length > 0 ||
             $el.closest('.product-card-slider').length > 0 ||
             $el.closest('.product-card').length > 0 ||
             $el.closest('.related-products').length > 0 ||
             $el.closest('.suggested-products').length > 0 ||
             $el.closest('.product-recommendations').length > 0 ||
-            $el.closest('.shopier-apps--related-product-product-card-product-link').length > 0) {
+            $el.closest('.shopier-apps--related-product-product-card-product-link').length > 0 ||
+            $el.closest('[class*="related-product"]').length > 0 ||
+            $el.closest('[class*="recommendation"]').length > 0 ||
+            $el.closest('[class*="suggested"]').length > 0 ||
+            $el.closest('[class*="you-may-like"]').length > 0 ||
+            $el.closest('[class*="also-like"]').length > 0 ||
+            $el.closest('[class*="product-card"]').length > 0) {
           return;
+        }
+        // Önerilen ürünler bölümü içinde olup olmadığını metin bazlı kontrol et
+        const parentSection = $el.closest('section, div[class], div[id]');
+        if (parentSection.length > 0) {
+          const prevHeading = parentSection.prevAll('h2, h3, h4').first().text().toLowerCase();
+          if (prevHeading.includes('beğenebilirsiniz') || prevHeading.includes('önerilen') || prevHeading.includes('benzer')) {
+            return;
+          }
         }
 
         let src = $el.attr('data-src') || $el.attr('src') || $el.attr('srcset')?.split(' ')[0];
@@ -1221,7 +1254,18 @@ module.exports = {
           description = cleanT(document.querySelector('#productDescription')?.innerText || document.querySelector('.product-description')?.innerText);
         }
 
-        // Images - TARGETED EXTRACTION
+        // Images - TARGETED EXTRACTION (Önerilen ürünler HARİÇ)
+        // Önce "Bu ürünleri beğenebilirsiniz" bölümünü bul ve işaretle
+        const recommendedSections = [];
+        document.querySelectorAll('h2, h3, h4, h5, strong, b').forEach(heading => {
+          const text = (heading.innerText || '').toLowerCase();
+          if (text.includes('beğenebilirsiniz') || text.includes('önerilen') || text.includes('benzer ürün') || text.includes('ilginizi çekebilir')) {
+            // Bu başlığın parent container'ını işaretle
+            const container = heading.closest('section') || heading.closest('div[class]') || heading.parentElement;
+            if (container) recommendedSections.push(container);
+          }
+        });
+
         const productContainer = document.querySelector('.product-container') || document.querySelector('#productDescription')?.closest('div') || document.body;
         
         const galleryImgs = productContainer.querySelectorAll('img');
@@ -1229,10 +1273,17 @@ module.exports = {
           const src = img.src || img.getAttribute('data-src') || img.getAttribute('data-lazy-src');
           if (!src) return;
 
+          // Önerilen ürünler bölümünde mi kontrol et
+          const isInRecommended = recommendedSections.some(section => section.contains(img));
+          if (isInRecommended) return;
+
           const isJunk = img.closest('.related-products') || 
                          img.closest('.suggested-products') || 
                          img.closest('.product-recommendations') ||
                          img.closest('.shopier-apps--related-product-product-card-product-link') ||
+                         img.closest('[class*="related-product"]') ||
+                         img.closest('[class*="recommendation"]') ||
+                         img.closest('[class*="product-card"]') ||
                          img.closest('.shopier-store--header-store-link') ||
                          img.closest('.follow-store-body') ||
                          img.closest('.product-card-slider-wrapper') ||
