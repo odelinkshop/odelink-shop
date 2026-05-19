@@ -38,7 +38,7 @@ const categories = [
 export const CategoryGrid = () => {
   return (
     <div className="max-w-[1600px] mx-auto">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {categories.map((category, index) => (
           <motion.div
             key={category.id}
@@ -54,18 +54,18 @@ export const CategoryGrid = () => {
                 alt={category.title}
                 fill
                 className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                sizes="(max-width: 640px) 50vw, 25vw"
                 priority={index < 2}
               />
               {/* Elegant overlay: Darkening gradient towards bottom */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 group-hover:from-black/85 group-hover:via-black/40 transition-all duration-500" />
               
               {/* Text overlay - aligned beautifully in the lower third */}
-              <div className="absolute inset-x-0 bottom-8 md:bottom-12 flex flex-col items-center justify-center text-center px-4 z-10">
-                <h3 className="text-2xl md:text-3xl font-serif text-white tracking-widest font-light uppercase transition-transform duration-500 group-hover:scale-105">
+              <div className="absolute inset-x-0 bottom-6 md:bottom-12 flex flex-col items-center justify-center text-center px-2 z-10">
+                <h3 className="text-sm sm:text-2xl md:text-3xl font-serif text-white tracking-widest font-light uppercase transition-transform duration-500 group-hover:scale-105 leading-tight">
                   {category.title}
                 </h3>
-                <span className="text-[10px] md:text-xs tracking-[0.25em] text-white/70 uppercase mt-2 font-light transition-colors duration-500 group-hover:text-white">
+                <span className="text-[7px] sm:text-[10px] md:text-xs tracking-[0.2em] sm:tracking-[0.25em] text-white/70 uppercase mt-1 md:mt-2 font-light transition-colors duration-500 group-hover:text-white">
                   {category.subtitle}
                 </span>
               </div>

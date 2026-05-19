@@ -26,6 +26,31 @@ export default function Home() {
   const [isMuted, setIsMuted] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<"satis" | "cok-satanlar" | "aktif">("satis");
+  const [displayProducts, setDisplayProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isLoading || products.length === 0) return;
+
+    let filtered = products;
+    if (activeTab === "satis") {
+      filtered = products.filter(p => p.originalPrice && Number(p.originalPrice) > Number(p.price));
+    } else if (activeTab === "aktif") {
+      filtered = products.filter(p => p.isNew);
+    }
+
+    if (filtered.length === 0) {
+      filtered = products;
+    }
+
+    // Fisher-Yates Shuffle for random selection
+    const shuffled = [...filtered];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    setDisplayProducts(shuffled.slice(0, 8));
+  }, [activeTab, products, isLoading]);
 
   useEffect(() => {
     setMounted(true);
@@ -144,30 +169,19 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
-            {isLoading
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 md:gap-x-6 gap-y-8 md:gap-y-16">
+            {isLoading || displayProducts.length === 0
               ? Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="animate-pulse space-y-4">
                     <div className="aspect-[3/4] bg-secondary/5" />
                     <div className="h-4 bg-secondary/5 w-3/4" />
                   </div>
                 ))
-              : (() => {
-                  let list = products;
-                  if (activeTab === "satis") {
-                    list = products.filter(p => p.originalPrice && Number(p.originalPrice) > Number(p.price));
-                  } else if (activeTab === "aktif") {
-                    list = products.filter(p => p.isNew);
-                  }
-                  
-                  const displayList = list.length === 0 ? products.slice(0, 8) : list.slice(0, 8);
-                  
-                  return displayList.map((product, i) => (
-                    <motion.div key={product.id} {...fadeInUp} transition={{ delay: i * 0.1 }} className="h-full">
-                      <ProductCard product={product} />
-                    </motion.div>
-                  ));
-                })()}
+              : displayProducts.map((product, i) => (
+                  <motion.div key={product.id} {...fadeInUp} transition={{ delay: i * 0.05 }} className="h-full">
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))}
           </div>
         </div>
       </section>
