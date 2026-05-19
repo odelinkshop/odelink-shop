@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useStoreData } from "@/store/useStoreData";
 import { motion } from "framer-motion";
+import { Localization } from "@/components/Localization";
 
 const InstagramIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
@@ -165,8 +166,10 @@ const Footer = () => {
 
       {/* Final Bottom Bar */}
       <div className="bg-black py-10 px-6 border-t border-white/5">
-        <div className="max-w-[1200px] mx-auto flex flex-col items-center space-y-6">
-          <div className="text-center space-y-2">
+        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
+          <Localization />
+          
+          <div className="text-center lg:text-right space-y-2">
             <p className="text-[10px] font-medium tracking-widest">
               BU SİTE <Link href="/" className="font-black underline underline-offset-4">{storeDisplayName}</Link> TARAFINDAN YÖNETİLMEKTEDİR.
             </p>
@@ -177,12 +180,14 @@ const Footer = () => {
               ÖDEMELER <a href="https://www.shopier.com" className="underline">SHOPIER</a> GÜVENCESİYLE KORUNMAKTADIR.
             </p>
           </div>
-          {!settings?.branding?.hide_odelink_credit && (
-            <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center group opacity-30 hover:opacity-100 transition-opacity">
-              <span className="text-lg font-black tracking-tighter italic">ödelink</span>
-              <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
-            </a>
-          )}
+          <div className="flex flex-col items-center lg:items-end space-y-4">
+            {!settings?.branding?.hide_odelink_credit && (
+              <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center lg:items-end group opacity-30 hover:opacity-100 transition-opacity">
+                <span className="text-lg font-black tracking-tighter italic">ödelink</span>
+                <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </footer>
