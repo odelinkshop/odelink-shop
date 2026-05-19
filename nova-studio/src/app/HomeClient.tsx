@@ -28,7 +28,7 @@ const reviewsData = [
     rating: 5,
     title: "Satın aldığımdan gerçekten çok memnunum!",
     text: "Genellikle tembel olduğum için yorum yazmam ama bu kapüşonlu sweatshirt gerçekten harika, yumuşak ve malzemesi çok kaliteli, dürüst olmak gerekirse çok etkilendim, bayıldım resmen!",
-    image: "/review_1.png",
+    image: "/1.png",
     likes: 48,
     dislikes: 4
   },
@@ -54,7 +54,7 @@ const reviewsData = [
     rating: 5,
     title: "Beklentimin çok üzerinde!",
     text: "Sessiz lüks tasarım çizgisini çok iyi yansıtmış. Dolabımdaki en kaliteli ve şık sweatshirt diyebilirim. Hızlı teslimat ve özenli paketleme için de ayrıca teşekkürler.",
-    image: "/3.jpg",
+    image: "/3.png",
     likes: 22,
     dislikes: 0
   }
@@ -402,7 +402,7 @@ export default function Home() {
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           const img = e.currentTarget as HTMLImageElement;
-                          img.src = review.id === 2 ? "/2.png" : "/3.jpg";
+                          img.src = review.id === 2 ? "/2.png" : (review.id === 3 ? "/3.png" : "/1.png");
                         }}
                       />
                     </div>
@@ -503,7 +503,7 @@ export default function Home() {
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const img = e.currentTarget as HTMLImageElement;
-                      img.src = selectedReview.id === 2 ? "/2.png" : "/3.jpg";
+                      img.src = selectedReview.id === 2 ? "/2.png" : (selectedReview.id === 3 ? "/3.png" : "/1.png");
                     }}
                   />
                 </div>
