@@ -4,90 +4,75 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+const categories = [
+  {
+    id: 1,
+    title: "KOMBİNLER",
+    subtitle: "Koleksiyonu incele",
+    image: "/1.jpg",
+    link: "/shop?category=kombinler",
+  },
+  {
+    id: 2,
+    title: "GÜNLÜK ŞIKLIK",
+    subtitle: "Koleksiyonu incele",
+    image: "/2.png",
+    link: "/shop?category=gunluk-siklik",
+  },
+  {
+    id: 3,
+    title: "DIŞ GİYİM",
+    subtitle: "Koleksiyonu incele",
+    image: "/3.jpg",
+    link: "/shop?category=dis-giyim",
+  },
+  {
+    id: 4,
+    title: "KLASİK ŞIKLIK",
+    subtitle: "Koleksiyonu incele",
+    image: "/4.jpg",
+    link: "/shop?category=klasik-siklik",
+  },
+];
+
 export const CategoryGrid = () => {
   return (
-    <section className="py-12 md:py-24 px-4 md:px-12 bg-background">
-      <div className="max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-2 gap-3 md:gap-6">
-          
-          {/* ————— LARGE (NEW SEASON) ————— */}
+    <div className="max-w-[1600px] mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {categories.map((category, index) => (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            key={category.id}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="col-span-2 md:col-span-1 relative group overflow-hidden aspect-[4/5] md:aspect-auto md:h-[800px]"
+            transition={{ duration: 0.8, delay: index * 0.15 }}
+            className="relative group overflow-hidden aspect-[3/4] w-full"
           >
-            <Link href="/shop" className="block w-full h-full">
+            <Link href={category.link} className="block w-full h-full">
               <Image
-                src="/cat_1.jpg"
-                alt="New Season"
+                src={category.image}
+                alt={category.title}
                 fill
-                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                priority={index < 2}
               />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-              <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10">
-                <span className="text-[8px] md:text-[10px] tracking-[0.5em] text-white/90 uppercase mb-2 block font-medium">
-                  EXPLORE
-                </span>
-                <h3 className="text-2xl md:text-5xl font-serif text-white uppercase tracking-tight font-light">
-                  NEW SEASON
+              {/* Elegant overlay: Darkening gradient towards bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 group-hover:from-black/85 group-hover:via-black/40 transition-all duration-500" />
+              
+              {/* Text overlay - aligned beautifully in the lower third */}
+              <div className="absolute inset-x-0 bottom-8 md:bottom-12 flex flex-col items-center justify-center text-center px-4 z-10">
+                <h3 className="text-2xl md:text-3xl font-serif text-white tracking-widest font-light uppercase transition-transform duration-500 group-hover:scale-105">
+                  {category.title}
                 </h3>
+                <span className="text-[10px] md:text-xs tracking-[0.25em] text-white/70 uppercase mt-2 font-light transition-colors duration-500 group-hover:text-white">
+                  {category.subtitle}
+                </span>
               </div>
             </Link>
           </motion.div>
-
-          {/* ————— SMALLER ITEMS ————— */}
-          <div className="col-span-2 md:col-span-1 grid grid-cols-2 md:grid-cols-1 gap-3 md:gap-6 md:h-[800px]">
-            
-            {/* ITEM 2 (SHIRTS) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative group overflow-hidden aspect-[3/4] md:aspect-auto"
-            >
-              <Link href="/shop" className="block w-full h-full">
-                <Image
-                  src="/cat_2.avif"
-                  alt="Premium Shirts"
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8">
-                  <h3 className="text-lg md:text-3xl font-serif text-white uppercase tracking-tight font-light leading-none">
-                    SHIRTS
-                  </h3>
-                </div>
-              </Link>
-            </motion.div>
-
-            {/* ITEM 3 (PANTS) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative group overflow-hidden aspect-[3/4] md:aspect-auto"
-            >
-              <Link href="/shop" className="block w-full h-full">
-                <Image
-                  src="/cat_3.avif"
-                  alt="Designer Pants"
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8">
-                  <h3 className="text-lg md:text-3xl font-serif text-white uppercase tracking-tight font-light leading-none">
-                    PANTS
-                  </h3>
-                </div>
-              </Link>
-            </motion.div>
-
-          </div>
-        </div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 };

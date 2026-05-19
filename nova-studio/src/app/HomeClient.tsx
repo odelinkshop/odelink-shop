@@ -87,20 +87,8 @@ export default function Home() {
       {/* ————— DYNAMIC BAR 1 ————— */}
       <ScrollingText text="LIMITED EDITORIAL — CURATED LUXURY" speed={50} />
 
-      {/* ————— PHYLOSOPHY ————— */}
-      <section className="py-24 md:py-40 px-6 lg:px-24">
-        <div className="max-w-[1400px] mx-auto text-center space-y-10 md:space-y-16">
-          <motion.h3 {...fadeInUp} className="text-3xl md:text-8xl font-serif text-secondary tracking-tighter uppercase font-light">
-            {aboutTitle}
-          </motion.h3>
-          <motion.p {...fadeInUp} transition={{delay: 0.3}} className="text-lg md:text-2xl text-secondary/60 max-w-3xl mx-auto font-light leading-relaxed">
-            {aboutText}
-          </motion.p>
-        </div>
-      </section>
-
       {/* ————— CATEGORY GRID ————— */}
-      <section className="px-6 lg:px-12 pb-24 md:pb-32">
+      <section className="px-6 lg:px-12 py-24 md:py-32">
          <CategoryGrid />
       </section>
 
