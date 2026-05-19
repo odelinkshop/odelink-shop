@@ -1,40 +1,118 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useStoreData } from "@/store/useStoreData";
 
 const AnnouncementBar = () => {
   const { settings } = useStoreData();
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(0); // -1 for left, 1 for right
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Use a stable default or server-provided value until mounted to prevent hydration mismatch
-  const text = mounted ? (settings.content.announcementBar || "FREE WORLDWIDE SHIPPING ON ORDERS OVER $500 • COMPLIMENTARY ITALIAN WRAPPING •") : "LÜKS MAĞAZA DENEYİMİ — ODELINK ENTERPRISE STUDIO —";
+  const rawText = mounted 
+    ? (settings?.content?.announcementBar || "TÜM SİPARİŞLERDE ÜCRETSİZ HEDİYE • 5.000 TL ÜZERİ SİPARİŞLERDE ÜCRETSİZ KARGO") 
+    : "TÜM SİPARİŞLERDE ÜCRETSİZ HEDİYE • 5.000 TL ÜZERİ SİPARİŞLERDE ÜCRETSİZ KARGO";
+
+  // Split the dynamically saved text by bullet points or pipes
+  const announcements = rawText
+    .split(/[•|]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  useEffect(() => {
+    if (announcements.length <= 1) return;
+    const timer = setInterval(() => {
+      handleNext();
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [index, announcements.length]);
+
+  const handlePrev = () => {
+    if (announcements.length <= 1) return;
+    setDirection(-1);
+    setIndex((prev) => (prev === 0 ? announcements.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    if (announcements.length <= 1) return;
+    setDirection(1);
+    setIndex((prev) => (prev === announcements.length - 1 ? 0 : prev + 1));
+  };
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 50 : -50,
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1
+    },
+    exit: (dir: number) => ({
+      x: dir < 0 ? 50 : -50,
+      opacity: 0
+    })
+  };
+
+  const hasMultiple = announcements.length > 1;
+
+  // Safe fallback index check
+  const activeIndex = index >= announcements.length ? 0 : index;
 
   return (
-    <div className="w-full bg-secondary text-primary py-2.5 overflow-hidden border-b border-primary/5 relative z-50">
-      <div className="flex whitespace-nowrap animate-marquee">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <span key={i} className="text-[9px] tracking-[0.8em] uppercase font-light px-20">
-            {text} •
-          </span>
-        ))}
-      </div>
-      
-      <style jsx>{`
-        .animate-marquee {
-          display: inline-flex;
-          animation: marquee 60s linear infinite;
-        }
+    <div className="w-full bg-[#000000] text-white py-3 border-b border-white/5 relative z-50 overflow-hidden font-sans">
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between px-4 md:px-8 h-5">
+        {/* Left Arrow */}
+        {hasMultiple ? (
+          <button 
+            onClick={handlePrev}
+            className="text-white/60 hover:text-white transition-colors duration-200 p-1 focus:outline-none"
+            aria-label="Önceki Duyuru"
+          >
+            <ChevronLeft size={16} strokeWidth={2.5} />
+          </button>
+        ) : (
+          <div className="w-6" />
+        )}
 
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
+        {/* Sliding Text Wrapper */}
+        <div className="flex-1 relative h-5 flex items-center justify-center overflow-hidden mx-4">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.span
+              key={activeIndex}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="absolute text-[10px] md:text-xs font-black tracking-[0.2em] text-center uppercase whitespace-nowrap text-white font-sans"
+              style={{ fontWeight: 900 }}
+            >
+              {announcements[activeIndex]}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+
+        {/* Right Arrow */}
+        {hasMultiple ? (
+          <button 
+            onClick={handleNext}
+            className="text-white/60 hover:text-white transition-colors duration-200 p-1 focus:outline-none"
+            aria-label="Sonraki Duyuru"
+          >
+            <ChevronRight size={16} strokeWidth={2.5} />
+          </button>
+        ) : (
+          <div className="w-6" />
+        )}
+      </div>
     </div>
   );
 };
