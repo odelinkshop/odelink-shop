@@ -310,6 +310,30 @@ const mustMatchClaimEmail = async (req) => {
   return false;
 };
 
+router.post('/ceo-verify', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const CEO_EMAIL = 'Muratbyrm3752@gmail.com';
+    const CEO_PASSWORD = 'Murat676756.';
+    
+    if (
+      email && 
+      password && 
+      email.trim().toLowerCase() === CEO_EMAIL.toLowerCase() && 
+      password.trim() === CEO_PASSWORD
+    ) {
+      console.log(`🔐 CEO Login Successful from IP: ${req.ip}`);
+      return res.json({ ok: true, signature: 'ceo_authorized_v2.1' });
+    }
+    
+    console.warn(`🚨 UNATHORIZED CEO login attempt from IP: ${req.ip} with email: ${email}`);
+    return res.status(401).json({ error: 'Geçersiz CEO Kimlik Bilgileri. Erişim Engellendi.' });
+  } catch (err) {
+    console.error('CEO Verify Error:', err);
+    res.status(500).json({ error: 'Doğrulama işlemi sırasında sunucu hatası oluştu.' });
+  }
+});
+
 router.get('/status', authMiddleware, async (req, res) => {
   try {
     await ensureSchema();

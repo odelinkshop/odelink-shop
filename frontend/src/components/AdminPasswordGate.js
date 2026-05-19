@@ -4,6 +4,12 @@ import { Lock, Mail, Key, ShieldCheck, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from './BrandLogo';
 
+const API_BASE =
+  process.env.REACT_APP_API_URL ||
+  ((typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+    ? 'http://localhost:5000'
+    : '');
+
 const AdminPasswordGate = ({ children }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -11,9 +17,6 @@ const AdminPasswordGate = ({ children }) => {
   const [authorized, setAuthorized] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const CEO_EMAIL = 'Muratbyrm3752@gmail.com';
-  const CEO_PASSWORD = 'Murat676756.';
 
   useEffect(() => {
     // Session kontrolü
@@ -23,20 +26,33 @@ const AdminPasswordGate = ({ children }) => {
     }
   }, []);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    setTimeout(() => {
-      if (email.toLowerCase() === CEO_EMAIL.toLowerCase() && password === CEO_PASSWORD) {
+    try {
+      const response = await fetch(`${API_BASE}/api/admin/ceo-verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.ok) {
         localStorage.setItem('nova_ceo_session_v1', 'true');
         setAuthorized(true);
       } else {
-        setError('Geçersiz CEO Kimlik Bilgileri. Erişim Engellendi.');
+        setError(data.error || 'Geçersiz CEO Kimlik Bilgileri. Erişim Engellendi.');
       }
+    } catch (err) {
+      console.error('CEO Login Error:', err);
+      setError('Bağlantı Hatası: Komut Merkezi ile iletişim kurulamadı.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   if (authorized) {
