@@ -173,7 +173,7 @@ export default function Home() {
           <div className="flex lg:grid lg:grid-cols-4 gap-4 lg:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory pb-6 lg:pb-0 scrollbar-none w-full">
             {isLoading || displayProducts.length === 0
               ? Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="w-[72vw] sm:w-[45vw] lg:w-auto flex-shrink-0 animate-pulse space-y-4">
+                  <div key={i} className="w-[48vw] sm:w-[45vw] lg:w-auto flex-shrink-0 animate-pulse space-y-4">
                     <div className="aspect-[3/4] bg-secondary/5" />
                     <div className="h-4 bg-secondary/5 w-3/4" />
                   </div>
@@ -183,7 +183,7 @@ export default function Home() {
                     key={product.id} 
                     {...fadeInUp} 
                     transition={{ delay: i * 0.05 }} 
-                    className="w-[72vw] sm:w-[45vw] lg:w-auto snap-start flex-shrink-0 h-full"
+                    className="w-[48vw] sm:w-[45vw] lg:w-auto snap-start flex-shrink-0 h-full"
                   >
                     <ProductCard product={product} />
                   </motion.div>
