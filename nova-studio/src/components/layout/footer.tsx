@@ -155,11 +155,27 @@ const Footer = () => {
              </a>
           </div>
 
-          <div className="flex items-center gap-4 opacity-30 grayscale hover:grayscale-0 transition-all">
-             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Visa</span>
-             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Master</span>
-             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Troy</span>
-             <span className="text-[8px] font-black tracking-widest border border-white/20 px-1.5 py-0.5 rounded uppercase">Amex</span>
+          <div className="flex items-center gap-6 text-white/50 hover:text-white/90 transition-all duration-500 grayscale hover:grayscale-0">
+             {/* Visa */}
+             <div className="text-[17px] font-black italic tracking-tighter" style={{ fontFamily: 'Arial, sans-serif', transform: 'skewX(-5deg)' }}>
+               VISA
+             </div>
+             
+             {/* MasterCard */}
+             <div className="text-[17px] font-black italic tracking-tighter" style={{ fontFamily: 'Arial, sans-serif' }}>
+               MasterCard
+             </div>
+
+             {/* Troy */}
+             <div className="text-[18px] font-black tracking-tighter lowercase" style={{ fontFamily: 'Arial, sans-serif' }}>
+               troy
+             </div>
+
+             {/* American Express */}
+             <div className="bg-current rounded-sm px-1.5 py-1 flex flex-col items-center justify-center">
+               <span className="text-[5.5px] font-black tracking-[0.05em] uppercase leading-none text-black">AMERICAN</span>
+               <span className="text-[5.5px] font-black tracking-[0.05em] uppercase leading-none text-black mt-[1px]">EXPRESS</span>
+             </div>
           </div>
         </div>
       </div>
