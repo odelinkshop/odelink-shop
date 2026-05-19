@@ -9,6 +9,20 @@ const ANNOUNCEMENTS = [
   "TÜM SİPARİŞLERDE HIZLI TESLİMAT GARANTİSİ",
 ];
 
+const REGIONS = [
+  "Türkiye | GBP £",
+  "United Kingdom | GBP £",
+  "United States | USD $",
+  "Europe | EUR €",
+];
+
+const LANGUAGES = [
+  "İngilizce",
+  "Türkçe",
+  "Deutsch",
+  "Français",
+];
+
 const slideVariants = {
   enter: (dir: number) => ({
     x: dir > 0 ? 60 : -60,
@@ -27,6 +41,9 @@ const slideVariants = {
 const AnnouncementBar = () => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [activeDropdown, setActiveDropdown] = useState<"region" | "language" | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState("Türkiye | GBP £");
+  const [selectedLanguage, setSelectedLanguage] = useState("İngilizce");
 
   const handlePrev = useCallback(() => {
     setDirection(-1);
@@ -96,14 +113,86 @@ const AnnouncementBar = () => {
         </div>
 
         {/* Right: Selectors */}
-        <div className="hidden lg:flex items-center justify-end flex-1 gap-6 text-[11px] md:text-xs font-semibold text-white/90">
-          <div className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors">
-            <span>Türkiye | GBP £</span>
-            <ChevronDown size={12} strokeWidth={2.5} className="text-white/70" />
+        <div className="hidden lg:flex items-center justify-end flex-1 gap-6 text-[11px] md:text-xs font-semibold text-white/90 relative">
+          
+          {/* Region Dropdown */}
+          <div className="relative">
+            <div 
+              className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors"
+              onClick={() => setActiveDropdown(activeDropdown === "region" ? null : "region")}
+            >
+              <span>{selectedRegion}</span>
+              <ChevronDown size={12} strokeWidth={2.5} className="text-white/70" />
+            </div>
+
+            <AnimatePresence>
+              {activeDropdown === "region" && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)} />
+                  <motion.div 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    className="absolute top-full mt-3 right-0 w-48 bg-white text-black py-2 rounded-xs shadow-xl z-50 border border-secondary/10"
+                  >
+                    {REGIONS.map((region) => (
+                      <button
+                        key={region}
+                        className={`w-full text-left px-4 py-2.5 transition-colors text-[11px] font-bold uppercase tracking-wider ${
+                          selectedRegion === region ? "bg-black/5 text-[#e31c25]" : "hover:bg-black/5 text-secondary"
+                        }`}
+                        onClick={() => {
+                          setSelectedRegion(region);
+                          setActiveDropdown(null);
+                        }}
+                      >
+                        {region}
+                      </button>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
-          <div className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors">
-            <span>İngilizce</span>
-            <ChevronDown size={12} strokeWidth={2.5} className="text-white/70" />
+
+          {/* Language Dropdown */}
+          <div className="relative">
+            <div 
+              className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors"
+              onClick={() => setActiveDropdown(activeDropdown === "language" ? null : "language")}
+            >
+              <span>{selectedLanguage}</span>
+              <ChevronDown size={12} strokeWidth={2.5} className="text-white/70" />
+            </div>
+
+            <AnimatePresence>
+              {activeDropdown === "language" && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)} />
+                  <motion.div 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    className="absolute top-full mt-3 right-0 w-32 bg-white text-black py-2 rounded-xs shadow-xl z-50 border border-secondary/10"
+                  >
+                    {LANGUAGES.map((lang) => (
+                      <button
+                        key={lang}
+                        className={`w-full text-left px-4 py-2.5 transition-colors text-[11px] font-bold uppercase tracking-wider ${
+                          selectedLanguage === lang ? "bg-black/5 text-[#e31c25]" : "hover:bg-black/5 text-secondary"
+                        }`}
+                        onClick={() => {
+                          setSelectedLanguage(lang);
+                          setActiveDropdown(null);
+                        }}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
