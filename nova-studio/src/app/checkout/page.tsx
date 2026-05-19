@@ -90,7 +90,7 @@ export default function CheckoutPage() {
             const inputVarId = document.createElement('input');
             inputVarId.type = 'hidden';
             inputVarId.name = 'first_variation_id';
-            inputVarId.value = '0';
+            inputVarId.value = resData.variationId;
             form.appendChild(inputVarId);
           }
 
