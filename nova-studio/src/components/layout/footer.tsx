@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useStoreData } from "@/store/useStoreData";
 import { motion } from "framer-motion";
-import { Localization } from "@/components/Localization";
+
 
 const InstagramIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
@@ -164,35 +164,73 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Final Bottom Bar - ORIGINAL CENTERED */}
-      <div className="bg-black py-10 px-6 border-t border-white/5">
-        <div className="max-w-[1200px] mx-auto flex flex-col items-center space-y-6">
-          <div className="text-center space-y-2">
-            <p className="text-[10px] font-medium tracking-widest">
-              BU SİTE <Link href="/" className="font-black underline underline-offset-4">{storeDisplayName}</Link> TARAFINDAN YÖNETİLMEKTEDİR.
-            </p>
-            <p className="text-[9px] text-white/40 tracking-[0.2em] font-light uppercase">
-              COPYRIGHT© {year} {storeDisplayName} — TÜM HAKLARI SAKLIDIR.
-            </p>
-            <p className="text-[8px] text-white/20 tracking-widest uppercase">
-              ÖDEMELER <a href="https://www.shopier.com" className="underline">SHOPIER</a> GÜVENCESİYLE KORUNMAKTADIR.
-            </p>
-          </div>
+      {/* Final Bottom Bar - Premium White */}
+      <div className="bg-white pt-12 pb-8 px-6 lg:px-12">
+        <div className="max-w-[1200px] mx-auto">
+          
+          {/* Ödelink Branding - Centered Hero */}
           {!settings?.branding?.hide_odelink_credit && (
-            <a href="https://www.odelink.shop" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center group opacity-30 hover:opacity-100 transition-opacity">
-              <span className="text-lg font-black tracking-tighter italic">ödelink</span>
-              <span className="text-[7px] tracking-[0.5em] font-black mt-1 uppercase">Digital Commerce Experience</span>
-            </a>
+            <div className="flex justify-center mb-10">
+              <a 
+                href="https://www.odelink.shop" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group flex flex-col items-center"
+              >
+                <span 
+                  className="text-[2.2rem] font-black text-black/85 group-hover:text-black transition-colors duration-500"
+                  style={{ fontStyle: 'italic', letterSpacing: '-0.04em', fontFamily: 'Georgia, serif' }}
+                >
+                  Ödelink
+                </span>
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="w-6 h-px bg-black/15" />
+                  <span className="text-[8px] tracking-[0.4em] font-semibold text-black/35 group-hover:text-black/55 transition-colors duration-500 uppercase">
+                    Türkiye'nin En İyi E-Ticaret Vitrin Platformu
+                  </span>
+                  <div className="w-6 h-px bg-black/15" />
+                </div>
+              </a>
+            </div>
           )}
+
+          {/* Divider */}
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-black/10 to-transparent mb-8" />
+
+          {/* Bottom Strip - Horizontal Professional Layout */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            {/* Left - Site Management */}
+            <p className="text-[10px] tracking-[0.1em] text-black/45 font-light order-2 md:order-1">
+              <Link href="/" className="font-semibold text-black/65 hover:text-black/90 transition-colors duration-300">{storeDisplayName}</Link>
+              <span className="mx-1.5 text-black/15">|</span>
+              Özenle yönetilmektedir
+            </p>
+
+            {/* Center - Copyright */}
+            <p className="text-[10px] tracking-[0.15em] text-black/30 font-light order-1 md:order-2">
+              © {year} Tüm hakları saklıdır.
+            </p>
+
+            {/* Right - Payment Security */}
+            <div className="flex items-center gap-1.5 text-[10px] text-black/40 order-3">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black/30">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span className="font-light tracking-[0.08em]">
+                Bütün ödemeler{" "}
+                <a href="https://www.shopier.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-black/55 hover:text-black/80 transition-colors duration-300">
+                  Shopier
+                </a>
+                {" "}güvencesindedir
+              </span>
+            </div>
+
+          </div>
         </div>
       </div>
 
-      {/* Localization - EN ALT */}
-      <div className="bg-black py-6 px-6 border-t border-white/5">
-        <div className="max-w-[1200px] mx-auto flex justify-center">
-          <Localization />
-        </div>
-      </div>
     </footer>
   );
 };
