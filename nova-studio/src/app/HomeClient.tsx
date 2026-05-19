@@ -49,7 +49,7 @@ export default function Home() {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    setDisplayProducts(shuffled.slice(0, 8));
+    setDisplayProducts(shuffled.slice(0, 4));
   }, [activeTab, products, isLoading]);
 
   useEffect(() => {
@@ -188,6 +188,16 @@ export default function Home() {
                     <ProductCard product={product} />
                   </motion.div>
                 ))}
+          </div>
+
+          {/* TÜMÜNÜ GÖRÜNTÜLE Button */}
+          <div className="flex justify-center mt-12 md:mt-16">
+            <Link 
+              href="/shop" 
+              className="bg-[#e31c25] hover:bg-[#b0141b] text-white text-xs md:text-sm font-bold tracking-[0.2em] px-8 py-3.5 uppercase transition-all duration-300 rounded-xs shadow-md"
+            >
+              TÜMÜNÜ GÖRÜNTÜLE
+            </Link>
           </div>
         </div>
       </section>
