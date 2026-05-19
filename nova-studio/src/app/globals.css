@@ -88,3 +88,12 @@ img {
 .video-overlay {
   background: linear-gradient(to bottom, rgba(10,10,10,0.4), rgba(10,10,10,0.1) 20%, rgba(10,10,10,0.1) 80%, rgba(10,10,10,0.4));
 }
+
+/* HIDE SCROLLBARS FOR CAROUSEL */
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+}
+.scrollbar-none {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}

@@ -124,21 +124,21 @@ export default function Home() {
       <ScrollingText text="NEW ARRIVALS — ESTATE ITALIANA 26" speed={60} reverse className="bg-primary text-secondary" />
 
       {/* ————— PRODUCTS (SANTO TABBED STYLE) ————— */}
-      <section className="py-24 md:py-36 px-6 lg:px-12">
+      <section className="py-24 md:py-36 px-4 md:px-12 overflow-hidden">
         <div className="max-w-[1800px] mx-auto">
           {/* Centered Title and Tabs Header */}
-          <div className="text-center space-y-8 mb-20 md:mb-28">
-            <h3 className="text-3xl md:text-5xl font-sans font-extrabold uppercase tracking-widest text-secondary">
+          <div className="text-center space-y-6 mb-16 md:mb-24">
+            <h3 className="text-2xl md:text-5xl font-sans font-black uppercase tracking-wider text-secondary leading-tight">
               ALIŞVERİŞ İÇİN TIKLAYIN
             </h3>
             
-            <div className="flex justify-center items-center gap-2 md:gap-3 flex-wrap">
+            <div className="flex flex-row justify-center items-center gap-1.5 md:gap-3 flex-nowrap overflow-x-auto scrollbar-none py-1">
               <button 
                 onClick={() => setActiveTab("satis")}
                 className={cn(
-                  "px-8 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs min-w-[140px]",
+                  "px-4 py-2.5 md:px-8 md:py-3.5 text-[10px] md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs flex-shrink-0",
                   activeTab === "satis" 
-                    ? "bg-[#e31c25] text-white shadow-md scale-105" 
+                    ? "bg-[#e31c25] text-white shadow-md" 
                     : "bg-[#f2f2f2] text-secondary hover:bg-secondary/10"
                 )}
               >
@@ -147,9 +147,9 @@ export default function Home() {
               <button 
                 onClick={() => setActiveTab("cok-satanlar")}
                 className={cn(
-                  "px-8 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs min-w-[140px]",
+                  "px-4 py-2.5 md:px-8 md:py-3.5 text-[10px] md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs flex-shrink-0",
                   activeTab === "cok-satanlar" 
-                    ? "bg-[#e31c25] text-white shadow-md scale-105" 
+                    ? "bg-[#e31c25] text-white shadow-md" 
                     : "bg-[#f2f2f2] text-secondary hover:bg-secondary/10"
                 )}
               >
@@ -158,9 +158,9 @@ export default function Home() {
               <button 
                 onClick={() => setActiveTab("aktif")}
                 className={cn(
-                  "px-8 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs min-w-[140px]",
+                  "px-4 py-2.5 md:px-8 md:py-3.5 text-[10px] md:text-sm font-bold uppercase tracking-wider transition-all duration-300 rounded-xs flex-shrink-0",
                   activeTab === "aktif" 
-                    ? "bg-[#e31c25] text-white shadow-md scale-105" 
+                    ? "bg-[#e31c25] text-white shadow-md" 
                     : "bg-[#f2f2f2] text-secondary hover:bg-secondary/10"
                 )}
               >
@@ -169,16 +169,22 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 md:gap-x-6 gap-y-8 md:gap-y-16">
+          {/* Swipeable on Mobile, Grid on Desktop */}
+          <div className="flex lg:grid lg:grid-cols-4 gap-4 lg:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory pb-6 lg:pb-0 scrollbar-none w-full">
             {isLoading || displayProducts.length === 0
               ? Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="animate-pulse space-y-4">
+                  <div key={i} className="w-[72vw] sm:w-[45vw] lg:w-auto flex-shrink-0 animate-pulse space-y-4">
                     <div className="aspect-[3/4] bg-secondary/5" />
                     <div className="h-4 bg-secondary/5 w-3/4" />
                   </div>
                 ))
               : displayProducts.map((product, i) => (
-                  <motion.div key={product.id} {...fadeInUp} transition={{ delay: i * 0.05 }} className="h-full">
+                  <motion.div 
+                    key={product.id} 
+                    {...fadeInUp} 
+                    transition={{ delay: i * 0.05 }} 
+                    className="w-[72vw] sm:w-[45vw] lg:w-auto snap-start flex-shrink-0 h-full"
+                  >
                     <ProductCard product={product} />
                   </motion.div>
                 ))}
