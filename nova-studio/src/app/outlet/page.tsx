@@ -6,7 +6,7 @@ import ShopClient from "../shop/ShopClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const store = await getStoreData(host);
 
   if (!store) return { title: "Outlet" };

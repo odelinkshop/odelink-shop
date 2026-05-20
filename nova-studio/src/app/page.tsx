@@ -17,7 +17,7 @@ function getFallbackStoreName(host: string): string {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const settings = await getStoreData(host);
   
   const shopName = settings?.name || settings?.title || getFallbackStoreName(host);

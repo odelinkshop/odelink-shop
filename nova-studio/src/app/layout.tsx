@@ -32,7 +32,7 @@ function getFallbackStoreName(host: string): string {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const store = await getStoreData(host);
 
   const DEFAULT_DESC = "En kaliteli ürünler ve güvenli alışverişin adresi.";
@@ -105,7 +105,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const storeData = await getStoreData(host);
 
   return (

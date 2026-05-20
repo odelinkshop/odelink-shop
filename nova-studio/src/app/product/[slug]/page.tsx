@@ -12,7 +12,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const headersList = await headers();
-  const host = headersList.get("host") || "";
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const store = await getStoreData(host);
   
   if (!store) return { title: "Ürün Bulunamadı" };
