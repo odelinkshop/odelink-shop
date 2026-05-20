@@ -9,7 +9,7 @@ const categories = [
     id: 1,
     title: "KOMBİNLER",
     subtitle: "Koleksiyonu incele",
-    image: "/11.jpg",
+    image: "/4.jpg",
     link: "/shop?category=kombinler",
   },
   {
@@ -23,14 +23,14 @@ const categories = [
     id: 3,
     title: "DIŞ GİYİM",
     subtitle: "Koleksiyonu incele",
-    image: "/5.jpg",
+    image: "/1.jpg",
     link: "/shop?category=dis-giyim",
   },
   {
     id: 4,
     title: "KLASİK ŞIKLIK",
     subtitle: "Koleksiyonu incele",
-    image: "/10.jpg",
+    image: "/3.jpg",
     link: "/shop?category=klasik-siklik",
   },
 ];
