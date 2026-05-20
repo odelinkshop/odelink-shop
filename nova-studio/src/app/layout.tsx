@@ -18,22 +18,26 @@ const playfair = Playfair_Display({
 import { headers } from "next/headers";
 import { getStoreData } from "@/lib/store-data";
 
+function getFallbackStoreName(host: string): string {
+  if (!host) return "MAĞAZA";
+  const cleanHost = host.replace("www.", "");
+  if (cleanHost.includes("odelink.shop")) {
+    const parts = cleanHost.split(".");
+    if (parts.length >= 3 && parts[0] !== "www") {
+      return parts[0].toUpperCase();
+    }
+  }
+  return "MAĞAZA";
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
   const host = headersList.get("host") || "";
   const store = await getStoreData(host);
 
   const DEFAULT_DESC = "En kaliteli ürünler ve güvenli alışverişin adresi.";
-
-  if (!store) {
-    return {
-      title: "Mağaza | Premium Alışveriş",
-      description: DEFAULT_DESC,
-    };
-  }
-
-  const shopName = store.title || store.name || "Mağaza";
-  const shopDesc = store.description || `${shopName} - ${DEFAULT_DESC}`;
+  const shopName = store?.title || store?.name || getFallbackStoreName(host);
+  const shopDesc = store?.description || `${shopName} - ${DEFAULT_DESC}`;
   
   return {
     title: {
@@ -41,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
       default: `${shopName} | Resmi Web Sitesi`,
     },
     description: shopDesc,
-    keywords: [shopName, "online alışveriş", "lüks giyim", "aksesuar", "premium koleksiyon"],
+    keywords: [shopName, "online alışveriş", "lüks giyim", "aksesuar", "premium koleksiyon", "klasik şıklık"],
     authors: [{ name: shopName }],
     metadataBase: new URL(`https://${host}`),
     alternates: { canonical: '/' },
