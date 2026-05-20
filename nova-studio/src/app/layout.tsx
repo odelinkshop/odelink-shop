@@ -61,9 +61,9 @@ export async function generateMetadata(): Promise<Metadata> {
       images: store.logoUrl ? [store.logoUrl] : [],
     },
     robots: {
-      index: false,
-      follow: false,
-      googleBot: { index: false, follow: false },
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
     },
   };
 }
