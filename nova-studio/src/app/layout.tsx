@@ -54,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: shopDesc,
       url: `https://${host}`,
       siteName: shopName,
-      images: store.logoUrl ? [{ url: store.logoUrl, width: 1200, height: 630, alt: shopName }] : [],
+      images: store?.logoUrl ? [{ url: store?.logoUrl, width: 1200, height: 630, alt: shopName }] : [],
       locale: "tr_TR",
       type: "website",
     },
@@ -62,7 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: shopName,
       description: shopDesc,
-      images: store.logoUrl ? [store.logoUrl] : [],
+      images: store?.logoUrl ? [store?.logoUrl] : [],
     },
     robots: {
       index: true,
