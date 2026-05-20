@@ -9,7 +9,7 @@ const categories = [
     id: 1,
     title: "KOMBİNLER",
     subtitle: "Koleksiyonu incele",
-    image: "/1.jpg",
+    image: "/11.jpg",
     link: "/shop?category=kombinler",
   },
   {
@@ -23,14 +23,14 @@ const categories = [
     id: 3,
     title: "DIŞ GİYİM",
     subtitle: "Koleksiyonu incele",
-    image: "/3.jpg",
+    image: "/5.jpg",
     link: "/shop?category=dis-giyim",
   },
   {
     id: 4,
     title: "KLASİK ŞIKLIK",
     subtitle: "Koleksiyonu incele",
-    image: "/4.jpg",
+    image: "/10.jpg",
     link: "/shop?category=klasik-siklik",
   },
 ];
@@ -48,7 +48,7 @@ export const CategoryGrid = () => {
             transition={{ duration: 0.8, delay: index * 0.15 }}
             className="relative group overflow-hidden aspect-[3/4] w-full"
           >
-            <Link href={category.link} className="block w-full h-full">
+          <Link href={category.link} prefetch={false} className="block w-full h-full">
               <Image
                 src={category.image}
                 alt={category.title}

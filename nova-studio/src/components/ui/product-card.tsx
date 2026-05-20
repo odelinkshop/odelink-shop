@@ -204,14 +204,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               <span role="img" aria-label="discount" className="text-[10px]">🏷</span> %{discountPercent} İNDİRİM
             </div>
           )}
-
-          {/* Favorite button overlay */}
-          <button
-            onClick={toggleFavorite}
-            className="absolute top-3 right-3 text-secondary p-1.5 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs shadow-xs transition-all duration-300"
-          >
-            <Heart size={16} strokeWidth={1.5} className={isFavorite ? "fill-[#e31c25] text-[#e31c25]" : "text-secondary"} />
-          </button>
         </div>
 
         {/* Text Area */}
@@ -235,6 +227,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </div>
         </div>
       </Link>
+
+      {/* Favorite button overlay outside the Link to prevent nesting hydration error */}
+      <button
+        onClick={toggleFavorite}
+        className="absolute top-5 right-5 text-secondary p-1.5 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs shadow-xs transition-all duration-300 z-20"
+      >
+        <Heart size={16} strokeWidth={1.5} className={isFavorite ? "fill-[#e31c25] text-[#e31c25]" : "text-secondary"} />
+      </button>
 
       {/* Non-link Swatches and CTA elements */}
       <div className="px-1 pt-1 pb-2">

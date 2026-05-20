@@ -81,7 +81,7 @@ const Navbar = () => {
             <button className="transition-colors text-white/90 hover:text-white">
               <Search className="w-[22px] h-[22px]" strokeWidth={1.5} />
             </button>
-            <Link href="/profile" className="transition-colors text-white/90 hover:text-white hidden sm:block">
+            <Link href="/account" className="transition-colors text-white/90 hover:text-white hidden sm:block">
               <User className="w-[22px] h-[22px]" strokeWidth={1.5} />
             </Link>
             <Link href="/cart" className="relative transition-colors text-white/90 hover:text-white">
@@ -141,7 +141,7 @@ const Navbar = () => {
                 className="mt-auto pt-8 border-t border-white/[0.05] grid grid-cols-1 gap-8"
               >
                 <div className="space-y-4">
-                   <Link href="/profile" className="flex items-center gap-3 text-sm text-white/80 hover:text-white transition-colors">
+                   <Link href="/account" className="flex items-center gap-3 text-sm text-white/80 hover:text-white transition-colors">
                      <User size={20} strokeWidth={1.5} />
                      HESABIM
                    </Link>
